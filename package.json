@@ -1,0 +1,19 @@
+{
+  "name": "biduul",
+  "version": "0.1.0",
+  "description": "A trading interface for Binance Futures",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "Pascal Reinhard",
+  "license": "CC-BY-NC-SA-4.0",
+  "devDependencies": {
+    "electron": "^8.0.1"
+  },
+  "dependencies": {
+    "d3": "^4.13.0",
+    "node-binance-api": "^0.10.3",
+    "techan": "^0.8.0"
+  }
+}

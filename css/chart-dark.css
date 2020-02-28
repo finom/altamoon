@@ -1,0 +1,122 @@
+
+svg {
+    font: 10px sans-serif;
+    background: #000113;
+    border-radius: 5px;
+    shape-rendering: crispEdges;
+}
+/*
+    Axis
+*/
+.axis text {
+    fill: #67bcff ;
+}
+.axis path, .axis line {
+    stroke: #3F51B5;
+}
+/*
+    Grid
+*/
+.gridlines line {
+    stroke: #000940;
+}
+/*
+    Candles
+*/
+path.candle {
+    stroke: #005dff;
+    stroke-linecap: round;
+}
+path.candle.body {
+    stroke-width: 0;
+}
+path.candle.wick {
+    stroke-width: 2 !important;
+}
+path.candle.up {
+    fill: #005dff;
+    stroke: #005dff;
+}
+path.candle.down {
+    fill: #0025ff;
+    stroke: #0025ff;
+}
+/*
+    Price line
+*/
+.price-line .supstance path {
+    stroke: blue;
+    stroke-dasharray: 10 5;
+}
+.price-line .axisannotation path {
+    fill: blue;
+    stroke: blue;
+    shape-rendering: auto;
+}
+.price-line .axisannotation text {
+    fill: #fff;
+    shape-rendering: geometricprecision;
+}
+/*
+    Position line
+*/
+.position-line path {
+    stroke: indigo;
+}
+.position-line .axisannotation path {
+    fill: indigo;
+    stroke: indigo;
+}
+.position-line .axisannotation text {
+    fill: #fff;
+}
+.position-label rect {
+    fill: indigo;
+    stroke: #210058;
+    stroke-width: 2;
+    width: 70px;
+    height: 19px;
+    rx: 6px;
+    ry: 6px;
+}
+.position-label text {
+    fill: #fff;
+}
+/*
+    Order lines
+*/
+.order-lines path {
+    stroke: #008042;
+}
+.order-lines .axisannotation path {
+    fill: #008042;
+    stroke: #008042;
+}
+.order-lines .axisannotation text {
+    fill: #fff;
+}
+.order-labels rect {
+    fill: #008042;
+    stroke: #003e37;
+    stroke-width: 2;
+    width: 70px;
+    height: 19px;
+    rx: 6px;
+    ry: 6px;
+}
+.order-labels text {
+    fill: #fff;
+}
+/*
+    Crosshair
+*/
+.crosshair path.wire {
+    stroke: #3F51B5;
+    stroke-dasharray: 2, 4;
+}
+.crosshair .axisannotation path {
+    fill: #555;
+}
+.crosshair .axisannotation text {
+    fill: #fff;
+}

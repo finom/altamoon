@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Biduul</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';" />
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/chart-dark.css">
+    <script src="node_modules/d3/build/d3.min.js"></script>
+    <script src="node_modules/techan/dist/techan.js"></script>
+    <script src="node_modules/node-binance-api/node-binance-api.js"></script>
+    <script>var OUT = console.log</script>
+  </head>
+  <body>
+    <div id="main-grid">
+
+      <div id="chart"></div>
+
+      <div id="trading">
+        <div>
+          <input id="market-order" type="checkbox"></input>
+          <label for="market-order">Market order</label>
+        </div>
+
+        <div class="trading-grid">
+          <div>
+            <input id="buy-amount" class="num-input" value="0.001"></input>
+            <input id="buy-price" class="num-input"></input>
+
+            <button id="buy">BUY</button>
+          </div>
+
+          <div></div>
+
+          <div>
+            <input id="sell-amount" class="num-input" value="0.001"></input>
+            <input id="sell-price" class="num-input"></input>
+            <button id="sell">SELL</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="orders">My Orders</div>
+      <div id="book">Order Book</div>
+      <div id="trades">Last Trades</div>
+      <div id="wallet">My Wallet</div>
+    </div>
+    <script src="js/dashboard.js"></script>
+  </body>
+</html>

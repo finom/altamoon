@@ -1,0 +1,61 @@
+
+svg {
+    font: 10px sans-serif;
+    background: #a2dcef;
+    border-radius: 5px;
+}
+
+.axis text {
+    fill: #3F51B5 ;
+}
+.axis path, .axis line {
+    stroke: #3F51B5;
+}
+
+/*
+    Candles
+*/
+path.candle {
+    stroke: #2196F3;
+}
+path.candle.body {
+    stroke-width: 0;
+}
+path.candle.up {
+    fill: #2196F3;
+    stroke: #2196F3;
+}
+path.candle.down {
+    fill: #3F51B5;
+    stroke: #3F51B5;
+}
+
+/*
+    Price line
+*/
+.price-line path {
+    stroke: blue;
+    stroke-width: 0.8;
+    stroke-dasharray: 2, 2;
+}
+.price-line .axisannotation path {
+    fill: blue;
+}
+.price-line .axisannotation text {
+    fill: #fff;
+}
+
+/*
+    Crosshair
+*/
+.crosshair path.wire {
+    stroke: #3F51B5;
+    stroke-dasharray: 1, 1;
+}
+.crosshair .axisannotation path {
+    fill: #555;
+}
+.crosshair .axisannotation text {
+    fill: #fff;
+}
+.crosshair
