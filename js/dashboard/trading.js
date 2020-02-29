@@ -26,29 +26,29 @@ function onBuy () {
     if (!(amount > 0)) return
 
     if (market) {
-        const classicPromise = binance.futuresMarketBuy('BTCUSDT', amount)
-                .catch(error => console.error(error))
+        binance.futuresMarketBuy('BTCUSDT', amount)
+            .catch(error => console.error(error))
     }
     else if (price > 0) {
-        const classicPromise = binance.futuresBuy('BTCUSDT', amount, price, {'timeInForce': 'GTX'})
-                .catch(error => console.error(error))
+        binance.futuresBuy('BTCUSDT', amount, price, {'timeInForce': 'GTX'})
+            .catch(error => console.error(error))
     }
 }
 
 function onSell () {
     var price = parseFloat(d3.select('#sell-price').property('value'))
     var amount = parseFloat(d3.select('#sell-amount').property('value'))
-    var market = d3.select('#market-order').checked
+    var market = d3.select('#market-order').property('checked')
 
     if (!(amount > 0)) return
 
     if (market) {
-        const classicPromise = binance.futuresMarketSell('BTCUSDT', amount)
-                .catch(error => console.error(error))
+        binance.futuresMarketSell('BTCUSDT', amount)
+            .catch(error => console.error(error))
     }
     else if (price > 0) {
-        const classicPromise = binance.futuresSell('BTCUSDT', amount, price, {'timeInForce': 'GTX'})
-                .catch(error => console.error(error))
+        binance.futuresSell('BTCUSDT', amount, price, {'timeInForce': 'GTX'})
+            .catch(error => console.error(error))
     }
 }
 

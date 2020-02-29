@@ -1,3 +1,4 @@
+const techan = require('techan')
 const fapi = require('../fapi.js')
 
 module.exports.drawChart = function (container) {

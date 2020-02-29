@@ -43,9 +43,9 @@ function streamUserData () {
     var stream
 
     // Get key
-    var promise = binance.futuresGetDataStream()
-            .then(response => openStream(response))
-            .catch(error => console.error(error))
+    binance.futuresGetDataStream()
+        .then(response => openStream(response))
+        .catch(error => console.error(error))
 
     function openStream (key) {
         stream = new WebSocket('wss://fstream.binance.com/ws/' + key.listenKey)
@@ -60,9 +60,9 @@ function streamUserData () {
         // Ping stream every 10 min
         setInterval(
             () => {
-                let promise = binance.futuresGetDataStream()
-                  .then(r => console.log('key: ' + r.listenKey))
-                  .catch(e => console.error(e))
+                binance.futuresGetDataStream()
+                	.then(r => console.log('key: ' + r.listenKey))
+                	.catch(e => console.error(e))
             },
             20 * 60000
         )
