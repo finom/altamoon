@@ -17,7 +17,7 @@ svg {
 /*
     Grid
 */
-.gridlines line {
+.gridlines line, .gridlines path {
     stroke: #000940;
 }
 /*

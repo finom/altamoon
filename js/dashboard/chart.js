@@ -118,27 +118,27 @@ module.exports.drawChart = function (container) {
     //// LOAD DATA
     var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&limit=1500&interval=1m'
 
-    d3.json(lastCandlesURL, (error, jsonCandles) => {
-        if (error) { console.warn(error) }
+    d3.json(lastCandlesURL)
+		.then(jsonCandles => {
+	        var accessor = plot.accessor()
 
-        var accessor = plot.accessor()
+	        candles = jsonCandles
+	            .map(d => {
+	                return {
+	                    date: new Date(+d[0]),
+	                    open: +d[1],
+	                    high: +d[2],
+	                    low: +d[3],
+	                    close: +d[4],
+	                    volume: +d[7]
+	                }
+	            })
+	            .sort((a, b) => d3.ascending(accessor.d(a), accessor.d(b)))
 
-        candles = jsonCandles
-            .map(d => {
-                return {
-                    date: new Date(+d[0]),
-                    open: +d[1],
-                    high: +d[2],
-                    low: +d[3],
-                    close: +d[4],
-                    volume: +d[7]
-                }
-            })
-            .sort((a, b) => d3.ascending(accessor.d(a), accessor.d(b)))
-
-        // Draw with initial data
-        initDraw()
-    })
+	        // Draw with initial data
+	        initDraw()
+	    })
+        .catch(e => console.error(e))
 
     //// INIT DRAW
     function initDraw() {

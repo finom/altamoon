@@ -9,10 +9,10 @@
   "author": "Pascal Reinhard",
   "license": "CC-BY-NC-SA-4.0",
   "devDependencies": {
-    "electron": "^8.0.1"
+    "electron": "^8.0.2"
   },
   "dependencies": {
-    "d3": "^4.13.0",
+    "d3": "^5.15.0",
     "node-binance-api": "^0.10.3",
     "techan": "^0.8.0"
   }
