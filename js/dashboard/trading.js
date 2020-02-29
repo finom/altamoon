@@ -53,14 +53,14 @@ function onSell () {
 }
 
 function forceNumInput () {
-	var text = event.target.value
+    var text = event.target.value
     var regex = /[0-9]|\./
 
-	for (let i = 0; i < text.length; i++) {
-    	if (!regex.test(text[i])) {
-			text = text.replace(text[i], '')
-			i--
-		}
+    for (let i = 0; i < text.length; i++) {
+        if (!regex.test(text[i])) {
+            text = text.replace(text[i], '')
+            i--
+        }
     }
-	event.target.value = text
+    event.target.value = text
 }

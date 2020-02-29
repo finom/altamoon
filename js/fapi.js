@@ -11,7 +11,7 @@ var onGetPosition = []
 var onNewUserData = []
 
 module.exports = { binance, onGetOpenOrders, onGetPosition, onNewUserData,
-	cancelOrder, getOpenOrders, getPosition }
+    cancelOrder, getOpenOrders, getPosition }
 
 streamUserData()
 
@@ -61,8 +61,8 @@ function streamUserData () {
         setInterval(
             () => {
                 binance.futuresGetDataStream()
-                	.then(r => console.log('key: ' + r.listenKey))
-                	.catch(e => console.error(e))
+                    .then(r => console.log('key: ' + r.listenKey))
+                    .catch(e => console.error(e))
             },
             20 * 60000
         )
