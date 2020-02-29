@@ -51,7 +51,7 @@ function streamUserData () {
         stream = new WebSocket('wss://fstream.binance.com/ws/' + key.listenKey)
 
         // Run callbacks with fresh data
-        stream.onmessage = function (event) {
+        stream.onmessage = (event) => {
             data = JSON.parse(event.data)
             for (let func of onNewUserData) func(data)
             OUT('STREAM UPDATE: ' + data.e)
@@ -66,7 +66,7 @@ function streamUserData () {
             },
             20 * 60000
         )
-		
+
         stream.onclose = streamUserData
     }
 }

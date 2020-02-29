@@ -3,25 +3,25 @@ const { binance } = require('../fapi.js')
 module.exports = { onMarketOrderToggled, onBuy, onSell, forceNumInput }
 
 function onMarketOrderToggled () {
-    var tradingDiv = document.getElementById('trading')
-    var buyBtn = document.getElementById('buy')
-    var sellBtn = document.getElementById('sell')
+    var tradingDiv = d3.select('#trading')
+    var buyBtn = d3.select('#buy')
+    var sellBtn = d3.select('#sell')
 
     if (event.target.checked) {
-        tradingDiv.className = 'market'
-        buyBtn.innerHTML = 'PUMP'
-        sellBtn.innerHTML = 'DUMP'
+        tradingDiv.classed('market', true)
+        buyBtn.html('PUMP')
+        sellBtn.html('DUMP')
     } else {
-        tradingDiv.className = ''
-        buyBtn.innerHTML = 'BUY'
-        sellBtn.innerHTML = 'SELL'
+        tradingDiv.classed('market', false)
+        buyBtn.html('BUY')
+        sellBtn.html('SELL')
     }
 }
 
 function onBuy () {
-    var price = Number(document.getElementById('buy-price').value)
-    var amount = Number(document.getElementById('buy-amount').value)
-    var market = document.getElementById('market-order').checked
+    var price = parseFloat(d3.select('#buy-price').property('value'))
+    var amount = parseFloat(d3.select('#buy-amount').property('value'))
+    var market = d3.select('#market-order').property('checked')
 
     if (!(amount > 0)) return
 
@@ -36,9 +36,9 @@ function onBuy () {
 }
 
 function onSell () {
-    var price = Number(document.getElementById('sell-price').value)
-    var amount = Number(document.getElementById('sell-amount').value)
-    var market = document.getElementById('market-order').checked
+    var price = parseFloat(d3.select('#sell-price').property('value'))
+    var amount = parseFloat(d3.select('#sell-amount').property('value'))
+    var market = d3.select('#market-order').checked
 
     if (!(amount > 0)) return
 
