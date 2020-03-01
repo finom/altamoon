@@ -61,7 +61,6 @@ module.exports.drawChart = function (container) {
             .xAnnotation(axisLabelBottom)
             .yAnnotation([axisLabelLeft, axisLabelRight])
 
-    // Plot
     var plot = techan.plot.candlestick()
             .xScale(x)
             .yScale(y)
@@ -108,12 +107,8 @@ module.exports.drawChart = function (container) {
 
         svg.append('g').attr('class', 'crosshair')
 
+        svg.append('g').attr('class', 'position-label')
         svg.append('g').attr('class', 'order-labels')
-
-        gPositionLabel = svg.append('g').attr('class', 'position-label')
-        gPositionLabel.append('rect')
-                .style('display', 'none')
-        gPositionLabel.append('text')
     }
 
     //// LOAD DATA
@@ -186,41 +181,8 @@ module.exports.drawChart = function (container) {
         svg.select('g.order-lines').datum(orderLinesData).call(orderLines)
         svg.select('g.position-line').datum(positionLineData).call(lines)
 
-        gPositionLabel.select('rect')
-                .data(positionLineData)
-                .attr('x', width - 80)
-                .attr('y', d => y(d.value) - 10)
-                .style('display', 'block')
-        gPositionLabel.select('text')
-                .data(positionLineData)
-                .text(d => +d.qty)
-                .attr('x', width - 75)
-                .attr('y', d => y(d.value) + 3)
-
-        //// ORDER LABELS
-        var orderLabels = svg.select('g.order-labels').selectAll('g')
-                .data(orderLinesData)
-
-        let gLabel = orderLabels.enter().append('g')
-
-        // Enter
-        gLabel.append('rect')
-                .attr('x', width - 80)
-                .attr('y', d => y(d.value) - 10)
-                .on('click', d =>  fapi.cancelOrder(d.id))
-        gLabel.append('text')
-                .text(d => +d.qty)
-                .attr('x', width - 75)
-                .attr('y', d => y(d.value) + 3)
-        // Update
-        orderLabels.select('g rect')
-                .attr('y', d => y(d.value) - 10)
-        orderLabels.select('g text')
-                .text(d => +d.qty)
-                .attr('y', d => y(d.value) + 3)
-        // Exit
-        orderLabels.exit().remove()
-        ////
+        svg.select('g.position-label').call(lineLabel, positionLineData)
+        svg.select('g.order-labels').call(lineLabel, orderLinesData, 'order')
 
         gPlot = svg.selectAll('g.plot').datum(data).call(plot)
 
@@ -325,5 +287,34 @@ module.exports.drawChart = function (container) {
             }
         }
     }
-    ////
+
+    //// CHART ITEM GENERATORS
+    function lineLabel (selection, data, type) {
+        selection.selectAll('g')
+            .data(data)
+            .join(
+                // Add label at y = price
+                enter => enter.append('g').call(g => {
+                    let rect = g.append('rect')
+                        .attr('x', width - 80)
+                        .attr('y', d => y(d.value) - 10)
+
+                    // Cancel order on click
+                    if (type == 'order')
+                        rect.on('click', d =>  fapi.cancelOrder(d.id))
+
+                    g.append('text')
+                        .text(d => +d.qty)
+                        .attr('x', width - 75)
+                        .attr('y', d => y(d.value) + 3)
+                }),
+                // Update y
+                update => update.call(g => {
+                    g.select('rect')
+                        .attr('y', d => y(d.value) - 10)
+                    g.select('text')
+                        .attr('y', d => y(d.value) + 3)
+                })
+            )
+    }
 }
