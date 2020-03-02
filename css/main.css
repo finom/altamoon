@@ -85,7 +85,7 @@ button {
 #sell {
     background-color: #ff3879;
     color: white;
-    text-shadow: 1px 2px 3px #480524f5;
+    text-shadow: 1px 2px 3px #480524;
     box-shadow: inset 3px 3px 2px #ffffff2e,
                 inset -2px -2px 2px #0c0c0c5c;
 }

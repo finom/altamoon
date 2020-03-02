@@ -54,7 +54,7 @@ function streamUserData () {
         stream.onmessage = (event) => {
             data = JSON.parse(event.data)
             for (let func of onNewUserData) func(data)
-            OUT('STREAM UPDATE: ' + data.e)
+            // OUT('Stream update: ' + data.e)
         }
 
         // Ping stream every 10 min

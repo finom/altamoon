@@ -50,11 +50,6 @@ module.exports.drawChart = function (container) {
             .yScale(y)
             .annotation([axisLabelLeft, axisLabelRight])
 
-    var orderLines = techan.plot.supstance()
-            .xScale(x)
-            .yScale(y)
-            .annotation([axisLabelLeft, axisLabelRight])
-
     var crosshair = techan.plot.crosshair()
             .xScale(x)
             .yScale(y)
@@ -65,53 +60,50 @@ module.exports.drawChart = function (container) {
             .xScale(x)
             .yScale(y)
 
-    var svg
+    //// PREPARE SVG CONTAINERS
+    var svg = d3.select(container).append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+        .append('g')
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+
+    var gClipPath = svg.append('clipPath')
+            .attr('id', 'clip')
+        .append('rect')
+            .attr('x', 0)
+            .attr('y', y(1))
+            .attr('width', width)
+            .attr('height', y(0) - y(1))
+
+    var gXGridlines = svg.append('g').attr('class', 'x gridlines')
+    var gYGridlines = svg.append('g').attr('class', 'y gridlines')
+
+    var gXAxis = svg.append('g').attr('class', 'x axis bottom')
+            .attr('transform', 'translate(0,' + height + ')')
+
+    var gYAxisLeft = svg.append('g').attr('class', 'y axis left')
+    var gYAxisRight = svg.append('g').attr('class', 'y axis right')
+            .attr('transform', 'translate(' + width + ',0)')
+
+    var gPositionLine = svg.append('g').attr('class', 'position-line')
+    var gOrderLines = svg.append('g').attr('class', 'order-lines')
+    var gPriceLine = svg.append('g').attr('class', 'price-line')
+
+    var gPlot = svg.append('g').attr('class', 'plot')
+            .attr('clip-path', 'url(#clip)')
+
+    var gCrosshair = svg.append('g').attr('class', 'crosshair')
+
+    var gPositionLabel = svg.append('g').attr('class', 'position-label')
+    var gOrderLabels = svg.append('g').attr('class', 'order-labels')
+
+    //// LOAD DATA
     var candles
     var priceLineData
     var positionLineData = []
     var openOrders = {}
     var orderLinesData = []
 
-    //// PREPARE SVG
-    function prepareSVG () {
-        svg = d3.select(container).append('svg')
-                .attr('width', width + margin.left + margin.right)
-                .attr('height', height + margin.top + margin.bottom)
-            .append('g')
-                .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-
-        svg.append('clipPath')
-                .attr('id', 'clip')
-            .append('rect')
-                .attr('x', 0)
-                .attr('y', y(1))
-                .attr('width', width)
-                .attr('height', y(0) - y(1))
-
-        svg.append('g').attr('class', 'x gridlines')
-        svg.append('g').attr('class', 'y gridlines')
-
-        svg.append('g').attr('class', 'x axis bottom')
-                .attr('transform', 'translate(0,' + height + ')')
-
-        svg.append('g').attr('class', 'y axis left')
-        svg.append('g').attr('class', 'y axis right')
-                .attr('transform', 'translate(' + width + ',0)')
-
-        svg.append('g').attr('class', 'position-line')
-        svg.append('g').attr('class', 'order-lines')
-        svg.append('g').attr('class', 'price-line')
-
-        svg.append('g').attr('class', 'plot')
-                .attr('clip-path', 'url(#clip)')
-
-        svg.append('g').attr('class', 'crosshair')
-
-        svg.append('g').attr('class', 'position-label')
-        svg.append('g').attr('class', 'order-labels')
-    }
-
-    //// LOAD DATA
     var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&limit=1500&interval=1m'
 
     d3.json(lastCandlesURL)
@@ -138,7 +130,6 @@ module.exports.drawChart = function (container) {
 
     //// INIT DRAW
     function initDraw() {
-        prepareSVG()
         draw()
         initialZoom()
 
@@ -170,25 +161,32 @@ module.exports.drawChart = function (container) {
 
         priceLineData = [{ value: candles[candles.length -1].close }]
 
-        gXGridlines = svg.select('g.x.gridlines').call(xGridlines)
-        gYGridlines = svg.select('g.y.gridlines').call(yGridlines)
+        gXGridlines.call(xGridlines)
+        gYGridlines.call(yGridlines)
 
-        gX = svg.select('g.x.axis.bottom').call(xAxis)
-        gYLeft  = svg.select('g.y.axis.left').call(yAxisLeft)
-        gYRight = svg.select('g.y.axis.right').call(yAxisRight)
+        gXAxis.call(xAxis)
+        gYAxisLeft.call(yAxisLeft)
+        gYAxisRight.call(yAxisRight)
 
-        svg.select('g.price-line').datum(priceLineData).call(lines)
-        svg.select('g.order-lines').datum(orderLinesData).call(orderLines)
-        svg.select('g.position-line').datum(positionLineData).call(lines)
+        gPriceLine.datum(priceLineData).call(lines)
+        gOrderLines.datum(orderLinesData).call(lines)
+        gPositionLine.datum(positionLineData).call(lines)
 
-        svg.select('g.position-label').call(lineLabel, positionLineData)
-        svg.select('g.order-labels').call(lineLabel, orderLinesData, 'order')
+        // Color hack for position line
+        if (positionLineData[0]) {
+            svg.select('.position-line')
+                .attr('class', 'position-line ' + positionLineData[0].side)
+        }
 
-        gPlot = svg.selectAll('g.plot').datum(data).call(plot)
+        gPositionLabel.call(lineLabel, positionLineData)
+        gOrderLabels.call(lineLabel, orderLinesData, 'order')
 
-        svg.selectAll('g.crosshair').call(crosshair)
+        gPlot.datum(data).call(plot)
+
+        gCrosshair.call(crosshair)
 
             .call(zoom)
+
     }
 
     function initialZoom() {
@@ -199,7 +197,7 @@ module.exports.drawChart = function (container) {
     function onZoom(direction='x') {
         if (direction == 'x') {
             var scaledX = d3.event.transform.rescaleX(x)
-            gX.call(xAxis.scale(scaledX))
+            gXAxis.call(xAxis.scale(scaledX))
             gXGridlines.call(xGridlines.scale(scaledX))
             gPlot.call(plot.xScale(scaledX))
         }
@@ -211,7 +209,8 @@ module.exports.drawChart = function (container) {
 
         positionLineData = [{
             value: data.entryPrice,
-            qty: data.positionAmt
+            qty: data.positionAmt,
+            side: (data.positionAmt >= 0) ? 'long' : 'short'
         }]
         draw()
     }
@@ -224,6 +223,7 @@ module.exports.drawChart = function (container) {
                 id: d.orderId,
                 value: d.price,
                 qty: d.origQty,
+                side: d.side
             }
         })
         draw()
@@ -260,7 +260,15 @@ module.exports.drawChart = function (container) {
 
         var positionData = data.a.P[0]
 
-        positionLineData = [{value: positionData.ep, qty: positionData.pa}]
+        if (positionData.pa == 0) {
+            positionLineData = []
+        } else {
+            positionLineData = [{
+                value: positionData.ep,
+                qty: parseFloat(positionData.pa),
+                side: (positionData.pa >= 0) ? 'long' : 'short'
+            }]
+        }
         draw()
     }
 
@@ -272,7 +280,12 @@ module.exports.drawChart = function (container) {
         // New limit order
         if (order.X == 'NEW' && order.o == 'LIMIT') {
             openOrders[order.i] = order
-            orderLinesData.push({id: order.i, value: order.p, qty: order.q})
+            orderLinesData.push({
+                id: order.i,
+                value: order.p,
+                qty: order.q,
+                side: order.S
+            })
             draw()
             return
         }
@@ -299,14 +312,17 @@ module.exports.drawChart = function (container) {
                         .attr('x', width - 80)
                         .attr('y', d => y(d.value) - 10)
 
-                    // Cancel order on click
-                    if (type == 'order')
-                        rect.on('click', d =>  fapi.cancelOrder(d.id))
-
                     g.append('text')
                         .text(d => +d.qty)
                         .attr('x', width - 75)
                         .attr('y', d => y(d.value) + 3)
+
+                    g.attr('class', d => d.side.toLowerCase())
+
+                    // Cancel order on click
+                    if (type == 'order') {
+                        rect.on('click', d =>  fapi.cancelOrder(d.id))
+                    }
                 }),
                 // Update y
                 update => update.call(g => {
@@ -314,6 +330,8 @@ module.exports.drawChart = function (container) {
                         .attr('y', d => y(d.value) - 10)
                     g.select('text')
                         .attr('y', d => y(d.value) + 3)
+                        .text(d => +d.qty)
+                    g.attr('class', d => d.side.toLowerCase())
                 })
             )
     }
