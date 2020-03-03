@@ -3,20 +3,21 @@
     border-collapse: collapse;
     margin: 5px;
     text-align: center;
-    text-shadow: 1px 2px 2px #00000060;
+    text-shadow: 1px 2px 2px #00000045;
 }
 
 /* Rounded corners hack */
-#position-orders table tr:first-child th:first-child {
+#position-orders thead th:first-child {
     border-top-left-radius: 5px;
 }
-#position-orders table tr:first-child th:last-child {
+#position-orders thead th:last-child,
+#position-orders tbody tr:first-child td:last-child {
     border-top-right-radius: 5px;
 }
-#position-orders table tr:last-child td:first-child {
+#position-orders tbody tr:last-child td:first-child {
     border-bottom-left-radius: 5px;
 }
-#position-orders table tr:last-child td:last-child {
+#position-orders tbody tr:last-child td:last-child {
     border-bottom-right-radius: 5px;
 }
 
@@ -30,14 +31,12 @@
 }
 
 #position-orders td {
-    background: #038e5b;
     padding: 4px 10px;
 }
-
-#position-orders .buy td {
-    background: #038e5b;
+#position-orders .buy {
+    background-color: #038e5b;
 }
-#position-orders .sell td {
+#position-orders .sell {
     background: #8c295e;
 }
 
@@ -46,4 +45,11 @@
     box-shadow: 1px 3px 2px #0000004a;
     border: none;
     cursor: pointer;
+}
+
+tr.disabled td {
+    border-right: 0px !important;
+}
+tr.disabled button {
+    display: none;
 }

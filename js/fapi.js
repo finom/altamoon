@@ -120,7 +120,7 @@ function streamUserData () {
         }
         if (position.qty != 0) positions = [position]
         else positions = []
-        
+
         for (let func of onPositionUpdate) func(positions)
     }
 
