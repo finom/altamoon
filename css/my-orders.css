@@ -40,3 +40,10 @@
 #position-orders .sell td {
     background: #8c295e;
 }
+
+#position-orders button {
+    padding: 1px 15px;
+    box-shadow: 1px 3px 2px #0000004a;
+    border: none;
+    cursor: pointer;
+}

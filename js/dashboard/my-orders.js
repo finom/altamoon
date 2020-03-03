@@ -16,6 +16,9 @@ function updateOrdersList (orders) {
         row.append('td').text(d => d.type)
         row.append('td').text(d => d.stopPrice)
         row.append('td').text(d => d.reduceOnly)
+        row.append('td').append('button')
+            .on('click', d => fapi.cancelOrder(d.id))
+            .html('X')
     })
 
     rows.exit().remove()
