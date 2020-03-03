@@ -101,7 +101,6 @@ module.exports.drawChart = function (container) {
     var candles
     var priceLineData
     var positionLineData = []
-    var openOrders = {}
     var orderLinesData = []
 
     var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&limit=1500&interval=1m'
@@ -133,15 +132,13 @@ module.exports.drawChart = function (container) {
         draw()
         initialZoom()
 
-        fapi.onGetPosition.push(updatePosition)
+        fapi.onPositionUpdate.push(updatePosition)
         fapi.getPosition()
 
-        fapi.onGetOpenOrders.push(updateOpenOrders)
+        fapi.onOrderUpdate.push(updateOpenOrders)
         fapi.getOpenOrders()
 
         streamLastCandle()
-
-        fapi.onNewUserData.push(onPositionUpdate, onOrderUpdate)
     }
 
     //// RENDER CHART
@@ -203,33 +200,18 @@ module.exports.drawChart = function (container) {
         }
     }
 
-    //// DATA UPDATES (REST)
-    function updatePosition (data) {
-        data = data.BTCUSDT
-
-        positionLineData = [{
-            value: data.entryPrice,
-            qty: data.positionAmt,
-            side: (data.positionAmt >= 0) ? 'long' : 'short'
-        }]
+    //// ORDERS/POSITION UPDATE CALLBACKS
+    function updatePosition (positions) {
+        positionLineData = positions
         draw()
     }
 
-    function updateOpenOrders (data) {
-        openOrders = data
-
-        orderLinesData = data.map(d => {
-            return {
-                id: d.orderId,
-                value: d.price,
-                qty: d.origQty,
-                side: d.side
-            }
-        })
+    function updateOpenOrders (orders) {
+        orderLinesData = orders
         draw()
     }
 
-    //// STREAMING DATA UPDATES (WEBSOCKET)
+    //// STREAM CANDLES (WEBSOCKET)
     function streamLastCandle () {
         var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@kline_1m')
 
@@ -252,52 +234,6 @@ module.exports.drawChart = function (container) {
                 candles[candles.length - 1] = newCandle
             }
             draw()
-        }
-    }
-
-    function onPositionUpdate (data) {
-        if (data.e != 'ACCOUNT_UPDATE') return
-
-        var positionData = data.a.P[0]
-
-        if (positionData.pa == 0) {
-            positionLineData = []
-        } else {
-            positionLineData = [{
-                value: positionData.ep,
-                qty: parseFloat(positionData.pa),
-                side: (positionData.pa >= 0) ? 'long' : 'short'
-            }]
-        }
-        draw()
-    }
-
-    function onOrderUpdate (data) {
-        if (data.e != 'ORDER_TRADE_UPDATE') return
-
-        var order = data.o
-
-        // New limit order
-        if (order.X == 'NEW' && order.o == 'LIMIT') {
-            openOrders[order.i] = order
-            orderLinesData.push({
-                id: order.i,
-                value: order.p,
-                qty: order.q,
-                side: order.S
-            })
-            draw()
-            return
-        }
-
-        // Removed limit order
-        if (order.o == 'LIMIT' && ['CANCELED', 'EXPIRED', 'FILLED'].indexOf(order.X) >= 0) {
-            delete openOrders[order.i]
-            index = orderLinesData.findIndex(x => x.id == order.i)
-            if (typeof index != 'undefined') {
-                orderLinesData.splice(index, 1)
-                draw()
-            }
         }
     }
 

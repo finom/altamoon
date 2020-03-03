@@ -1,14 +1,22 @@
 const fapi = require('../fapi.js')
 
-fapi.onGetOpenOrders.push(updateOrdersList)
+fapi.onOrderUpdate.push(updateOrdersList)
 
 
 function updateOrdersList (orders) {
-    divs = d3.select('#orders').selectAll('div')
+    rows = d3.select('#orders tbody').selectAll('tr:not(:first-child)')
         .data(orders)
 
-    divs.enter().append('div')
-        .text(d => 'Entry: ' + d.price + ' | Amount:' + d.origQty)
+    rows.enter().append('tr').call(row => {
+        row.attr('class', d => d.side.toLowerCase())
+        row.append('td').text(d => d.side)
+        row.append('td').text(d => d.qty)
+        row.append('td').text(d => d.price)
+        row.append('td').text(d => d.filledQty)
+        row.append('td').text(d => d.type)
+        row.append('td').text(d => d.stopPrice)
+        row.append('td').text(d => d.reduceOnly)
+    })
 
-    // divs.exit().remove()
+    rows.exit().remove()
 }

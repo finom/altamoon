@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/chart-dark.css">
+    <link rel="stylesheet" type="text/css" href="css/my-orders.css">
   </head>
   <body>
     <div id="main-grid">
@@ -37,7 +38,16 @@
         </div>
       </div>
 
-      <div id="orders">My Orders</div>
+      <div id="position-orders">My Orders
+        <table id="orders">
+          <tbody>
+            <tr>
+              <th>Order</th><th>Qty</th><th>At</th><th>Filled</th>
+              <th>Type</th><th>Stop</th><th>Reduce</th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div id="book">Order Book</div>
       <div id="trades">Last Trades</div>
       <div id="wallet">My Wallet</div>
