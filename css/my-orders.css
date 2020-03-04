@@ -6,6 +6,10 @@
     text-shadow: 1px 2px 2px #00000045;
 }
 
+#positions {
+    margin-bottom: 10px !important;
+}
+
 /* Rounded corners hack */
 #position-orders thead th:first-child {
     border-top-left-radius: 5px;
@@ -21,15 +25,19 @@
     border-bottom-right-radius: 5px;
 }
 
+/* th */
 #position-orders th {
     background: #00000030;
     padding: 8px 10px;
 }
 
-#position-orders th:not(:last-child), #position-orders td:not(:last-child) {
+/* Borders */
+#position-orders th:not(:last-child),
+#position-orders td:not(:last-child) {
     border-right: 2px solid #00000012;
 }
 
+/* td */
 #position-orders td {
     padding: 4px 10px;
 }
@@ -41,11 +49,11 @@
 #position-orders .short  {
     background: #8c295e;
 }
-
 #position-orders td:first-child {
     text-transform: capitalize;
 }
 
+/* Button */
 #position-orders button {
     padding: 1px 15px;
     box-shadow: 1px 3px 2px #0000004a;
@@ -53,6 +61,7 @@
     cursor: pointer;
 }
 
+/* Disabled */
 tr.disabled td {
     border-right: 0px !important;
 }

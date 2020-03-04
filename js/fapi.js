@@ -1,19 +1,20 @@
 
 const Binance = require('node-binance-api')
 const binance = new Binance().options({
-        APIKEY: 'v1708vJ5dYaHyPev81r0Mi6Vds5JGa5pR28SUPjbgMhDw0cfAE8t6Q6ZLXQAzqiS',
-        APISECRET: 'oOEvPnMqmN2HAPdJjIBKVFKr4eZR1vb0inGsefDL2hzJNqqSk1GT6IQTimo1J1xj'
+        APIKEY: 'nBZIPvnJXxAnbswpRmvNeqlOIwAouIg6oWGUt9t5J2uiIry8BzyueKx4BycjvSWc',
+        APISECRET: 'qQ7xAC36EDqSc3ZTnckjn2gsiSiF9aVucywCN0mg3SzkmeRk7Gnu8Fon6tgzVrhq'
     })
 
 // Callbacks
 var onOrderUpdate = []
 var onPositionUpdate = []
-var onAccountUpdate = []
+var onBalancesUpdate = []
 
 var openOrders = []
 var positions = []
+var account = {}
 
-module.exports = { binance, onOrderUpdate, onPositionUpdate, cancelOrder, getOpenOrders, getPosition, closePosition }
+module.exports = { binance, onOrderUpdate, onPositionUpdate, onBalancesUpdate, cancelOrder, getOpenOrders, getPosition, closePosition, getAccount }
 
 streamUserData()
 
@@ -82,6 +83,15 @@ function closePosition () {
             .catch(error => console.error(error))
 }
 
+function getAccount() {
+    binance.futuresAccount()
+        .then(response => {
+            account = response
+
+            for (let func of onBalancesUpdate) func(account)
+        })
+}
+
 //// STREAM USER TRADES & POSITION CHANGES (WEBSOCKET)
 function streamUserData () {
     var stream
@@ -96,12 +106,12 @@ function streamUserData () {
 
         stream.onmessage = (event) => {
             var data = JSON.parse(event.data)
-            // Order update
+
             if (data.e == 'ORDER_TRADE_UPDATE')
                 orderUpdate(data)
-            // Account or position update
             if (data.e == 'ACCOUNT_UPDATE') {
                 positionUpdate(data)
+                balancesUpdate(data)
             }
         }
 
@@ -113,6 +123,11 @@ function streamUserData () {
         )
 
         stream.onclose = streamUserData
+    }
+
+    function balancesUpdate (data) {
+        account.totalWalletBalance = data.a.B[0].wb
+        for (let func of onBalancesUpdate) func(account)
     }
 
     function positionUpdate (data) {

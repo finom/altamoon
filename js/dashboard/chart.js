@@ -85,8 +85,8 @@ module.exports.drawChart = function (container) {
     var gYAxisRight = svg.append('g').attr('class', 'y axis right')
             .attr('transform', 'translate(' + width + ',0)')
 
-    var gPositionLine = svg.append('g').attr('class', 'position-line')
     var gOrderLines = svg.append('g').attr('class', 'order-lines')
+    var gPositionLine = svg.append('g').attr('class', 'position-line')
     var gPriceLine = svg.append('g').attr('class', 'price-line')
 
     var gPlot = svg.append('g').attr('class', 'plot')
