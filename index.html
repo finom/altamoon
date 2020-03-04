@@ -38,12 +38,21 @@
         </div>
       </div>
 
-      <div id="position-orders">My Orders
+      <div id="position-orders">My Position & Orders
+        <table id="positions">
+          <thead>
+            <tr>
+              <th>Position</th><th>Size</th><th>Entry price</th><th>Liquidation</th>
+              <th>Margin</th><th>PNL</th><th>Close</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
         <table id="orders">
           <thead>
             <tr>
-              <th>Order</th><th>Qty</th><th>At</th><th>Filled</th>
-              <th>Type</th><th>Stop</th><th>Reduce</th>
+              <th>Order</th><th>Qty</th><th>Price</th><th>Filled</th>
+              <th>Type</th><th>Stop</th><th>Reduce</th><th>Cancel</th>
             </tr>
           </thead>
           <tbody></tbody>

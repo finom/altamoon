@@ -9,8 +9,8 @@ function onMarketOrderToggled () {
 
     if (event.target.checked) {
         tradingDiv.classed('market', true)
-        buyBtn.html('PUMP')
-        sellBtn.html('DUMP')
+        buyBtn.html('MARKET BUY')
+        sellBtn.html('MARKET SELL')
     } else {
         tradingDiv.classed('market', false)
         buyBtn.html('BUY')

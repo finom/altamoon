@@ -12,7 +12,7 @@ var onPositionUpdate = []
 var openOrders = []
 var positions = []
 
-module.exports = { binance, cancelOrder, onOrderUpdate, onPositionUpdate, getOpenOrders, getPosition }
+module.exports = { binance, onOrderUpdate, onPositionUpdate, cancelOrder, getOpenOrders, getPosition, closePosition }
 
 streamUserData()
 
@@ -70,6 +70,19 @@ function getPosition () {
         .catch(err => console.error(err))
 }
 
+function closePosition () {
+    qty = positions[0].qty
+
+    if (qty < 0)
+        binance.futuresMarketBuy('BTCUSDT', -qty, {'reduceOnly': true})
+            .then(r => console.log(r))
+            .catch(error => console.error(error))
+    else if (qty > 0)
+        binance.futuresMarketSell('BTCUSDT', qty, {'reduceOnly': true})
+            .then(r => console.log(r))
+            .catch(error => console.error(error))
+}
+
 //// STREAM USER TRADES & POSITION CHANGES (WEBSOCKET)
 function streamUserData () {
     var stream
@@ -84,11 +97,9 @@ function streamUserData () {
 
         stream.onmessage = (event) => {
             data = JSON.parse(event.data)
-
             // Order update
             if (data.e == 'ORDER_TRADE_UPDATE')
                 orderUpdate(data)
-
             // Account or position update
             if (data.e == 'ACCOUNT_UPDATE') {
                 positionUpdate(data)
@@ -106,19 +117,24 @@ function streamUserData () {
     }
 
     function positionUpdate (data) {
-        p = data.a.P[0]
-        position = {
-            leverage: NaN,
-            liquidation: NaN,
-            margin: p.iw,
-            marginType: p.mt,
-            price: p.ep,
-            value: p.ep, // synonym, for feeding to techan.substance
-            qty: p.pa,
-            side: (p.pa >= 0) ? 'long' : 'short',
-            symbol: p.s
+        index = data.a.P.findIndex(x => x.s == 'BTCUSDT') // Restrict to BTC for now
+        p = data.a.P[index]
+
+        if (p.pa != 0) {
+            position = {
+                leverage: NaN,
+                liquidation: NaN,
+                margin: p.iw,
+                marginType: p.mt,
+                price: p.ep,
+                value: p.ep, // synonym, for feeding to techan.substance
+                qty: p.pa,
+                side: (p.pa >= 0) ? 'long' : 'short',
+                symbol: p.s
+            }
+            positions = [position]
+            getPosition() // REST update for missing data
         }
-        if (position.qty != 0) positions = [position]
         else positions = []
 
         for (let func of onPositionUpdate) func(positions)

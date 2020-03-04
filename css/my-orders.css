@@ -33,11 +33,17 @@
 #position-orders td {
     padding: 4px 10px;
 }
-#position-orders .buy {
+#position-orders .buy,
+#position-orders .long {
     background-color: #038e5b;
 }
-#position-orders .sell {
+#position-orders .sell,
+#position-orders .short  {
     background: #8c295e;
+}
+
+#position-orders td:first-child {
+    text-transform: capitalize;
 }
 
 #position-orders button {
