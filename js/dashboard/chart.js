@@ -1,5 +1,5 @@
 const techan = require('techan')
-const fapi = require('../fapi.js')
+const fapi = require('../fapi')
 
 module.exports.drawChart = function (container) {
     var margin = { top: 0, right: 55, bottom: 30, left: 55 }

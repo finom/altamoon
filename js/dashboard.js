@@ -2,9 +2,9 @@ d3 = require('d3')
 
 OUT = console.log // Haaa :D
 
-const chart = require('./js/dashboard/chart.js')
-const trading = require('./js/dashboard/trading.js')
-const myOrders = require('./js/dashboard/my-orders.js')
+const chart = require('./js/dashboard/chart')
+const trading = require('./js/dashboard/trading')
+const myOrders = require('./js/dashboard/my-orders')
 
 //// CHART
 chart.drawChart('#chart')

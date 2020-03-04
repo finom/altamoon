@@ -8,6 +8,7 @@ const binance = new Binance().options({
 // Callbacks
 var onOrderUpdate = []
 var onPositionUpdate = []
+var onAccountUpdate = []
 
 var openOrders = []
 var positions = []
@@ -50,7 +51,7 @@ function getOpenOrders () {
 function getPosition () {
     binance.futuresPositionRisk()
         .then(response => {
-            p = response.BTCUSDT // Restrict to BTC for now
+            var p = response.BTCUSDT // Restrict to BTC for now
             if (p.positionAmt != 0)
                 positions = [{
                     leverage: p.leverage,
@@ -71,15 +72,13 @@ function getPosition () {
 }
 
 function closePosition () {
-    qty = positions[0].qty
+    var qty = positions[0].qty
 
     if (qty < 0)
         binance.futuresMarketBuy('BTCUSDT', -qty, {'reduceOnly': true})
-            .then(r => console.log(r))
             .catch(error => console.error(error))
     else if (qty > 0)
         binance.futuresMarketSell('BTCUSDT', qty, {'reduceOnly': true})
-            .then(r => console.log(r))
             .catch(error => console.error(error))
 }
 
@@ -96,7 +95,7 @@ function streamUserData () {
         stream = new WebSocket('wss://fstream.binance.com/ws/' + key.listenKey)
 
         stream.onmessage = (event) => {
-            data = JSON.parse(event.data)
+            var data = JSON.parse(event.data)
             // Order update
             if (data.e == 'ORDER_TRADE_UPDATE')
                 orderUpdate(data)
@@ -117,11 +116,11 @@ function streamUserData () {
     }
 
     function positionUpdate (data) {
-        index = data.a.P.findIndex(x => x.s == 'BTCUSDT') // Restrict to BTC for now
-        p = data.a.P[index]
+        var index = data.a.P.findIndex(x => x.s == 'BTCUSDT') // Restrict to BTC
+        var p = data.a.P[index]
 
         if (p.pa != 0) {
-            position = {
+            var position = {
                 leverage: NaN,
                 liquidation: NaN,
                 margin: p.iw,
@@ -141,8 +140,8 @@ function streamUserData () {
     }
 
     function orderUpdate(data) {
-        o = data.o
-        order = {
+        var o = data.o
+        var order = {
             id: o.i,
             clientID: o.c,
             filledQty: o.z,
@@ -166,7 +165,7 @@ function streamUserData () {
         if (order.type == 'LIMIT'
             && ['CANCELED', 'EXPIRED', 'FILLED'].indexOf(order.status) >= 0)
             {
-            index = openOrders.findIndex(x => x.id == order.id)
+            var index = openOrders.findIndex(x => x.id == order.id)
             if (typeof index != 'undefined') {
                 openOrders.splice(index, 1)
             }

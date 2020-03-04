@@ -1,10 +1,10 @@
-const fapi = require('../fapi.js')
+const fapi = require('../fapi')
 
 fapi.onPositionUpdate.push(updatePositions)
 fapi.onOrderUpdate.push(updateOrders)
 
 function updatePositions (positions) {
-    rows = d3.select('#positions tbody').selectAll('tr')
+    var rows = d3.select('#positions tbody').selectAll('tr')
         .data(positions, d => d.symbol)
         .join(
             enter => enter.append('tr').call(row => {
@@ -46,7 +46,7 @@ function updatePositions (positions) {
 function updateOrders (orders) {
     orders.sort((a, b) => b.price - a.price)
 
-    rows = d3.select('#orders tbody').selectAll('tr')
+    var rows = d3.select('#orders tbody').selectAll('tr')
         .data(orders, d => d.id)
         .join(
             enter => enter.append('tr').call(row => {
