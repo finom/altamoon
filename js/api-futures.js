@@ -1,28 +1,37 @@
 
 const Binance = require('node-binance-api')
 const binance = new Binance().options({
-        APIKEY: 'nBZIPvnJXxAnbswpRmvNeqlOIwAouIg6oWGUt9t5J2uiIry8BzyueKx4BycjvSWc',
-        APISECRET: 'qQ7xAC36EDqSc3ZTnckjn2gsiSiF9aVucywCN0mg3SzkmeRk7Gnu8Fon6tgzVrhq'
-    })
+    APIKEY: 'nBZIPvnJXxAnbswpRmvNeqlOIwAouIg6oWGUt9t5J2uiIry8BzyueKx4BycjvSWc',
+    APISECRET: 'qQ7xAC36EDqSc3ZTnckjn2gsiSiF9aVucywCN0mg3SzkmeRk7Gnu8Fon6tgzVrhq'
+})
 
 // Callbacks
 var onOrderUpdate = []
 var onPositionUpdate = []
 var onBalancesUpdate = []
 
+module.exports = {
+    binance,
+    onOrderUpdate,
+    onPositionUpdate,
+    onBalancesUpdate,
+    getOpenOrders, cancelOrder,
+    getPosition, closePosition,
+    getAccount,
+    streamUserData
+}
+
 var openOrders = []
 var positions = []
 var account = {}
 
-module.exports = { binance, onOrderUpdate, onPositionUpdate, onBalancesUpdate, cancelOrder, getOpenOrders, getPosition, closePosition, getAccount }
-
-streamUserData()
-
-//// GET DATA (REST)
-function cancelOrder (id) {
-    binance.futuresCancel('BTCUSDT', {orderId: id})
-        //.then(r => console.log(r))
-        .catch(err => console.error(err))
+//// GET
+function getAccount() {
+    binance.futuresAccount()
+        .then(response => {
+            account = response
+            for (let func of onBalancesUpdate) func(account)
+        })
 }
 
 function getOpenOrders () {
@@ -66,9 +75,16 @@ function getPosition () {
                     symbol: p.symbol
                 }]
             else positions = []
-
+OUT(onPositionUpdate)
             for (let func of onPositionUpdate) func(positions)
         })
+        .catch(err => console.error(err))
+}
+
+//// PUT
+function cancelOrder (id) {
+    binance.futuresCancel('BTCUSDT', {orderId: id})
+        //.then(r => console.log(r))
         .catch(err => console.error(err))
 }
 
@@ -83,16 +99,8 @@ function closePosition () {
             .catch(error => console.error(error))
 }
 
-function getAccount() {
-    binance.futuresAccount()
-        .then(response => {
-            account = response
 
-            for (let func of onBalancesUpdate) func(account)
-        })
-}
-
-//// STREAM USER TRADES & POSITION CHANGES (WEBSOCKET)
+//// STREAM (WEBSOCKET)
 function streamUserData () {
     var stream
 
@@ -135,9 +143,7 @@ function streamUserData () {
         var p = data.a.P[index]
 
         if (p.pa != 0) {
-            var position = {
-                leverage: NaN,
-                liquidation: NaN,
+            Object.assign(positions[0], {
                 margin: p.iw,
                 marginType: p.mt,
                 price: p.ep,
@@ -145,8 +151,7 @@ function streamUserData () {
                 qty: p.pa,
                 side: (p.pa >= 0) ? 'long' : 'short',
                 symbol: p.s
-            }
-            positions = [position]
+            })
             getPosition() // REST update for missing data
         }
         else positions = []

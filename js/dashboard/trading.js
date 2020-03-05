@@ -1,4 +1,4 @@
-const { binance } = require('../fapi')
+const { binance } = require('../api-futures')
 
 module.exports = { onMarketOrderToggled, onBuy, onSell, forceNumInput }
 

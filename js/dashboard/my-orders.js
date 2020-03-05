@@ -1,7 +1,7 @@
-const fapi = require('../fapi')
+const api = require('../api-futures')
 
-fapi.onPositionUpdate.push(updatePositions)
-fapi.onOrderUpdate.push(updateOrders)
+api.onPositionUpdate.push(updatePositions)
+api.onOrderUpdate.push(updateOrders)
 
 function updatePositions (positions) {
     var rows = d3.select('#positions tbody').selectAll('tr')
@@ -16,7 +16,7 @@ function updatePositions (positions) {
                 row.append('td').text(d => d3.format(',.2~f')(d.margin))
                 row.append('td').text(d => d.PNL)
                 row.append('td').append('button')
-                    .on('click', d => fapi.closePosition(d.symbol))
+                    .on('click', d => api.closePosition(d.symbol))
                     .html('Market')
             }),
             update => update.call(row => {
@@ -28,7 +28,7 @@ function updatePositions (positions) {
                 row.select('td:nth-child(5)').text(d => d3.format(',.2~f')(d.margin))
                 row.select('td:nth-child(6)').text(d => d.PNL)
                 row.select('button')
-                    .on('click', d => fapi.closePosition(d.symbol))
+                    .on('click', d => api.closePosition(d.symbol))
             }),
             exit => exit
                 .classed('disabled', true)
@@ -59,7 +59,7 @@ function updateOrders (orders) {
                 row.append('td').text(d => d.stopPrice)
                 row.append('td').text(d => d.reduceOnly)
                 row.append('td').append('button')
-                    .on('click', d => fapi.cancelOrder(d.id))
+                    .on('click', d => api.cancelOrder(d.id))
                     .html('X')
             }),
             update => update.call(row => {
@@ -72,7 +72,7 @@ function updateOrders (orders) {
                 row.select('td:nth-child(6)').text(d => d.stopPrice)
                 row.select('td:nth-child(7)').text(d => d.reduceOnly)
                 row.select('button')
-                    .on('click', d => fapi.cancelOrder(d.id))
+                    .on('click', d => api.cancelOrder(d.id))
             }),
             exit => exit
                 .classed('disabled', true)

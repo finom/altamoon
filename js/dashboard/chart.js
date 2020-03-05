@@ -1,5 +1,5 @@
 const techan = require('techan')
-const fapi = require('../fapi')
+const api = require('../api-futures')
 
 module.exports.drawChart = function (container) {
     var margin = { top: 0, right: 55, bottom: 30, left: 55 }
@@ -103,7 +103,7 @@ module.exports.drawChart = function (container) {
     var positionLineData = []
     var orderLinesData = []
 
-    var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&limit=1500&interval=1m'
+    var lastCandlesURL = 'https://api.binance.com/fapi/v1/klines?symbol=BTCUSDT&limit=1500&interval=1m'
 
     d3.json(lastCandlesURL)
         .then(jsonCandles => {
@@ -132,11 +132,11 @@ module.exports.drawChart = function (container) {
         draw()
         initialZoom()
 
-        fapi.onPositionUpdate.push(updatePosition)
-        fapi.getPosition()
+        api.onPositionUpdate.push(updatePosition)
+        api.getPosition()
 
-        fapi.onOrderUpdate.push(updateOpenOrders)
-        fapi.getOpenOrders()
+        api.onOrderUpdate.push(updateOpenOrders)
+        api.getOpenOrders()
 
         streamLastCandle()
     }
@@ -257,7 +257,7 @@ module.exports.drawChart = function (container) {
 
                     // Cancel order on click
                     if (type == 'order') {
-                        rect.on('click', d =>  fapi.cancelOrder(d.id))
+                        rect.on('click', d =>  api.cancelOrder(d.id))
                     }
                 }),
                 // Update y

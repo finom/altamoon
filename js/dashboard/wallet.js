@@ -1,8 +1,8 @@
-const fapi = require('../fapi')
+const api = require('../api-futures')
 
-fapi.onBalancesUpdate.push(updateWallet)
+api.onBalancesUpdate.push(updateWallet)
 
-function updateWallet (data) {OUT(data)
+function updateWallet (data) {
     var bal = d3.select('#balances')
     var usdformat = x => d3.format(',.2~f')(x) + ' ₮'
     bal.html('Balance: ' + usdformat(data.totalWalletBalance)
