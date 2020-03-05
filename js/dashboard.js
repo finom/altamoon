@@ -12,6 +12,7 @@ const wallet = require('./js/dashboard/wallet')
 api.getPosition()
 api.getOpenOrders()
 api.getAccount()
+api.streamLastTrade()
 api.streamUserData()
 
 // Chart

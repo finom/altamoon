@@ -9,21 +9,27 @@ const binance = new Binance().options({
 var onOrderUpdate = []
 var onPositionUpdate = []
 var onBalancesUpdate = []
+var onPriceUpdate = []
 
 module.exports = {
     binance,
-    onOrderUpdate,
-    onPositionUpdate,
-    onBalancesUpdate,
+
+    onOrderUpdate, onPositionUpdate,
+    onBalancesUpdate, onPriceUpdate,
+
     getOpenOrders, cancelOrder,
     getPosition, closePosition,
     getAccount,
+    getPNL,
+
+    streamLastTrade,
     streamUserData
 }
 
-var openOrders = []
-var positions = []
 var account = {}
+var positions = []
+var openOrders = []
+var lastTrade = {}
 
 //// GET
 function getAccount() {
@@ -75,7 +81,6 @@ function getPosition () {
                     symbol: p.symbol
                 }]
             else positions = []
-OUT(onPositionUpdate)
             for (let func of onPositionUpdate) func(positions)
         })
         .catch(err => console.error(err))
@@ -99,8 +104,18 @@ function closePosition () {
             .catch(error => console.error(error))
 }
 
-
 //// STREAM (WEBSOCKET)
+
+function streamLastTrade () {
+    /* Last aggregated taker trade. Gives price, refreshed 100ms */
+    stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@aggTrade')
+
+    stream.onmessage = (event) => {
+        lastTrade = JSON.parse(event.data)
+        for (let func of onPriceUpdate) func(lastTrade.p)
+    }
+}
+
 function streamUserData () {
     var stream
 
@@ -129,7 +144,6 @@ function streamUserData () {
                     .catch(e => console.error(e))
             }, 20 * 60000
         )
-
         stream.onclose = streamUserData
     }
 
@@ -143,6 +157,7 @@ function streamUserData () {
         var p = data.a.P[index]
 
         if (p.pa != 0) {
+            if (!positions[0]) position[0] = {}
             Object.assign(positions[0], {
                 margin: p.iw,
                 marginType: p.mt,
@@ -155,7 +170,6 @@ function streamUserData () {
             getPosition() // REST update for missing data
         }
         else positions = []
-
         for (let func of onPositionUpdate) func(positions)
     }
 
@@ -194,3 +208,45 @@ function streamUserData () {
     }
 }
 ////
+
+function getPNL () {
+    if (!positions[0] || positions[0].qty == 0)
+        return 0
+
+    var qty = positions[0].qty
+    var price = parseFloat(lastTrade.p)
+    var entryPrice = parseFloat(positions[0].price)
+
+    pnl = (price - entryPrice) / entryPrice * qty * price
+    pnlPercent = pnl / account.totalWalletBalance
+    return pnl
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
