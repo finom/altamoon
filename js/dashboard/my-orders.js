@@ -1,3 +1,4 @@
+'use strict'
 const api = require('../api-futures')
 
 api.onPositionUpdate.push(updatePositions)

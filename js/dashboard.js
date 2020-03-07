@@ -1,6 +1,7 @@
-d3 = require('d3')
+'use strict'
+var d3 = require('d3')
 
-OUT = console.log // Haaa :D
+var OUT = console.log // Haaa :D
 
 const api = require('./js/api-futures')
 const chart = require('./js/dashboard/chart')

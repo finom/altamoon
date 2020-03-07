@@ -1,30 +1,35 @@
-
+'use strict'
 const Binance = require('node-binance-api')
 const binance = new Binance().options({
     APIKEY: 'nBZIPvnJXxAnbswpRmvNeqlOIwAouIg6oWGUt9t5J2uiIry8BzyueKx4BycjvSWc',
     APISECRET: 'qQ7xAC36EDqSc3ZTnckjn2gsiSiF9aVucywCN0mg3SzkmeRk7Gnu8Fon6tgzVrhq'
 })
 
+module.exports = {
+    binance,
+
+    get onOrderUpdate () { return onOrderUpdate },
+    get onPositionUpdate () { return onPositionUpdate },
+    get onBalancesUpdate () { return onBalancesUpdate },
+    get onPriceUpdate () { return onPriceUpdate },
+
+    get account () { return account },
+    get positions () { return positions },
+    get openOrders () { return openOrders },
+    get lastTrade () { return lastTrade },
+
+    getOpenOrders, cancelOrder,
+    getPosition, closePosition,
+    getAccount,
+
+    streamLastTrade, streamUserData
+}
+
 // Callbacks
 var onOrderUpdate = []
 var onPositionUpdate = []
 var onBalancesUpdate = []
 var onPriceUpdate = []
-
-module.exports = {
-    binance,
-
-    onOrderUpdate, onPositionUpdate,
-    onBalancesUpdate, onPriceUpdate,
-
-    getOpenOrders, cancelOrder,
-    getPosition, closePosition,
-    getAccount,
-    getPNL,
-
-    streamLastTrade,
-    streamUserData
-}
 
 var account = {}
 var positions = []
@@ -106,9 +111,17 @@ function closePosition () {
 
 //// STREAM (WEBSOCKET)
 
+function streamOrderBook () {
+    var book = binance.futuresDepth('BTCUSDT')
+        .then(r => OUT(r))
+
+    var bookUpdates = new WebSocket('wss://fstream.binance.com/ws/btcusdt@depth@500ms')
+    bookUpdates.onmessage = (e) => OUT(JSON.parse(e.data))
+}
+
 function streamLastTrade () {
     /* Last aggregated taker trade. Gives price, refreshed 100ms */
-    stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@aggTrade')
+    var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@aggTrade')
 
     stream.onmessage = (event) => {
         lastTrade = JSON.parse(event.data)
@@ -153,11 +166,10 @@ function streamUserData () {
     }
 
     function positionUpdate (data) {
-        var index = data.a.P.findIndex(x => x.s == 'BTCUSDT') // Restrict to BTC
-        var p = data.a.P[index]
+        var p = data.a.P.filter(x => x.s == 'BTCUSDT')[0] // Restrict to BTC
 
         if (p.pa != 0) {
-            if (!positions[0]) position[0] = {}
+            if (!positions[0]) positions[0] = {}
             Object.assign(positions[0], {
                 margin: p.iw,
                 marginType: p.mt,
@@ -208,19 +220,6 @@ function streamUserData () {
     }
 }
 ////
-
-function getPNL () {
-    if (!positions[0] || positions[0].qty == 0)
-        return 0
-
-    var qty = positions[0].qty
-    var price = parseFloat(lastTrade.p)
-    var entryPrice = parseFloat(positions[0].price)
-
-    pnl = (price - entryPrice) / entryPrice * qty * price
-    pnlPercent = pnl / account.totalWalletBalance
-    return pnl
-}
 
 
 

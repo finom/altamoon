@@ -1,3 +1,4 @@
+'use strict'
 const techan = require('techan')
 const api = require('../api-futures')
 
@@ -103,7 +104,7 @@ module.exports.drawChart = function (container) {
     var positionLineData = []
     var orderLinesData = []
 
-    var lastCandlesURL = 'https://api.binance.com/fapi/v1/klines?symbol=BTCUSDT&limit=1500&interval=1m'
+    var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&limit=1500&interval=1m'
 
     d3.json(lastCandlesURL)
         .then(jsonCandles => {

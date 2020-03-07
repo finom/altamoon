@@ -1,3 +1,4 @@
+'use strict'
 const { binance } = require('../api-futures')
 
 module.exports = { onMarketOrderToggled, onBuy, onSell, forceNumInput }
