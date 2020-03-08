@@ -20,8 +20,8 @@ function updateWallet (data) {
 
     data = [
         'Balance: ', format(data.totalWalletBalance),
-        'Balance + uPNL: ', format(unrealizedBalance),
-        'uPNL: ', format(pnl) + ' (' + pnlPercent + ')',
+        'Balance + PNL: ', format(unrealizedBalance),
+        'PNL: ', format(pnl) + ' (' + pnlPercent + ')',
         'Position margin: ', format(data.totalPositionInitialMargin),
         'Order margin: ', format(data.totalOpenOrderInitialMargin)
     ]

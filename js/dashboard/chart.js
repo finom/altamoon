@@ -51,6 +51,13 @@ module.exports.drawChart = function (container) {
             .yScale(y)
             .annotation([axisLabelLeft, axisLabelRight])
 
+    var orderLines = techan.plot.supstance()
+            .xScale(x)
+            .yScale(y)
+            .annotation([axisLabelLeft, axisLabelRight])
+            .on('drag', onDragOrder)
+            .on('dragend', onDragOrderEnd)
+
     var crosshair = techan.plot.crosshair()
             .xScale(x)
             .yScale(y)
@@ -86,8 +93,10 @@ module.exports.drawChart = function (container) {
     var gYAxisRight = svg.append('g').attr('class', 'y axis right')
             .attr('transform', 'translate(' + width + ',0)')
 
-    var gOrderLines = svg.append('g').attr('class', 'order-lines')
     var gPositionLine = svg.append('g').attr('class', 'position-line')
+    var gLiquidationLine = svg.append('g').attr('class', 'liquidation-line')
+            .attr('clip-path', 'url(#clip)')
+    var gBidASkLines = svg.append('g').attr('class', 'bid-ask-lines')
     var gPriceLine = svg.append('g').attr('class', 'price-line')
 
     var gPlot = svg.append('g').attr('class', 'plot')
@@ -95,13 +104,19 @@ module.exports.drawChart = function (container) {
 
     var gCrosshair = svg.append('g').attr('class', 'crosshair')
 
+    var gOrderLines = svg.append('g').attr('class', 'order-lines')
+
     var gPositionLabel = svg.append('g').attr('class', 'position-label')
+            .attr('clip-path', 'url(#clip)')
     var gOrderLabels = svg.append('g').attr('class', 'order-labels')
+            .attr('clip-path', 'url(#clip)')
 
     //// LOAD DATA
     var candles
-    var priceLineData
+    var priceLineData = []
     var positionLineData = []
+    var bidAskLinesData = []
+    var liquidationLineData = []
     var orderLinesData = []
 
     var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&limit=1500&interval=1m'
@@ -133,18 +148,20 @@ module.exports.drawChart = function (container) {
         draw()
         initialZoom()
 
-        api.onPositionUpdate.push(updatePosition)
         api.getPosition()
-
-        api.onOrderUpdate.push(updateOpenOrders)
         api.getOpenOrders()
+
+        api.onPriceUpdate.push(updatePrice)
+        api.onPositionUpdate.push(updatePosition)
+        api.onOrderUpdate.push(updateOpenOrders)
+        api.onBidAskUpdate.push(updateBidAsk)
 
         streamLastCandle()
     }
 
     //// RENDER CHART
     function draw() {
-        var data = candles.slice(-350, candles.length)
+        var data = candles.slice(-250, candles.length)
         var accessor = plot.accessor()
 
         var xdomain = d3.extent(data.map(accessor.d))
@@ -157,8 +174,6 @@ module.exports.drawChart = function (container) {
         x.domain(xdomain)
         y.domain(ydomain)
 
-        priceLineData = [{ value: candles[candles.length -1].close }]
-
         gXGridlines.call(xGridlines)
         gYGridlines.call(yGridlines)
 
@@ -167,8 +182,10 @@ module.exports.drawChart = function (container) {
         gYAxisRight.call(yAxisRight)
 
         gPriceLine.datum(priceLineData).call(lines)
-        gOrderLines.datum(orderLinesData).call(lines)
         gPositionLine.datum(positionLineData).call(lines)
+        gBidASkLines.datum(bidAskLinesData).call(lines)
+        gLiquidationLine.datum(liquidationLineData).call(lines)
+        gOrderLines.datum(orderLinesData).call(orderLines).call(orderLines.drag)
 
         // Color hack for position line
         if (positionLineData[0]) {
@@ -179,11 +196,10 @@ module.exports.drawChart = function (container) {
         gPositionLabel.call(lineLabel, positionLineData)
         gOrderLabels.call(lineLabel, orderLinesData, 'order')
 
-        gPlot.datum(data).call(plot)
-
         gCrosshair.call(crosshair)
+        svg.call(zoom)
 
-            .call(zoom)
+        gPlot.datum(data).call(plot)
 
     }
 
@@ -192,6 +208,7 @@ module.exports.drawChart = function (container) {
         svg.call(zoom.translateBy, -100)
     }
 
+    //// EVENT HANDLERS
     function onZoom(direction='x') {
         if (direction == 'x') {
             var scaledX = d3.event.transform.rescaleX(x)
@@ -201,15 +218,62 @@ module.exports.drawChart = function (container) {
         }
     }
 
-    //// ORDERS/POSITION UPDATE CALLBACKS
+    function onDragOrder (d) {
+        var currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
+        if (!currentOrder || currentOrder.price == d.value)
+            return
+        draw()
+    }
+    function onDragOrderEnd (d) {
+        /* Delete order, recreate at new price */
+        var currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
+        if (!currentOrder || currentOrder.price == d.value)
+            return
+
+        api.cancelOrder(d.id)
+
+        var order = (d.side == 'BUY')
+            ? api.binance.futuresBuy
+            : api.binance.futuresSell
+
+        order(d.symbol,
+            d.qty,
+            d.value.toFixed(2),
+            {'timeInForce': 'GTX'})
+                .catch(error => console.error(error))
+    }
+
+    //// DATA UPDATE CALLBACKS
+    function updatePrice (price) {
+        priceLineData = [{value: price}]
+        gPriceLine.datum(priceLineData).call(lines)
+    }
+
     function updatePosition (positions) {
-        positionLineData = positions
+        var position = positions.filter(x => x.symbol == symbol)[0]
+
+        if (position && position.liquidation)
+            liquidationLineData = [{value: position.liquidation}]
+        else liquidationLineData = []
+
+        positionLineData = (position) ? [position] : []
         draw()
     }
 
     function updateOpenOrders (orders) {
         orderLinesData = orders
         draw()
+    }
+
+    function updateBidAsk (data) {
+        if (bidAskLinesData[0]) {
+            if (bidAskLinesData[0].value == data.a
+                && bidAskLinesData[1].value == data.b)
+                return
+        }
+        bidAskLinesData = [{value: data.a}, {value: data.b}]
+
+        gBidASkLines.datum(bidAskLinesData).call(lines)
     }
 
     //// STREAM CANDLES (WEBSOCKET)

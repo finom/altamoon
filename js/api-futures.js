@@ -12,6 +12,7 @@ module.exports = {
     get onPositionUpdate () { return onPositionUpdate },
     get onBalancesUpdate () { return onBalancesUpdate },
     get onPriceUpdate () { return onPriceUpdate },
+    get onBidAskUpdate () { return onBidAskUpdate },
 
     get account () { return account },
     get positions () { return positions },
@@ -22,7 +23,7 @@ module.exports = {
     getPosition, closePosition,
     getAccount,
 
-    streamLastTrade, streamUserData
+    streamLastTrade, streamUserData, streamBidAsk
 }
 
 // Callbacks
@@ -30,6 +31,7 @@ var onOrderUpdate = []
 var onPositionUpdate = []
 var onBalancesUpdate = []
 var onPriceUpdate = []
+var onBidAskUpdate = []
 
 var account = {}
 var positions = []
@@ -52,7 +54,6 @@ function getOpenOrders () {
                     id: o.orderId,
                     clientID: o.clientOrderId,
                     filledQty: o.executedQty,
-                    market: o.symbol,
                     price: o.price,
                     value: o.price, // synonym, for feeding to techan.substance
                     qty: o.origQty,
@@ -60,6 +61,7 @@ function getOpenOrders () {
                     side: o.side,
                     status: o.status,
                     stopPrice: o.stopPrice,
+                    symbol: o.symbol,
                     time: o.time,
                     type: o.type,
                     updateTime: o.updateTime
@@ -94,7 +96,7 @@ function getPosition () {
 //// PUT
 function cancelOrder (id) {
     binance.futuresCancel('BTCUSDT', {orderId: id})
-        //.then(r => console.log(r))
+        // .then(r => console.log(r))
         .catch(err => console.error(err))
 }
 
@@ -117,6 +119,15 @@ function streamOrderBook () {
 
     var bookUpdates = new WebSocket('wss://fstream.binance.com/ws/btcusdt@depth@500ms')
     bookUpdates.onmessage = (e) => OUT(JSON.parse(e.data))
+}
+
+function streamBidAsk () {
+    var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@bookTicker')
+
+    stream.onmessage = (event) => {
+        var data = JSON.parse(event.data)
+        for (let func of onBidAskUpdate) func(data)
+    }
 }
 
 function streamLastTrade () {
@@ -161,12 +172,13 @@ function streamUserData () {
     }
 
     function balancesUpdate (data) {
-        account.totalWalletBalance = data.a.B[0].wb
-        for (let func of onBalancesUpdate) func(account)
+        if (account.totalWalletBalance != data.a.B[0].wb)
+            getAccount()
+            OUT('Balance update')
     }
 
     function positionUpdate (data) {
-        var p = data.a.P.filter(x => x.s == 'BTCUSDT')[0] // Restrict to BTC
+        var p = data.a.P.filter(x => x.s == symbol)[0] // Restrict to BTC
 
         if (p.pa != 0) {
             if (!positions[0]) positions[0] = {}
@@ -191,7 +203,6 @@ function streamUserData () {
             id: o.i,
             clientID: o.c,
             filledQty: o.z,
-            market: o.s,
             price: o.p,
             value: o.p, // synonym, for feeding to techan.supstance
             qty: o.q,
@@ -199,6 +210,7 @@ function streamUserData () {
             side: o.S,
             status: o.X,
             stopPrice: o.sp,
+            symbol: o.s,
             time: o.T,
             type: o.o,
             updateTime: data.E

@@ -3,6 +3,8 @@ var d3 = require('d3')
 
 var OUT = console.log // Haaa :D
 
+var symbol = 'BTCUSDT'
+
 const api = require('./js/api-futures')
 const chart = require('./js/dashboard/chart')
 const trading = require('./js/dashboard/trading')
@@ -15,6 +17,7 @@ api.getOpenOrders()
 api.getAccount()
 api.streamLastTrade()
 api.streamUserData()
+api.streamBidAsk()
 
 // Chart
 chart.drawChart('#chart')

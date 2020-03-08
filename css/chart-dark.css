@@ -5,6 +5,9 @@ svg {
     border-radius: 5px;
     shape-rendering: crispEdges;
 }
+svg text {
+    fill: white
+}
 /*
     Axis
 */
@@ -45,29 +48,31 @@ path.candle.down {
     Price line
 */
 .price-line .supstance path {
-    stroke: blue;
+    stroke: #0000ff;
     stroke-dasharray: 10 6;
+    visibility: hidden;
 }
 .price-line .axisannotation path {
-    fill: blue;
-    stroke: blue;
+    fill: #0000ff;
+    stroke: #0000ff;
     shape-rendering: auto;
 }
-.price-line .axisannotation text {
-    fill: #fff;
-    shape-rendering: geometricprecision;
+/*
+    Bid & Ask line
+*/
+.bid-ask-lines .supstance path {
+    stroke: #0000ff;
+}
+.bid-ask-lines .axisannotation path,
+.bid-ask-lines .axisannotation text {
+    visibility: hidden;
 }
 /*
     Position line
 */
-.position-line text,
-.position-label text {
-    fill: #fff;
-}
 .position-line path {
     fill: #20884c;
     stroke: #20884c;
-    /* stroke-dasharray: 10 6; */
 }
 .position-label rect {
     fill: #20884c;
@@ -87,16 +92,25 @@ path.candle.down {
     stroke: #ab257c;
 }
 /*
+    Liquidation line
+*/
+.liquidation-line .supstance path {
+    stroke: #ff0026;
+    stroke-width: 2;
+}
+.liquidation-line .axisannotation path,
+.liquidation-line .axisannotation text {
+    visibility: hidden;
+}
+/*
     Order lines
 */
-.order-lines text,
-.order-labels text {
-    fill: #fff;
+.order-lines .scope-supstance.mouseover path {
+    cursor: grab;
 }
 .order-lines path {
     fill: #673AB7;
     stroke: #673AB7;
-    /* stroke-dasharray: 10 6; */
 }
 .order-lines .sell path {
     fill: #ff3879;
@@ -111,10 +125,6 @@ path.candle.down {
     rx: 6px;
     ry: 6px;
 }
-/* .order-labels .sell rect {
-    fill: #ff3879;
-    stroke: #480524;
-} */
 /*
     Crosshair
 */
