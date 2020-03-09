@@ -83,10 +83,7 @@ path.candle.down {
     rx: 6px;
     ry: 6px;
 }
-.position-line.short path {
-    fill: #ab257c;
-    stroke: #ab257c;
-}
+.position-label .short path,
 .position-label .short rect {
     fill: #ab257c;
     stroke: #ab257c;
@@ -96,7 +93,7 @@ path.candle.down {
 */
 .liquidation-line .supstance path {
     stroke: #ff0026;
-    stroke-width: 2;
+    stroke-dasharray: 10 6;
 }
 .liquidation-line .axisannotation path,
 .liquidation-line .axisannotation text {
@@ -109,17 +106,32 @@ path.candle.down {
     cursor: grab;
 }
 .order-lines path {
-    fill: #673AB7;
-    stroke: #673AB7;
-}
-.order-lines .sell path {
-    fill: #ff3879;
-    stroke: #480524;
+    fill: #6d28d2;
+    stroke: #6d28d2;
 }
 .order-labels rect {
-    fill: #673AB7;
-    stroke: #673AB7;
-    stroke-width: 2;
+    fill: #6d28d2;
+    stroke: #6d28d2;
+    stroke-width: 0;
+    width: 70px;
+    height: 19px;
+    rx: 6px;
+    ry: 6px;
+}
+/*
+    Draft lines
+*/
+.draft-lines .scope-supstance.mouseover path {
+    cursor: grab;
+}
+.draft-lines path {
+    fill: #656464;
+    stroke: #656464;
+}
+.draft-labels rect {
+    fill: #656464;
+    stroke: #656464;
+    stroke-width: 0;
     width: 70px;
     height: 19px;
     rx: 6px;

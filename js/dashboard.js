@@ -19,11 +19,5 @@ api.streamLastTrade()
 api.streamUserData()
 api.streamBidAsk()
 
-// Chart
-chart.drawChart('#chart')
-
-// Trading
-d3.selectAll('.num-input').on('keyup', () => { trading.forceNumInput() })
-d3.select('#market-order').on('change', () => { trading.onMarketOrderToggled() })
-d3.select('#buy').on('click', () => { trading.onBuy() })
-d3.select('#sell').on('click', () => { trading.onSell() })
+// Inputs
+d3.selectAll('.num-input').on('input', trading.forceNumInput)

@@ -4,11 +4,12 @@ const stats = require('../stats')
 
 api.onBalancesUpdate.push(updateWallet)
 api.onPriceUpdate.push(updateWallet)
+setInterval(api.getAccount, 2000)
 
 var accountData
 
 function updateWallet (data) {
-    if (data.assets == undefined) data = accountData
+    if (data.assets === undefined) data = accountData
     else accountData = data
 
     var format = (value, symbol) => d3.format(',.2~f')(value) + ' ₮'

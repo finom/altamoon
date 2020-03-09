@@ -1,7 +1,14 @@
 'use strict'
 const { binance } = require('../api-futures')
+const chart = require('./chart')
 
 module.exports = { onMarketOrderToggled, onBuy, onSell, forceNumInput }
+
+d3.select('#buy-amount').on('input', () => onChangeAmount('buy'))
+d3.select('#sell-amount').on('input', () => onChangeAmount('sell'))
+d3.select('#market-order').on('change', onMarketOrderToggled)
+d3.select('#buy').on('click', onBuy)
+d3.select('#sell').on('click', onSell)
 
 function onMarketOrderToggled () {
     var tradingDiv = d3.select('#trading')
@@ -53,15 +60,24 @@ function onSell () {
     }
 }
 
+function onChangeAmount (side) {
+    var amount = forceNumInput()
+    var draft = chart.draftLinesData[0]
+
+    if (draft && side == draft.side) {
+        chart.draftLinesData[0].qty = Number(amount)
+        chart.draw()
+    }
+}
+
 function forceNumInput () {
     var text = event.target.value
     var regex = /[0-9]|\./
-
     for (let i = 0; i < text.length; i++) {
         if (!regex.test(text[i])) {
             text = text.replace(text[i], '')
             i--
         }
     }
-    event.target.value = text
+    return event.target.value = text
 }

@@ -18,6 +18,8 @@ module.exports = {
     get positions () { return positions },
     get openOrders () { return openOrders },
     get lastTrade () { return lastTrade },
+    get lastPrice () { return lastPrice },
+    get bidAsk () { return bidAsk },
 
     getOpenOrders, cancelOrder,
     getPosition, closePosition,
@@ -37,6 +39,8 @@ var account = {}
 var positions = []
 var openOrders = []
 var lastTrade = {}
+var lastPrice
+var bidAsk
 
 //// GET
 function getAccount() {
@@ -125,8 +129,8 @@ function streamBidAsk () {
     var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@bookTicker')
 
     stream.onmessage = (event) => {
-        var data = JSON.parse(event.data)
-        for (let func of onBidAskUpdate) func(data)
+        bidAsk = JSON.parse(event.data)
+        for (let func of onBidAskUpdate) func(bidAsk)
     }
 }
 
@@ -136,7 +140,8 @@ function streamLastTrade () {
 
     stream.onmessage = (event) => {
         lastTrade = JSON.parse(event.data)
-        for (let func of onPriceUpdate) func(lastTrade.p)
+        lastPrice = lastTrade.p
+        for (let func of onPriceUpdate) func(lastPrice)
     }
 }
 
@@ -174,7 +179,6 @@ function streamUserData () {
     function balancesUpdate (data) {
         if (account.totalWalletBalance != data.a.B[0].wb)
             getAccount()
-            OUT('Balance update')
     }
 
     function positionUpdate (data) {
