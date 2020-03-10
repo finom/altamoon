@@ -74,7 +74,7 @@ var plot = techan.plot.candlestick()
         .xScale(x)
         .yScale(y)
 
-//// PREPARE SVG CONTAINERS
+// --- PREPARE SVG CONTAINERS --- //
 var svg = d3.select('#chart').append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
@@ -120,7 +120,7 @@ var gOrderLabels = svg.append('g').attr('class', 'order-labels')
 var gDraftLabels = svg.append('g').attr('class', 'draft-labels')
         .attr('clip-path', 'url(#clip)')
 
-//// LOAD DATA
+// --- LOAD DATA --- //
 var candles
 var priceLineData = []
 var positionLineData = []
@@ -153,7 +153,7 @@ d3.json(lastCandlesURL)
     })
     .catch(e => console.error(e))
 
-//// INIT DRAW
+// --- INIT DRAW --- //
 function initDraw() {
     draw()
     initialZoom()
@@ -169,9 +169,9 @@ function initDraw() {
     streamLastCandle()
 }
 
-//// RENDER CHART
+// --- RENDER CHART --- //
 function draw() {
-    var data = candles.slice(-250, candles.length)
+    var data = candles.slice(-300, candles.length)
     var accessor = plot.accessor()
 
     var xdomain = d3.extent(data.map(accessor.d))
@@ -222,14 +222,15 @@ function initialZoom() {
     svg.call(zoom.translateBy, -100)
 }
 
-//// EVENT HANDLERS
-function onZoom(direction='x') {
+// --- EVENT HANDLERS --- //
+function onZoom(direction = 'x') {
     if (direction == 'x') {
         var scaledX = d3.event.transform.rescaleX(x)
-        gXAxis.call(xAxis.scale(scaledX))
-        gXGridlines.call(xGridlines.scale(scaledX))
-        gPlot.call(plot.xScale(scaledX))
+        xAxis.scale(scaledX)
+        xGridlines.scale(scaledX)
+        plot.xScale(scaledX)
     }
+    draw()
 }
 
 function onDragOrder (d) {
@@ -271,7 +272,7 @@ function onDragDraft (d) {
     gDraftLabels.call(lineLabel, draftLinesData, 'draft')
 }
 
-//// DATA UPDATE CALLBACKS
+// --- DATA UPDATE CALLBACKS --- //
 function updatePrice (price) {
     priceLineData = [{value: price}]
     gPriceLine.datum(priceLineData).call(lines)
@@ -304,7 +305,7 @@ function updateBidAsk (data) {
     gBidASkLines.datum(bidAskLinesData).call(lines)
 }
 
-//// STREAM CANDLES (WEBSOCKET)
+// --- STREAM CANDLES (WEBSOCKET) --- //
 function streamLastCandle () {
     var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@kline_1m')
 
@@ -330,7 +331,7 @@ function streamLastCandle () {
     }
 }
 
-//// CHART ITEM GENERATORS
+// --- CHART ITEM GENERATORS --- //
 function lineLabel (selection, data, type) {
     selection.selectAll('g')
         .data(data)

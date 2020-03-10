@@ -1,0 +1,2 @@
+#marker-rule: /(?:	*\/\/ --- )(.*)(?: --- \/\/)/||%1||Sections||startOver
+#marker-rule: /function (\w+)/i||%1||Functions
