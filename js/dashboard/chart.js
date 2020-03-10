@@ -278,7 +278,7 @@ function updatePrice (price) {
 }
 
 function updatePosition (positions) {
-    var position = positions.filter(x => x.symbol == symbol)[0]
+    var position = positions.filter(x => x.symbol == SYMBOL)[0]
 
     if (position && position.liquidation)
         liquidationLineData = [{value: position.liquidation}]
@@ -403,7 +403,7 @@ function draftToOrder (d, i) {
         ? api.binance.futuresBuy
         : api.binance.futuresSell
 
-    order(symbol, d.qty, price, {'timeInForce': 'GTX'})
+    order(SYMBOL, d.qty, price, {'timeInForce': 'GTX'})
         .catch(error => console.error(error))
     draw()
 }

@@ -52,7 +52,7 @@ function getAccount() {
 }
 
 function getOpenOrders () {
-    binance.futuresOpenOrders('BTCUSDT')
+    binance.futuresOpenOrders(SYMBOL)
         .then(response => {
             openOrders = response.map(o => { return {
                     id: o.orderId,
@@ -99,7 +99,7 @@ function getPosition () {
 
 //// PUT
 function cancelOrder (id) {
-    binance.futuresCancel('BTCUSDT', {orderId: id})
+    binance.futuresCancel(SYMBOL, {orderId: id})
         // .then(r => console.log(r))
         .catch(err => console.error(err))
 }
@@ -108,17 +108,17 @@ function closePosition () {
     var qty = positions[0].qty
 
     if (qty < 0)
-        binance.futuresMarketBuy('BTCUSDT', -qty, {'reduceOnly': true})
+        binance.futuresMarketBuy(SYMBOL, -qty, {'reduceOnly': true})
             .catch(error => console.error(error))
     else if (qty > 0)
-        binance.futuresMarketSell('BTCUSDT', qty, {'reduceOnly': true})
+        binance.futuresMarketSell(SYMBOL, qty, {'reduceOnly': true})
             .catch(error => console.error(error))
 }
 
 //// STREAM (WEBSOCKET)
 
 function streamOrderBook () {
-    var book = binance.futuresDepth('BTCUSDT')
+    var book = binance.futuresDepth(SYMBOL)
         .then(r => OUT(r))
 
     var bookUpdates = new WebSocket('wss://fstream.binance.com/ws/btcusdt@depth@500ms')
@@ -182,7 +182,7 @@ function streamUserData () {
     }
 
     function positionUpdate (data) {
-        var p = data.a.P.filter(x => x.s == symbol)[0] // Restrict to BTC
+        var p = data.a.P.filter(x => x.s == SYMBOL)[0] // Restrict to BTC
 
         if (p.pa != 0) {
             if (!positions[0]) positions[0] = {}

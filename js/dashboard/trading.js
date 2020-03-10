@@ -40,11 +40,11 @@ function onBuy () {
     if (!(qty > 0)) return
 
     if (market) {
-        binance.futuresMarketBuy('BTCUSDT', qty)
+        binance.futuresMarketBuy(SYMBOL, qty)
             .catch(error => console.error(error))
     }
     else if (price > 0) {
-        binance.futuresBuy('BTCUSDT', qty, price, {'timeInForce': 'GTX'})
+        binance.futuresBuy(SYMBOL, qty, price, {'timeInForce': 'GTX'})
             .catch(error => console.error(error))
     }
 }
@@ -57,11 +57,11 @@ function onSell () {
     if (!(qty > 0)) return
 
     if (market) {
-        binance.futuresMarketSell('BTCUSDT', qty)
+        binance.futuresMarketSell(SYMBOL, qty)
             .catch(error => console.error(error))
     }
     else if (price > 0) {
-        binance.futuresSell('BTCUSDT', qty, price, {'timeInForce': 'GTX'})
+        binance.futuresSell(SYMBOL, qty, price, {'timeInForce': 'GTX'})
             .catch(error => console.error(error))
     }
 }
