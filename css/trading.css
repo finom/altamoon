@@ -1,0 +1,49 @@
+
+.trading-grid {
+    display: grid;
+    grid-template-columns: auto 50px auto;
+    grid-gap: 5px;
+}
+
+.trading-grid input {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    min-width: 130px;
+}
+.trading-grid button {
+    display: block;
+    margin-top: 15px;
+    width: 100%;
+    min-width: 150px;
+}
+#trading button:active {
+    box-shadow: inset 2px 3px 4px #0c0c0c69;
+    line-height: 11px;
+    padding: 14px 6px 10px 10px;
+}
+.buy .btn {
+    background-color: #06ca6f;
+    color: white;
+    text-shadow: 1px 2px 3px #000000a6;
+}
+.sell .btn {
+    background-color: #ff3879;
+    color: white;
+    text-shadow: 1px 2px 3px #480524;
+    box-shadow: inset 3px 3px 2px #ffffff2e,
+                inset -2px -2px 2px #0c0c0c5c;
+}
+
+.market .buy .price, .market .sell .price {
+    background: #636363;
+    color: #888;
+    display: none;
+    pointer-events: none;
+}
+.market .buy .btn {
+    background-color: #005bff;
+}
+.market .sell .btn {
+    background-color: #f72424;
+}
