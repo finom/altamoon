@@ -4,16 +4,22 @@ const chart = require('./chart')
 
 module.exports = { onMarketOrderToggled, onBuy, onSell, forceNumInput }
 
-d3.select('#buy-amount').on('input', () => onChangeAmount('buy'))
-d3.select('#sell-amount').on('input', () => onChangeAmount('sell'))
-d3.select('#market-order').on('change', onMarketOrderToggled)
-d3.select('#buy').on('click', onBuy)
-d3.select('#sell').on('click', onSell)
+var marketCheckbox = d3.select('#market-order')
+var buyBtn = d3.select('.buy .btn')
+var sellBtn = d3.select('.sell .btn')
+var buyQty = d3.select('.buy .qty')
+var sellQty = d3.select('.sell .qty')
+
+marketCheckbox.on('change', onMarketOrderToggled)
+buyQty.on('input', () => onChangeQty('buy'))
+    .on('wheel', increment)
+sellQty.on('input', () => onChangeQty('sell'))
+    .on('wheel', increment)
+buyBtn.on('click', onBuy)
+sellBtn.on('click', onSell)
 
 function onMarketOrderToggled () {
     var tradingDiv = d3.select('#trading')
-    var buyBtn = d3.select('#buy')
-    var sellBtn = d3.select('#sell')
 
     if (event.target.checked) {
         tradingDiv.classed('market', true)
@@ -27,45 +33,45 @@ function onMarketOrderToggled () {
 }
 
 function onBuy () {
-    var price = parseFloat(d3.select('#buy-price').property('value'))
-    var amount = parseFloat(d3.select('#buy-amount').property('value'))
-    var market = d3.select('#market-order').property('checked')
+    var price = parseFloat(d3.select('.buy .price').property('value'))
+    var qty = parseFloat(buyQty.property('value'))
+    var market = marketCheckbox.property('checked')
 
-    if (!(amount > 0)) return
+    if (!(qty > 0)) return
 
     if (market) {
-        binance.futuresMarketBuy('BTCUSDT', amount)
+        binance.futuresMarketBuy('BTCUSDT', qty)
             .catch(error => console.error(error))
     }
     else if (price > 0) {
-        binance.futuresBuy('BTCUSDT', amount, price, {'timeInForce': 'GTX'})
+        binance.futuresBuy('BTCUSDT', qty, price, {'timeInForce': 'GTX'})
             .catch(error => console.error(error))
     }
 }
 
 function onSell () {
-    var price = parseFloat(d3.select('#sell-price').property('value'))
-    var amount = parseFloat(d3.select('#sell-amount').property('value'))
-    var market = d3.select('#market-order').property('checked')
+    var price = parseFloat(d3.select('.sell .price').property('value'))
+    var qty = parseFloat(sellQty.property('value'))
+    var market = marketCheckbox.property('checked')
 
-    if (!(amount > 0)) return
+    if (!(qty > 0)) return
 
     if (market) {
-        binance.futuresMarketSell('BTCUSDT', amount)
+        binance.futuresMarketSell('BTCUSDT', qty)
             .catch(error => console.error(error))
     }
     else if (price > 0) {
-        binance.futuresSell('BTCUSDT', amount, price, {'timeInForce': 'GTX'})
+        binance.futuresSell('BTCUSDT', qty, price, {'timeInForce': 'GTX'})
             .catch(error => console.error(error))
     }
 }
 
-function onChangeAmount (side) {
-    var amount = forceNumInput()
+function onChangeQty (side) {
+    var qty = forceNumInput()
     var draft = chart.draftLinesData[0]
 
     if (draft && side == draft.side) {
-        chart.draftLinesData[0].qty = Number(amount)
+        chart.draftLinesData[0].qty = Number(qty)
         chart.draw()
     }
 }
@@ -80,4 +86,11 @@ function forceNumInput () {
         }
     }
     return event.target.value = text
+}
+
+function increment () {
+    var qty = parseFloat(this.value)
+    qty = (qty + 0.1 * Math.sign(-event.deltaY)).toFixed(1)
+    this.value = Math.max(0, qty)
+    onChangeQty(this.parentNode.className)
 }

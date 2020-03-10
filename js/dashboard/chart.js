@@ -256,14 +256,17 @@ function onDragOrderEnd (d) {
 
 function onDragDraft (d) {
     var price = d.value.toFixed(2)
-    var side = (price <= api.lastPrice) ? 'buy' : 'sell'
-    var qty = d3.select('#' + side + '-amount').property('value')
+    var lastPrice = (api.lastPrice)
+            ? api.lastPrice
+            : candles[candles.length - 1].close
+    var side = (price <= lastPrice) ? 'buy' : 'sell'
+    var qty = d3.select('.' + side + ' .qty').property('value')
 
     draftLinesData[0].value = price
     draftLinesData[0].side = side
     draftLinesData[0].qty = Number(qty)
 
-    d3.select('#' + d.side + '-price').property('value', price)
+    d3.select('.' + d.side + ' .price').property('value', price)
 
     gDraftLabels.call(lineLabel, draftLinesData, 'draft')
 }
@@ -380,12 +383,16 @@ function lineLabel (selection, data, type) {
 
 function placeOrderDraft (price) {
     price = Number(price).toFixed(2)
-    var side = (price <= api.lastPrice) ? 'buy' : 'sell'
-    var qty = d3.select('#' + side + '-amount').property('value')
+    var lastPrice = (api.lastPrice)
+            ? api.lastPrice
+            : candles[candles.length - 1].close
+    var side = (price <= lastPrice) ? 'buy' : 'sell'
+    var qty = d3.select('.' + side + ' .qty').property('value')
+
     draftLinesData = [{ value: price, qty: Number(qty), side: side }]
     draw()
 
-    d3.select('#' + side + '-price').property('value', price)
+    d3.select('.' + side + ' .price').property('value', price)
 }
 
 function draftToOrder (d, i) {

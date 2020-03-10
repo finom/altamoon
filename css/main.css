@@ -77,12 +77,12 @@ button {
     line-height: 11px;
     padding: 14px 6px 10px 10px;
 }
-#buy {
+.buy .btn {
     background-color: #06ca6f;
     color: white;
     text-shadow: 1px 2px 3px #000000a6;
 }
-#sell {
+.sell .btn {
     background-color: #ff3879;
     color: white;
     text-shadow: 1px 2px 3px #480524;
@@ -90,16 +90,16 @@ button {
                 inset -2px -2px 2px #0c0c0c5c;
 }
 
-.market #buy-price, .market #sell-price {
+.market .buy .price, .market .sell .price {
     background: #636363;
     color: #888;
     display: none;
     pointer-events: none;
 }
-.market #buy {
+.market .buy .btn {
     background-color: #005bff;
 }
-.market #sell {
+.market .sell .btn {
     background-color: #f72424;
 }
 
