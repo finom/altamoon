@@ -19,7 +19,7 @@ function updateTrades (d) {
                 .call(row => {
                     row.selectAll('div')
                         .data(d => [d.p, d.q])
-                        .join('div')
+                        .enter().append('div')
                             .html(d => d)
             }),
             update => update
@@ -27,7 +27,6 @@ function updateTrades (d) {
                     row.attr('class', d => 'row ' + ((d.m) ? 'sell' : 'buy'))
                     row.selectAll('div')
                         .data(d => [d.p, d.q])
-                        .join('div')
                             .html(d => d)
             })
     )
