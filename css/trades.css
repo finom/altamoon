@@ -1,18 +1,16 @@
 #trades .table {
+    /* border: #444242e8 2px solid; */
+    border-radius: 20px;
+    box-shadow: 1px 3px 6px #00000050;
+    font-size: 0.9em;
     margin-top: 10px;
-    text-shadow: 1px 2px 2px #00000045;
+    overflow: hidden;
 }
 
 #trades .row {
     display: flex;
     flex-wrap: nowrap;
     padding: 0px 5px;
-}
-#trades .row:first-child {
-    border-radius: 5px 5px 0px 0px;
-}
-#trades .row:last-child {
-    border-radius: 0px 0px 5px 5px;
 }
 
 #trades .row > div {
@@ -26,5 +24,5 @@
     background-color: #038e5b;
 }
 #trades .sell {
-    background-color: #9c2665;
+    background-color: #6b49a9;
 }
