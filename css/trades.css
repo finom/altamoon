@@ -1,0 +1,30 @@
+#trades .table {
+    margin-top: 10px;
+    text-shadow: 1px 2px 2px #00000045;
+}
+
+#trades .row {
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 0px 5px;
+}
+#trades .row:first-child {
+    border-radius: 5px 5px 0px 0px;
+}
+#trades .row:last-child {
+    border-radius: 0px 0px 5px 5px;
+}
+
+#trades .row > div {
+    padding: 5px 10px;
+}
+#trades .row > div:not(:last-child) {
+    border-right: 2px solid #00000021;
+}
+
+#trades .buy {
+    background-color: #038e5b;
+}
+#trades .sell {
+    background-color: #9c2665;
+}

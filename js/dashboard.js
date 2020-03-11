@@ -10,6 +10,7 @@ const chart = require('./js/dashboard/chart')
 const trading = require('./js/dashboard/trading')
 const myOrders = require('./js/dashboard/my-orders')
 const wallet = require('./js/dashboard/wallet')
+const trades = require('./js/dashboard/trades')
 
 // Get initial data
 api.getPosition()

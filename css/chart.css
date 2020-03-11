@@ -28,7 +28,7 @@ svg text {
 */
 path.candle {
     stroke: #005dff;
-    stroke-linecap: round;
+    /* stroke-linecap: round; */
 }
 path.candle.body {
     stroke-width: 0;

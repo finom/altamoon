@@ -13,6 +13,7 @@ module.exports = {
     get onBalancesUpdate () { return onBalancesUpdate },
     get onPriceUpdate () { return onPriceUpdate },
     get onBidAskUpdate () { return onBidAskUpdate },
+    get onTradeUpdate () { return onTradeUpdate },
 
     get account () { return account },
     get positions () { return positions },
@@ -34,6 +35,7 @@ var onPositionUpdate = []
 var onBalancesUpdate = []
 var onPriceUpdate = []
 var onBidAskUpdate = []
+var onTradeUpdate = []
 
 var account = {}
 var positions = []
@@ -143,6 +145,7 @@ function streamLastTrade () {
         lastTrade = JSON.parse(event.data)
         lastPrice = lastTrade.p
         for (let func of onPriceUpdate) func(lastPrice)
+        for (let func of onTradeUpdate) func(lastTrade)
     }
 }
 
