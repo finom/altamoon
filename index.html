@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>Biduul</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';" />
-
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <link rel="stylesheet" type="text/css" href="css/chart.css">
     <link rel="stylesheet" type="text/css" href="css/trading.css">
     <link rel="stylesheet" type="text/css" href="css/my-orders.css">
     <link rel="stylesheet" type="text/css" href="css/wallet.css">
+    <link rel="stylesheet" type="text/css" href="css/book.css">
     <link rel="stylesheet" type="text/css" href="css/trades.css">
   </head>
   <body>
@@ -17,59 +17,65 @@
 
       <div id="chart"></div>
 
-      <div id="trading">
-        <div>
-          <input id="market-order" type="checkbox"></input>
-          <label for="market-order">Market order</label>
-        </div>
-
-        <div class="trading-grid">
-          <div class="buy">
-            <input class="price" class="num-input" step="1"></input>
-            <input class="qty" step="0.1" value="0.3"></input>
-            <button class="btn">BUY</button>
+      <div id="trading"><header>Trading</header>
+        <main>
+          <div>
+            <input id="market-order" type="checkbox"></input>
+            <label for="market-order">Market order</label>
           </div>
 
-          <div></div>
+          <div class="trading-grid">
+            <div class="buy">
+              <input class="price" class="num-input" step="1"></input>
+              <input class="qty" step="0.1" value="0.3"></input>
+              <button class="btn">BUY</button>
+            </div>
 
-          <div class="sell">
-            <input class="price" class="num-input" step="1"></input>
-            <input class="qty" step="0.1" value="0.3"></input>
-            <button class="btn">SELL</button>
+            <div></div>
+
+            <div class="sell">
+              <input class="price" class="num-input" step="1"></input>
+              <input class="qty" step="0.1" value="0.3"></input>
+              <button class="btn">SELL</button>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <div id="position-orders">Position
-        <table id="positions">
-          <thead>
-            <tr>
-              <th>Position</th><th>Size</th><th>Entry price</th><th>Liquidation</th>
-              <th>Margin</th><th>PNL</th><th>Close</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        Orders
-        <table id="orders">
-          <thead>
-            <tr>
-              <th>Order</th><th>Qty</th><th>Price</th><th>Filled</th>
-              <th>Type</th><th>Stop</th><th>Reduce</th><th>Cancel</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <div id="book">Order Book</div>
-
-      <div id="trades">Last Trades
+        </main>
 
       </div>
 
-      <div id="wallet">
-        <div id="balances"></div>
+      <div id="position-orders"><header>Position & Orders</header>
+        <main>
+          Position
+          <table id="positions">
+            <thead>
+              <tr>
+                <th>Position</th><th>Size</th><th>Entry price</th><th>Liquidation</th>
+                <th>Margin</th><th>PNL</th><th>Close</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          Orders
+          <table id="orders">
+            <thead>
+              <tr>
+                <th>Order</th><th>Qty</th><th>Price</th><th>Filled</th>
+                <th>Type</th><th>Stop</th><th>Reduce</th><th>Cancel</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </main>
+      </div>
+
+      <div id="book"><header>Order Book</header></div>
+
+      <div id="trades"><header>Last Trades</header></div>
+
+      <div id="wallet"><header>Wallet</header>
+        <main>
+          <div id="balances"></div>
+        </main>
       </div>
 
     </div>

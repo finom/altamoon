@@ -37,10 +37,20 @@ button {
     grid-auto-rows: minmax(200px, auto);
     width: 100%;
 }
-#main-grid>div {
-    background: #666;
+#main-grid > div {
+    background-color: #666;
     border-radius: 5px;
     box-shadow: 2px 2px 6px #333;
+}
+
+#main-grid > div > header {
+    background-color: #151515;
+    border-radius: 5px 5px 0px 0px;
+    color: #cccccc;
+    padding: 10px;
+}
+
+#main-grid > div > main {
     padding: 10px;
 }
 

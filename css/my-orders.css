@@ -47,7 +47,7 @@
 }
 #position-orders .sell,
 #position-orders .short  {
-    background: #8c295e;
+    background: #704fad;
 }
 #position-orders td:first-child {
     text-transform: capitalize;
