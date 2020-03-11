@@ -3,6 +3,7 @@ svg {
     font: 10px sans-serif;
     background: #000113;
     border-radius: 5px;
+    height: 100%;
     shape-rendering: crispEdges;
 }
 svg text {

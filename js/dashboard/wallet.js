@@ -12,7 +12,7 @@ function updateWallet (data) {
     if (data.assets === undefined) data = accountData
     else accountData = data
 
-    var format = (value, symbol) => d3.format(',.2~f')(value) + ' ₮'
+    var format = (value, symbol) => d3.format(',.2~f')(value) // + ' ₮'
 
     var balance = parseFloat(data.totalWalletBalance)
     var pnl = stats.getPNL()

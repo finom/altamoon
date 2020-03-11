@@ -1,28 +1,16 @@
 
 #position-orders table {
     border-collapse: collapse;
-    margin: 5px;
+    border-radius: 5px;
+    box-shadow: 1px 3px 4px #00000045;
+    margin:  auto;
     text-align: center;
     text-shadow: 1px 2px 2px #00000045;
+    overflow: hidden;
 }
 
 #positions {
-    margin-bottom: 10px !important;
-}
-
-/* Rounded corners hack */
-#position-orders thead th:first-child {
-    border-top-left-radius: 5px;
-}
-#position-orders thead th:last-child,
-#position-orders tbody tr:first-child td:last-child {
-    border-top-right-radius: 5px;
-}
-#position-orders tbody tr:last-child td:first-child {
-    border-bottom-left-radius: 5px;
-}
-#position-orders tbody tr:last-child td:last-child {
-    border-bottom-right-radius: 5px;
+    margin-bottom: 20px !important;
 }
 
 /* th */
