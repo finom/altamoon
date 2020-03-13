@@ -11,13 +11,13 @@ var mainDiv = d3.select('#book').append('div')
 var bids = mainDiv.append('div').attr('class', 'bids')
 var asks = mainDiv.append('div').attr('class', 'asks')
 
-var timer
-var timer2
+var timer = 0
+var timer2 = 0
 
 async function getSnapshot () {
-    if (timer && Date.now() < timer + 1000)
-        return
+    if (Date.now() < timer + 2000) return // API rate limit
     timer = Date.now()
+
     await api.binance.futuresDepth(SYMBOL)
         .then(r => book = r)
 }
@@ -27,7 +27,7 @@ async function updateBook (d) {
     timer2 = Date.now()
 
     if (!book)
-        await getSnapshot()
+        await getSnapshot() // Initial data
 
     bids.selectAll('.bids > div')
         .data(book.bids.slice(0,13), d => d[0])
@@ -67,7 +67,7 @@ var buffer = []
 var lastEvent
 
 function assembleBook (d) {
-    /* Following instructions from Binance API docs */
+    /* Following complicated instructions from Binance API docs */
     buffer.push(d)
 
     for (let i = 0; i < buffer.length; i++) {
@@ -82,18 +82,19 @@ function assembleBook (d) {
             started = true
             lastEvent = item
             getSnapshot()
-            return false
+            return
         }
         if (item.pu != lastEvent.u) {
             started = false
             lastEvent = item
             buffer.splice(i, 1)
             i--
-            return false
+            return
         }
         lastEvent = item
         item = { 'bids': item.b, 'asks': item.a }
 
+        // Event is ok so treat it against book
         for (let [key, side] of Object.entries(item)) {
             var sort = false
             var bookSide = book[key]
@@ -122,26 +123,4 @@ function assembleBook (d) {
         i--
     }
     updateBook()
-}
-
-var info = {
-  "e": "depthUpdate", // Event type
-  "E": 123456789,     // Event time
-  "T": 123456788,     // transaction time
-  "s": "BTCUSDT",      // Symbol
-  "U": 157,           // first update Id from last stream
-  "u": 160,           // last update Id from last stream
-  "pu": 149,          // last update Id in last stream（ie ‘u’ in last stream）
-  "b": [              // Bids to be updated
-    [
-      "0.0024",       // Price level to be updated
-      "10"            // Quantity
-    ]
-  ],
-  "a": [              // Asks to be updated
-    [
-      "0.0026",       // Price level to be updated
-      "100"          // Quantity
-    ]
-  ]
 }
