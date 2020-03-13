@@ -3,7 +3,7 @@ var d3 = require('d3')
 
 var OUT = console.log // Haaa :D
 
-var SYMBOL = 'BTCUSDT'
+var SYMBOL = 'BTC' + 'USDT'
 
 const api = require('./js/api-futures')
 const chart = require('./js/dashboard/chart')

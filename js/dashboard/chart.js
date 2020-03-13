@@ -129,8 +129,8 @@ var liquidationLineData = []
 var orderLinesData = []
 var draftLinesData = []
 
-var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=BTCUSDT&limit=1500&interval=1m'
-
+var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=' + SYMBOL.toLowerCase() + '&limit=1500&interval=1m'
+OUT(lastCandlesURL)
 d3.json(lastCandlesURL)
     .then(jsonCandles => {
         var accessor = plot.accessor()
@@ -307,7 +307,7 @@ function updateBidAsk (data) {
 
 // --- STREAM CANDLES (WEBSOCKET) --- //
 function streamLastCandle () {
-    var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@kline_1m')
+    var stream = new WebSocket(api.wsURL + '@kline_1m')
 
     stream.onmessage = event => {
         var d = JSON.parse(event.data).k

@@ -7,6 +7,7 @@ const binance = new Binance().options({
 
 module.exports = {
     binance,
+    get wsURL () { return wsURL },
 
     get onOrderUpdate () { return onOrderUpdate },
     get onPositionUpdate () { return onPositionUpdate },
@@ -30,6 +31,8 @@ module.exports = {
 
     streamLastTrade, streamUserData, streamBidAsk, streamBook
 }
+
+const wsURL = 'wss://fstream.binance.com/ws/' + SYMBOL.toLowerCase()
 
 // Callbacks
 var onOrderUpdate = []
@@ -85,7 +88,7 @@ function getOpenOrders () {
 function getPosition () {
     binance.futuresPositionRisk()
         .then(response => {
-            var p = response.BTCUSDT // Restrict to BTC for now
+            var p = response[SYMBOL]
             if (p.positionAmt != 0)
                 positions = [{
                     leverage: p.leverage,
@@ -123,9 +126,8 @@ function closePosition () {
 }
 
 // --- STREAM (WEBSOCKET) --- //
-
 function streamBook () {
-    var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@depth@0ms')
+    var stream = new WebSocket(wsURL + '@depth@0ms')
 
     stream.onmessage = (e) => {
         book = JSON.parse(e.data)
@@ -134,7 +136,7 @@ function streamBook () {
 }
 
 function streamBidAsk () {
-    var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@bookTicker')
+    var stream = new WebSocket(wsURL + '@bookTicker')
 
     stream.onmessage = (e) => {
         bidAsk = JSON.parse(e.data)
@@ -144,7 +146,7 @@ function streamBidAsk () {
 
 function streamLastTrade () {
     /* Last aggregated taker trade. Gives price, refreshed 100ms */
-    var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@aggTrade')
+    var stream = new WebSocket(wsURL + '@aggTrade')
 
     stream.onmessage = (e) => {
         lastTrade = JSON.parse(e.data)
@@ -191,7 +193,7 @@ function streamUserData () {
     }
 
     function positionUpdate (data) {
-        var p = data.a.P.filter(x => x.s == SYMBOL)[0] // Restrict to BTC
+        var p = data.a.P.filter(x => x.s == SYMBOL)[0]
 
         if (p.pa != 0) {
             if (!positions[0]) positions[0] = {}
