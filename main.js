@@ -12,7 +12,7 @@ app.allowRendererProcessReuse = true
 
 function createWindow () {
     var window = new BrowserWindow({
-            width: 1920,
+            width: 2400,
             height: 1050,
             webPreferences: { nodeIntegration: true }
     })

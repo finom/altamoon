@@ -12,21 +12,23 @@ module.exports = {
     get onPositionUpdate () { return onPositionUpdate },
     get onBalancesUpdate () { return onBalancesUpdate },
     get onPriceUpdate () { return onPriceUpdate },
-    get onBidAskUpdate () { return onBidAskUpdate },
     get onTradeUpdate () { return onTradeUpdate },
+    get onBidAskUpdate () { return onBidAskUpdate },
+    get onBookUpdate () { return onBookUpdate },
 
     get account () { return account },
     get positions () { return positions },
     get openOrders () { return openOrders },
-    get lastTrade () { return lastTrade },
     get lastPrice () { return lastPrice },
+    get lastTrade () { return lastTrade },
     get bidAsk () { return bidAsk },
+    get book () { return book },
 
     getOpenOrders, cancelOrder,
     getPosition, closePosition,
     getAccount,
 
-    streamLastTrade, streamUserData, streamBidAsk
+    streamLastTrade, streamUserData, streamBidAsk, streamBook
 }
 
 // Callbacks
@@ -36,6 +38,7 @@ var onBalancesUpdate = []
 var onPriceUpdate = []
 var onBidAskUpdate = []
 var onTradeUpdate = []
+var onBookUpdate = []
 
 var account = {}
 var positions = []
@@ -43,6 +46,7 @@ var openOrders = []
 var lastTrade = {}
 var lastPrice
 var bidAsk
+var book
 
 // --- GET --- //
 function getAccount() {
@@ -120,19 +124,20 @@ function closePosition () {
 
 // --- STREAM (WEBSOCKET) --- //
 
-function streamOrderBook () {
-    var book = binance.futuresDepth(SYMBOL)
-        .then(r => OUT(r))
+function streamBook () {
+    var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@depth@0ms')
 
-    var bookUpdates = new WebSocket('wss://fstream.binance.com/ws/btcusdt@depth@500ms')
-    bookUpdates.onmessage = (e) => OUT(JSON.parse(e.data))
+    stream.onmessage = (e) => {
+        book = JSON.parse(e.data)
+        for (let func of onBookUpdate) func(book)
+    }
 }
 
 function streamBidAsk () {
     var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@bookTicker')
 
-    stream.onmessage = (event) => {
-        bidAsk = JSON.parse(event.data)
+    stream.onmessage = (e) => {
+        bidAsk = JSON.parse(e.data)
         for (let func of onBidAskUpdate) func(bidAsk)
     }
 }
@@ -141,8 +146,8 @@ function streamLastTrade () {
     /* Last aggregated taker trade. Gives price, refreshed 100ms */
     var stream = new WebSocket('wss://fstream.binance.com/ws/btcusdt@aggTrade')
 
-    stream.onmessage = (event) => {
-        lastTrade = JSON.parse(event.data)
+    stream.onmessage = (e) => {
+        lastTrade = JSON.parse(e.data)
         lastPrice = lastTrade.p
         for (let func of onPriceUpdate) func(lastPrice)
         for (let func of onTradeUpdate) func(lastTrade)
@@ -160,8 +165,8 @@ function streamUserData () {
     function openStream (key) {
         stream = new WebSocket('wss://fstream.binance.com/ws/' + key.listenKey)
 
-        stream.onmessage = (event) => {
-            var data = JSON.parse(event.data)
+        stream.onmessage = (e) => {
+            var data = JSON.parse(e.data)
 
             if (data.e == 'ORDER_TRADE_UPDATE')
                 orderUpdate(data)
