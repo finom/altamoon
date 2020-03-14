@@ -167,6 +167,8 @@ function streamUserData () {
     function openStream (key) {
         stream = new WebSocket('wss://fstream.binance.com/ws/' + key.listenKey)
 
+        stream.onopen = getOpenOrders()
+
         stream.onmessage = (e) => {
             var data = JSON.parse(e.data)
 
@@ -241,6 +243,9 @@ function streamUserData () {
             var index = openOrders.findIndex(x => x.id == order.id)
             if (typeof index != 'undefined') {
                 openOrders.splice(index, 1)
+
+                if(order.status == 'FILLED')
+                    new Audio('./audio/plop.mp3').play()
             }
         }
         for (let func of onOrderUpdate) func(openOrders)

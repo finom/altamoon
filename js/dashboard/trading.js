@@ -90,7 +90,7 @@ function forceNumInput () {
 
 function increment () {
     var qty = parseFloat(this.value)
-    qty = (qty + 0.1 * Math.sign(-event.deltaY)).toFixed(1)
+    qty = (qty + 0.05 * Math.sign(-event.deltaY)).toFixed(3)
     this.value = Math.max(0, qty)
     onChangeQty(this.parentNode.className)
 }

@@ -50,7 +50,7 @@ button {
     color: #2a4eb5;
     padding: 10px;
     position: relative; /* for box-shadow over sibling divs */
-    text-align: center;
+    /* text-align: center; */
 }
 
 #main-grid > div > main {

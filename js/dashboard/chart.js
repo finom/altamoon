@@ -130,7 +130,7 @@ var orderLinesData = []
 var draftLinesData = []
 
 var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=' + SYMBOL.toLowerCase() + '&limit=1500&interval=1m'
-OUT(lastCandlesURL)
+
 d3.json(lastCandlesURL)
     .then(jsonCandles => {
         var accessor = plot.accessor()
@@ -178,8 +178,8 @@ function draw() {
     var ydomain = techan.scale.plot.ohlc(data, accessor).domain()
 
     // Padding y axis
-    ydomain[0] -= 40
-    ydomain[1] += 40
+    ydomain[0] -= 80
+    ydomain[1] += 80
 
     x.domain(xdomain)
     y.domain(ydomain)
