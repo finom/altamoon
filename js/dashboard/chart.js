@@ -272,7 +272,13 @@ function onDragDraft (d) {
     draftLinesData[0].side = side
     draftLinesData[0].qty = Number(qty)
 
-    d3.select('.' + d.side + ' .price').property('value', price)
+
+    // Update price input
+    var input = d3.select('.' + d.side + ' .price')
+    input.property('value', price)
+
+    new Event('input')
+    input.dispatch('input', { 'bubbles': true, 'cancelable': true })
 
     gDraftLabels.call(lineLabel, draftLinesData, 'draft')
 }

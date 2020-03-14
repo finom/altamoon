@@ -28,17 +28,18 @@
     min-width: 150px;
     text-shadow: 1px 2px 3px #000000a6;
 }
+
 #trading button:active {
     box-shadow: 1px 1px 3px #ffffff10,
                 inset 2px 3px 4px #0c0c0c3d;
     line-height: 11px;
     padding: 14px 6px 10px 10px;
 }
-.buy .btn {
+#trading .buy .btn {
     background-color: #14bf70;
     color: white;
 }
-.sell .btn {
+#trading .sell .btn {
     background-color: #914cec;
     /* background-color: #ff3879; */
     /* box-shadow: 3px 3px 3px #00000050,
@@ -59,4 +60,9 @@
 }
 .market .sell .btn {
     background-color: #f72424;
+}
+
+#trading .margin {
+    font-size: .7em;
+    margin-left: 9px;
 }

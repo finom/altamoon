@@ -24,4 +24,4 @@ api.streamBook()
 book.updateBook()
 
 // Inputs
-d3.selectAll('.num-input').on('input', trading.forceNumInput)
+d3.selectAll('.num-input').on('input', trading.parseNumber)

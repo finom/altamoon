@@ -2,15 +2,19 @@
 const { binance } = require('../api-futures')
 const chart = require('./chart')
 
-module.exports = { onMarketOrderToggled, onBuy, onSell, forceNumInput }
+module.exports = { onMarketOrderToggled, onBuy, onSell, parseNumber }
 
 var marketCheckbox = d3.select('#market-order')
-var buyBtn = d3.select('.buy .btn')
-var sellBtn = d3.select('.sell .btn')
+var buyPrice = d3.select('.buy .price')
+var sellprice = d3.select('.sell .price')
 var buyQty = d3.select('.buy .qty')
 var sellQty = d3.select('.sell .qty')
+var buyBtn = d3.select('.buy .btn')
+var sellBtn = d3.select('.sell .btn')
 
 marketCheckbox.on('change', onMarketOrderToggled)
+buyPrice.on('input', () => onChangePrice('buy'))
+sellprice.on('input', () => onChangePrice('sell'))
 buyQty.on('input', () => onChangeQty('buy'))
     .on('wheel', increment)
 sellQty.on('input', () => onChangeQty('sell'))
@@ -66,26 +70,52 @@ function onSell () {
     }
 }
 
+function onChangePrice (side) {
+    var price = parseNumber()
+    updateMarginCost({price: price}, side)
+}
+
 function onChangeQty (side) {
-    var qty = forceNumInput()
+    var qty = parseNumber()
     var draft = chart.draftLinesData[0]
 
+    // Update qty on order draft line
     if (draft && side == draft.side) {
         chart.draftLinesData[0].qty = Number(qty)
         chart.draw()
     }
+
+    updateMarginCost({qty: event.target.value}, side)
 }
 
-function forceNumInput () {
-    var text = event.target.value
+function updateMarginCost ({price, qty, leverage}, side) {
+    if (!side) {
+        updateMarginCost({price, qty, leverage}, 'buy')
+        updateMarginCost({price, qty, leverage}, 'sell')
+        return
+    }
+    if (!price)
+        price = d3.select('#trading .' + side +  ' .price').property('value')
+    if (!qty)
+        qty = d3.select('#trading .' + side +  ' .qty').property('value')
+    var leverage = 25
+    var margin = qty * price / leverage
+
+    d3.select('#trading .' + side +  ' .margin .val')
+        .text(margin.toFixed(2) + ' ₮')
+}
+
+function parseNumber () {
+    var string = event.target.value
+
     var regex = /[0-9]|\./
-    for (let i = 0; i < text.length; i++) {
-        if (!regex.test(text[i])) {
-            text = text.replace(text[i], '')
+    for (let i = 0; i < string.length; i++) {
+        if (!regex.test(string[i])) {
+            string = string.replace(string[i], '')
             i--
         }
     }
-    return event.target.value = text
+    return event.target.value = string
 }
 
 function increment () {
