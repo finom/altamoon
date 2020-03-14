@@ -212,9 +212,14 @@ function draw() {
             placeOrderDraft(y.invert(d3.mouse(this)[1]))
         })
 
-    // Color hack for position line
-    gPositionLine.selectAll('.position-line .supstance')
-        .attr('class', d => 'supstance ' + d.side.toLowerCase())
+    // Color hack for position and order lines
+    gPositionLine.selectAll('.position-line > g')
+        .attr('class', d => 'data scope-supstance ' + d.side.toLowerCase())
+    gOrderLines.selectAll('.order-lines > g')
+        .attr('class', function (d) {
+            this.classList.add(d.side.toLowerCase())
+            return this.className.baseVal
+        })
 }
 
 function initialZoom() {

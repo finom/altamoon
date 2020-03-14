@@ -72,22 +72,31 @@ path.candle.down {
     Position line
 */
 .position-line path {
-    fill: #20884c;
-    stroke: #20884c;
+    fill: #30b332;
+    stroke: #30b332;
 }
 .position-label rect {
-    fill: #20884c;
-    stroke: #20884c;
+    fill: #30b332;
+    stroke: #30b332;
     stroke-width: 2;
     width: 70px;
     height: 19px;
     rx: 6px;
     ry: 6px;
 }
+.position-line text,
+.position-label text {
+    font-weight: bold;
+}
+.position-line .short path,
 .position-label .short path,
 .position-label .short rect {
     fill: #ab257c;
     stroke: #ab257c;
+}
+.position-line .short text,
+.position-label .short text {
+    fill: #fff;
 }
 /*
     Liquidation line
@@ -107,17 +116,22 @@ path.candle.down {
     cursor: grab;
 }
 .order-lines path {
-    fill: #6d28d2;
-    stroke: #6d28d2;
+    fill: #20884c;
+    stroke: #20884c;
 }
 .order-labels rect {
-    fill: #6d28d2;
-    stroke: #6d28d2;
+    fill: #20884c;
+    stroke: #20884c;
     stroke-width: 0;
     width: 70px;
     height: 19px;
     rx: 6px;
     ry: 6px;
+}
+.order-lines .sell path,
+.order-labels .sell rect {
+    fill: #6d28d2;
+    stroke: #6d28d2;
 }
 /*
     Draft lines

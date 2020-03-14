@@ -29,12 +29,16 @@
 #position-orders td {
     padding: 4px 10px;
 }
-#position-orders .buy,
 #position-orders .long {
+    background-color: #4ab94c;
+}
+#position-orders .short  {
+    background: #ab257c;
+}
+#position-orders .buy {
     background-color: #038e5b;
 }
-#position-orders .sell,
-#position-orders .short  {
+#position-orders .sell  {
     background: #704fad;
 }
 #position-orders td:first-child {
