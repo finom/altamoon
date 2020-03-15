@@ -163,7 +163,8 @@ d3.json(lastCandlesURL)
 // --- INIT DRAW --- //
 function initDraw() {
     draw()
-    initialZoom()
+    // Right padding
+    svg.call(zoom.translateBy, -100)
 
     api.getPosition()
     api.getOpenOrders()
@@ -220,11 +221,6 @@ function draw() {
         .attr('data-side', d => d.side)
     gDraftLines.selectAll('.draft-lines > g')
         .attr('data-side', d => d.side)
-}
-
-function initialZoom() {
-    // add right padding
-    svg.call(zoom.translateBy, -100)
 }
 
 // --- EVENT HANDLERS --- //
@@ -322,7 +318,7 @@ function streamLastCandle () {
     stream.onmessage = event => {
         var d = JSON.parse(event.data).k
 
-        var newCandle = {
+        var candle = {
                 date: new Date(d.t),
                 open: parseFloat(d.o),
                 high: parseFloat(d.h),
@@ -331,13 +327,19 @@ function streamLastCandle () {
                 volume: parseFloat(d.q) }
 
         var lastCandle = candles[candles.length - 1]
+        var newCandle = false
 
-        if (newCandle.date > lastCandle.date) {
-            candles.push(newCandle)
+        if (candle.date > lastCandle.date) {
+            candles.push(candle)
+            newCandle = true
         } else {
-            candles[candles.length - 1] = newCandle
+            candles[candles.length - 1] = candle
         }
         draw()
+
+        if (newCandle)
+            // Pan chart
+            svg.call(zoom.translateBy, 0) // Ehh... ¯\_(°~°)_/¯
     }
 }
 
