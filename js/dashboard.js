@@ -1,9 +1,6 @@
 'use strict'
-var d3 = require('d3')
 
-var OUT = console.log // Haaa :D
-
-var SYMBOL = 'BTC' + 'USDT'
+require ('./js/globals')
 
 const api = require('./js/api-futures')
 const chart = require('./js/dashboard/chart')
