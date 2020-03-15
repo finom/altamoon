@@ -72,7 +72,7 @@ function getOpenOrders () {
                     value: o.price, // synonym, for feeding to techan.substance
                     qty: o.origQty,
                     reduceOnly: o.reduceOnly,
-                    side: o.side,
+                    side: o.side.toLowerCase(),
                     status: o.status,
                     stopPrice: o.stopPrice,
                     symbol: o.symbol,
@@ -224,7 +224,7 @@ function streamUserData () {
             value: o.p, // synonym, for feeding to techan.supstance
             qty: o.q,
             reduceOnly: o.R,
-            side: o.S,
+            side: o.S.toLowerCase(),
             status: o.X,
             stopPrice: o.sp,
             symbol: o.s,

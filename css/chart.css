@@ -46,6 +46,12 @@ path.candle.down {
     stroke: #0025ff;
 }
 /*
+    Lines
+*/
+.scope-supstance .interaction path {
+    stroke-width: 10px !important;
+}
+/*
     Price line
 */
 .price-line .supstance path {
@@ -88,14 +94,14 @@ path.candle.down {
 .position-label text {
     font-weight: bold;
 }
-.position-line .short path,
-.position-label .short path,
-.position-label .short rect {
+.position-line [data-side='short'] path,
+.position-label [data-side='short'] path,
+.position-label [data-side='short'] rect {
     fill: #ab257c;
     stroke: #ab257c;
 }
-.position-line .short text,
-.position-label .short text {
+.position-line [data-side='short'] text,
+.position-label [data-side='short'] text {
     fill: #fff;
 }
 /*
@@ -128,8 +134,8 @@ path.candle.down {
     rx: 6px;
     ry: 6px;
 }
-.order-lines .sell path,
-.order-labels .sell rect {
+.order-lines [data-side='sell'] path,
+.order-labels [data-side='sell'] rect {
     fill: #6d28d2;
     stroke: #6d28d2;
 }
@@ -139,18 +145,28 @@ path.candle.down {
 .draft-lines .scope-supstance.mouseover path {
     cursor: grab;
 }
+.draft-lines .supstance path {
+    stroke-dasharray: 10 6;
+}
 .draft-lines path {
-    fill: #656464;
-    stroke: #656464;
+    fill: #20884c;
+    stroke: #20884c;
 }
 .draft-labels rect {
-    fill: #656464;
-    stroke: #656464;
-    stroke-width: 0;
+    fill: #191919;
+    stroke: #20884c;
+    stroke-width: 2;
     width: 70px;
     height: 19px;
     rx: 6px;
     ry: 6px;
+}
+.draft-lines [data-side='sell'] path {
+    fill: #7d37e4;
+    stroke: #7d37e4;
+}
+.draft-labels [data-side='sell'] rect {
+    stroke: #7d37e4;
 }
 /*
     Crosshair

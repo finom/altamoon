@@ -81,6 +81,13 @@ var svg = d3.select('#chart').append('svg')
     .append('g')
         .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
 
+svg.call(zoom)
+
+svg.on('dblclick.zoom', null)
+    .on('dblclick', function () {
+        placeOrderDraft(y.invert(d3.mouse(this)[1]))
+    })
+
 var gClipPath = svg.append('clipPath')
         .attr('id', 'clip')
     .append('rect')
@@ -129,7 +136,7 @@ var liquidationLineData = []
 var orderLinesData = []
 var draftLinesData = []
 
-var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=' + SYMBOL.toLowerCase() + '&limit=1500&interval=1m'
+var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=' + SYMBOL + '&limit=1500&interval=1m'
 
 d3.json(lastCandlesURL)
     .then(jsonCandles => {
@@ -206,20 +213,13 @@ function draw() {
 
     gPlot.datum(data).call(plot)
 
-    svg.call(zoom)
-        .on('dblclick.zoom', null)
-        .on('dblclick', function () {
-            placeOrderDraft(y.invert(d3.mouse(this)[1]))
-        })
-
-    // Color hack for position and order lines
+    // Color lines based on market side
     gPositionLine.selectAll('.position-line > g')
-        .attr('class', d => 'data scope-supstance ' + d.side.toLowerCase())
+        .attr('data-side', d => d.side)
     gOrderLines.selectAll('.order-lines > g')
-        .attr('class', function (d) {
-            this.classList.add(d.side.toLowerCase())
-            return this.className.baseVal
-        })
+        .attr('data-side', d => d.side)
+    gDraftLines.selectAll('.draft-lines > g')
+        .attr('data-side', d => d.side)
 }
 
 function initialZoom() {
@@ -252,7 +252,7 @@ function onDragOrderEnd (d) {
 
     api.cancelOrder(d.id)
 
-    var order = (d.side == 'BUY')
+    var order = (d.side == 'buy')
         ? api.binance.futuresBuy
         : api.binance.futuresSell
 
@@ -265,11 +265,9 @@ function onDragDraft (d) {
     var lastPrice = (api.lastPrice)
             ? api.lastPrice
             : candles[candles.length - 1].close
-    var side = (price <= lastPrice) ? 'buy' : 'sell'
-    var qty = d3.select('.' + side + ' .qty').property('value')
+    var qty = d3.select('.' + d.side + ' .qty').property('value')
 
     draftLinesData[0].value = price
-    draftLinesData[0].side = side
     draftLinesData[0].qty = Number(qty)
 
 
@@ -280,6 +278,7 @@ function onDragDraft (d) {
     new Event('input')
     input.dispatch('input', { 'bubbles': true, 'cancelable': true })
 
+    // Redraw label
     gDraftLabels.call(lineLabel, draftLinesData, 'draft')
 }
 
@@ -358,20 +357,20 @@ function lineLabel (selection, data, type) {
                     .attr('x', width - 75)
                     .attr('y', d => y(d.value) + 3)
 
-                g.attr('class', d => d.side.toLowerCase())
+                g.attr('data-side', d => d.side)
 
-                // Cancel order on click
+                // Order
                 if (type == 'order')
                     rect.on('click', d =>  api.cancelOrder(d.id))
+                // Draft
                 if (type == 'draft') {
                     rect.on('click', (d, i) => {
                         draftToOrder(d, i)
                     })
-                    selection
-                        .call(d3.drag()
+                    // rect.call(d3.drag()
                             // .on('drag', onDragDraft)
                             // .on('end', onDragDraftEnd)
-                        )
+                    // )
                 }
             }),
             // Update y
@@ -381,7 +380,7 @@ function lineLabel (selection, data, type) {
                 g.select('text')
                     .attr('y', d => y(d.value) + 3)
                     .text(d => +d.qty)
-                g.attr('class', d => d.side.toLowerCase())
+                g.attr('data-side', d => d.side)
 
                 if (type == 'draft') {
                     rect.on('click', (d, i) => {

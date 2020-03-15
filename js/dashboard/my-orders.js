@@ -9,7 +9,7 @@ function updatePositions (positions) {
         .data(positions, d => d.symbol)
         .join(
             enter => enter.append('tr').call(row => {
-                row.attr('class', d => d.side.toLowerCase())
+                row.attr('class', d => d.side)
                 var td = () => row.append('td')
                 td().text(d => d.symbol.slice(0,3))
                 td().text(d => d.qty)
@@ -22,7 +22,7 @@ function updatePositions (positions) {
                     .html('Market')
             }),
             update => update.call(row => {
-                row.attr('class', d => d.side.toLowerCase())
+                row.attr('class', d => d.side)
                 var td = (i) => row.select('td:nth-child(' + i + ')')
                 td(1).text(d => d.symbol.slice(0,3))
                 td(2).text(d => d.qty)
@@ -53,9 +53,9 @@ function updateOrders (orders) {
         .data(orders, d => d.id)
         .join(
             enter => enter.append('tr').call(row => {
-                row.attr('class', d => d.side.toLowerCase())
+                row.attr('class', d => d.side)
                 var td = () => row.append('td')
-                td().text(d => d.side.toLowerCase())
+                td().text(d => d.side)
                 td().text(d => d.qty)
                 td().text(d => d3.format(',.2~f')(d.price))
                 td().text(d => d.filledQty)
@@ -67,9 +67,9 @@ function updateOrders (orders) {
                     .html('X')
             }),
             update => update.call(row => {
-                row.attr('class', d => d.side.toLowerCase())
+                row.attr('class', d => d.side)
                 var td = (i) => row.select('td:nth-child(' + i + ')')
-                td(1).text(d => d.side.toLowerCase())
+                td(1).text(d => d.side)
                 td(2).text(d => d.qty)
                 td(3).text(d => d3.format(',.2~f')(d.price))
                 td(4).text(d => d.filledQty)
