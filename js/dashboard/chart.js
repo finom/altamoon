@@ -179,7 +179,7 @@ function initDraw() {
 
 // --- RENDER CHART --- //
 function draw() {
-    var data = candles.slice(-300, candles.length)
+    var data = candles.slice(-350, candles.length)
     var accessor = plot.accessor()
 
     var xdomain = d3.extent(data.map(accessor.d))
@@ -221,61 +221,6 @@ function draw() {
         .attr('data-side', d => d.side)
     gDraftLines.selectAll('.draft-lines > g')
         .attr('data-side', d => d.side)
-}
-
-// --- EVENT HANDLERS --- //
-function onZoom(direction = 'x') {
-    if (direction == 'x') {
-        var scaledX = d3.event.transform.rescaleX(x)
-        xAxis.scale(scaledX)
-        xGridlines.scale(scaledX)
-        plot.xScale(scaledX)
-    }
-    draw()
-}
-
-function onDragOrder (d) {
-    var currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
-    if (!currentOrder || currentOrder.price == d.value)
-        return
-    gOrderLabels.call(lineLabel, orderLinesData, 'order')
-}
-function onDragOrderEnd (d) {
-    /* Delete order, recreate at new price */
-    var currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
-    if (!currentOrder || currentOrder.price == d.value)
-        return
-
-    api.cancelOrder(d.id)
-
-    var order = (d.side == 'buy')
-        ? api.binance.futuresBuy
-        : api.binance.futuresSell
-
-    order(d.symbol, d.qty, d.value.toFixed(2), {'timeInForce': 'GTX'})
-        .catch(error => console.error(error))
-}
-
-function onDragDraft (d) {
-    var price = d.value.toFixed(2)
-    var lastPrice = (api.lastPrice)
-            ? api.lastPrice
-            : candles[candles.length - 1].close
-    var qty = d3.select('.' + d.side + ' .qty').property('value')
-
-    draftLinesData[0].value = price
-    draftLinesData[0].qty = Number(qty)
-
-
-    // Update price input
-    var input = d3.select('.' + d.side + ' .price')
-    input.property('value', price)
-
-    new Event('input')
-    input.dispatch('input', { 'bubbles': true, 'cancelable': true })
-
-    // Redraw label
-    gDraftLabels.call(lineLabel, draftLinesData, 'draft')
 }
 
 // --- DATA UPDATE CALLBACKS --- //
@@ -395,28 +340,83 @@ function lineLabel (selection, data, type) {
 }
 
 function placeOrderDraft (price) {
-    price = Number(price).toFixed(2)
+    price = +(price.toFixed(2))
     var lastPrice = (api.lastPrice)
             ? api.lastPrice
             : candles[candles.length - 1].close
     var side = (price <= lastPrice) ? 'buy' : 'sell'
     var qty = d3.select('.' + side + ' .qty').property('value')
 
-    draftLinesData = [{ value: price, qty: Number(qty), side: side }]
-    draw()
+    var data = { value: price, qty: Number(qty), side: side }
+    draftLinesData = [data]
 
-    d3.select('.' + side + ' .price').property('value', price)
+    onDragDraft(data) // Wobbly coding <(^–^)<
+    draw()
 }
 
 function draftToOrder (d, i) {
     draftLinesData.splice(i, 1)
 
-    var price = Number(d.value).toFixed(2)
+    var price = +(d.value.toFixed(2))
     var order = (d.side == 'buy')
         ? api.binance.futuresBuy
         : api.binance.futuresSell
 
     order(SYMBOL, d.qty, price, {'timeInForce': 'GTX'})
         .catch(error => console.error(error))
+    draw()
+}
+
+// --- EVENT HANDLERS --- //
+function onDragDraft (d) {
+    var price = +(d.value.toFixed(2))
+    var lastPrice = (api.lastPrice)
+            ? api.lastPrice
+            : candles[candles.length - 1].close
+    var qty = d3.select('.' + d.side + ' .qty').property('value')
+
+    draftLinesData[0].value = price
+    draftLinesData[0].qty = Number(qty)
+
+    // Update price input
+    var input = d3.select('.' + d.side + ' .price')
+    input.property('value', price)
+
+    new Event('input')
+    input.dispatch('input', { 'bubbles': true, 'cancelable': true })
+
+    // Redraw label
+    gDraftLabels.call(lineLabel, draftLinesData, 'draft')
+}
+
+function onDragOrder (d) {
+    var currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
+    if (!currentOrder || currentOrder.price == d.value)
+        return
+    gOrderLabels.call(lineLabel, orderLinesData, 'order')
+}
+function onDragOrderEnd (d) {
+    /* Delete order, recreate at new price */
+    var currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
+    if (!currentOrder || currentOrder.price == d.value)
+        return
+
+    api.cancelOrder(d.id)
+
+    var order = (d.side == 'buy')
+        ? api.binance.futuresBuy
+        : api.binance.futuresSell
+
+    order(d.symbol, d.qty, d.value.toFixed(2), {'timeInForce': 'GTX'})
+        .catch(error => console.error(error))
+}
+
+function onZoom(direction = 'x') {
+    if (direction == 'x') {
+        var scaledX = d3.event.transform.rescaleX(x)
+        xAxis.scale(scaledX)
+        xGridlines.scale(scaledX)
+        plot.xScale(scaledX)
+    }
     draw()
 }
