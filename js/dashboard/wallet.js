@@ -8,15 +8,17 @@ setInterval(api.getAccount, 2000)
 
 var accountData
 
-function updateWallet (data) {
+async function updateWallet (data) {
     if (data.assets === undefined) data = accountData
     else accountData = data
 
     var format = (value, symbol) => d3.format(',.2~f')(value) // + ' ₮'
 
     var balance = parseFloat(data.totalWalletBalance)
-    var pnl = stats.getPNL()
-    var pnlPercent = d3.format(',.1~%')(pnl / balance)
+    var pnl = stats.getPNL().pnl
+    var pnlPercent = d3.format(',.1~%')(stats.getPNL().percent)
+    var dailyPNL = await stats.getDailyPNL().pnl
+    var dailyPNLPercent = d3.format(',.1~%')(await stats.getDailyPNL().percent)
     var unrealizedBalance = pnl + balance
 
     data = [
@@ -24,7 +26,8 @@ function updateWallet (data) {
         'Balance + PNL: ', format(unrealizedBalance),
         'PNL: ', format(pnl) + ' (' + pnlPercent + ')',
         'Position margin: ', format(data.totalPositionInitialMargin),
-        'Order margin: ', format(data.totalOpenOrderInitialMargin)
+        'Order margin: ', format(data.totalOpenOrderInitialMargin),
+        'Daily pnl', format(dailyPNL) + ' (' + dailyPNLPercent + ')'
     ]
 
     d3.select('#balances').selectAll('#balances > div')

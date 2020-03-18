@@ -1,8 +1,14 @@
 'use strict'
 const api = require('../api-futures')
+const stats = require('../stats')
 
 api.onPositionUpdate.push(updatePositions)
 api.onOrderUpdate.push(updateOrders)
+api.onPriceUpdate.push(updatePNL)
+
+function updatePNL () {
+    updatePositions(api.positions)
+}
 
 function updatePositions (positions) {
     var rows = d3.select('#positions tbody').selectAll('tr')
@@ -16,7 +22,7 @@ function updatePositions (positions) {
                 td().text(d => d3.format(',.2~f')(d.price))
                 td().text(d => d3.format(',.2~f')(d.liquidation))
                 td().text(d => d3.format(',.2~f')(d.margin))
-                td().text(d => d.PNL)
+                td().text(d => d3.format(',.2~f')(stats.getPNL().pnl) + ' (' +  d3.format(',.1~%')(stats.getPNL().percent) + ')')
                 td().append('button')
                     .on('click', d => api.closePosition(d.symbol))
                     .html('Market')
@@ -29,7 +35,7 @@ function updatePositions (positions) {
                 td(3).text(d => d3.format(',.2~f')(d.price))
                 td(4).text(d => d3.format(',.2~f')(d.liquidation))
                 td(5).text(d => d3.format(',.2~f')(d.margin))
-                td(6).text(d => d.PNL)
+                td().text(d => d3.format(',.2~f')(stats.getPNL().pnl) + ' (' +  d3.format(',.1~%')(stats.getPNL().percent) + ')')
                 row.select('button')
                     .on('click', d => api.closePosition(d.symbol))
             }),
