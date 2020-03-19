@@ -1,41 +1,51 @@
 'use strict'
 const api = require('../api-futures')
-const stats = require('../stats')
+const { getPnl, getDailyPnl } = require('../stats')
 
 api.onPositionUpdate.push(updatePositions)
 api.onOrderUpdate.push(updateOrders)
-api.onPriceUpdate.push(updatePNL)
+api.onPriceUpdate.push(updatePnl)
 
-function updatePNL () {
+function updatePnl () {
     updatePositions(api.positions)
 }
 
 function updatePositions (positions) {
+    var format = d3.format(',.2~f')
+    var formatPercent = d3.format(',.1~%')
+
     var rows = d3.select('#positions tbody').selectAll('tr')
         .data(positions, d => d.symbol)
         .join(
             enter => enter.append('tr').call(row => {
                 row.attr('class', d => d.side)
+
+                var pnl = format(getPnl().pnl)
+                var pnlPercent = formatPercent(getPnl().percent)
                 var td = () => row.append('td')
                 td().text(d => d.symbol.slice(0,3))
                 td().text(d => d.qty)
-                td().text(d => d3.format(',.2~f')(d.price))
-                td().text(d => d3.format(',.2~f')(d.liquidation))
-                td().text(d => d3.format(',.2~f')(d.margin))
-                td().text(d => d3.format(',.2~f')(stats.getPNL().pnl) + ' (' +  d3.format(',.1~%')(stats.getPNL().percent) + ')')
+                td().text(d => format(d.price))
+                td().text(d => format(d.liquidation))
+                td().text(d => format(d.margin))
+                td().text(d => `${ pnl } (${ pnlPercent })`)
                 td().append('button')
                     .on('click', d => api.closePosition(d.symbol))
                     .html('Market')
             }),
             update => update.call(row => {
                 row.attr('class', d => d.side)
+
+                var pnl = format(getPnl().pnl)
+                var pnlPercent = formatPercent(getPnl().percent)
+
                 var td = (i) => row.select('td:nth-child(' + i + ')')
                 td(1).text(d => d.symbol.slice(0,3))
                 td(2).text(d => d.qty)
-                td(3).text(d => d3.format(',.2~f')(d.price))
-                td(4).text(d => d3.format(',.2~f')(d.liquidation))
-                td(5).text(d => d3.format(',.2~f')(d.margin))
-                td().text(d => d3.format(',.2~f')(stats.getPNL().pnl) + ' (' +  d3.format(',.1~%')(stats.getPNL().percent) + ')')
+                td(3).text(d => format(d.price))
+                td(4).text(d => format(d.liquidation))
+                td(5).text(d => format(d.margin))
+                td(6).text(d => `${ pnl } (${ pnlPercent })`)
                 row.select('button')
                     .on('click', d => api.closePosition(d.symbol))
             }),

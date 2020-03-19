@@ -350,7 +350,7 @@ function placeOrderDraft (price) {
     var data = { value: price, qty: Number(qty), side: side }
     draftLinesData = [data]
 
-    onDragDraft(data) // Wobbly coding <(^–^)<
+    onDragDraft(data) // Wobbly coding <(°v°)<
     draw()
 }
 

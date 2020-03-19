@@ -1,43 +1,56 @@
 'use strict'
 const api = require('./api-futures')
 
-module.exports = { getPNL, getDailyPNL }
+module.exports = { getPnl, getDailyPnl }
 
-function getPNL () {
+function getBreakEven () {
+    // TODO
+}
+
+function getPnl () {
     if (!api.positions[0] || api.positions[0].qty == 0)
-        return 0
+        return {pnl: 0, percent: 0}
+
     var qty = api.positions[0].qty
     var price = parseFloat(api.lastTrade.p)
     var entryPrice = parseFloat(api.positions[0].price)
 
     var pnl = (price - entryPrice) / entryPrice * qty * price
-    var pnlPercent = pnl / api.account.totalWalletBalance
-    return { pnl: pnl, percent: pnlPercent }
-
+    return {
+        pnl: pnl,
+        percent: pnl / api.account.totalWalletBalance
+    }
 }
 
-function getBreakEven () {
+var timer
+var incomeHistory
 
-}
-
-
-async function getDailyPNL(){
-    var incomeHistory
+async function getDailyPnl() {
     var currentBalance = +api.account.totalWalletBalance
 
-    var startTime = new Date().setHours(4)
-    await api.binance.futuresIncome({symbol: SYMBOL, startTime: startTime, endTime: Date.now()})
-        .then(response => incomeHistory = response)
-    var PNLarray = incomeHistory.filter(x => x.incomeType == "REALIZED_PNL" && x.symbol == SYMBOL)
-
-    var total = 0
-    for (let x of PNLarray){
-        total += +x.income
+    // Throttle api calls
+    if (!timer || Date.now() > timer + 5 * 1000) {
+        timer = Date.now()
+        // Get all balance modifying events since 4am
+        incomeHistory = await api.binance.futuresIncome({
+            symbol: SYMBOL,
+            startTime: new Date().setHours(4),
+            endTime: Date.now()
+        })
     }
-    var oldBalance = currentBalance - total
 
-    return { pnl: total, percent: (total / oldBalance) }
+    var pnlArray = incomeHistory.filter(
+        x => x.incomeType == 'REALIZED_PNL' && x.symbol == SYMBOL
+    )
 
+    var totalPnl = 0
+    for (let x of pnlArray)
+        totalPnl += +x.income
 
-    "BTCUSDT", {orderId: "1025137386"}
+    var oldBalance = currentBalance - totalPnl
+
+    return {
+        pnl: totalPnl,
+        percent: totalPnl / oldBalance
+    }
 }

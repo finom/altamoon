@@ -12,22 +12,24 @@ async function updateWallet (data) {
     if (data.assets === undefined) data = accountData
     else accountData = data
 
-    var format = (value, symbol) => d3.format(',.2~f')(value) // + ' ₮'
+    var format = value => d3.format(',.2~f')(value)
+
+    var pnl = stats.getPnl()
+    var pnlPercent = d3.format(',.1~%')(pnl.percent)
 
     var balance = parseFloat(data.totalWalletBalance)
-    var pnl = stats.getPNL().pnl
-    var pnlPercent = d3.format(',.1~%')(stats.getPNL().percent)
-    var dailyPNL = await stats.getDailyPNL().pnl
-    var dailyPNLPercent = d3.format(',.1~%')(await stats.getDailyPNL().percent)
-    var unrealizedBalance = pnl + balance
+    var unrealizedBalance = pnl.pnl + balance
+
+    var dailyPnl = await stats.getDailyPnl()
+    var dailyPnlPercent = d3.format(',.1~%')(dailyPnl.percent)
 
     data = [
         'Balance: ', format(data.totalWalletBalance),
         'Balance + PNL: ', format(unrealizedBalance),
-        'PNL: ', format(pnl) + ' (' + pnlPercent + ')',
+        'PNL: ', format(pnl.pnl) + ' (' + pnlPercent + ')',
         'Position margin: ', format(data.totalPositionInitialMargin),
         'Order margin: ', format(data.totalOpenOrderInitialMargin),
-        'Daily pnl', format(dailyPNL) + ' (' + dailyPNLPercent + ')'
+        'Daily PNL: ', format(dailyPnl.pnl) + ' (' + dailyPnlPercent + ')'
     ]
 
     d3.select('#balances').selectAll('#balances > div')
