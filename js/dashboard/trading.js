@@ -89,11 +89,6 @@ function onChangeQty (side) {
 }
 
 function updateMarginCost ({price, qty, leverage}, side) {
-    if (!side) {
-        updateMarginCost({price, qty, leverage}, 'buy')
-        updateMarginCost({price, qty, leverage}, 'sell')
-        return
-    }
     if (!price)
         price = d3.select('#trading .' + side +  ' .price').property('value')
     if (!qty)
