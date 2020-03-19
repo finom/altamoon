@@ -58,7 +58,7 @@ function getAccount() {
             account = response
             for (let func of onBalancesUpdate) func(account)
         })
-        .catch(err => console.error(err))
+        .catch(err => console.warn('Warning: getAccount() request timed out'))
 }
 
 function getOpenOrders () {
