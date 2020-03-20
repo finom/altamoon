@@ -4,7 +4,11 @@ body {
     color: #fff;
     font-family: sans-serif;
 }
-input {
+input[type="range"],
+output {
+    vertical-align: middle;
+}
+input[type="text"] {
     border: #888 solid 2px;
     border-top: #505050 solid 3px;
     border-left: #505050 solid 2px;
@@ -14,6 +18,10 @@ input {
     margin-bottom: 10px;
     outline: none;
     padding: 8px;
+}
+input[type="checkbox"] {
+    margin-bottom: 10px;
+    margin-top: 10px;
 }
 button {
     border-radius: 6px;

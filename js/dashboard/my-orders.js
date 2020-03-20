@@ -1,6 +1,6 @@
 'use strict'
 const api = require('../api-futures')
-const { getPnl, getDailyPnl } = require('../stats')
+const { getPnl } = require('../stats')
 
 api.onPositionUpdate.push(updatePositions)
 api.onOrderUpdate.push(updateOrders)
@@ -13,6 +13,8 @@ function updatePnl () {
 function updatePositions (positions) {
     var format = d3.format(',.2~f')
     var formatPercent = d3.format(',.1~%')
+
+    positions = positions.filter(x => x.qty != 0)
 
     var rows = d3.select('#positions tbody').selectAll('tr')
         .data(positions, d => d.symbol)

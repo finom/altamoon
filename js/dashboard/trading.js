@@ -1,9 +1,12 @@
 'use strict'
-const { binance } = require('../api-futures')
+const api = require('../api-futures')
 const chart = require('./chart')
 
 module.exports = { onMarketOrderToggled, onBuy, onSell, parseNumber }
 
+api.onPositionUpdate.push(updateLeverage)
+
+var leverageInput = d3.select('[name="leverageInput"]')
 var marketCheckbox = d3.select('#market-order')
 var buyPrice = d3.select('.buy .price')
 var sellprice = d3.select('.sell .price')
@@ -12,6 +15,7 @@ var sellQty = d3.select('.sell .qty')
 var buyBtn = d3.select('.buy .btn')
 var sellBtn = d3.select('.sell .btn')
 
+leverageInput.on('change', onLeverageChanged)
 marketCheckbox.on('change', onMarketOrderToggled)
 buyPrice.on('input', () => onChangePrice('buy'))
 sellprice.on('input', () => onChangePrice('sell'))
@@ -21,6 +25,17 @@ sellQty.on('input', () => onChangeQty('sell'))
     .on('wheel', increment)
 buyBtn.on('click', onBuy)
 sellBtn.on('click', onSell)
+
+function updateLeverage (d) {
+    var position = d.filter(x => x.symbol == SYMBOL)[0]
+    leverageInput.property('value', position.leverage)
+    d3.select('[name="leverageOutput"]').property('value', position.leverage)
+}
+
+function onLeverageChanged () {
+    api.binance.futuresLeverage(SYMBOL, this.value)
+    this.value
+}
 
 function onMarketOrderToggled () {
     var tradingDiv = d3.select('#trading')
@@ -44,11 +59,11 @@ function onBuy () {
     if (!(qty > 0)) return
 
     if (market) {
-        binance.futuresMarketBuy(SYMBOL, qty)
+        api.binance.futuresMarketBuy(SYMBOL, qty)
             .catch(error => console.error(error))
     }
     else if (price > 0) {
-        binance.futuresBuy(SYMBOL, qty, price, {'timeInForce': 'GTX'})
+        api.binance.futuresBuy(SYMBOL, qty, price, {'timeInForce': 'GTX'})
             .catch(error => console.error(error))
     }
 }
@@ -61,11 +76,11 @@ function onSell () {
     if (!(qty > 0)) return
 
     if (market) {
-        binance.futuresMarketSell(SYMBOL, qty)
+        api.binance.futuresMarketSell(SYMBOL, qty)
             .catch(error => console.error(error))
     }
     else if (price > 0) {
-        binance.futuresSell(SYMBOL, qty, price, {'timeInForce': 'GTX'})
+        api.binance.futuresSell(SYMBOL, qty, price, {'timeInForce': 'GTX'})
             .catch(error => console.error(error))
     }
 }

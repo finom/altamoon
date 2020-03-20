@@ -232,11 +232,11 @@ function updatePrice (price) {
 function updatePosition (positions) {
     var position = positions.filter(x => x.symbol == SYMBOL)[0]
 
-    if (position && position.liquidation)
+    if (position.qty && position.liquidation)
         liquidationLineData = [{value: position.liquidation}]
     else liquidationLineData = []
 
-    positionLineData = (position) ? [position] : []
+    positionLineData = (position.qty) ? [position] : []
     draw()
 }
 

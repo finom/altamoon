@@ -58,7 +58,10 @@ function getAccount() {
             account = response
             for (let func of onBalancesUpdate) func(account)
         })
-        .catch(err => console.warn('Warning: getAccount() request timed out'))
+        .catch(err => {
+            if (err.code == 'ETIMEDOUT')
+                console.warn('Warning: getAccount() request timed out')
+        })
 }
 
 function getOpenOrders () {
@@ -89,19 +92,17 @@ function getPosition () {
     binance.futuresPositionRisk()
         .then(response => {
             var p = response[SYMBOL]
-            if (p.positionAmt != 0)
-                positions = [{
-                    leverage: p.leverage,
-                    liquidation: p.liquidationPrice,
-                    margin: p.isolatedMargin,
-                    marginType: p.marginType,
-                    price: p.entryPrice,
-                    value: p.entryPrice, // synonym, for feeding to techan.substance
-                    qty: p.positionAmt,
-                    side: (p.positionAmt >= 0) ? 'long' : 'short',
-                    symbol: p.symbol
-                }]
-            else positions = []
+            positions[0] = {
+                leverage: p.leverage,
+                liquidation: p.liquidationPrice,
+                margin: p.isolatedMargin,
+                marginType: p.marginType,
+                price: p.entryPrice,
+                value: p.entryPrice, // synonym, for feeding to techan.substance
+                qty: p.positionAmt,
+                side: (p.positionAmt >= 0) ? 'long' : 'short',
+                symbol: p.symbol
+            }
             for (let func of onPositionUpdate) func(positions)
         })
         .catch(err => console.error(err))
@@ -197,20 +198,18 @@ function streamUserData () {
     function positionUpdate (data) {
         var p = data.a.P.filter(x => x.s == SYMBOL)[0]
 
-        if (p.pa != 0) {
-            if (!positions[0]) positions[0] = {}
-            Object.assign(positions[0], {
-                margin: p.iw,
-                marginType: p.mt,
-                price: p.ep,
-                value: p.ep, // synonym, for feeding to techan.substance
-                qty: p.pa,
-                side: (p.pa >= 0) ? 'long' : 'short',
-                symbol: p.s
-            })
-            getPosition() // REST update for missing data
-        }
-        else positions = []
+        if (!positions[0]) positions[0] = {}
+        Object.assign(positions[0], {
+            margin: p.iw,
+            marginType: p.mt,
+            price: p.ep,
+            value: p.ep, // synonym, for feeding to techan.substance
+            qty: p.pa,
+            side: (p.pa >= 0) ? 'long' : 'short',
+            symbol: p.s
+        })
+        getPosition() // REST update for missing data
+
         for (let func of onPositionUpdate) func(positions)
     }
 

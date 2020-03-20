@@ -20,6 +20,16 @@
 
       <div id="trading"><header>Trading</header>
         <main>
+          <div><form>
+              <label>Leverage: </label>
+              <input name="leverageInput" type="range" min="1" max="125" value="1"
+                oninput="leverageOutput.value = leverageInput.value"
+              />
+              <output name="leverageOutput" for="leverageInput"></output>
+
+              </form>
+          </div>
+
           <div>
             <input id="market-order" type="checkbox"></input>
             <label for="market-order">Market order</label>
@@ -27,8 +37,8 @@
 
           <div class="trading-grid">
             <div class="buy">
-              <input class="price" step="1"></input>
-              <input class="qty" step="0.001" value="0.001"></input>
+              <input class="price" type="text" step="1"></input>
+              <input class="qty" type="text" step="0.001" value="0.001"></input>
               <div class="margin">Margin: <span class='val'></span></div>
               <button class="btn">BUY</button>
             </div>
@@ -36,8 +46,8 @@
             <div></div>
 
             <div class="sell">
-              <input class="price" step="1"></input>
-              <input class="qty" step="0.001" value="0.001"></input>
+              <input class="price" type="text" step="1"></input>
+              <input class="qty" type="text" step="0.001" value="0.001"></input>
               <div class="margin">Margin: <span class='val'></span></div>
               <button class="btn">SELL</button>
             </div>
