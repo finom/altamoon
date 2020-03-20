@@ -56,7 +56,7 @@ function onBuy () {
     var qty = parseFloat(buyQty.property('value'))
     var market = marketCheckbox.property('checked')
 
-    if (qty <= 0)) return
+    if (qty <= 0) return
 
     if (market) {
         api.binance.futuresMarketBuy(SYMBOL, qty)
@@ -73,7 +73,7 @@ function onSell () {
     var qty = parseFloat(sellQty.property('value'))
     var market = marketCheckbox.property('checked')
 
-    if (qty <= 0)) return
+    if (qty <= 0) return
 
     if (market) {
         api.binance.futuresMarketSell(SYMBOL, qty)
