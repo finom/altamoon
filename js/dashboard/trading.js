@@ -88,6 +88,7 @@ function onSell () {
 function onChangePrice (side) {
     var price = parseNumber()
     updateMarginCost({price: price}, side)
+        updateDollarValue(side)
 }
 
 function onChangeQty (side) {
@@ -101,6 +102,18 @@ function onChangeQty (side) {
     }
 
     updateMarginCost({qty: event.target.value}, side)
+    updateDollarValue(side)
+}
+
+function updateDollarValue(side){
+    var qty = d3.select('#trading .' + side +  ' .qty').property('value')
+    var dollarValue = d3.select('#trading .' + side +  ' .price').property('value')
+    var quantityDollarValue = qty * dollarValue
+
+    d3.select('#trading .' + side +  ' .dollar-qty .val')
+        .text(quantityDollarValue.toFixed(2) + ' $')
+        OUT(quantityDollarValue)
+        OUT(d3.select('#trading .' + side +  ' .dollar-qty .val'))
 }
 
 function updateMarginCost ({price, qty, leverage}, side) {
