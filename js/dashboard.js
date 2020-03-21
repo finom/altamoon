@@ -1,6 +1,7 @@
 'use strict'
 
 require ('./js/globals')
+const settings = require('./settings')
 
 const api = require('./js/api-futures')
 const chart = require('./js/dashboard/chart')
@@ -22,3 +23,12 @@ book.updateBook()
 
 // Inputs
 d3.selectAll('.num-input').on('input', trading.parseNumber)
+
+// Inject custom CSS
+for (let url of settings.customCss) {
+    var link = document.createElement("link")
+    link.href = url
+    link.type = "text/css"
+    link.rel = "stylesheet"
+    document.getElementsByTagName("head")[0].appendChild(link)
+}
