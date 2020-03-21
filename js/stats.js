@@ -32,11 +32,13 @@ async function getDailyPnl() {
     if (!timer || Date.now() > timer + 5 * 1000) {
         timer = Date.now()
         // Get all balance modifying events since 4am
-        incomeHistory = await api.binance.futuresIncome({
+        var response = await api.binance.futuresIncome({
             symbol: SYMBOL,
             startTime: new Date().setHours(4),
             endTime: Date.now()
         })
+        if (response)
+            incomeHistory = response
     }
 
     var pnlArray = incomeHistory.filter(
