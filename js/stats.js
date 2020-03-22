@@ -41,6 +41,9 @@ async function getDailyPnl() {
             incomeHistory = response
     }
 
+    if (!incomeHistory)
+        return { pnl: 0, percent: 0 }
+
     var pnlArray = incomeHistory.filter(
         x => x.incomeType == 'REALIZED_PNL' && x.symbol == SYMBOL
     )

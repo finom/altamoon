@@ -9,8 +9,12 @@ setInterval(api.getAccount, 2000)
 var accountData
 
 async function updateWallet (data) {
-    if (data.assets === undefined) data = accountData
-    else accountData = data
+    if (data.assets === undefined)
+        data = accountData
+    else
+        accountData = data
+
+    if(!data) return
 
     var format = value => d3.format(',.2~f')(value)
 
