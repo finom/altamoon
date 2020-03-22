@@ -15,26 +15,43 @@ var sellQty = d3.select('.sell .qty')
 var buyBtn = d3.select('.buy .btn')
 var sellBtn = d3.select('.sell .btn')
 
+leverageInput.on('input', onInputLeverage)
 leverageInput.on('change', onLeverageChanged)
 marketCheckbox.on('change', onMarketOrderToggled)
-buyPrice.on('input', () => onChangePrice('buy'))
-sellprice.on('input', () => onChangePrice('sell'))
-buyQty.on('input', () => onChangeQty('buy'))
+buyPrice.on('input', () => onInputPrice('buy'))
+sellprice.on('input', () => onInputPrice('sell'))
+buyQty.on('input', () => onInputQty('buy'))
     .on('wheel', increment)
-sellQty.on('input', () => onChangeQty('sell'))
+sellQty.on('input', () => onInputQty('sell'))
     .on('wheel', increment)
 buyBtn.on('click', onBuy)
 sellBtn.on('click', onSell)
 
+var leverage
+var price
+var qty
+
 function updateLeverage (d) {
     var position = d.filter(x => x.symbol == SYMBOL)[0]
-    leverageInput.property('value', position.leverage)
-    d3.select('[name="leverageOutput"]').property('value', position.leverage)
+    leverage = position.leverage
+    leverageInput.property('value', leverage)
+    d3.select('[name="leverageOutput"]').property('value', leverage)
+    updateMarginCost('buy')
+    updateMarginCost('sell')
+}
+
+function onInputLeverage () {
+    leverage = this.value
+    updateMarginCost('buy')
+    updateMarginCost('sell')
 }
 
 function onLeverageChanged () {
-    api.binance.futuresLeverage(SYMBOL, this.value)
+    leverage = this.value
+    api.binance.futuresLeverage(SYMBOL, leverage)
         .catch(err => OUT(err))
+    updateMarginCost('buy')
+    updateMarginCost('sell')
 }
 
 function onMarketOrderToggled () {
@@ -49,6 +66,49 @@ function onMarketOrderToggled () {
         buyBtn.html('BUY')
         sellBtn.html('SELL')
     }
+}
+
+function onInputPrice (side) {
+    price = parseNumber()
+    updateMarginCost(side)
+    updateDollarValue(side)
+}
+
+function onInputQty (side) {
+    qty = parseNumber()
+    var draft = chart.draftLinesData[0]
+
+    // Update qty on order draft line
+    if (draft && side == draft.side) {
+        chart.draftLinesData[0].qty = Number(qty)
+        chart.draw()
+    }
+    updateMarginCost(side)
+    updateDollarValue(side)
+}
+
+function updateDollarValue(side){
+    if (!qty)
+        qty = d3.select('#trading .' + side +  ' .qty').property('value')
+    if (!price)
+        price = d3.select('#trading .' + side +  ' .price').property('value')
+    var dollarValue = qty * price
+
+    d3.select('#trading .' + side +  ' .dollar-qty .val')
+        .text(dollarValue.toFixed(2) + ' $')
+}
+
+function updateMarginCost (side) {
+    if (!leverage)
+        leverage = leverageInput.property('value')
+    if (!price)
+        price = d3.select('#trading .' + side +  ' .price').property('value')
+    if (!qty)
+        qty = d3.select('#trading .' + side +  ' .qty').property('value')
+    var margin = qty * price / leverage
+
+    d3.select('#trading .' + side +  ' .margin .val')
+        .text(margin.toFixed(2) + ' ₮')
 }
 
 function onBuy () {
@@ -85,47 +145,6 @@ function onSell () {
     }
 }
 
-function onChangePrice (side) {
-    var price = parseNumber()
-    updateMarginCost({price: price}, side)
-    updateDollarValue(side)
-}
-
-function onChangeQty (side) {
-    var qty = parseNumber()
-    var draft = chart.draftLinesData[0]
-
-    // Update qty on order draft line
-    if (draft && side == draft.side) {
-        chart.draftLinesData[0].qty = Number(qty)
-        chart.draw()
-    }
-
-    updateMarginCost({qty: event.target.value}, side)
-    updateDollarValue(side)
-}
-
-function updateDollarValue(side){
-    var qty = d3.select('#trading .' + side +  ' .qty').property('value')
-    var dollarValue = d3.select('#trading .' + side +  ' .price').property('value')
-    var quantityDollarValue = qty * dollarValue
-
-    d3.select('#trading .' + side +  ' .dollar-qty .val')
-        .text(quantityDollarValue.toFixed(2) + ' $')
-}
-
-function updateMarginCost ({price, qty, leverage}, side) {
-    if (!price)
-        price = d3.select('#trading .' + side +  ' .price').property('value')
-    if (!qty)
-        qty = d3.select('#trading .' + side +  ' .qty').property('value')
-    var leverage = 25
-    var margin = qty * price / leverage
-
-    d3.select('#trading .' + side +  ' .margin .val')
-        .text(margin.toFixed(2) + ' ₮')
-}
-
 function parseNumber () {
     var string = event.target.value
 
@@ -143,5 +162,5 @@ function increment () {
     var qty = parseFloat(this.value)
     qty = (qty + 0.05 * Math.sign(-event.deltaY)).toFixed(3)
     this.value = Math.max(0, qty)
-    onChangeQty(this.parentNode.className)
+    onInputQty(this.parentNode.className)
 }
