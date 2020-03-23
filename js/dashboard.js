@@ -1,7 +1,7 @@
 'use strict'
 
 require ('./js/globals')
-const settings = require('./settings')
+const settings = require('./user/settings')
 
 const api = require('./js/api-futures')
 const chart = require('./js/dashboard/chart')
