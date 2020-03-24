@@ -23,7 +23,7 @@ function getPnl () {
 }
 
 var timer
-var incomeHistory
+var incomeHistory = []
 
 async function getDailyPnl() {
     var currentBalance = +api.account.totalWalletBalance
@@ -37,21 +37,13 @@ async function getDailyPnl() {
             startTime: new Date().setHours(4),
             endTime: Date.now()
         })
-        if (response)
+        if (Array.isArray(response))
             incomeHistory = response
     }
 
-    if (!incomeHistory)
-        return { pnl: 0, percent: 0 }
-
-    try {
-        var pnlArray = incomeHistory.filter(
-            x => x.incomeType == 'REALIZED_PNL' && x.symbol == SYMBOL
-        )
-    }
-    catch (err) {
-        OUT(incomeHistory, err)
-    }
+    var pnlArray = incomeHistory.filter(
+        x => x.incomeType == 'REALIZED_PNL' && x.symbol == SYMBOL
+    )
 
     var totalPnl = 0
     for (let x of pnlArray)
