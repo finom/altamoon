@@ -57,7 +57,7 @@ function onLeverageChanged () {
 function onMarketOrderToggled () {
     var tradingDiv = d3.select('#trading')
 
-    if (event.target.checked) {
+    if (this.checked) {
         tradingDiv.classed('market', true)
         buyBtn.html('MARKET BUY')
         sellBtn.html('MARKET SELL')
@@ -95,7 +95,7 @@ function updateDollarValue(side){
     var dollarValue = qty * price
 
     d3.select('#trading .' + side +  ' .dollar-qty .val')
-        .text(dollarValue.toFixed(2) + ' $')
+        .text(dollarValue.toFixed(2) + ' ₮')
 }
 
 function updateMarginCost (side) {

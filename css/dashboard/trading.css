@@ -63,44 +63,8 @@
     background-color: #f72424;
 }
 
-#trading .margin {
-    font-size: .7em;
-    margin-left: 9px;
-}
+#trading .margin,
 #trading .dollar-qty {
-    font-size: .9em;
-    line-height: 11px;
-    border-radius: 8px;
-    padding: 9px 1px 9px 6px;
-    text-shadow: 1px 1px 2px #00000090;
-}
-
-#trading .buy .dollar-qty {
-    background-color: #14bf70;
-}
-#trading .sell .dollar-qty {
-    background-color: #914cec;
-}
-#trading .dollar-qty .val{
-    font-size: .9em;
-    margin-left: 2px;
-    box-shadow: 1px 1px 3px #ffffff10, inset 2px 3px 4px #0c0c0c3d;
-    /* line-height: 11px; */
-    border-radius: 5px;
-    padding: 5px 6px 5px 6px;
-    background-color: #11a25e;
-    display: block;
-    float: right;
-    margin-top: -4px;
-    min-height: 9px;
-    min-width: 70px;
-    margin-right: 4px;
-    overflow: hidden;
-    max-width: 120px;
-}
-#trading .buy .dollar-qty .val{
-    background-color: #11a25e;
-}
-#trading .sell .dollar-qty .val{
-    background-color: #8e46ec;
+    font-size: .8em;
+    margin-left: 9px;
 }

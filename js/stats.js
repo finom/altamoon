@@ -44,9 +44,14 @@ async function getDailyPnl() {
     if (!incomeHistory)
         return { pnl: 0, percent: 0 }
 
-    var pnlArray = incomeHistory.filter(
-        x => x.incomeType == 'REALIZED_PNL' && x.symbol == SYMBOL
-    )
+    try {
+        var pnlArray = incomeHistory.filter(
+            x => x.incomeType == 'REALIZED_PNL' && x.symbol == SYMBOL
+        )
+    }
+    catch (err) {
+        OUT(incomeHistory, err)
+    }
 
     var totalPnl = 0
     for (let x of pnlArray)
