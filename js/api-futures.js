@@ -169,7 +169,11 @@ function streamUserData () {
     function openStream (key) {
         stream = new WebSocket('wss://fstream.binance.com/ws/' + key.listenKey)
 
-        stream.onopen = getOpenOrders()
+        // Get what happened before the stream opened
+        stream.onopen = () => {
+            getOpenOrders()
+            getPosition()
+        }
 
         stream.onmessage = (e) => {
             var data = JSON.parse(e.data)
