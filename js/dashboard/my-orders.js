@@ -7,23 +7,26 @@ api.onOrderUpdate.push(updateOrders)
 api.onPriceUpdate.push(updatePnl)
 
 function updatePnl () {
-    updatePositions(api.positions)
+    var openPositions = api.positions.filter(x => x.qty != 0)
+    if (openPositions.length)
+        updatePositions(openPositions)
 }
 
 function updatePositions (positions) {
-    var format = d3.format(',.2~f')
-    var formatPercent = d3.format(',.1~%')
+    var format = d3.format(',.2f')
+    var formatPercent = d3.format(',.1%')
 
-    positions = positions.filter(x => x.qty != 0)
+    var openPositions = positions.filter(x => x.qty != 0)
 
     var rows = d3.select('#positions tbody').selectAll('tr')
-        .data(positions, d => d.symbol)
+        .data(openPositions, d => d.symbol)
         .join(
             enter => enter.append('tr').call(row => {
                 row.attr('class', d => d.side)
 
                 var pnl = format(getPnl().pnl)
                 var pnlPercent = formatPercent(getPnl().percent)
+
                 var td = () => row.append('td')
                 td().text(d => d.symbol.slice(0,3))
                 td().text(d => d.qty)
@@ -55,13 +58,8 @@ function updatePositions (positions) {
                 .classed('disabled', true)
                 .transition()
                     .style('background-color', '#222222')
-                .transition()
-                    .delay(1000)
-                    .duration(1000)
-                    .style('opacity', 0.01)
                 .remove()
         )
-
 }
 
 function updateOrders (orders) {
