@@ -24,10 +24,11 @@
     Order type
 */
 #order-type {
-    background: #2b2b2b;
-    border-radius: 13px 13px 13px 13px;
-    margin: 0;
+    background: #424242;
+    border-radius: 16px;
+    box-shadow: inset 2px 2px 16px #0000003b;
     margin-bottom: 14px;
+    padding: 2px 0px;
 }
 #order-type input {
     height: 0;
@@ -47,7 +48,7 @@
 }
 #order-type :checked + label {
     background: #c3c3c3;
-    border-radius: 13px 13px 13px 13px;
+    border-radius: 13px;
     color: black;
     cursor: default;
     font-weight: bold;
