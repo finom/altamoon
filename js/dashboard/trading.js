@@ -2,14 +2,15 @@
 const api = require('../api-futures')
 const chart = require('./chart')
 
-module.exports = { onMarketOrderToggled, onBuy, onSell, parseNumber }
+module.exports = { onBuy, onSell, parseNumber }
 
 api.onPositionUpdate.push(updateLeverage)
 
 var leverageInput = d3.select('[name="leverageInput"]')
-var marketCheckbox = d3.select('#market-order')
+var orderTypes = d3.selectAll('#order-type input[name="order-type"]')
+var orderType = () => d3.select('#order-type input[name="order-type"]:checked')
 var buyPrice = d3.select('#buy-price')
-var sellprice = d3.select('#sell-price')
+var sellPrice = d3.select('#sell-price')
 var buyQty = d3.select('#buy-qty')
 var sellQty = d3.select('#sell-qty')
 var buyBtn = d3.select('.buy .btn')
@@ -17,9 +18,9 @@ var sellBtn = d3.select('.sell .btn')
 
 leverageInput.on('input', onInputLeverage)
 leverageInput.on('change', onLeverageChanged)
-marketCheckbox.on('change', onMarketOrderToggled)
+orderTypes.on('change', onOrderTypeChanged)
 buyPrice.on('input', () => onInputPrice('buy'))
-sellprice.on('input', () => onInputPrice('sell'))
+sellPrice.on('input', () => onInputPrice('sell'))
 buyQty.on('input', () => onInputQty('buy'))
     .on('wheel', () => increment('buy'))
 sellQty.on('input', () => onInputQty('sell'))
@@ -30,6 +31,22 @@ sellBtn.on('click', onSell)
 var leverage
 var price
 var qty
+
+function onOrderTypeChanged () {
+    var type = orderType().property('value')
+    var tradingDiv = d3.select('#trading')
+
+    if (type == 'limit') {
+        tradingDiv.classed('market', false)
+        buyBtn.html('BUY')
+        sellBtn.html('SELL')
+    }
+    else if (type == 'market') {
+        tradingDiv.classed('market', true)
+        buyBtn.html('MARKET BUY')
+        sellBtn.html('MARKET SELL')
+    }
+}
 
 function updateLeverage (d) {
     var position = d.filter(x => x.symbol == SYMBOL)[0]
@@ -52,20 +69,6 @@ function onLeverageChanged () {
         .catch(err => OUT(err))
     updateMarginCost('buy')
     updateMarginCost('sell')
-}
-
-function onMarketOrderToggled () {
-    var tradingDiv = d3.select('#trading')
-
-    if (this.checked) {
-        tradingDiv.classed('market', true)
-        buyBtn.html('MARKET BUY')
-        sellBtn.html('MARKET SELL')
-    } else {
-        tradingDiv.classed('market', false)
-        buyBtn.html('BUY')
-        sellBtn.html('SELL')
-    }
 }
 
 function onInputPrice (side) {
@@ -118,11 +121,11 @@ function updateMarginCost (side) {
 function onBuy () {
     var price = parseFloat(buyPrice.property('value'))
     var qty = parseFloat(buyQty.property('value'))
-    var market = marketCheckbox.property('checked')
+    var type = orderType().property('value')
 
     if (qty <= 0) return
 
-    if (market) {
+    if (type == 'market') {
         api.binance.futuresMarketBuy(SYMBOL, qty)
             .catch(error => console.error(error))
     }
@@ -135,11 +138,11 @@ function onBuy () {
 function onSell () {
     var price = parseFloat(sellPrice.property('value'))
     var qty = parseFloat(sellQty.property('value'))
-    var market = marketCheckbox.property('checked')
+    var type = orderType().property('value')
 
     if (qty <= 0) return
 
-    if (market) {
+    if (type == 'market') {
         api.binance.futuresMarketSell(SYMBOL, qty)
             .catch(error => console.error(error))
     }

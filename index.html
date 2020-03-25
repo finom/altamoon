@@ -20,11 +20,12 @@
 
       <div id="trading"><header>Trading</header>
         <main>
-          <div>
-            <label>Market order
-              <input id="market-order" type="checkbox">
-            </label>
-          </div>
+          <form id="order-type">
+            <input id="limit-order" type="radio" name="order-type" value="limit" checked>
+            <label for="limit-order">Limit</label>
+            <input id="market-order" type="radio" name="order-type" value="market">
+            <label for="market-order">Market</label>
+          </form>
 
           <div class="leverage">
             <form>
