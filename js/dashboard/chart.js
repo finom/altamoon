@@ -345,7 +345,7 @@ function placeOrderDraft (price) {
             ? api.lastPrice
             : candles[candles.length - 1].close
     var side = (price <= lastPrice) ? 'buy' : 'sell'
-    var qty = d3.select('.' + side + ' .qty').property('value')
+    var qty = d3.select('#' + side + '-qty').property('value')
 
     var data = { value: price, qty: Number(qty), side: side }
     draftLinesData = [data]
@@ -373,13 +373,13 @@ function onDragDraft (d) {
     var lastPrice = (api.lastPrice)
             ? api.lastPrice
             : candles[candles.length - 1].close
-    var qty = d3.select('.' + d.side + ' .qty').property('value')
+    var qty = d3.select('#' + d.side + '-qty').property('value')
 
     draftLinesData[0].value = price
     draftLinesData[0].qty = Number(qty)
 
     // Update price input
-    var input = d3.select('.' + d.side + ' .price')
+    var input = d3.select('#' + d.side + '-price')
     input.property('value', price)
 
     new Event('input')

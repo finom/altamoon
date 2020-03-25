@@ -8,10 +8,10 @@ api.onPositionUpdate.push(updateLeverage)
 
 var leverageInput = d3.select('[name="leverageInput"]')
 var marketCheckbox = d3.select('#market-order')
-var buyPrice = d3.select('.buy .price')
-var sellprice = d3.select('.sell .price')
-var buyQty = d3.select('.buy .qty')
-var sellQty = d3.select('.sell .qty')
+var buyPrice = d3.select('#buy-price')
+var sellprice = d3.select('#sell-price')
+var buyQty = d3.select('#buy-qty')
+var sellQty = d3.select('#sell-qty')
 var buyBtn = d3.select('.buy .btn')
 var sellBtn = d3.select('.sell .btn')
 
@@ -21,9 +21,9 @@ marketCheckbox.on('change', onMarketOrderToggled)
 buyPrice.on('input', () => onInputPrice('buy'))
 sellprice.on('input', () => onInputPrice('sell'))
 buyQty.on('input', () => onInputQty('buy'))
-    .on('wheel', increment)
+    .on('wheel', () => increment('buy'))
 sellQty.on('input', () => onInputQty('sell'))
-    .on('wheel', increment)
+    .on('wheel', () => increment('sell'))
 buyBtn.on('click', onBuy)
 sellBtn.on('click', onSell)
 
@@ -88,31 +88,35 @@ function onInputQty (side) {
 }
 
 function updateDollarValue(side){
-    if (!qty)
-        qty = d3.select('#trading .' + side +  ' .qty').property('value')
     if (!price)
-        price = d3.select('#trading .' + side +  ' .price').property('value')
+        price = d3.select('#' + side +  '-price').property('value')
+    if (!qty)
+        qty = d3.select('#' + side +  '-qty').property('value')
+
     var dollarValue = qty * price
+    dollarValue = d3.format(',d')(dollarValue)
 
     d3.select('#trading .' + side +  ' .dollar-qty .val')
-        .text(dollarValue.toFixed(2) + ' ₮')
+        .text('± ' + dollarValue + ' ₮')
 }
 
 function updateMarginCost (side) {
     if (!leverage)
         leverage = leverageInput.property('value')
     if (!price)
-        price = d3.select('#trading .' + side +  ' .price').property('value')
+        price = d3.select('#' + side +  '-price').property('value')
     if (!qty)
-        qty = d3.select('#trading .' + side +  ' .qty').property('value')
+        qty = d3.select('#' + side +  '-qty').property('value')
+
     var margin = qty * price / leverage
+    margin = d3.format(',.2f')(margin)
 
     d3.select('#trading .' + side +  ' .margin .val')
-        .text(margin.toFixed(2) + ' ₮')
+        .text('± ' + margin + ' ₮')
 }
 
 function onBuy () {
-    var price = parseFloat(d3.select('.buy .price').property('value'))
+    var price = parseFloat(buyPrice.property('value'))
     var qty = parseFloat(buyQty.property('value'))
     var market = marketCheckbox.property('checked')
 
@@ -129,7 +133,7 @@ function onBuy () {
 }
 
 function onSell () {
-    var price = parseFloat(d3.select('.sell .price').property('value'))
+    var price = parseFloat(sellPrice.property('value'))
     var qty = parseFloat(sellQty.property('value'))
     var market = marketCheckbox.property('checked')
 
@@ -158,9 +162,9 @@ function parseNumber () {
     return event.target.value = string
 }
 
-function increment () {
-    var qty = parseFloat(this.value)
+function increment (side) {
+    var qty = parseFloat(event.target.value)
     qty = (qty + 0.05 * Math.sign(-event.deltaY)).toFixed(3)
-    this.value = Math.max(0, qty)
-    onInputQty(this.parentNode.className)
+    event.target.value = Math.max(0, qty)
+    onInputQty(side)
 }

@@ -20,37 +20,54 @@
 
       <div id="trading"><header>Trading</header>
         <main>
-          <div><form>
-              <label>Leverage: </label>
-              <input name="leverageInput" type="range" min="0" max="125" step="5"
-                oninput="leverageOutput.value = leverageInput.value"
-              />
-              <output name="leverageOutput" for="leverageInput"></output>
-
-              </form>
+          <div>
+            <label>Market order
+              <input id="market-order" type="checkbox">
+            </label>
           </div>
 
-          <div>
-            <input id="market-order" type="checkbox"></input>
-            <label for="market-order">Market order</label>
+          <div class="leverage">
+            <form>
+              <label>Leverage </label>
+              <input name="leverageInput" type="range" min="0" max="125" step="5"
+                oninput="leverageOutput.value = leverageInput.value">
+              <output name="leverageOutput" for="leverageInput">
+
+            </form>
           </div>
 
           <div class="trading-grid">
             <div class="buy">
-              <input class="price" type="text" step="1"></input>
-              <input class="qty" type="text" step="0.001" value="0.001"></input>
-              <div class="dollar-qty">Value: <span class='val'></span></div>
-              <div class="margin">Margin: <span class='val'></span></div>
+              <div class="input price">
+                <label for="buy-price">Price</label>
+                <input id="buy-price" type="text" step="1">
+              </div>
+              <div class="input qty">
+                <label for="buy-qty">Qty</label>
+                <input id="buy-qty" type="text" value="0.001">
+                <div class="dollar-qty"><span class='val'></span></div>
+              </div>
+              <div class="margin">
+                <label>Margin: </label><span class='val'></span>
+              </div>
               <button class="btn">BUY</button>
             </div>
 
             <div></div>
 
             <div class="sell">
-              <input class="price" type="text" step="1"></input>
-              <input class="qty" type="text" step="0.001" value="0.001"></input>
-              <div class="dollar-qty">Value: <span class='val'></span></div>
-              <div class="margin">Margin: <span class='val'></span></div>
+              <div class="input price">
+                <label for="sell-price">Price</label>
+                <input id="sell-price" type="text" step="1">
+              </div>
+              <div class="input qty">
+                <label for="sell-qty">Qty</label>
+                <input id="sell-qty" type="text" value="0.001">
+                <div class="dollar-qty"><span class='val'></span></div>
+              </div>
+              <div class="margin">
+                <label>Margin: </label><span class='val'></span>
+              </div>
               <button class="btn">SELL</button>
             </div>
           </div>

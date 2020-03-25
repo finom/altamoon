@@ -5,16 +5,50 @@
     grid-gap: 5px;
 }
 
-.trading-grid input {
-    box-sizing: border-box;
-    display: block;
-    width: 100%;
-    min-width: 130px;
+#trading label {
+    color: #ffffff96;
+    margin-right: 4px;
 }
-.trading-grid button {
-    /* border: none; */
-    /* border-left: none; */
-    /* border-top: none; */
+
+#trading input {
+    flex-grow: 1;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#trading .input label {
+    color: #ffffff6e;
+}
+
+#trading .leverage {
+    margin-bottom: 10px;
+}
+#trading .leverage input  {
+    width: 65%;
+    cursor: pointer;
+}
+
+#trading .buy input {
+    color: #71e8a2;
+}
+#trading .sell input {
+    color: #bca0ff;
+}
+
+#trading .dollar-qty {
+    font-size: .8em;
+    color: #ffffff6e;
+}
+
+#trading .margin {
+    font-size: .8em;
+    margin-left: 9px;
+}
+#trading .margin .val {
+    font-weight: bold;
+}
+
+#trading button {
     border: 2px solid #333;
     border-left: 2px solid #404040;
     border-top: 2px solid #404040;
@@ -41,12 +75,7 @@
 }
 #trading .sell .btn {
     background-color: #914cec;
-    /* background-color: #ff3879; */
-    /* box-shadow: 3px 3px 3px #00000050,
-                inset 3px 3px 2px #ffffff2e,
-                inset -2px -2px 2px #0c0c0c5c; */
     color: white;
-    /* text-shadow: 1px 2px 3px #480524; */
 }
 
 #trading.market .buy .price,
@@ -61,10 +90,4 @@
 }
 #trading.market .sell .btn {
     background-color: #f72424;
-}
-
-#trading .margin,
-#trading .dollar-qty {
-    font-size: .8em;
-    margin-left: 9px;
 }

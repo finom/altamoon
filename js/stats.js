@@ -33,10 +33,15 @@ async function getDailyPnl() {
         timer = Date.now()
         // Get all balance modifying events since 4am
         var response = await api.binance.futuresIncome({
-            symbol: SYMBOL,
-            startTime: new Date().setHours(4),
-            endTime: Date.now()
-        })
+                symbol: SYMBOL,
+                startTime: new Date().setHours(4),
+                endTime: Date.now()
+            })
+            .catch(err => {
+                if (err.code == 'ETIMEDOUT')
+                    console.warn('Warning: futuresIncome() request timed out')
+            })
+
         if (Array.isArray(response))
             incomeHistory = response
     }

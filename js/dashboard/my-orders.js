@@ -56,8 +56,11 @@ function updatePositions (positions) {
             }),
             exit => exit
                 .classed('disabled', true)
+                .style('background-color', '#222222')
                 .transition()
-                    .style('background-color', '#222222')
+                    .delay(800)
+                    .duration(200)
+                    .style('opacity', 0.01)
                 .remove()
         )
 }
