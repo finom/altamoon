@@ -60,6 +60,7 @@
 */
 #trading .leverage {
     margin-bottom: 10px;
+    margin-left: 10px;
 }
 #trading .leverage input  {
     width: 65%;
