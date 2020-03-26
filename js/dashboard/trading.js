@@ -115,7 +115,7 @@ function updateMarginCost (side) {
     margin = d3.format(',.2f')(margin)
 
     d3.select('#trading .' + side +  ' .margin .val')
-        .text('± ' + margin + ' ₮')
+        .text(margin + ' ₮')
 }
 
 function onBuy () {
