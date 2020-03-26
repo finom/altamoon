@@ -36,6 +36,7 @@ input[type=range] {
     -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
     background: transparent;
     vertical-align: middle;
+    outline: none;
 }
 input[type=range]::-webkit-slider-runnable-track {
     -webkit-appearance: none;
@@ -99,10 +100,10 @@ button {
     background-color: #080e29;
     border-radius: 5px 5px 0px 0px;
     box-shadow: 0px 2px 4px #00000042;
-    color: #2a4eb5;
+    color: #2a67b5;
     padding: 10px;
     position: relative; /* for box-shadow over sibling divs */
-    /* text-align: center; */
+    text-align: center;
 }
 
 #main-grid > div > main {
