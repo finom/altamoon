@@ -20,20 +20,23 @@
 
       <div id="trading"><header>Trading</header>
         <main>
-          <form id="order-type">
-            <input id="limit-order" type="radio" name="order-type" value="limit" checked>
-            <label for="limit-order">Limit</label>
-            <input id="market-order" type="radio" name="order-type" value="market">
-            <label for="market-order">Market</label>
-          </form>
+          <div>
+            <form id="order-type">
+              <input id="limit-order" type="radio" name="order-type" value="limit" checked>
+              <label for="limit-order">Limit</label>
+              <input id="market-order" type="radio" name="order-type" value="market">
+              <label for="market-order">Market</label>
+            </form>
+            <input id="reduce-only" type="checkbox">
+            <label for="reduce-only">Reduce-only</label>
+          </div>
 
-          <div class="leverage">
-            <form>
+          <div>
+            <form class="leverage">
               <label>Leverage </label>
               <input name="leverageInput" type="range" min="0" max="125" step="5"
                 oninput="leverageOutput.value = leverageInput.value">
               <output name="leverageOutput" for="leverageInput">
-
             </form>
           </div>
 

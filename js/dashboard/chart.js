@@ -1,6 +1,7 @@
 'use strict'
 const techan = require('techan')
 const api = require('../api-futures')
+const trading = require('./trading')
 
 module.exports = {
     draw,
@@ -9,7 +10,7 @@ module.exports = {
 
 var margin = { top: 0, right: 55, bottom: 30, left: 55 }
 var width = 960 - margin.left - margin.right
-var height = 600 - margin.top - margin.bottom
+var height = 700 - margin.top - margin.bottom
 
 var x = d3.scaleTime().range([0, width])
 var y = d3.scaleLinear().range([height, 0])
@@ -339,6 +340,7 @@ function lineLabel (selection, data, type) {
     return selection
 }
 
+// --- EVENT HANDLERS --- //
 function placeOrderDraft (price) {
     price = +(price.toFixed(2))
     var lastPrice = (api.lastPrice)
@@ -356,18 +358,15 @@ function placeOrderDraft (price) {
 
 function draftToOrder (d, i) {
     draftLinesData.splice(i, 1)
-
-    var price = +(d.value.toFixed(2))
-    var order = (d.side == 'buy')
-        ? api.binance.futuresBuy
-        : api.binance.futuresSell
-
-    order(SYMBOL, d.qty, price, {'timeInForce': 'GTX'})
-        .catch(error => console.error(error))
     draw()
+
+    var order = (d.side == 'buy')
+        ? trading.onBuy
+        : trading.onSell
+
+    order('limit')
 }
 
-// --- EVENT HANDLERS --- //
 function onDragDraft (d) {
     var price = +(d.value.toFixed(2))
     var lastPrice = (api.lastPrice)

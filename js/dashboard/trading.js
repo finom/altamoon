@@ -28,6 +28,7 @@ sellQty.on('input', () => onInputQty('sell'))
 buyBtn.on('click', onBuy)
 sellBtn.on('click', onSell)
 
+var reduceOnly = () => d3.select('#reduce-only').property('checked')
 var leverage
 var price
 var qty
@@ -48,6 +49,7 @@ function onOrderTypeChanged () {
     }
 }
 
+// --- LEVERAGE --- //
 function updateLeverage (d) {
     var position = d.filter(x => x.symbol == SYMBOL)[0]
     leverage = position.leverage
@@ -71,12 +73,14 @@ function onLeverageChanged () {
     updateMarginCost('sell')
 }
 
+// --- PRICE --- //
 function onInputPrice (side) {
     price = parseNumber()
     updateMarginCost(side)
     updateDollarValue(side)
 }
 
+// --- QUANTITY --- //
 function onInputQty (side) {
     qty = parseNumber()
     var draft = chart.draftLinesData[0]
@@ -103,6 +107,7 @@ function updateDollarValue(side){
         .text('± ' + dollarValue + ' ₮')
 }
 
+// --- MARGIN COST --- //
 function updateMarginCost (side) {
     if (!leverage)
         leverage = leverageInput.property('value')
@@ -118,40 +123,53 @@ function updateMarginCost (side) {
         .text(margin + ' ₮')
 }
 
-function onBuy () {
+// --- BUY --- //
+function onBuy (type) {
     var price = parseFloat(buyPrice.property('value'))
     var qty = parseFloat(buyQty.property('value'))
-    var type = orderType().property('value')
+    var type = (type) ? type : orderType().property('value')
 
     if (qty <= 0) return
 
     if (type == 'market') {
-        api.binance.futuresMarketBuy(SYMBOL, qty)
+        api.binance.futuresMarketBuy(SYMBOL, qty, {
+                'reduceOnly': reduceOnly().toString()
+            })
             .catch(error => console.error(error))
     }
     else if (price > 0) {
-        api.binance.futuresBuy(SYMBOL, qty, price, {'timeInForce': 'GTX'})
+        api.binance.futuresBuy(SYMBOL, qty, price, {
+                'timeInForce': 'GTX',
+                'reduceOnly': reduceOnly().toString()
+            })
             .catch(error => console.error(error))
     }
 }
 
-function onSell () {
+// --- SELL --- //
+function onSell (type) {
     var price = parseFloat(sellPrice.property('value'))
     var qty = parseFloat(sellQty.property('value'))
-    var type = orderType().property('value')
+    var type = (type) ? type : orderType().property('value')
 
     if (qty <= 0) return
 
     if (type == 'market') {
-        api.binance.futuresMarketSell(SYMBOL, qty)
+        api.binance.futuresMarketSell(SYMBOL, qty, {
+                'reduceOnly': reduceOnly().toString()
+            })
             .catch(error => console.error(error))
     }
     else if (price > 0) {
-        api.binance.futuresSell(SYMBOL, qty, price, {'timeInForce': 'GTX'})
+        api.binance.futuresSell(SYMBOL, qty, price, {
+                'timeInForce': 'GTX',
+                'reduceOnly': reduceOnly().toString()
+            })
             .catch(error => console.error(error))
     }
 }
 
+// --- GENERIC FUNCTIONS --- //
 function parseNumber () {
     var string = event.target.value
 
