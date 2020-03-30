@@ -1,5 +1,4 @@
 'use strict'
-const api = require('../api-futures')
 exports.updateBook = updateBook
 
 api.onBookUpdate.push(assembleBook)

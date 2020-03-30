@@ -1,6 +1,4 @@
 'use strict'
-const api = require('../api-futures')
-const chart = require('./chart')
 
 module.exports = { onBuy, onSell, parseNumber }
 
@@ -87,7 +85,7 @@ function onInputQty (side) {
 
     // Update qty on order draft line
     if (draft && side == draft.side) {
-        chart.draftLinesData[0].qty = Number(qty)
+        draft.qty = Number(qty)
         chart.draw()
     }
     updateMarginCost(side)

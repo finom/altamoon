@@ -26,9 +26,9 @@ d3.selectAll('.num-input').on('input', trading.parseNumber)
 
 // Inject custom CSS
 for (let url of settings.customCss) {
-    var link = document.createElement("link")
+    var link = document.createElement('link')
     link.href = url
-    link.type = "text/css"
-    link.rel = "stylesheet"
-    document.getElementsByTagName("head")[0].appendChild(link)
+    link.type = 'text/css'
+    link.rel = 'stylesheet'
+    document.getElementsByTagName('head')[0].appendChild(link)
 }
