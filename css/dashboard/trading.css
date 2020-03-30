@@ -27,10 +27,9 @@
     background: #424242;
     border-radius: 16px;
     box-shadow: inset 2px 2px 16px #0000003b;
-    display: inline-block;
     margin-bottom: 14px;
     padding: 2px 0px;
-    width: 125px;
+    /* width: 125px; */
 }
 #order-type input {
     height: 0;

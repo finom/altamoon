@@ -35,8 +35,8 @@
             <form class="leverage">
               <label>Leverage </label>
               <input name="leverageInput" type="range" min="0" max="125" step="5"
-                oninput="leverageOutput.value = leverageInput.value">
-              <output name="leverageOutput" for="leverageInput">
+                oninput="leverageOutput.value = leverageInput.value" />
+              <output name="leverageOutput" for="leverageInput" />
             </form>
           </div>
 
@@ -44,11 +44,11 @@
             <div class="buy">
               <div class="input price">
                 <label for="buy-price">Price</label>
-                <input id="buy-price" type="text" step="1">
+                <input id="buy-price" type="text" step="1" />
               </div>
               <div class="input qty">
                 <label for="buy-qty">Qty</label>
-                <input id="buy-qty" type="text" value="0.001">
+                <input id="buy-qty" type="text" value="0.001" />
                 <div class="dollar-qty"><span class='val'></span></div>
               </div>
               <div class="margin">
@@ -62,11 +62,11 @@
             <div class="sell">
               <div class="input price">
                 <label for="sell-price">Price</label>
-                <input id="sell-price" type="text" step="1">
+                <input id="sell-price" type="text" step="1" />
               </div>
               <div class="input qty">
                 <label for="sell-qty">Qty</label>
-                <input id="sell-qty" type="text" value="0.001">
+                <input id="sell-qty" type="text" value="0.001" />
                 <div class="dollar-qty"><span class='val'></span></div>
               </div>
               <div class="margin">
