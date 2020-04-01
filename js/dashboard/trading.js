@@ -125,7 +125,7 @@ function updateMarginCost (side) {
 function onBuy (type) {
     var price = parseFloat(buyPrice.property('value'))
     var qty = parseFloat(buyQty.property('value'))
-    var type = (type) ? type : orderType().property('value')
+    type = (type) ? type : orderType().property('value')
 
     if (qty <= 0) return
 
@@ -148,7 +148,7 @@ function onBuy (type) {
 function onSell (type) {
     var price = parseFloat(sellPrice.property('value'))
     var qty = parseFloat(sellQty.property('value'))
-    var type = (type) ? type : orderType().property('value')
+    type = (type) ? type : orderType().property('value')
 
     if (qty <= 0) return
 

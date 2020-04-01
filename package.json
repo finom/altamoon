@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "d3": "^5.15.0",
+    "electron-store": "^5.1.1",
     "node-binance-api": "^0.10.4",
     "techan": "^0.8.0"
   }

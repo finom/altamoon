@@ -1,5 +1,6 @@
 const { app, BrowserWindow } = require('electron')
 const { session } = require('electron')
+const { config } = require('./js/config')
 
 // Quit if not first instance
 if (!app.requestSingleInstanceLock()) app.quit()
@@ -11,24 +12,31 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
 app.allowRendererProcessReuse = true
 
 function createWindow () {
-    var window = new BrowserWindow({
-            width: 2400,
-            height: 1070,
+    var mainWindow = new BrowserWindow({
+            width: config.get('window.width'),
+            height: config.get('window.height'),
             webPreferences: { nodeIntegration: true }
     })
 
-    window.loadFile('index.html')
+    mainWindow.loadFile('index.html')
 
     // DevTools
-    window.webContents.openDevTools()
+    mainWindow.webContents.openDevTools()
 
     // Focus existing instance instead if second instance started
     app.on('second-instance', (event, argv, cwd) => {
-      if (window) {
-        if (window.isMinimized()) window.restore()
-        window.focus()
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore()
+        mainWindow.focus()
       }
     })
+
+    // On window resize
+    mainWindow.on('resize', () => {
+        let { width, height } = mainWindow.getBounds()
+        config.set({'window.width': width, 'window.height': height })
+    })
+
 }
 
 app.on('ready', () => {
