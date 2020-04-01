@@ -28,11 +28,11 @@ async function updateWallet (data) {
 
     data = [
         'Balance: ', format(data.totalWalletBalance),
-        'Balance + PNL: ', format(unrealizedBalance),
-        'PNL: ', format(pnl.pnl) + ' (' + pnlPercent + ')',
+        'Equity: ', format(unrealizedBalance),
+        'Unrealized PNL: ', format(pnl.pnl) + ' (' + pnlPercent + ')',
+        'Daily PNL: ', format(dailyPnl.pnl) + ' (' + dailyPnlPercent + ')',
         'Position margin: ', format(data.totalPositionInitialMargin),
-        'Order margin: ', format(data.totalOpenOrderInitialMargin),
-        'Daily PNL: ', format(dailyPnl.pnl) + ' (' + dailyPnlPercent + ')'
+        'Order margin: ', format(data.totalOpenOrderInitialMargin)
     ]
 
     d3.select('#balances').selectAll('#balances > div')
