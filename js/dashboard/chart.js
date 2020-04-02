@@ -1,5 +1,7 @@
 'use strict'
 const techan = require('techan')
+const api = require('../api-futures')
+const trading = require('./trading')
 
 module.exports = {
     draw,

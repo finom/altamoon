@@ -1,4 +1,5 @@
 'use strict'
+const api = require('../api-futures')
 const { getPnl } = require('../stats')
 
 api.onPositionUpdate.push(updatePositions)

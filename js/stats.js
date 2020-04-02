@@ -1,4 +1,5 @@
 'use strict'
+const api = require('./api-futures')
 
 module.exports = { getPnl, getDailyPnl }
 

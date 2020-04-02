@@ -1,4 +1,5 @@
 'use strict'
+const api = require('../api-futures')
 const stats = require('../stats')
 
 api.onBalancesUpdate.push(updateWallet)
