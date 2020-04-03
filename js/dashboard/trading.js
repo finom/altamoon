@@ -1,6 +1,5 @@
 'use strict'
 const api = require('../api-futures')
-const chart = require('./chart')
 
 module.exports = { onBuy, onSell, parseNumber }
 
