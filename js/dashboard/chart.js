@@ -75,7 +75,9 @@ var plot = techan.plot.candlestick()
         .xScale(x)
         .yScale(y)
 
-// --- PREPARE SVG CONTAINERS --- //
+// -----------------------------------------------------------------------------
+//   PREPARE SVG CONTAINERS
+// -----------------------------------------------------------------------------
 var svg = d3.select('#chart').append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
@@ -128,7 +130,9 @@ var gOrderLabels = svg.append('g').attr('class', 'order-labels')
 var gDraftLabels = svg.append('g').attr('class', 'draft-labels')
         .attr('clip-path', 'url(#clip)')
 
-// --- LOAD DATA --- //
+// -----------------------------------------------------------------------------
+//   LOAD DATA
+// -----------------------------------------------------------------------------
 var candles
 var priceLineData = []
 var positionLineData = []
@@ -161,7 +165,9 @@ d3.json(lastCandlesURL)
     })
     .catch(e => console.error(e))
 
-// --- INIT DRAW --- //
+// -----------------------------------------------------------------------------
+//   INIT DRAW
+// -----------------------------------------------------------------------------
 function initDraw() {
     draw()
     // Right padding
@@ -178,7 +184,9 @@ function initDraw() {
     streamLastCandle()
 }
 
-// --- RENDER CHART --- //
+// -----------------------------------------------------------------------------
+//   RENDER CHART
+// -----------------------------------------------------------------------------
 function draw() {
     var data = candles.slice(-350, candles.length)
     var accessor = plot.accessor()
@@ -224,7 +232,9 @@ function draw() {
         .attr('data-side', d => d.side)
 }
 
-// --- DATA UPDATE CALLBACKS --- //
+// -----------------------------------------------------------------------------
+//   DATA UPDATE CALLBACKS
+// -----------------------------------------------------------------------------
 function updatePrice (price) {
     priceLineData = [{value: price}]
     gPriceLine.datum(priceLineData).call(lines)
@@ -257,7 +267,9 @@ function updateBidAsk (data) {
     gBidASkLines.datum(bidAskLinesData).call(lines)
 }
 
-// --- STREAM CANDLES (WEBSOCKET) --- //
+// -----------------------------------------------------------------------------
+//   STREAM CANDLES (WEBSOCKET)
+// -----------------------------------------------------------------------------
 function streamLastCandle () {
     var stream = new WebSocket(api.wsURL + '@kline_1m')
 
@@ -289,7 +301,9 @@ function streamLastCandle () {
     }
 }
 
-// --- CHART ITEM GENERATORS --- //
+// -----------------------------------------------------------------------------
+//   CHART ITEM GENERATORS
+// -----------------------------------------------------------------------------
 function lineLabel (selection, data, type) {
     selection.selectAll('g')
         .data(data)
@@ -340,7 +354,9 @@ function lineLabel (selection, data, type) {
     return selection
 }
 
-// --- EVENT HANDLERS --- //
+// -----------------------------------------------------------------------------
+//   EVENT HANDLERS
+// -----------------------------------------------------------------------------
 function placeOrderDraft (price) {
     price = +(price.toFixed(2))
     var lastPrice = (api.lastPrice)

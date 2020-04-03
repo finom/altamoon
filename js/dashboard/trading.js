@@ -48,7 +48,9 @@ function onOrderTypeChanged () {
     }
 }
 
-// --- LEVERAGE --- //
+// -----------------------------------------------------------------------------
+//   LEVERAGE
+// -----------------------------------------------------------------------------
 function updateLeverage (d) {
     var position = d.filter(x => x.symbol == SYMBOL)[0]
     leverage = position.leverage
@@ -72,14 +74,18 @@ function onLeverageChanged () {
     updateMarginCost('sell')
 }
 
-// --- PRICE --- //
+// -----------------------------------------------------------------------------
+//   PRICE
+// -----------------------------------------------------------------------------
 function onInputPrice (side) {
     price = parseNumber()
     updateMarginCost(side)
     updateDollarValue(side)
 }
 
-// --- QUANTITY --- //
+// -----------------------------------------------------------------------------
+//   QUANTITY
+// -----------------------------------------------------------------------------
 function onInputQty (side) {
     qty = parseNumber()
     var draft = chart.draftLinesData[0]
@@ -106,7 +112,9 @@ function updateDollarValue(side){
         .text('± ' + dollarValue + ' ₮')
 }
 
-// --- MARGIN COST --- //
+// -----------------------------------------------------------------------------
+//   MARGIN COST
+// -----------------------------------------------------------------------------
 function updateMarginCost (side) {
     if (!leverage)
         leverage = leverageInput.property('value')
@@ -122,7 +130,9 @@ function updateMarginCost (side) {
         .text(margin + ' ₮')
 }
 
-// --- BUY --- //
+// -----------------------------------------------------------------------------
+//   BUY
+// -----------------------------------------------------------------------------
 function onBuy (type) {
     var price = parseFloat(buyPrice.property('value'))
     var qty = parseFloat(buyQty.property('value'))
@@ -145,7 +155,9 @@ function onBuy (type) {
     }
 }
 
-// --- SELL --- //
+// -----------------------------------------------------------------------------
+//   SELL
+// -----------------------------------------------------------------------------
 function onSell (type) {
     var price = parseFloat(sellPrice.property('value'))
     var qty = parseFloat(sellQty.property('value'))
@@ -168,7 +180,9 @@ function onSell (type) {
     }
 }
 
-// --- GENERIC FUNCTIONS --- //
+// -----------------------------------------------------------------------------
+//   GENERIC FUNCTIONS
+// -----------------------------------------------------------------------------
 function parseNumber () {
     var string = event.target.value
 

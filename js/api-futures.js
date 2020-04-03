@@ -52,7 +52,9 @@ var lastPrice
 var bidAsk
 var book
 
-// --- GET --- //
+// -----------------------------------------------------------------------------
+//   GET
+// -----------------------------------------------------------------------------
 function getAccount() {
     binance.futuresAccount()
         .then(response => {
@@ -109,7 +111,9 @@ function getPosition () {
         .catch(err => console.error(err))
 }
 
-// --- PUT --- //
+// -----------------------------------------------------------------------------
+//   PUT
+// -----------------------------------------------------------------------------
 function cancelOrder (id) {
     binance.futuresCancel(SYMBOL, {orderId: id})
         // .then(r => console.log(r))
@@ -127,7 +131,9 @@ function closePosition () {
             .catch(error => console.error(error))
 }
 
-// --- STREAM (WEBSOCKET) --- //
+// -----------------------------------------------------------------------------
+//   STREAM (WEBSOCKET)
+// -----------------------------------------------------------------------------
 function streamBook () {
     var stream = new WebSocket(wsURL + '@depth@0ms')
 
@@ -255,33 +261,4 @@ function streamUserData () {
         for (let func of onOrderUpdate) func(openOrders)
     }
 }
-// --- //
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
+// -----------------------------------------------------------------------------
