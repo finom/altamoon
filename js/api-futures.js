@@ -83,6 +83,7 @@ function getOpenOrders () {
                     stopPrice: o.stopPrice,
                     symbol: o.symbol,
                     time: o.time,
+                    timeInForce: o.timeInForce,
                     type: o.type,
                     updateTime: o.updateTime
             } })
@@ -239,6 +240,7 @@ function streamUserData () {
             stopPrice: o.sp,
             symbol: o.s,
             time: o.T,
+            timeInForce: o.f,
             type: o.o,
             updateTime: data.E
         }

@@ -422,7 +422,10 @@ function onDragOrderEnd (d) {
         ? api.binance.futuresBuy
         : api.binance.futuresSell
 
-    order(d.symbol, d.qty, d.value.toFixed(2), {'timeInForce': 'GTX'})
+    order(d.symbol, d.qty, d.value.toFixed(2), {
+            'reduceOnly': d.reduceOnly,
+            'timeInForce': d.timeInForce
+        })
         .catch(error => console.error(error))
 }
 

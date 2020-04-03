@@ -1,10 +1,10 @@
 'use strict'
 const api = require('../api-futures')
+const { config } = require('../config')
 
 module.exports = { onBuy, onSell, parseNumber }
 
-api.onPositionUpdate.push(updateLeverage)
-
+// HTML nodes
 var leverageInput = d3.select('[name="leverageInput"]')
 var orderTypes = d3.selectAll('#order-type input[name="order-type"]')
 var orderType = () => d3.select('#order-type input[name="order-type"]:checked')
@@ -15,6 +15,7 @@ var sellQty = d3.select('#sell-qty')
 var buyBtn = d3.select('.buy .btn')
 var sellBtn = d3.select('.sell .btn')
 
+// Set events
 leverageInput.on('input', onInputLeverage)
 leverageInput.on('change', onLeverageChanged)
 orderTypes.on('change', onOrderTypeChanged)
@@ -27,11 +28,13 @@ sellQty.on('input', () => onInputQty('sell'))
 buyBtn.on('click', onBuy)
 sellBtn.on('click', onSell)
 
-var reduceOnly = () => d3.select('#reduce-only').property('checked')
 var leverage
 var price
 var qty
 
+// -----------------------------------------------------------------------------
+//   ORDER TYPE
+// -----------------------------------------------------------------------------
 function onOrderTypeChanged () {
     var type = orderType().property('value')
     var tradingDiv = d3.select('#trading')
@@ -51,6 +54,8 @@ function onOrderTypeChanged () {
 // -----------------------------------------------------------------------------
 //   LEVERAGE
 // -----------------------------------------------------------------------------
+api.onPositionUpdate.push(updateLeverage)
+
 function updateLeverage (d) {
     var position = d.filter(x => x.symbol == SYMBOL)[0]
     leverage = position.leverage
@@ -73,6 +78,19 @@ function onLeverageChanged () {
     updateMarginCost('buy')
     updateMarginCost('sell')
 }
+
+// -----------------------------------------------------------------------------
+//   OPTIONS
+// -----------------------------------------------------------------------------
+var reduceOnly = () => d3.select('#reduce-only').property('checked')
+var makerOnly = () => d3.select('#maker-only').property('checked')
+
+// Get maker-only from config
+d3.select('#maker-only').property('checked', config.get('order.makerOnly'))
+// Save maker-only on change
+d3.select('#maker-only').on('change', function () {
+        config.set({'order.makerOnly': this.checked})
+})
 
 // -----------------------------------------------------------------------------
 //   PRICE
@@ -148,7 +166,7 @@ function onBuy (type) {
     }
     else if (price > 0) {
         api.binance.futuresBuy(SYMBOL, qty, price, {
-                'timeInForce': 'GTX',
+                'timeInForce': (makerOnly()) ? 'GTX' : 'GTC',
                 'reduceOnly': reduceOnly().toString()
             })
             .catch(error => console.error(error))
@@ -173,7 +191,7 @@ function onSell (type) {
     }
     else if (price > 0) {
         api.binance.futuresSell(SYMBOL, qty, price, {
-                'timeInForce': 'GTX',
+                'timeInForce': (makerOnly()) ? 'GTX' : 'GTC',
                 'reduceOnly': reduceOnly().toString()
             })
             .catch(error => console.error(error))

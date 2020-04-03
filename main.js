@@ -34,7 +34,7 @@ function createWindow () {
     // On window resize
     mainWindow.on('resize', () => {
         let { width, height } = mainWindow.getBounds()
-        config.set({'window.width': width, 'window.height': height })
+        config.set({ 'window.width': width, 'window.height': height })
     })
 
 }

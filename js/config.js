@@ -18,6 +18,16 @@ const schema = {
             }
         },
         default: {} // See https://github.com/sindresorhus/electron-store/issues/102
+    },
+    order: {
+        type: 'object',
+        properties: {
+            makerOnly: {
+                type: 'boolean',
+                default: true
+            }
+        },
+        default: {}
     }
 }
 

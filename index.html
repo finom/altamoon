@@ -27,8 +27,6 @@
               <input id="market-order" type="radio" name="order-type" value="market">
               <label for="market-order">Market</label>
             </form>
-            <input id="reduce-only" type="checkbox">
-            <label for="reduce-only">Reduce-only</label>
           </div>
 
           <div>
@@ -38,6 +36,13 @@
                 oninput="leverageOutput.value = leverageInput.value" />
               <output name="leverageOutput" for="leverageInput" />
             </form>
+          </div>
+
+          <div id="order-options">
+            <input id="reduce-only" type="checkbox" />
+            <label for="reduce-only">Reduce-only</label>
+            <input id="maker-only" type="checkbox" checked />
+            <label for="maker-only">Maker-only</label>
           </div>
 
           <div class="trading-grid">
