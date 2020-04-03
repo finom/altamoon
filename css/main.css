@@ -105,6 +105,7 @@ button {
     padding: 10px;
     position: relative; /* for box-shadow over sibling divs */
     text-align: center;
+    text-shadow: 0 0 5px #2a3bb5;
 }
 
 #main-grid > div > main {
