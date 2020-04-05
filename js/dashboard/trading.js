@@ -2,7 +2,7 @@
 const api = require('../api-futures')
 const { config } = require('../config')
 
-module.exports = { onBuy, onSell, parseNumber }
+module.exports = { onBuy, onSell, parseNumber, getMarginCost }
 
 // HTML nodes
 var leverageInput = d3.select('[name="leverageInput"]')
@@ -133,7 +133,7 @@ function updateDollarValue(side){
 // -----------------------------------------------------------------------------
 //   MARGIN COST
 // -----------------------------------------------------------------------------
-function updateMarginCost (side) {
+function getMarginCost (side) {
     if (!leverage)
         leverage = leverageInput.property('value')
     if (!price)
@@ -141,7 +141,11 @@ function updateMarginCost (side) {
     if (!qty)
         qty = d3.select('#' + side +  '-qty').property('value')
 
-    var margin = qty * price / leverage
+    return qty * price / leverage
+}
+
+function updateMarginCost (side) {
+    var margin = getMarginCost(side)
     margin = d3.format(',.2f')(margin)
 
     d3.select('#trading .' + side +  ' .margin .val')
@@ -216,7 +220,7 @@ function parseNumber () {
 
 function increment (side) {
     var qty = parseFloat(event.target.value)
-    qty = (qty + 0.05 * Math.sign(-event.deltaY)).toFixed(3)
+    qty = (qty + 0.5 * Math.sign(-event.deltaY)).toFixed(3)
     event.target.value = Math.max(0, qty)
     onInputQty(side)
 }

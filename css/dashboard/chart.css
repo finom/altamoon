@@ -105,15 +105,17 @@ path.candle.down {
     fill: #fff;
 }
 /*
-    Liquidation line
+    Liquidation lines
 */
 .liquidation-line .supstance path {
     stroke: #ff0026;
-    stroke-dasharray: 10 6;
 }
 .liquidation-line .axisannotation path,
 .liquidation-line .axisannotation text {
     visibility: hidden;
+}
+.liquidation-line [data-type='draft'] .supstance path {
+    stroke-dasharray: 10 6;
 }
 /*
     Order lines

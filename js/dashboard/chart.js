@@ -2,6 +2,7 @@
 const techan = require('techan')
 const api = require('../api-futures')
 const trading = require('./trading')
+const { getLiquidation } = require('../stats')
 
 module.exports = {
     draw,
@@ -244,8 +245,8 @@ function updatePosition (positions) {
     var position = positions.filter(x => x.symbol == SYMBOL)[0]
 
     if (position.qty && position.liquidation)
-        liquidationLineData = [{value: position.liquidation}]
-    else liquidationLineData = []
+        liquidationLineData[0] = {value: position.liquidation}
+    else liquidationLineData[0] = undefined
 
     positionLineData = (position.qty) ? [position] : []
     draw()
@@ -372,17 +373,6 @@ function placeOrderDraft (price) {
     draw()
 }
 
-function draftToOrder (d, i) {
-    draftLinesData.splice(i, 1)
-    draw()
-
-    var order = (d.side == 'buy')
-        ? trading.onBuy
-        : trading.onSell
-
-    order('limit')
-}
-
 function onDragDraft (d) {
     var price = +(d.value.toFixed(2))
     var lastPrice = (api.lastPrice)
@@ -400,8 +390,29 @@ function onDragDraft (d) {
     new Event('input')
     input.dispatch('input', { 'bubbles': true, 'cancelable': true })
 
-    // Redraw label
+    // Liquidation line
+    var direction = (d.side == 'buy') ? 1 : -1
+    var liqui = getLiquidation(trading.getMarginCost(d.side), direction, price, qty)
+    liquidationLineData[1] = {value: liqui, type: 'draft'}
+
+    // Redraw
     gDraftLabels.call(lineLabel, draftLinesData, 'draft')
+    gLiquidationLine.datum(liquidationLineData).call(lines)
+    // Set style on liquidation lines
+    gLiquidationLine.selectAll('.liquidation-line > g')
+        .attr('data-type', d => d.type)
+}
+
+function draftToOrder (d, i) {
+    draftLinesData.splice(i, 1)
+    liquidationLineData.splice(1, 1)
+    draw()
+
+    var order = (d.side == 'buy')
+        ? trading.onBuy
+        : trading.onSell
+
+    order('limit')
 }
 
 function onDragOrder (d) {
