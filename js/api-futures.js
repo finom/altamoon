@@ -16,11 +16,8 @@ module.exports = {
 
     get account () { return account },
     get positions () { return positions },
-    get openOrders () { return openOrders },
     get lastPrice () { return lastPrice },
     get lastTrade () { return lastTrade },
-    get bidAsk () { return bidAsk },
-    get book () { return book },
 
     getOpenOrders, cancelOrder,
     getPosition, closePosition,
@@ -34,8 +31,6 @@ var positions = []
 var openOrders = []
 var lastTrade = {}
 var lastPrice
-var bidAsk
-var book
 
 // -----------------------------------------------------------------------------
 //   GET
@@ -124,7 +119,7 @@ function streamBook () {
     var stream = new WebSocket(wsURL + '@depth@0ms')
 
     stream.onmessage = (e) => {
-        book = JSON.parse(e.data)
+        var book = JSON.parse(e.data)
         events.emit('bookUpdate', book)
     }
 }
@@ -133,7 +128,7 @@ function streamBidAsk () {
     var stream = new WebSocket(wsURL + '@bookTicker')
 
     stream.onmessage = (e) => {
-        bidAsk = JSON.parse(e.data)
+        var bidAsk = JSON.parse(e.data)
         events.emit('bidAskUpdate', bidAsk)
     }
 }

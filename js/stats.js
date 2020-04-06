@@ -63,18 +63,19 @@ async function getDailyPnl() {
 }
 
 function getLiquidation (balance, direction, entryPrice, qty) {
-    // https://binance.zendesk.com/hc/en-us/articles/360037941092-How-to-Calculate-Liquidation-Price
-
-    // var balance         // = Margin in isolated mode
-    // var direction       // 1 (buy) or -1 (sell)
-    // var entryPrice
-    // var qty             // in BTC (or other coin)
+    /* https://binance.zendesk.com/hc/en-us/articles/360037941092-How-to-Calculate-Liquidation-Price
+    
+        @balance         // = Margin in isolated mode
+        @direction       // 1 (buy) or -1 (sell)
+        @entryPrice      // Average entry price
+        @qty             // in BTC (or other coin)
+     */
     var maintenance
 
     var position = direction * qty * entryPrice
 
     var maintenanceTable = [
-        // Max position ($k), Maintenance rate, Maintenance amount ($)
+        // Position max ($k), Maintenance rate, Maintenance amount ($)
         [50, 0.004, 0],
         [250, 0.005, 50],
         [1000, 0.01, 1300],
