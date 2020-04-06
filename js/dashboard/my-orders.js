@@ -2,9 +2,9 @@
 const api = require('../api-futures')
 const { getPnl } = require('../stats')
 
-api.onPositionUpdate.push(updatePositions)
-api.onOrderUpdate.push(updateOrders)
-api.onPriceUpdate.push(updatePnl)
+api.events.on('positionUpdate', updatePositions)
+api.events.on('orderUpdate', updateOrders)
+api.events.on('priceUpdate', updatePnl)
 
 function updatePnl () {
     var openPositions = api.positions.filter(x => x.qty != 0)

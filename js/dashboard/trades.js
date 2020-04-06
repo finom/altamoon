@@ -1,7 +1,7 @@
 'use strict'
 const api = require('../api-futures')
 
-api.onTradeUpdate.push(updateTrades)
+api.events.on('newTrade', updateTrades)
 
 var data = []
 var table = d3.select('#trades').append('div')

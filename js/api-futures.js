@@ -1,4 +1,6 @@
 'use strict'
+const { EventEmitter } = require('events')
+
 const settings = require('../user/settings')
 const Binance = require('node-binance-api')
 const binance = new Binance().options({
@@ -6,17 +8,11 @@ const binance = new Binance().options({
     APISECRET: settings.apiSecret
 })
 
-module.exports = {
-    binance,
-    get wsURL () { return wsURL },
+const events = new EventEmitter()
+const wsURL = 'wss://fstream.binance.com/ws/' + SYMBOL.toLowerCase()
 
-    get onOrderUpdate () { return onOrderUpdate },
-    get onPositionUpdate () { return onPositionUpdate },
-    get onBalancesUpdate () { return onBalancesUpdate },
-    get onPriceUpdate () { return onPriceUpdate },
-    get onTradeUpdate () { return onTradeUpdate },
-    get onBidAskUpdate () { return onBidAskUpdate },
-    get onBookUpdate () { return onBookUpdate },
+module.exports = {
+    binance, events, wsURL,
 
     get account () { return account },
     get positions () { return positions },
@@ -33,17 +29,6 @@ module.exports = {
     streamLastTrade, streamUserData, streamBidAsk, streamBook
 }
 
-const wsURL = 'wss://fstream.binance.com/ws/' + SYMBOL.toLowerCase()
-
-// Callbacks
-var onOrderUpdate = []
-var onPositionUpdate = []
-var onBalancesUpdate = []
-var onPriceUpdate = []
-var onBidAskUpdate = []
-var onTradeUpdate = []
-var onBookUpdate = []
-
 var account = {}
 var positions = []
 var openOrders = []
@@ -59,7 +44,7 @@ function getAccount() {
     binance.futuresAccount()
         .then(response => {
             account = response
-            for (let func of onBalancesUpdate) func(account)
+            events.emit('balancesUpdate', account)
         })
         .catch(err => {
             if (err.code == 'ETIMEDOUT')
@@ -87,7 +72,7 @@ function getOpenOrders () {
                     type: o.type,
                     updateTime: o.updateTime
             } })
-            for (let func of onOrderUpdate) func(openOrders)
+            events.emit('orderUpdate', openOrders)
         })
         .catch(err => console.error(err))
 }
@@ -107,7 +92,7 @@ function getPosition () {
                 side: (p.positionAmt >= 0) ? 'long' : 'short',
                 symbol: p.symbol
             }
-            for (let func of onPositionUpdate) func(positions)
+            events.emit('positionUpdate', positions)
         })
         .catch(err => console.error(err))
 }
@@ -140,7 +125,7 @@ function streamBook () {
 
     stream.onmessage = (e) => {
         book = JSON.parse(e.data)
-        for (let func of onBookUpdate) func(book)
+        events.emit('bookUpdate', book)
     }
 }
 
@@ -149,7 +134,7 @@ function streamBidAsk () {
 
     stream.onmessage = (e) => {
         bidAsk = JSON.parse(e.data)
-        for (let func of onBidAskUpdate) func(bidAsk)
+        events.emit('bidAskUpdate', bidAsk)
     }
 }
 
@@ -160,8 +145,8 @@ function streamLastTrade () {
     stream.onmessage = (e) => {
         lastTrade = JSON.parse(e.data)
         lastPrice = lastTrade.p
-        for (let func of onPriceUpdate) func(lastPrice)
-        for (let func of onTradeUpdate) func(lastTrade)
+        events.emit('priceUpdate', lastPrice)
+        events.emit('newTrade', lastTrade)
     }
 }
 
@@ -222,7 +207,7 @@ function streamUserData () {
         })
         getPosition() // REST update for missing data
 
-        for (let func of onPositionUpdate) func(positions)
+        events.emit('positionUpdate', positions)
     }
 
     function orderUpdate(data) {
@@ -260,7 +245,7 @@ function streamUserData () {
                     new Audio('./audio/plop.mp3').play()
             }
         }
-        for (let func of onOrderUpdate) func(openOrders)
+        events.emit('orderUpdate', openOrders)
     }
 }
 // -----------------------------------------------------------------------------

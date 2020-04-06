@@ -177,10 +177,10 @@ function initDraw() {
     api.getPosition()
     api.getOpenOrders()
 
-    api.onPriceUpdate.push(updatePrice)
-    api.onPositionUpdate.push(updatePosition)
-    api.onOrderUpdate.push(updateOpenOrders)
-    api.onBidAskUpdate.push(updateBidAsk)
+    api.events.on('priceUpdate', updatePrice)
+    api.events.on('positionUpdate', updatePosition)
+    api.events.on('orderUpdate', updateOpenOrders)
+    api.events.on('bidAskUpdate', updateBidAsk)
 
     streamLastCandle()
 }

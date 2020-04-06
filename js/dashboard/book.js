@@ -2,7 +2,7 @@
 const api = require('../api-futures')
 exports.updateBook = updateBook
 
-api.onBookUpdate.push(assembleBook)
+api.events.on('bookUpdate', assembleBook)
 
 var book
 

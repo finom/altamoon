@@ -54,7 +54,7 @@ function onOrderTypeChanged () {
 // -----------------------------------------------------------------------------
 //   LEVERAGE
 // -----------------------------------------------------------------------------
-api.onPositionUpdate.push(updateLeverage)
+api.events.on('positionUpdate', updateLeverage)
 
 function updateLeverage (d) {
     var position = d.filter(x => x.symbol == SYMBOL)[0]
