@@ -1,6 +1,6 @@
 'use strict'
 const api = require('../api-futures')
-const stats = require('../stats')
+const stats = require('../data/stats')
 
 api.events.on('balancesUpdate', updateWallet)
 api.events.on('priceUpdate', updateWallet)

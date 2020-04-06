@@ -1,8 +1,16 @@
-module.exports = { getLiquidation }
+const { EventEmitter } = require('events')
+const api = require('../api-futures')
+const trading = require('../dashboard/trading')
 
-function getLiquidation (balance, direction, entryPrice, qty) {
+var event = new EventEmitter()
+
+module.exports = { updateLiquidation }
+
+api.events.on('orderUpdate', updateLiquidation)
+
+function updateLiquidation (balance, direction, entryPrice, qty) {
     /* https://binance.zendesk.com/hc/en-us/articles/360037941092-How-to-Calculate-Liquidation-Price
-    
+
         @balance         // = Margin in isolated mode
         @direction       // 1 (buy) or -1 (sell)
         @entryPrice      // Average entry price
@@ -28,8 +36,8 @@ function getLiquidation (balance, direction, entryPrice, qty) {
         if (qty * entryPrice < x[0] * 1000) {
             maintenance = { rate: x[1], amount: x[2] }
             break
-        }    
+        }
 
-    return (balance + maintenance.amount - position) 
+    return (balance + maintenance.amount - position)
             / (qty * (maintenance.rate - direction))
 }

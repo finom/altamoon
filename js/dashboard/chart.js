@@ -2,7 +2,7 @@
 const techan = require('techan')
 const api = require('../api-futures')
 const trading = require('./trading')
-const { getLiquidation } = require('../liquidation')
+const { updateLiquidation } = require('../data/liquidation')
 
 module.exports = {
     draw,
@@ -392,7 +392,7 @@ function onDragDraft (d) {
 
     // Liquidation line
     var direction = (d.side == 'buy') ? 1 : -1
-    var liqui = getLiquidation(trading.getMarginCost(d.side), direction, price, qty)
+    var liqui = updateLiquidation(trading.getMarginCost(d.side), direction, price, qty)
     liquidationLineData[1] = {value: liqui, type: 'draft'}
 
     // Redraw
