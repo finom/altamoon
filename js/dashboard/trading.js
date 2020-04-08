@@ -2,16 +2,19 @@
 const api = require('../api-futures')
 const { config } = require('../config')
 
-module.exports = { onBuy, onSell, parseNumber, getMarginCost }
+module.exports = { onBuy, onSell, getMarginCost }
 
 // HTML nodes
 var leverageInput = d3.select('[name="leverageInput"]')
+var leverageOutput = d3.select('[name="leverageOutput"]')
 var orderTypes = d3.selectAll('#order-type input[name="order-type"]')
 var orderType = () => d3.select('#order-type input[name="order-type"]:checked')
 var buyPrice = d3.select('#buy-price')
 var sellPrice = d3.select('#sell-price')
 var buyQty = d3.select('#buy-qty')
 var sellQty = d3.select('#sell-qty')
+var buyDollarValue = d3.select('#trading .buy .dollar-qty .val')
+var sellDollarValue = d3.select('#trading .sell .dollar-qty .val')
 var buyBtn = d3.select('.buy .btn')
 var sellBtn = d3.select('.sell .btn')
 
@@ -28,9 +31,10 @@ sellQty.on('input', () => onInputQty('sell'))
 buyBtn.on('click', onBuy)
 sellBtn.on('click', onSell)
 
+events.on('chart.draftOrderMoved', onPriceUpdate)
+
 var leverage
-var price
-var qty
+var qty = { 'buy': undefined, 'sell': undefined }
 
 // -----------------------------------------------------------------------------
 //   ORDER TYPE
@@ -54,27 +58,30 @@ function onOrderTypeChanged () {
 // -----------------------------------------------------------------------------
 //   LEVERAGE
 // -----------------------------------------------------------------------------
-api.events.on('positionUpdate', updateLeverage)
+events.on('api.positionUpdate', updateLeverage)
 
 function updateLeverage (d) {
     var position = d.filter(x => x.symbol == SYMBOL)[0]
     leverage = position.leverage
     leverageInput.property('value', leverage)
-    d3.select('[name="leverageOutput"]').property('value', leverage)
+    leverageOutput.property('value', leverage)
     updateMarginCost('buy')
     updateMarginCost('sell')
 }
 
 function onInputLeverage () {
     leverage = this.value
+    events.emit('trading.leverageUpdate', this.value)
     updateMarginCost('buy')
     updateMarginCost('sell')
 }
 
 function onLeverageChanged () {
     leverage = this.value
+
     api.binance.futuresLeverage(SYMBOL, leverage)
         .catch(err => OUT(err))
+
     updateMarginCost('buy')
     updateMarginCost('sell')
 }
@@ -96,56 +103,63 @@ d3.select('#maker-only').on('change', function () {
 //   PRICE
 // -----------------------------------------------------------------------------
 function onInputPrice (side) {
-    price = parseNumber()
-    updateMarginCost(side)
-    updateDollarValue(side)
+    var price = parseNumber()
+    updateMarginCost(side, price)
+    updateDollarValue(side, price)
+}
+
+function onPriceUpdate (side, price) {
+    var input = eval(side + 'Price')
+    input.property('value', price)
+    updateMarginCost(side, price)
+    updateDollarValue(side, price)
 }
 
 // -----------------------------------------------------------------------------
 //   QUANTITY
 // -----------------------------------------------------------------------------
 function onInputQty (side) {
-    qty = parseNumber()
+    qty[side] = parseNumber()
     var draft = chart.draftLinesData[0]
 
     // Update qty on order draft line
     if (draft && side == draft.side) {
-        draft.qty = Number(qty)
+        draft.qty = Number(qty[side])
         chart.draw()
     }
     updateMarginCost(side)
     updateDollarValue(side)
 }
 
-function updateDollarValue(side){
+function updateDollarValue(side, price){
     if (!price)
-        price = d3.select('#' + side +  '-price').property('value')
-    if (!qty)
-        qty = d3.select('#' + side +  '-qty').property('value')
+        price = eval(side + 'Price').property('value')
+    if (!qty[side])
+        qty[side] = eval(side + 'Qty').property('value')
 
-    var dollarValue = qty * price
+    var dollarValue = qty[side] * price
     dollarValue = d3.format(',d')(dollarValue)
 
-    d3.select('#trading .' + side +  ' .dollar-qty .val')
+    eval(side + 'DollarValue')
         .text('± ' + dollarValue + ' ₮')
 }
 
 // -----------------------------------------------------------------------------
 //   MARGIN COST
 // -----------------------------------------------------------------------------
-function getMarginCost (side) {
+function getMarginCost (side, price) {
     if (!leverage)
         leverage = leverageInput.property('value')
     if (!price)
-        price = d3.select('#' + side +  '-price').property('value')
-    if (!qty)
-        qty = d3.select('#' + side +  '-qty').property('value')
+        price = eval(side + 'Price').property('value')
+    if (!qty[side])
+        qty[side] = eval(side + 'Qty').property('value')
 
-    return qty * price / leverage
+    return qty[side] * price / leverage
 }
 
-function updateMarginCost (side) {
-    var margin = getMarginCost(side)
+function updateMarginCost (side, price) {
+    var margin = getMarginCost(side, price)
     margin = d3.format(',.2f')(margin)
 
     d3.select('#trading .' + side +  ' .margin .val')

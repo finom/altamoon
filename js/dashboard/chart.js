@@ -2,7 +2,6 @@
 const techan = require('techan')
 const api = require('../api-futures')
 const trading = require('./trading')
-const { updateLiquidation } = require('../data/liquidation')
 
 module.exports = {
     draw,
@@ -134,7 +133,7 @@ var gDraftLabels = svg.append('g').attr('class', 'draft-labels')
 // -----------------------------------------------------------------------------
 //   LOAD DATA
 // -----------------------------------------------------------------------------
-var candles
+var candles = []
 var priceLineData = []
 var positionLineData = []
 var bidAskLinesData = []
@@ -164,7 +163,7 @@ d3.json(lastCandlesURL)
         // Draw with initial data
         initDraw()
     })
-    .catch(e => console.error(e))
+    .catch(e => console.error(e)) // fixme: load something on error
 
 // -----------------------------------------------------------------------------
 //   INIT DRAW
@@ -177,10 +176,11 @@ function initDraw() {
     api.getPosition()
     api.getOpenOrders()
 
-    api.events.on('priceUpdate', updatePrice)
-    api.events.on('positionUpdate', updatePosition)
-    api.events.on('orderUpdate', updateOpenOrders)
-    api.events.on('bidAskUpdate', updateBidAsk)
+    events.on('api.priceUpdate', updatePrice)
+    events.on('api.positionUpdate', updatePosition)
+    events.on('api.orderUpdate', updateOpenOrders)
+    events.on('api.bidAskUpdate', updateBidAsk)
+    events.on('liquidation.update', onLiquidationUpdate)
 
     streamLastCandle()
 }
@@ -383,24 +383,11 @@ function onDragDraft (d) {
     draftLinesData[0].value = price
     draftLinesData[0].qty = Number(qty)
 
-    // Update price input
-    var input = d3.select('#' + d.side + '-price')
-    input.property('value', price)
-
-    new Event('input')
-    input.dispatch('input', { 'bubbles': true, 'cancelable': true })
-
-    // Liquidation line
-    var direction = (d.side == 'buy') ? 1 : -1
-    var liqui = updateLiquidation(trading.getMarginCost(d.side), direction, price, qty)
-    liquidationLineData[1] = {value: liqui, type: 'draft'}
+    // Update liquidation
+    events.emit('chart.draftOrderMoved', d.side, price, qty)
 
     // Redraw
     gDraftLabels.call(lineLabel, draftLinesData, 'draft')
-    gLiquidationLine.datum(liquidationLineData).call(lines)
-    // Set style on liquidation lines
-    gLiquidationLine.selectAll('.liquidation-line > g')
-        .attr('data-type', d => d.type)
 }
 
 function draftToOrder (d, i) {
@@ -438,6 +425,16 @@ function onDragOrderEnd (d) {
             'timeInForce': d.timeInForce
         })
         .catch(error => console.error(error))
+}
+
+function onLiquidationUpdate (price) {
+    liquidationLineData[1] = {value: price, type: 'draft'}
+
+    //Redraw
+    gLiquidationLine.datum(liquidationLineData).call(lines)
+    // Set style on liquidation lines
+    gLiquidationLine.selectAll('.liquidation-line > g')
+        .attr('data-type', d => d.type)
 }
 
 function onZoom(direction = 'x') {

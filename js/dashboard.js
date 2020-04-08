@@ -1,5 +1,4 @@
 'use strict'
-
 require ('./js/globals')
 const settings = require('./user/settings')
 
@@ -10,6 +9,7 @@ const myOrders = require('./js/dashboard/my-orders')
 const wallet = require('./js/dashboard/wallet')
 const book = require('./js/dashboard/book')
 const trades = require('./js/dashboard/trades')
+const liquidation = require('./js/data/liquidation')
 
 // Get initial data
 api.getPosition()

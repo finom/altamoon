@@ -2,8 +2,8 @@
 const api = require('../api-futures')
 const stats = require('../data/stats')
 
-api.events.on('balancesUpdate', updateWallet)
-api.events.on('priceUpdate', updateWallet)
+events.on('api.balancesUpdate', updateWallet)
+events.on('api.priceUpdate', updateWallet)
 setInterval(api.getAccount, 2000)
 
 var accountData

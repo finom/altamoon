@@ -1,6 +1,4 @@
 'use strict'
-const { EventEmitter } = require('events')
-
 const settings = require('../user/settings')
 const Binance = require('node-binance-api')
 const binance = new Binance().options({
@@ -8,11 +6,10 @@ const binance = new Binance().options({
     APISECRET: settings.apiSecret
 })
 
-const events = new EventEmitter()
 const wsURL = 'wss://fstream.binance.com/ws/' + SYMBOL.toLowerCase()
 
 module.exports = {
-    binance, events, wsURL,
+    binance, wsURL,
 
     get account () { return account },
     get positions () { return positions },
@@ -39,7 +36,7 @@ function getAccount() {
     binance.futuresAccount()
         .then(response => {
             account = response
-            events.emit('balancesUpdate', account)
+            events.emit('api.balancesUpdate', account)
         })
         .catch(err => {
             if (err.code == 'ETIMEDOUT')
@@ -67,7 +64,7 @@ function getOpenOrders () {
                     type: o.type,
                     updateTime: o.updateTime
             } })
-            events.emit('orderUpdate', openOrders)
+            events.emit('api.orderUpdate', openOrders)
         })
         .catch(err => console.error(err))
 }
@@ -87,7 +84,7 @@ function getPosition () {
                 side: (p.positionAmt >= 0) ? 'long' : 'short',
                 symbol: p.symbol
             }
-            events.emit('positionUpdate', positions)
+            events.emit('api.positionUpdate', positions)
         })
         .catch(err => console.error(err))
 }
@@ -120,7 +117,7 @@ function streamBook () {
 
     stream.onmessage = (e) => {
         var book = JSON.parse(e.data)
-        events.emit('bookUpdate', book)
+        events.emit('api.bookUpdate', book)
     }
 }
 
@@ -129,7 +126,7 @@ function streamBidAsk () {
 
     stream.onmessage = (e) => {
         var bidAsk = JSON.parse(e.data)
-        events.emit('bidAskUpdate', bidAsk)
+        events.emit('api.bidAskUpdate', bidAsk)
     }
 }
 
@@ -140,8 +137,8 @@ function streamLastTrade () {
     stream.onmessage = (e) => {
         lastTrade = JSON.parse(e.data)
         lastPrice = lastTrade.p
-        events.emit('priceUpdate', lastPrice)
-        events.emit('newTrade', lastTrade)
+        events.emit('api.priceUpdate', lastPrice)
+        events.emit('api.newTrade', lastTrade)
     }
 }
 
@@ -202,7 +199,7 @@ function streamUserData () {
         })
         getPosition() // REST update for missing data
 
-        events.emit('positionUpdate', positions)
+        events.emit('api.positionUpdate', positions)
     }
 
     function orderUpdate(data) {
@@ -240,7 +237,7 @@ function streamUserData () {
                     new Audio('./audio/plop.mp3').play()
             }
         }
-        events.emit('orderUpdate', openOrders)
+        events.emit('api.orderUpdate', openOrders)
     }
 }
 // -----------------------------------------------------------------------------
