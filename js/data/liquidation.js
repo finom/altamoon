@@ -1,5 +1,4 @@
 'use strict'
-const api = require('../api-futures')
 const trading = require('../dashboard/trading')
 
 events.on('chart.draftOrderMoved', onDraftOrderMoved)

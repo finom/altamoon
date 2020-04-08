@@ -1,7 +1,7 @@
 'use strict'
 const settings = require('../user/settings')
 const Binance = require('node-binance-api')
-const binance = new Binance().options({
+const lib = new Binance().options({
     APIKEY: settings.apiKey,
     APISECRET: settings.apiSecret
 })
@@ -9,7 +9,7 @@ const binance = new Binance().options({
 const wsURL = 'wss://fstream.binance.com/ws/' + SYMBOL.toLowerCase()
 
 module.exports = {
-    binance, wsURL,
+    lib, wsURL,
 
     get account () { return account },
     get positions () { return positions },
@@ -33,7 +33,7 @@ var lastPrice
 //   GET
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function getAccount() {
-    binance.futuresAccount()
+    lib.futuresAccount()
         .then(response => {
             account = response
             events.emit('api.balancesUpdate', account)
@@ -45,7 +45,7 @@ function getAccount() {
 }
 
 function getOpenOrders () {
-    binance.futuresOpenOrders(SYMBOL)
+    lib.futuresOpenOrders(SYMBOL)
         .then(response => {
             openOrders = response.map(o => { return {
                     id: o.orderId,
@@ -70,7 +70,7 @@ function getOpenOrders () {
 }
 
 function getPosition () {
-    binance.futuresPositionRisk()
+    lib.futuresPositionRisk()
         .then(response => {
             var p = response[SYMBOL]
             positions[0] = {
@@ -93,7 +93,7 @@ function getPosition () {
 //   PUT
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function cancelOrder (id) {
-    binance.futuresCancel(SYMBOL, {orderId: id})
+    lib.futuresCancel(SYMBOL, {orderId: id})
         // .then(r => console.log(r))
         .catch(err => console.error(err))
 }
@@ -102,10 +102,10 @@ function closePosition () {
     var qty = positions[0].qty
 
     if (qty < 0)
-        binance.futuresMarketBuy(SYMBOL, -qty, {'reduceOnly': true})
+        lib.futuresMarketBuy(SYMBOL, -qty, {'reduceOnly': true})
             .catch(error => console.error(error))
     else if (qty > 0)
-        binance.futuresMarketSell(SYMBOL, qty, {'reduceOnly': true})
+        lib.futuresMarketSell(SYMBOL, qty, {'reduceOnly': true})
             .catch(error => console.error(error))
 }
 
@@ -146,7 +146,7 @@ function streamUserData () {
     var stream
 
     // Get key
-    binance.futuresGetDataStream()
+    lib.futuresGetDataStream()
         .then(response => openStream(response))
         .catch(err => console.error(err))
 
@@ -172,7 +172,7 @@ function streamUserData () {
 
         // Ping every 10 min to keep stream alive
         setInterval(() => {
-                binance.futuresGetDataStream()
+                lib.futuresGetDataStream()
                     .catch(e => console.error(e))
             }, 20 * 60000
         )

@@ -1,6 +1,4 @@
 'use strict'
-const api = require('../api-futures')
-
 events.on('api.newTrade', updateTrades)
 
 var data = []

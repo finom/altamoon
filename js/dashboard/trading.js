@@ -79,7 +79,7 @@ function onInputLeverage () {
 function onLeverageChanged () {
     leverage = this.value
 
-    api.binance.futuresLeverage(SYMBOL, leverage)
+    api.lib.futuresLeverage(SYMBOL, leverage)
         .catch(err => OUT(err))
 
     updateMarginCost('buy')
@@ -177,13 +177,13 @@ function onBuy (type) {
     if (qty <= 0) return
 
     if (type == 'market') {
-        api.binance.futuresMarketBuy(SYMBOL, qty, {
+        api.lib.futuresMarketBuy(SYMBOL, qty, {
                 'reduceOnly': reduceOnly().toString()
             })
             .catch(error => console.error(error))
     }
     else if (price > 0) {
-        api.binance.futuresBuy(SYMBOL, qty, price, {
+        api.lib.futuresBuy(SYMBOL, qty, price, {
                 'timeInForce': (makerOnly()) ? 'GTX' : 'GTC',
                 'reduceOnly': reduceOnly().toString()
             })
@@ -202,13 +202,13 @@ function onSell (type) {
     if (qty <= 0) return
 
     if (type == 'market') {
-        api.binance.futuresMarketSell(SYMBOL, qty, {
+        api.lib.futuresMarketSell(SYMBOL, qty, {
                 'reduceOnly': reduceOnly().toString()
             })
             .catch(error => console.error(error))
     }
     else if (price > 0) {
-        api.binance.futuresSell(SYMBOL, qty, price, {
+        api.lib.futuresSell(SYMBOL, qty, price, {
                 'timeInForce': (makerOnly()) ? 'GTX' : 'GTC',
                 'reduceOnly': reduceOnly().toString()
             })

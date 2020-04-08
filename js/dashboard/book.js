@@ -18,7 +18,7 @@ async function getSnapshot () {
     if (Date.now() < timer + 2000) return // API rate limit
     timer = Date.now()
 
-    await api.binance.futuresDepth(SYMBOL)
+    await api.lib.futuresDepth(SYMBOL)
         .then(r => book = r)
 }
 

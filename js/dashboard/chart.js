@@ -163,7 +163,7 @@ d3.json(lastCandlesURL)
         // Draw with initial data
         initDraw()
     })
-    .catch(e => console.error(e)) // fixme: load something on error
+    .catch(e => console.error(e)) // Fixme (load something on error)
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   INIT DRAW
@@ -417,8 +417,8 @@ function onDragOrderEnd (d) {
     api.cancelOrder(d.id)
 
     var order = (d.side == 'buy')
-        ? api.binance.futuresBuy
-        : api.binance.futuresSell
+        ? api.lib.futuresBuy
+        : api.lib.futuresSell
 
     order(d.symbol, d.qty, d.value.toFixed(2), {
             'reduceOnly': d.reduceOnly,
