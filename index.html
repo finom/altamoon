@@ -11,7 +11,11 @@
     <link rel="stylesheet" type="text/css" href="css/dashboard/wallet.css">
     <link rel="stylesheet" type="text/css" href="css/dashboard/book.css">
     <link rel="stylesheet" type="text/css" href="css/dashboard/trades.css">
-    <script defer src="js/dashboard/main.js"></script>
+    <script defer>
+      window.addEventListener('DOMContentLoaded',
+        () => require('./js/dashboard/main')
+      )
+    </script>
   </head>
   <body>
     <div id="main-grid">

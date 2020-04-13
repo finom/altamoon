@@ -1,15 +1,15 @@
 'use strict'
-require ('./js/globals')
-const settings = require('./user/settings')
+require ('../globals')
+const settings = require('../../user/settings')
 
-const api = require('./js/api-futures')
-const chart = require('./js/dashboard/widgets/chart')
-const trading = require('./js/dashboard/widgets/trading')
-const myOrders = require('./js/dashboard/widgets/my-orders')
-const wallet = require('./js/dashboard/widgets/wallet')
-const book = require('./js/dashboard/widgets/book')
-const trades = require('./js/dashboard/widgets/trades')
-const liquidation = require('./js/data/liquidation')
+const api = require('../api-futures')
+const chart = require('./widgets/chart')
+const trading = require('./widgets/trading')
+const myOrders = require('./widgets/my-orders')
+const wallet = require('./widgets/wallet')
+const book = require('./widgets/book')
+const trades = require('./widgets/trades')
+const liquidation = require('../data/liquidation')
 
 // Get initial data
 api.getPosition()
