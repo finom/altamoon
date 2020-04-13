@@ -7,27 +7,27 @@ events.on('api.orderUpdate', updateOrders)
 events.on('api.priceUpdate', updatePnl)
 
 function updatePnl () {
-    var openPositions = api.positions.filter(x => x.qty != 0)
+    let openPositions = api.positions.filter(x => x.qty != 0)
     if (openPositions.length)
         updatePositions(openPositions)
 }
 
 function updatePositions (positions) {
-    var format = d3.format(',.2f')
-    var formatPercent = d3.format(',.1%')
+    let format = d3.format(',.2f')
+    let formatPercent = d3.format(',.1%')
 
-    var openPositions = positions.filter(x => x.qty != 0)
+    let openPositions = positions.filter(x => x.qty != 0)
 
-    var rows = d3.select('#positions tbody').selectAll('tr')
+    let rows = d3.select('#positions tbody').selectAll('tr')
         .data(openPositions, d => d.symbol)
         .join(
             enter => enter.append('tr').call(row => {
                 row.attr('class', d => d.side)
 
-                var pnl = format(getPnl().pnl)
-                var pnlPercent = formatPercent(getPnl().percent)
+                let pnl = format(getPnl().pnl)
+                let pnlPercent = formatPercent(getPnl().percent)
 
-                var td = () => row.append('td')
+                let td = () => row.append('td')
                 td().text(d => d.symbol.slice(0,3))
                 td().text(d => d.qty)
                 td().text(d => format(d.price))
@@ -41,10 +41,10 @@ function updatePositions (positions) {
             update => update.call(row => {
                 row.attr('class', d => d.side)
 
-                var pnl = format(getPnl().pnl)
-                var pnlPercent = formatPercent(getPnl().percent)
+                let pnl = format(getPnl().pnl)
+                let pnlPercent = formatPercent(getPnl().percent)
 
-                var td = (i) => row.select('td:nth-child(' + i + ')')
+                let td = (i) => row.select('td:nth-child(' + i + ')')
                 td(1).text(d => d.symbol.slice(0,3))
                 td(2).text(d => d.qty)
                 td(3).text(d => format(d.price))
@@ -68,12 +68,12 @@ function updatePositions (positions) {
 function updateOrders (orders) {
     orders.sort((a, b) => b.price - a.price)
 
-    var rows = d3.select('#orders tbody').selectAll('tr')
+    let rows = d3.select('#orders tbody').selectAll('tr')
         .data(orders, d => d.id)
         .join(
             enter => enter.append('tr').call(row => {
                 row.attr('class', d => d.side)
-                var td = () => row.append('td')
+                let td = () => row.append('td')
                 td().text(d => d.side)
                 td().text(d => d.qty)
                 td().text(d => d3.format(',.2~f')(d.price))
@@ -87,7 +87,7 @@ function updateOrders (orders) {
             }),
             update => update.call(row => {
                 row.attr('class', d => d.side)
-                var td = (i) => row.select('td:nth-child(' + i + ')')
+                let td = (i) => row.select('td:nth-child(' + i + ')')
                 td(1).text(d => d.side)
                 td(2).text(d => d.qty)
                 td(3).text(d => d3.format(',.2~f')(d.price))

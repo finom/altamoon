@@ -5,18 +5,18 @@ const { config } = require('../config')
 module.exports = { onBuy, onSell, getMarginCost }
 
 // HTML nodes
-var leverageInput = d3.select('[name="leverageInput"]')
-var leverageOutput = d3.select('[name="leverageOutput"]')
-var orderTypes = d3.selectAll('#order-type input[name="order-type"]')
-var orderType = () => d3.select('#order-type input[name="order-type"]:checked')
-var buyPrice = d3.select('#buy-price')
-var sellPrice = d3.select('#sell-price')
-var buyQty = d3.select('#buy-qty')
-var sellQty = d3.select('#sell-qty')
-var buyDollarValue = d3.select('#trading .buy .dollar-qty .val')
-var sellDollarValue = d3.select('#trading .sell .dollar-qty .val')
-var buyBtn = d3.select('.buy .btn')
-var sellBtn = d3.select('.sell .btn')
+let leverageInput = d3.select('[name="leverageInput"]')
+let leverageOutput = d3.select('[name="leverageOutput"]')
+let orderTypes = d3.selectAll('#order-type input[name="order-type"]')
+let orderType = () => d3.select('#order-type input[name="order-type"]:checked')
+let buyPrice = d3.select('#buy-price')
+let sellPrice = d3.select('#sell-price')
+let buyQty = d3.select('#buy-qty')
+let sellQty = d3.select('#sell-qty')
+let buyDollarValue = d3.select('#trading .buy .dollar-qty .val')
+let sellDollarValue = d3.select('#trading .sell .dollar-qty .val')
+let buyBtn = d3.select('.buy .btn')
+let sellBtn = d3.select('.sell .btn')
 
 // Set events
 leverageInput.on('input', onInputLeverage)
@@ -33,15 +33,15 @@ sellBtn.on('click', onSell)
 
 events.on('chart.draftOrderMoved', onPriceUpdate)
 
-var leverage
-var qty = { 'buy': undefined, 'sell': undefined }
+let leverage
+let qty = { 'buy': undefined, 'sell': undefined }
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   ORDER TYPE
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function onOrderTypeChanged () {
-    var type = orderType().property('value')
-    var tradingDiv = d3.select('#trading')
+    let type = orderType().property('value')
+    let tradingDiv = d3.select('#trading')
 
     if (type == 'limit') {
         tradingDiv.classed('market', false)
@@ -61,7 +61,7 @@ function onOrderTypeChanged () {
 events.on('api.positionUpdate', updateLeverage)
 
 function updateLeverage (d) {
-    var position = d.filter(x => x.symbol == SYMBOL)[0]
+    let position = d.filter(x => x.symbol == SYMBOL)[0]
     leverage = position.leverage
     leverageInput.property('value', leverage)
     leverageOutput.property('value', leverage)
@@ -92,8 +92,8 @@ function onLeverageChanged () {
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   OPTIONS
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-var reduceOnly = () => d3.select('#reduce-only').property('checked')
-var makerOnly = () => d3.select('#maker-only').property('checked')
+let reduceOnly = () => d3.select('#reduce-only').property('checked')
+let makerOnly = () => d3.select('#maker-only').property('checked')
 
 // Get maker-only from config
 d3.select('#maker-only').property('checked', config.get('order.makerOnly'))
@@ -106,7 +106,7 @@ d3.select('#maker-only').on('change', function () {
 //   PRICE
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function onInputPrice (side) {
-    var price = parseNumber()
+    let price = parseNumber()
     updateMarginCost(side, price)
     updateDollarValue(side, price)
 }
@@ -114,7 +114,7 @@ function onInputPrice (side) {
 function onPriceUpdate (side, price) {
     if (price === null)
         return
-    var input = eval(side + 'Price')
+    let input = eval(side + 'Price')
     input.property('value', price)
     updateMarginCost(side, price)
     updateDollarValue(side, price)
@@ -138,7 +138,7 @@ function updateDollarValue(side, price){
     if (!qty[side])
         qty[side] = eval(side + 'Qty').property('value')
 
-    var dollarValue = qty[side] * price
+    let dollarValue = qty[side] * price
     dollarValue = d3.format(',d')(dollarValue)
 
     eval(side + 'DollarValue')
@@ -160,7 +160,7 @@ function getMarginCost (side, price) {
 }
 
 function updateMarginCost (side, price) {
-    var margin = getMarginCost(side, price)
+    let margin = getMarginCost(side, price)
     margin = d3.format(',.2f')(margin)
 
     d3.select('#trading .' + side +  ' .margin .val')
@@ -171,8 +171,8 @@ function updateMarginCost (side, price) {
 //   BUY
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function onBuy (type) {
-    var price = parseFloat(buyPrice.property('value'))
-    var qty = parseFloat(buyQty.property('value'))
+    let price = parseFloat(buyPrice.property('value'))
+    let qty = parseFloat(buyQty.property('value'))
     type = (type) ? type : orderType().property('value')
 
     if (qty <= 0) return
@@ -196,8 +196,8 @@ function onBuy (type) {
 //   SELL
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function onSell (type) {
-    var price = parseFloat(sellPrice.property('value'))
-    var qty = parseFloat(sellQty.property('value'))
+    let price = parseFloat(sellPrice.property('value'))
+    let qty = parseFloat(sellQty.property('value'))
     type = (type) ? type : orderType().property('value')
 
     if (qty <= 0) return
@@ -221,9 +221,9 @@ function onSell (type) {
 //   GENERIC FUNCTIONS
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function parseNumber () {
-    var string = event.target.value
+    let string = event.target.value
 
-    var regex = /[0-9]|\./
+    let regex = /[0-9]|\./
     for (let i = 0; i < string.length; i++) {
         if (!regex.test(string[i])) {
             string = string.replace(string[i], '')
@@ -234,8 +234,8 @@ function parseNumber () {
 }
 
 function increment (side) {
-    var qty = parseFloat(event.target.value)
-    var direction = Math.sign(-event.deltaY)
+    let qty = parseFloat(event.target.value)
+    let direction = Math.sign(-event.deltaY)
 
     qty = (qty + config.get('order.qtyInterval') * direction).toFixed(3)
     event.target.value = Math.max(0, qty)

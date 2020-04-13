@@ -6,7 +6,7 @@ events.on('api.balancesUpdate', updateWallet)
 events.on('api.priceUpdate', updateWallet)
 setInterval(api.getAccount, 2000)
 
-var accountData
+let accountData
 
 async function updateWallet (data) {
     if (data.assets === undefined)
@@ -16,16 +16,16 @@ async function updateWallet (data) {
 
     if(!data) return
 
-    var format = value => d3.format(',.2~f')(value)
+    let format = value => d3.format(',.2~f')(value)
 
-    var pnl = stats.getPnl()
-    var pnlPercent = d3.format(',.1~%')(pnl.percent)
+    let pnl = stats.getPnl()
+    let pnlPercent = d3.format(',.1~%')(pnl.percent)
 
-    var balance = parseFloat(data.totalWalletBalance)
-    var unrealizedBalance = pnl.pnl + balance
+    let balance = parseFloat(data.totalWalletBalance)
+    let unrealizedBalance = pnl.pnl + balance
 
-    var dailyPnl = await stats.getDailyPnl()
-    var dailyPnlPercent = d3.format(',.1~%')(dailyPnl.percent)
+    let dailyPnl = await stats.getDailyPnl()
+    let dailyPnlPercent = d3.format(',.1~%')(dailyPnl.percent)
 
     data = [
         'Balance: ', format(data.totalWalletBalance),

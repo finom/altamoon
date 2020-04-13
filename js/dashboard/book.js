@@ -4,15 +4,15 @@ exports.updateBook = updateBook
 
 events.on('api.bookUpdate', assembleBook)
 
-var book
+let book
 
-var mainDiv = d3.select('#book').append('div')
+let mainDiv = d3.select('#book').append('div')
         .attr('class', 'something')
-var bids = mainDiv.append('div').attr('class', 'bids')
-var asks = mainDiv.append('div').attr('class', 'asks')
+let bids = mainDiv.append('div').attr('class', 'bids')
+let asks = mainDiv.append('div').attr('class', 'asks')
 
-var timer = 0
-var timer2 = 0
+let timer = 0
+let timer2 = 0
 
 async function getSnapshot () {
     if (Date.now() < timer + 2000) return // API rate limit
@@ -35,7 +35,7 @@ async function updateBook (d) {
             enter => enter.append('div')
                 .attr('class', 'row')
                 .call(row => {
-                    var cell = () => row.append('div').attr('class', 'cell')
+                    let cell = () => row.append('div').attr('class', 'cell')
                     cell().html(d => d[1])
                     cell().html(d => d[0])
             }),
@@ -51,7 +51,7 @@ async function updateBook (d) {
             enter => enter.append('div')
                 .attr('class', 'row')
                 .call(row => {
-                    var cell = () => row.append('div').attr('class', 'cell')
+                    let cell = () => row.append('div').attr('class', 'cell')
                     cell().html(d => d[0])
                     cell().html(d => d[1])
                 }),
@@ -62,9 +62,9 @@ async function updateBook (d) {
         )
 }
 
-var started = false
-var buffer = []
-var lastEvent
+let started = false
+let buffer = []
+let lastEvent
 
 function assembleBook (d) {
     /* Following complicated instructions from Binance API docs */
@@ -96,12 +96,12 @@ function assembleBook (d) {
 
         // Event is ok so treat it against book
         for (let [key, side] of Object.entries(item)) {
-            var sort = false
-            var bookSide = book[key]
+            let sort = false
+            let bookSide = book[key]
 
             for (let j = side.length -1; j >= 0; j--) {
-                var level = side[j]
-                var oldIndex = bookSide.findIndex(y => y[0] == level[0])
+                let level = side[j]
+                let oldIndex = bookSide.findIndex(y => y[0] == level[0])
 
                 if (level[1] == 0 && oldIndex >= 0) {
                     bookSide.splice(oldIndex, 1)
@@ -115,7 +115,7 @@ function assembleBook (d) {
                 }
             }
             if (sort) {
-                var order = (key == 'bids') ? 1 : -1
+                let order = (key == 'bids') ? 1 : -1
                 bookSide.sort((a,b) => order * b[0] - a[0] * order)
             }
         }

@@ -12,7 +12,7 @@ process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = true
 app.allowRendererProcessReuse = true
 
 function createWindow () {
-    var mainWindow = new BrowserWindow({
+    let mainWindow = new BrowserWindow({
             width: config.get('window.width'),
             height: config.get('window.height'),
             webPreferences: { nodeIntegration: true }

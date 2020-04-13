@@ -8,77 +8,77 @@ module.exports = {
     get draftLinesData () { return draftLinesData }
 }
 
-var margin = { top: 0, right: 55, bottom: 30, left: 55 }
-var width = 960 - margin.left - margin.right
-var height = 700 - margin.top - margin.bottom
+let margin = { top: 0, right: 55, bottom: 30, left: 55 }
+let width = 960 - margin.left - margin.right
+let height = 700 - margin.top - margin.bottom
 
-var x = d3.scaleTime().range([0, width])
-var y = d3.scaleLinear().range([height, 0])
+let x = d3.scaleTime().range([0, width])
+let y = d3.scaleLinear().range([height, 0])
 
-var zoom = d3.zoom().on('zoom', onZoom)
+let zoom = d3.zoom().on('zoom', onZoom)
 
-var xAxis = d3.axisBottom(x)
-var yAxisLeft = d3.axisLeft(y)
-var yAxisRight = d3.axisRight(y)
+let xAxis = d3.axisBottom(x)
+let yAxisLeft = d3.axisLeft(y)
+let yAxisRight = d3.axisRight(y)
 
-var xGridlines = d3.axisTop(x)
+let xGridlines = d3.axisTop(x)
         .tickFormat('')
         .tickSize(-height)
 
-var yGridlines = d3.axisLeft(y)
+let yGridlines = d3.axisLeft(y)
         .tickFormat('')
         .tickSize(-width)
 
-var axisLabelBottom = techan.plot.axisannotation()
+let axisLabelBottom = techan.plot.axisannotation()
         .axis(xAxis)
         .orient('bottom')
         .format(d3.timeFormat('%-d/%-m/%Y %-H:%M:%S'))
         .width(94)
         .translate([0, height])
 
-var axisLabelLeft = techan.plot.axisannotation()
+let axisLabelLeft = techan.plot.axisannotation()
         .axis(yAxisLeft)
         .orient('left')
         .format(d3.format(',.2f'))
 
-var axisLabelRight = techan.plot.axisannotation()
+let axisLabelRight = techan.plot.axisannotation()
         .axis(yAxisRight)
         .orient('right')
         .format(d3.format(',.2f'))
         .translate([width, 0])
 
-var lines = techan.plot.supstance()
+let lines = techan.plot.supstance()
         .xScale(x)
         .yScale(y)
         .annotation([axisLabelLeft, axisLabelRight])
 
-var orderLines = techan.plot.supstance()
+let orderLines = techan.plot.supstance()
         .xScale(x)
         .yScale(y)
         .annotation([axisLabelLeft, axisLabelRight])
         .on('drag', onDragOrder)
         .on('dragend', onDragOrderEnd)
 
-var draftLines = techan.plot.supstance()
+let draftLines = techan.plot.supstance()
         .xScale(x)
         .yScale(y)
         .annotation([axisLabelLeft, axisLabelRight])
         .on('drag', onDragDraft)
 
-var crosshair = techan.plot.crosshair()
+let crosshair = techan.plot.crosshair()
         .xScale(x)
         .yScale(y)
         .xAnnotation(axisLabelBottom)
         .yAnnotation([axisLabelLeft, axisLabelRight])
 
-var plot = techan.plot.candlestick()
+let plot = techan.plot.candlestick()
         .xScale(x)
         .yScale(y)
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   PREPARE SVG CONTAINERS
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-var svg = d3.select('#chart').append('svg')
+let svg = d3.select('#chart').append('svg')
         .attr('width', width + margin.left + margin.right)
         .attr('height', height + margin.top + margin.bottom)
     .append('g')
@@ -91,7 +91,7 @@ svg.on('dblclick.zoom', null)
         placeOrderDraft(y.invert(d3.mouse(this)[1]))
     })
 
-var gClipPath = svg.append('clipPath')
+let gClipPath = svg.append('clipPath')
         .attr('id', 'clip')
     .append('rect')
         .attr('x', 0)
@@ -99,53 +99,53 @@ var gClipPath = svg.append('clipPath')
         .attr('width', width)
         .attr('height', y(0) - y(1))
 
-var gXGridlines = svg.append('g').attr('class', 'x gridlines')
-var gYGridlines = svg.append('g').attr('class', 'y gridlines')
+let gXGridlines = svg.append('g').attr('class', 'x gridlines')
+let gYGridlines = svg.append('g').attr('class', 'y gridlines')
 
-var gXAxis = svg.append('g').attr('class', 'x axis bottom')
+let gXAxis = svg.append('g').attr('class', 'x axis bottom')
         .attr('transform', 'translate(0,' + height + ')')
 
-var gYAxisLeft = svg.append('g').attr('class', 'y axis left')
-var gYAxisRight = svg.append('g').attr('class', 'y axis right')
+let gYAxisLeft = svg.append('g').attr('class', 'y axis left')
+let gYAxisRight = svg.append('g').attr('class', 'y axis right')
         .attr('transform', 'translate(' + width + ',0)')
 
-var gPositionLine = svg.append('g').attr('class', 'position-line')
-var gLiquidationLine = svg.append('g').attr('class', 'liquidation-line')
+let gPositionLine = svg.append('g').attr('class', 'position-line')
+let gLiquidationLine = svg.append('g').attr('class', 'liquidation-line')
         .attr('clip-path', 'url(#clip)')
-var gBidASkLines = svg.append('g').attr('class', 'bid-ask-lines')
-var gPriceLine = svg.append('g').attr('class', 'price-line')
+let gBidASkLines = svg.append('g').attr('class', 'bid-ask-lines')
+let gPriceLine = svg.append('g').attr('class', 'price-line')
 
-var gPlot = svg.append('g').attr('class', 'plot')
+let gPlot = svg.append('g').attr('class', 'plot')
         .attr('clip-path', 'url(#clip)')
 
-var gCrosshair = svg.append('g').attr('class', 'crosshair')
+let gCrosshair = svg.append('g').attr('class', 'crosshair')
 
-var gOrderLines = svg.append('g').attr('class', 'order-lines')
-var gDraftLines = svg.append('g').attr('class', 'draft-lines')
+let gOrderLines = svg.append('g').attr('class', 'order-lines')
+let gDraftLines = svg.append('g').attr('class', 'draft-lines')
 
-var gPositionLabel = svg.append('g').attr('class', 'position-label')
+let gPositionLabel = svg.append('g').attr('class', 'position-label')
         .attr('clip-path', 'url(#clip)')
-var gOrderLabels = svg.append('g').attr('class', 'order-labels')
+let gOrderLabels = svg.append('g').attr('class', 'order-labels')
         .attr('clip-path', 'url(#clip)')
-var gDraftLabels = svg.append('g').attr('class', 'draft-labels')
+let gDraftLabels = svg.append('g').attr('class', 'draft-labels')
         .attr('clip-path', 'url(#clip)')
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   LOAD DATA
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-var candles = []
-var priceLineData = []
-var positionLineData = []
-var bidAskLinesData = []
-var liquidationLineData = []
-var orderLinesData = []
-var draftLinesData = []
+let candles = []
+let priceLineData = []
+let positionLineData = []
+let bidAskLinesData = []
+let liquidationLineData = []
+let orderLinesData = []
+let draftLinesData = []
 
-var lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=' + SYMBOL + '&limit=1500&interval=1m'
+let lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=' + SYMBOL + '&limit=1500&interval=1m'
 
 d3.json(lastCandlesURL)
     .then(jsonCandles => {
-        var accessor = plot.accessor()
+        let accessor = plot.accessor()
 
         candles = jsonCandles
             .map(d => {
@@ -191,11 +191,11 @@ function initDraw() {
 //   RENDER CHART
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function draw() {
-    var data = candles.slice(-350, candles.length)
-    var accessor = plot.accessor()
+    let data = candles.slice(-350, candles.length)
+    let accessor = plot.accessor()
 
-    var xdomain = d3.extent(data.map(accessor.d))
-    var ydomain = techan.scale.plot.ohlc(data, accessor).domain()
+    let xdomain = d3.extent(data.map(accessor.d))
+    let ydomain = techan.scale.plot.ohlc(data, accessor).domain()
 
     // Padding y axis
     ydomain[0] -= 80
@@ -244,8 +244,8 @@ function updatePrice (price) {
 }
 
 function updatePosition (positions) {
-    var position = positions.filter(x => x.symbol == SYMBOL)[0]
-    var i = liquidationLineData.findIndex(x => x.type === 'real')
+    let position = positions.filter(x => x.symbol == SYMBOL)[0]
+    let i = liquidationLineData.findIndex(x => x.type === 'real')
 
     if (position.qty && position.liquidation) {
         // Add new
@@ -282,12 +282,12 @@ function updateBidAsk (data) {
 //   STREAM CANDLES (WEBSOCKET)
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function streamLastCandle () {
-    var stream = new WebSocket(api.wsURL + '@kline_1m')
+    let stream = new WebSocket(api.wsURL + '@kline_1m')
 
     stream.onmessage = event => {
-        var d = JSON.parse(event.data).k
+        let d = JSON.parse(event.data).k
 
-        var candle = {
+        let candle = {
                 date: new Date(d.t),
                 open: parseFloat(d.o),
                 high: parseFloat(d.h),
@@ -295,8 +295,8 @@ function streamLastCandle () {
                 close: parseFloat(d.c),
                 volume: parseFloat(d.q) }
 
-        var lastCandle = candles[candles.length - 1]
-        var newCandle = false
+        let lastCandle = candles[candles.length - 1]
+        let newCandle = false
 
         if (candle.date > lastCandle.date) {
             candles.push(candle)
@@ -370,13 +370,13 @@ function lineLabel (selection, data, type) {
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function placeOrderDraft (price) {
     price = +(price.toFixed(2))
-    var lastPrice = (api.lastPrice)
+    let lastPrice = (api.lastPrice)
             ? api.lastPrice
             : candles[candles.length - 1].close
-    var side = (price <= lastPrice) ? 'buy' : 'sell'
-    var qty = d3.select('#' + side + '-qty').property('value')
+    let side = (price <= lastPrice) ? 'buy' : 'sell'
+    let qty = d3.select('#' + side + '-qty').property('value')
 
-    var data = { value: price, qty: Number(qty), side: side }
+    let data = { value: price, qty: Number(qty), side: side }
     draftLinesData = [data]
 
     onDragDraft(data) // Wobbly coding <(°v°)<
@@ -384,11 +384,11 @@ function placeOrderDraft (price) {
 }
 
 function onDragDraft (d) {
-    var price = +(d.value.toFixed(2))
-    var lastPrice = (api.lastPrice)
+    let price = +(d.value.toFixed(2))
+    let lastPrice = (api.lastPrice)
             ? api.lastPrice
             : candles[candles.length - 1].close
-    var qty = d3.select('#' + d.side + '-qty').property('value')
+    let qty = d3.select('#' + d.side + '-qty').property('value')
 
     draftLinesData[0].value = price
     draftLinesData[0].qty = Number(qty)
@@ -406,7 +406,7 @@ function draftToOrder (d, i) {
 
     draw()
 
-    var order = (d.side == 'buy')
+    let order = (d.side == 'buy')
         ? trading.onBuy
         : trading.onSell
 
@@ -414,7 +414,7 @@ function draftToOrder (d, i) {
 }
 
 function onTradingQtyUpdate (side, qty) {
-    var draft = draftLinesData[0]
+    let draft = draftLinesData[0]
     // Update qty on order draft line
     if (draft && side === draft.side) {
         draft.qty = +qty
@@ -423,20 +423,20 @@ function onTradingQtyUpdate (side, qty) {
 }
 
 function onDragOrder (d) {
-    var currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
+    let currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
     if (!currentOrder || currentOrder.price == d.value)
         return
     gOrderLabels.call(lineLabel, orderLinesData, 'order')
 }
 function onDragOrderEnd (d) {
     /* Delete order, recreate at new price */
-    var currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
+    let currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
     if (!currentOrder || currentOrder.price == d.value)
         return
 
     api.cancelOrder(d.id)
 
-    var order = (d.side == 'buy')
+    let order = (d.side == 'buy')
         ? api.lib.futuresBuy
         : api.lib.futuresSell
 
@@ -448,7 +448,7 @@ function onDragOrderEnd (d) {
 }
 
 function onLiquidationUpdate (price, side) {
-    var index = liquidationLineData.findIndex(x => x.side == side)
+    let index = liquidationLineData.findIndex(x => x.side == side)
 
     if (!price && index >= 0)
         // Remove
@@ -469,7 +469,7 @@ function onLiquidationUpdate (price, side) {
 
 function onZoom(direction = 'x') {
     if (direction == 'x') {
-        var scaledX = d3.event.transform.rescaleX(x)
+        let scaledX = d3.event.transform.rescaleX(x)
         xAxis.scale(scaledX)
         xGridlines.scale(scaledX)
         plot.xScale(scaledX)
