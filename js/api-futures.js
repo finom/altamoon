@@ -13,6 +13,7 @@ module.exports = {
 
     get account () { return account },
     get positions () { return positions },
+    get openOrders () { return openOrders },
     get lastPrice () { return lastPrice },
     get lastTrade () { return lastTrade },
 
@@ -29,10 +30,24 @@ var openOrders = []
 var lastTrade = {}
 var lastPrice
 
+// setInterval(() => {
+//         getAccount()
+//         getPosition()
+
+//         OUT('account       | ', 'initialMargin: ' + account.positions[0].initialMargin)
+//         OUT('                 leverage: ' + account.positions[0].leverage)
+
+//         OUT('positionRisk  | ', 'isolatedMargin: ' + positions[0].margin)
+//         OUT('                 leverage: ' + positions[0].leverage)
+
+//         OUT(' ')
+
+//     }, 5000)
+
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   GET
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-function getAccount() {
+function getAccount () {
     lib.futuresAccount()
         .then(response => {
             account = response
@@ -81,7 +96,7 @@ function getPosition () {
                 price: p.entryPrice,
                 value: p.entryPrice, // synonym, for feeding to techan.substance
                 qty: p.positionAmt,
-                side: (p.positionAmt >= 0) ? 'long' : 'short',
+                side: (p.positionAmt >= 0) ? 'buy' : 'sell',
                 symbol: p.symbol
             }
             events.emit('api.positionUpdate', positions)
@@ -100,7 +115,7 @@ function cancelOrder (id) {
 
 function closePosition () {
     var qty = positions[0].qty
-
+OUT(positions)
     if (qty < 0)
         lib.futuresMarketBuy(SYMBOL, -qty, {'reduceOnly': true})
             .catch(error => console.error(error))
@@ -194,7 +209,7 @@ function streamUserData () {
             price: p.ep,
             value: p.ep, // synonym, for feeding to techan.substance
             qty: p.pa,
-            side: (p.pa >= 0) ? 'long' : 'short',
+            side: (p.pa >= 0) ? 'buy' : 'sell',
             symbol: p.s
         })
         getPosition() // REST update for missing data

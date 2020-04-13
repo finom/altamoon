@@ -25,8 +25,8 @@ function getPnl () {
 var timer
 var incomeHistory = []
 
-async function getDailyPnl() {
-    var currentBalance = +api.account.totalWalletBalance
+async function getDailyPnl () {
+    var currentBalance = api.account.totalWalletBalance
 
     // Throttle api calls
     if (!timer || Date.now() > timer + 5 * 1000) {
@@ -49,10 +49,26 @@ async function getDailyPnl() {
     var pnlArray = incomeHistory.filter(
         x => x.incomeType == 'REALIZED_PNL' && x.symbol == SYMBOL
     )
+    var feesArray = incomeHistory.filter(
+        x => x.incomeType == 'COMMISSION' && x.symbol == SYMBOL
+    )
+    var fundingArray = incomeHistory.filter(
+        x => x.incomeType == 'FUNDING_FEE' && x.symbol == SYMBOL
+    )
 
     var totalPnl = 0
     for (let x of pnlArray)
         totalPnl += +x.income
+
+    var totalFee = 0
+    for (let x of feesArray)
+        totalFee += +x.income
+
+    var totalFunding = 0
+    for (let x of fundingArray)
+        totalFunding += +x.income
+
+    totalPnl += totalFee + totalFunding
 
     var oldBalance = currentBalance - totalPnl
 

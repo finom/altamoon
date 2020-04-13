@@ -176,11 +176,13 @@ function initDraw() {
     api.getPosition()
     api.getOpenOrders()
 
+    // Event listeners
     events.on('api.priceUpdate', updatePrice)
     events.on('api.positionUpdate', updatePosition)
     events.on('api.orderUpdate', updateOpenOrders)
     events.on('api.bidAskUpdate', updateBidAsk)
     events.on('liquidation.update', onLiquidationUpdate)
+    events.on('trading.qtyUpdate', onTradingQtyUpdate)
 
     streamLastCandle()
 }
@@ -243,10 +245,18 @@ function updatePrice (price) {
 
 function updatePosition (positions) {
     var position = positions.filter(x => x.symbol == SYMBOL)[0]
+    var i = liquidationLineData.findIndex(x => x.type === 'real')
 
-    if (position.qty && position.liquidation)
-        liquidationLineData[0] = {value: position.liquidation}
-    else liquidationLineData[0] = undefined
+    if (position.qty && position.liquidation) {
+        // Add new
+        if (i >= 0)
+            liquidationLineData[i].value = position.liquidation
+        else
+            liquidationLineData.push({ value: position.liquidation, type: 'real' })
+    }
+    else
+        // Remove
+        if (i >= 0) liquidationLineData.splice(i, 1)
 
     positionLineData = (position.qty) ? [position] : []
     draw()
@@ -383,7 +393,6 @@ function onDragDraft (d) {
     draftLinesData[0].value = price
     draftLinesData[0].qty = Number(qty)
 
-    // Update liquidation
     events.emit('chart.draftOrderMoved', d.side, price, qty)
 
     // Redraw
@@ -392,7 +401,9 @@ function onDragDraft (d) {
 
 function draftToOrder (d, i) {
     draftLinesData.splice(i, 1)
-    liquidationLineData.splice(1, 1)
+
+    events.emit('chart.draftOrderMoved', d.side, null, null)
+
     draw()
 
     var order = (d.side == 'buy')
@@ -400,6 +411,15 @@ function draftToOrder (d, i) {
         : trading.onSell
 
     order('limit')
+}
+
+function onTradingQtyUpdate (side, qty) {
+    var draft = draftLinesData[0]
+    // Update qty on order draft line
+    if (draft && side === draft.side) {
+        draft.qty = +qty
+        draw()
+    }
 }
 
 function onDragOrder (d) {
@@ -427,8 +447,18 @@ function onDragOrderEnd (d) {
         .catch(error => console.error(error))
 }
 
-function onLiquidationUpdate (price) {
-    liquidationLineData[1] = {value: price, type: 'draft'}
+function onLiquidationUpdate (price, side) {
+    var index = liquidationLineData.findIndex(x => x.side == side)
+
+    if (!price && index >= 0)
+        // Remove
+        liquidationLineData.splice(index, 1)
+    else if (price && index >= 0)
+        // Update
+        liquidationLineData[index].value = price
+    else if (price)
+        // Add
+        liquidationLineData.push({ value: price, type: 'draft', side: side })
 
     //Redraw
     gLiquidationLine.datum(liquidationLineData).call(lines)

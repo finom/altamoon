@@ -94,14 +94,14 @@ path.candle.down {
 .position-label text {
     font-weight: bold;
 }
-.position-line [data-side='short'] path,
-.position-label [data-side='short'] path,
-.position-label [data-side='short'] rect {
+.position-line [data-side='sell'] path,
+.position-label [data-side='sell'] path,
+.position-label [data-side='sell'] rect {
     fill: #ab257c;
     stroke: #ab257c;
 }
-.position-line [data-side='short'] text,
-.position-label [data-side='short'] text {
+.position-line [data-side='sell'] text,
+.position-label [data-side='sell'] text {
     fill: #fff;
 }
 /*

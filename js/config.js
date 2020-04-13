@@ -25,7 +25,11 @@ const schema = {
             makerOnly: {
                 type: 'boolean',
                 default: true
-            }
+            },
+            qtyInterval: {
+                type: 'number',
+                default: 0.01
+            },
         },
         default: {}
     }

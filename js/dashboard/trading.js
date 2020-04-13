@@ -65,6 +65,8 @@ function updateLeverage (d) {
     leverage = position.leverage
     leverageInput.property('value', leverage)
     leverageOutput.property('value', leverage)
+
+    events.emit('trading.leverageUpdate', leverage)
     updateMarginCost('buy')
     updateMarginCost('sell')
 }
@@ -82,6 +84,7 @@ function onLeverageChanged () {
     api.lib.futuresLeverage(SYMBOL, leverage)
         .catch(err => OUT(err))
 
+    events.emit('trading.leverageUpdate', leverage)
     updateMarginCost('buy')
     updateMarginCost('sell')
 }
@@ -109,6 +112,8 @@ function onInputPrice (side) {
 }
 
 function onPriceUpdate (side, price) {
+    if (price === null)
+        return
     var input = eval(side + 'Price')
     input.property('value', price)
     updateMarginCost(side, price)
@@ -120,13 +125,9 @@ function onPriceUpdate (side, price) {
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function onInputQty (side) {
     qty[side] = parseNumber()
-    var draft = chart.draftLinesData[0]
 
-    // Update qty on order draft line
-    if (draft && side == draft.side) {
-        draft.qty = Number(qty[side])
-        chart.draw()
-    }
+    events.emit('trading.qtyUpdate', side, qty[side])
+
     updateMarginCost(side)
     updateDollarValue(side)
 }
@@ -234,7 +235,9 @@ function parseNumber () {
 
 function increment (side) {
     var qty = parseFloat(event.target.value)
-    qty = (qty + 0.5 * Math.sign(-event.deltaY)).toFixed(3)
+    var direction = Math.sign(-event.deltaY)
+
+    qty = (qty + config.get('order.qtyInterval') * direction).toFixed(3)
     event.target.value = Math.max(0, qty)
     onInputQty(side)
 }
