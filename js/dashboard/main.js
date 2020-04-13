@@ -3,12 +3,12 @@ require ('./js/globals')
 const settings = require('./user/settings')
 
 const api = require('./js/api-futures')
-const chart = require('./js/dashboard/chart')
-const trading = require('./js/dashboard/trading')
-const myOrders = require('./js/dashboard/my-orders')
-const wallet = require('./js/dashboard/wallet')
-const book = require('./js/dashboard/book')
-const trades = require('./js/dashboard/trades')
+const chart = require('./js/dashboard/widgets/chart')
+const trading = require('./js/dashboard/widgets/trading')
+const myOrders = require('./js/dashboard/widgets/my-orders')
+const wallet = require('./js/dashboard/widgets/wallet')
+const book = require('./js/dashboard/widgets/book')
+const trades = require('./js/dashboard/widgets/trades')
 const liquidation = require('./js/data/liquidation')
 
 // Get initial data

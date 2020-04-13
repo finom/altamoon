@@ -1,6 +1,6 @@
 'use strict'
-const api = require('../api-futures')
-const { config } = require('../config')
+const api = require('../../api-futures')
+const { config } = require('../../config')
 
 module.exports = { onBuy, onSell, getMarginCost }
 
