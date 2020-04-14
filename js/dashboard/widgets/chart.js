@@ -12,20 +12,20 @@ let margin = { top: 0, right: 55, bottom: 30, left: 55 }
 let width = 960 - margin.left - margin.right
 let height = 700 - margin.top - margin.bottom
 
-let x = d3.scaleTime().range([0, width])
-let y = d3.scaleLinear().range([height, 0])
+let xScale = d3.scaleTime().range([0, width])
+let yScale = d3.scaleLinear().range([height, 0])
 
 let zoom = d3.zoom().on('zoom', onZoom)
 
-let xAxis = d3.axisBottom(x)
-let yAxisLeft = d3.axisLeft(y)
-let yAxisRight = d3.axisRight(y)
+let xAxis = d3.axisBottom(xScale)
+let yAxisLeft = d3.axisLeft(yScale)
+let yAxisRight = d3.axisRight(yScale)
 
-let xGridlines = d3.axisTop(x)
+let xGridlines = d3.axisTop(xScale)
         .tickFormat('')
         .tickSize(-height)
 
-let yGridlines = d3.axisLeft(y)
+let yGridlines = d3.axisLeft(yScale)
         .tickFormat('')
         .tickSize(-width)
 
@@ -48,32 +48,32 @@ let axisLabelRight = techan.plot.axisannotation()
         .translate([width, 0])
 
 let lines = techan.plot.supstance()
-        .xScale(x)
-        .yScale(y)
+        .xScale(xScale)
+        .yScale(yScale)
         .annotation([axisLabelLeft, axisLabelRight])
 
 let orderLines = techan.plot.supstance()
-        .xScale(x)
-        .yScale(y)
+        .xScale(xScale)
+        .yScale(yScale)
         .annotation([axisLabelLeft, axisLabelRight])
         .on('drag', onDragOrder)
         .on('dragend', onDragOrderEnd)
 
 let draftLines = techan.plot.supstance()
-        .xScale(x)
-        .yScale(y)
+        .xScale(xScale)
+        .yScale(yScale)
         .annotation([axisLabelLeft, axisLabelRight])
         .on('drag', onDragDraft)
 
 let crosshair = techan.plot.crosshair()
-        .xScale(x)
-        .yScale(y)
+        .xScale(xScale)
+        .yScale(yScale)
         .xAnnotation(axisLabelBottom)
         .yAnnotation([axisLabelLeft, axisLabelRight])
 
 let plot = techan.plot.candlestick()
-        .xScale(x)
-        .yScale(y)
+        .xScale(xScale)
+        .yScale(yScale)
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   PREPARE SVG CONTAINERS
@@ -88,16 +88,16 @@ svg.call(zoom)
 
 svg.on('dblclick.zoom', null)
     .on('dblclick', function () {
-        placeOrderDraft(y.invert(d3.mouse(this)[1]))
+        placeOrderDraft(yScale.invert(d3.mouse(this)[1]))
     })
 
 let gClipPath = svg.append('clipPath')
         .attr('id', 'clip')
     .append('rect')
         .attr('x', 0)
-        .attr('y', y(1))
+        .attr('y', yScale(1))
         .attr('width', width)
-        .attr('height', y(0) - y(1))
+        .attr('height', yScale(0) - yScale(1))
 
 let gXGridlines = svg.append('g').attr('class', 'x gridlines')
 let gYGridlines = svg.append('g').attr('class', 'y gridlines')
@@ -201,8 +201,8 @@ function draw() {
     ydomain[0] -= 80
     ydomain[1] += 80
 
-    x.domain(xdomain)
-    y.domain(ydomain)
+    xScale.domain(xdomain)
+    yScale.domain(ydomain)
 
     gXGridlines.call(xGridlines)
     gYGridlines.call(yGridlines)
@@ -323,12 +323,12 @@ function lineLabel (selection, data, type) {
             enter => enter.append('g').call(g => {
                 let rect = g.append('rect')
                     .attr('x', width - 80)
-                    .attr('y', d => y(d.value) - 10)
+                    .attr('y', d => yScale(d.value) - 10)
 
                 g.append('text')
                     .text(d => +d.qty)
                     .attr('x', width - 75)
-                    .attr('y', d => y(d.value) + 3)
+                    .attr('y', d => yScale(d.value) + 3)
 
                 g.attr('data-side', d => d.side)
 
@@ -349,9 +349,9 @@ function lineLabel (selection, data, type) {
             // Update y
             update => update.call(g => {
                 let rect = g.select('rect')
-                    .attr('y', d => y(d.value) - 10)
+                    .attr('y', d => yScale(d.value) - 10)
                 g.select('text')
-                    .attr('y', d => y(d.value) + 3)
+                    .attr('y', d => yScale(d.value) + 3)
                     .text(d => +d.qty)
                 g.attr('data-side', d => d.side)
 
@@ -469,7 +469,7 @@ function onLiquidationUpdate (price, side) {
 
 function onZoom(direction = 'x') {
     if (direction == 'x') {
-        let scaledX = d3.event.transform.rescaleX(x)
+        let scaledX = d3.event.transform.rescaleX(xScale)
         xAxis.scale(scaledX)
         xGridlines.scale(scaledX)
         plot.xScale(scaledX)
