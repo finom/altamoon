@@ -239,7 +239,7 @@ function updatePrice (price) {
 }
 
 function updatePosition (positions) {
-    let position = positions.filter(x => x.symbol == SYMBOL)[0]
+    let position = positions.filter(x => x.symbol === SYMBOL)[0]
     let i = liquidationLineData.findIndex(x => x.type === 'real')
 
     if (position.qty && position.liquidation) {
@@ -264,8 +264,8 @@ function updateOpenOrders (orders) {
 
 function updateBidAsk (data) {
     if (bidAskLinesData[0]) {
-        if (bidAskLinesData[0].value == data.a
-            && bidAskLinesData[1].value == data.b)
+        if (bidAskLinesData[0].value === data.a
+            && bidAskLinesData[1].value === data.b)
             return
     }
     bidAskLinesData = [{value: data.a}, {value: data.b}]
@@ -328,10 +328,10 @@ function lineLabel (selection, data, type) {
                 g.attr('data-side', d => d.side)
 
                 // Order
-                if (type == 'order')
+                if (type === 'order')
                     rect.on('click', d =>  api.cancelOrder(d.id))
                 // Draft
-                if (type == 'draft') {
+                if (type === 'draft') {
                     rect.on('click', (d, i) => {
                         draftToOrder(d, i)
                     })
@@ -350,7 +350,7 @@ function lineLabel (selection, data, type) {
                     .text(d => +d.qty)
                 g.attr('data-side', d => d.side)
 
-                if (type == 'draft') {
+                if (type === 'draft') {
                     rect.on('click', (d, i) => {
                         draftToOrder(d, i)
                     })
@@ -401,7 +401,7 @@ function draftToOrder (d, i) {
 
     draw()
 
-    let order = (d.side == 'buy')
+    let order = (d.side === 'buy')
         ? trading.onBuy
         : trading.onSell
 
@@ -418,20 +418,20 @@ function onTradingQtyUpdate (side, qty) {
 }
 
 function onDragOrder (d) {
-    let currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
-    if (!currentOrder || currentOrder.price == d.value)
+    let currentOrder = orderLinesData.filter(x => x.id === d.id)[0]
+    if (!currentOrder || currentOrder.price === d.value)
         return
     gOrderLabels.call(lineLabel, orderLinesData, 'order')
 }
 function onDragOrderEnd (d) {
     /* Delete order, recreate at new price */
-    let currentOrder = orderLinesData.filter(x => x.id == d.id)[0]
-    if (!currentOrder || currentOrder.price == d.value)
+    let currentOrder = orderLinesData.filter(x => x.id === d.id)[0]
+    if (!currentOrder || currentOrder.price === d.value)
         return
 
     api.cancelOrder(d.id)
 
-    let order = (d.side == 'buy')
+    let order = (d.side === 'buy')
         ? api.lib.futuresBuy
         : api.lib.futuresSell
 
@@ -443,7 +443,7 @@ function onDragOrderEnd (d) {
 }
 
 function onLiquidationUpdate (price, side) {
-    let index = liquidationLineData.findIndex(x => x.side == side)
+    let index = liquidationLineData.findIndex(x => x.side === side)
 
     if (!price && index >= 0)
         // Remove
@@ -463,7 +463,7 @@ function onLiquidationUpdate (price, side) {
 }
 
 function onZoom(direction = 'x') {
-    if (direction == 'x') {
+    if (direction === 'x') {
         let scaledX = d3.event.transform.rescaleX(xScale)
         xAxis.scale(scaledX)
         xGridlines.scale(scaledX)
