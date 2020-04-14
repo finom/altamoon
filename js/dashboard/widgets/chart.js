@@ -335,10 +335,6 @@ function lineLabel (selection, data, type) {
                     rect.on('click', (d, i) => {
                         draftToOrder(d, i)
                     })
-                    // rect.call(d3.drag()
-                            // .on('drag', onDragDraft)
-                            // .on('end', onDragDraftEnd)
-                    // )
                 }
             }),
             // Update y
