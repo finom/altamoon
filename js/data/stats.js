@@ -35,7 +35,8 @@ async function getDailyPnl () {
         let response = await api.lib.futuresIncome({
                 symbol: SYMBOL,
                 startTime: new Date().setHours(4),
-                endTime: Date.now()
+                endTime: Date.now(),
+                limit: 1000
             })
             .catch(err => {
                 if (err.code == 'ETIMEDOUT')
@@ -44,6 +45,8 @@ async function getDailyPnl () {
 
         if (Array.isArray(response))
             incomeHistory = response
+            if (incomeHistory.length >= 999)
+                console.warn('Income history request reached limit :(')
     }
 
     let pnlArray = incomeHistory.filter(

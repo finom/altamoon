@@ -332,9 +332,7 @@ function lineLabel (selection, data, type) {
                     rect.on('click', d =>  api.cancelOrder(d.id))
                 // Draft
                 if (type === 'draft') {
-                    rect.on('click', (d, i) => {
-                        draftToOrder(d, i)
-                    })
+                    rect.on('click', (d, i) => draftToOrder(d, i))
                 }
             }),
             // Update y
