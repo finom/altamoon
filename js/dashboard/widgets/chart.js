@@ -8,21 +8,27 @@ let width = 960 - margin.left - margin.right
 let height = 700 - margin.top - margin.bottom
 
 let xScale = d3.scaleTime().range([0, width])
-let yScale = d3.scaleLinear().range([height, 0])
+let yScale = d3.scaleSymlog().range([height, 0])
 
 let zoom = d3.zoom().on('zoom', onZoom)
 
 let xAxis = d3.axisBottom(xScale)
+
 let yAxisLeft = d3.axisLeft(yScale)
+        .tickFormat(d3.format('.2f'))
+
 let yAxisRight = d3.axisRight(yScale)
+        .tickFormat(d3.format('.2f'))
 
 let xGridlines = d3.axisTop(xScale)
         .tickFormat('')
         .tickSize(-height)
 
-let yGridlines = d3.axisLeft(yScale)
+let yGridlines = g => g.call(d3.axisLeft(yScale)
         .tickFormat('')
         .tickSize(-width)
+        .tickValues(d3.scaleLinear().domain(yScale.domain()).ticks())
+    )
 
 let axisLabelBottom = techan.plot.axisannotation()
         .axis(xAxis)
@@ -199,12 +205,16 @@ function draw() {
     xScale.domain(xdomain)
     yScale.domain(ydomain)
 
+    gXAxis.call(xAxis)
+    gYAxisLeft.call(yAxisLeft
+        .tickValues(d3.scaleLinear().domain(yScale.domain()).ticks())
+    )
+    gYAxisRight.call(yAxisRight
+        .tickValues(d3.scaleLinear().domain(yScale.domain()).ticks())
+    )
+
     gXGridlines.call(xGridlines)
     gYGridlines.call(yGridlines)
-
-    gXAxis.call(xAxis)
-    gYAxisLeft.call(yAxisLeft)
-    gYAxisRight.call(yAxisRight)
 
     gPriceLine.datum(priceLineData).call(lines)
     gPositionLine.datum(positionLineData).call(lines)
