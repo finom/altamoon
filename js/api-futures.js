@@ -252,6 +252,10 @@ function streamUserData () {
                     new Audio('./audio/plop.mp3').play()
             }
         }
+        // Market order
+        if (order.type === 'MARKET' && order.status === 'FILLED')
+            new Audio('./audio/plop.mp3').play()
+
         events.emit('api.orderUpdate', openOrders)
     }
 }
