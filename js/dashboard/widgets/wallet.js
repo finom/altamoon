@@ -16,16 +16,16 @@ async function updateWallet (data) {
 
     if(!data) return
 
-    let format = value => d3.format(',.2~f')(value)
+    let format = value => d3.format(',.2f')(value)
 
     let pnl = stats.getPnl()
-    let pnlPercent = d3.format(',.1~%')(pnl.percent)
+    let pnlPercent = d3.format(',.1%')(pnl.percent)
 
     let balance = parseFloat(data.totalWalletBalance)
     let unrealizedBalance = pnl.pnl + balance
 
     let dailyPnl = await stats.getDailyPnl()
-    let dailyPnlPercent = d3.format(',.1~%')(dailyPnl.percent)
+    let dailyPnlPercent = d3.format(',.1%')(dailyPnl.percent)
 
     data = [
         'Balance: ', format(data.totalWalletBalance),
