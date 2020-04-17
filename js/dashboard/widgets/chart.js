@@ -3,6 +3,8 @@ const techan = require('techan')
 const api = require('../../api-futures')
 const trading = require('./trading')
 
+const { Plot } = require('./chart/plot')
+
 let margin = { top: 0, right: 55, bottom: 30, left: 55 }
 let width = 960 - margin.left - margin.right
 let height = 700 - margin.top - margin.bottom
@@ -72,10 +74,6 @@ let crosshair = techan.plot.crosshair()
         .xAnnotation(axisLabelBottom)
         .yAnnotation([axisLabelLeft, axisLabelRight])
 
-let plot = techan.plot.candlestick()
-        .xScale(xScale)
-        .yScale(yScale)
-
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   PREPARE SVG CONTAINERS
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -116,8 +114,7 @@ let gLiquidationLine = svg.append('g').attr('class', 'liquidation-line')
 let gBidASkLines = svg.append('g').attr('class', 'bid-ask-lines')
 let gPriceLine = svg.append('g').attr('class', 'price-line')
 
-let gPlot = svg.append('g').attr('class', 'plot')
-        .attr('clip-path', 'url(#clip)')
+let plot = new Plot(svg, xScale, yScale)
 
 let gCrosshair = svg.append('g').attr('class', 'crosshair')
 
@@ -146,8 +143,6 @@ let lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=' + SYMBOL 
 
 d3.json(lastCandlesURL)
     .then(jsonCandles => {
-        let accessor = plot.accessor()
-
         candles = jsonCandles
             .map(d => {
                 return {
@@ -159,7 +154,6 @@ d3.json(lastCandlesURL)
                     volume: +d[7]
                 }
             })
-            .sort((a, b) => d3.ascending(accessor.d(a), accessor.d(b)))
 
         // Draw with initial data
         initDraw()
@@ -193,14 +187,14 @@ function initDraw() {
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function draw() {
     let data = candles.slice(-350, candles.length)
-    let accessor = plot.accessor()
+    let accessor = techan.plot.candlestick().accessor()
 
     let xdomain = d3.extent(data.map(accessor.d))
-    let ydomain = techan.scale.plot.ohlc(data, accessor).domain()
+    let ydomain = [d3.min(data, d => d.low), d3.max(data, d => d.high)]
 
     // Padding y axis
-    ydomain[0] -= 80
-    ydomain[1] += 80
+    ydomain[0] -= 50
+    ydomain[1] += 50
 
     xScale.domain(xdomain)
     yScale.domain(ydomain)
@@ -229,7 +223,7 @@ function draw() {
 
     gCrosshair.call(crosshair)
 
-    gPlot.datum(data).call(plot)
+    plot.draw(data)
 
     // Color lines based on market side
     gPositionLine.selectAll('.position-line > g')
@@ -466,12 +460,16 @@ function onLiquidationUpdate (price, side) {
         .attr('data-type', d => d.type)
 }
 
-function onZoom(direction = 'x') {
-    if (direction === 'x') {
-        let scaledX = d3.event.transform.rescaleX(xScale)
-        xAxis.scale(scaledX)
-        xGridlines.scale(scaledX)
-        plot.xScale(scaledX)
-    }
+function onZoom() {
+    let transform = d3.event.transform
+    let scaledX = transform.rescaleX(xScale)
+
+    xAxis.scale(scaledX)
+    xGridlines.scale(scaledX)
+    plot.xScale = scaledX
+    // plot.transformX(transform)
+
+    // let scaledY = transform.rescaleY(yScale)
+    // plot.yScale = scaledY
     draw()
 }

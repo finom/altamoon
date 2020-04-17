@@ -27,21 +27,21 @@ svg text {
 /*
     Candles
 */
-path.candle {
+.plot .candle {
     stroke: #005dff;
-    /* stroke-linecap: round; */
+    stroke-linecap: round;
 }
-path.candle.body {
-    stroke-width: 0;
+.plot .candle .body {
+    stroke-width: 3;
 }
-path.candle.wick {
-    stroke-width: 2 !important;
+.plot .candle .wick {
+    stroke-width: 2;
 }
-path.candle.up {
+.plot .candle .up {
     fill: #005dff;
     stroke: #005dff;
 }
-path.candle.down {
+.plot .candle .down {
     fill: #0025ff;
     stroke: #0025ff;
 }
