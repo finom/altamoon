@@ -22,10 +22,9 @@ function ovoCandles (candles) {
             ? 'up' : 'down'
 
         // Clamp new open to low/high
-        if (newDirection === 'up')
-            newOpen = Math.max(newOpen, low)
-        else
-            newOpen = Math.min(newOpen, high)
+        newOpen = (newDirection === 'up')
+            ? Math.max(newOpen, low)
+            : Math.min(newOpen, high)
 
         newCandles[i] = {
             date: date,
@@ -39,10 +38,9 @@ function ovoCandles (candles) {
 
         // Adjust close of last candle, we don't want gaps
         if (last)
-            if (last.direction === 'up')
-                last.close = Math.max(last.close, newOpen)
-            else
-                last.close = Math.min(last.close, newOpen)
+            last.close = (last.direction === 'up')
+                ? Math.max(last.close, newOpen)
+                : Math.min(last.close, newOpen)
     }
     return newCandles
 }
