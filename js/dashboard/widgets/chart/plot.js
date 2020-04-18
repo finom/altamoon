@@ -7,6 +7,7 @@ class Plot {
         this.yScale = yScale
         this.wrapper = this.appendWrapper()
 
+        this.candles
         this.haCandles // 'ha' for 'Heikin Ashi'
     }
 
@@ -17,86 +18,91 @@ class Plot {
     }
 
     draw (candles) {
-        this._candlesToHeikinashi(candles)
+        this.candles = candles
+        this.haCandles = this.candlesToHeikinashi(candles)
+
+        let data = this.candles
+        // let data = this.haCandles
+
         this.wrapper
             .selectAll('g')
-            .data(candles)
+            .data(data)
             .join(
                 enter => enter.append('g')
                     .attr('class', 'candle')
                     .attr('transform',
-                        d => 'translate(' + this.xScale(d.date) + ', 0)'
-                    )
-                    .call(sel => this._appendBody(sel))
-                    .call(sel => this._appendWick(sel))
+                        d => 'translate(' + this.xScale(d.date) + ' 0)')
+                    .call(g => this._appendBody(g))
+                    .call(g => this._appendWick(g))
                 ,
                 update => update
                     .attr('transform',
-                        d => 'translate(' + this.xScale(d.date) + ', 0)'
-                    )
-                    .call(sel => this._updateBody(sel))
-                    .call(sel => this._updateWick(sel))
+                        d => 'translate(' + this.xScale(d.date) + ' 0)')
+                    .call(g => this._updateBody(g))
+                    .call(g => this._updateWick(g))
             )
     }
 
-    transformX (transform) {
-        let zoom = 'translate(' + transform.x + ',0) '
-                    + 'scale(' + transform.k + ',1)'
-        this.wrapper.attr('transform', zoom)
-    }
+    candlesToHeikinashi(candles) {
+        /* Creates an array of Heikin Ashi candles */
+        let haCandles = []
 
-    _candlesToHeikinashi(candles) {
-        this.haCandles = []
         for (let [i, d] of candles.entries()) {
-            let last = this.haCandles[i-1]
-            if (last)
-                open = (last.open + last.close) / 2
-            else
-                open = (d.open + d.close) / 2
+            let last = haCandles[i-1]
 
-            close = (d.open + d.close + d.high + d.low) / 4
-
-            this.haCandles[i] = { open: open, close: close }
+            haCandles[i] = {
+                open : (last) ? (last.open + last.close) / 2
+                              : (d.open + d.close) / 2,
+                close : (d.open + d.close + d.high + d.low) / 4,
+                high : Math.max(d.high, open, close),
+                low : Math.min(d.low, open, close)
+            }
         }
+        return haCandles
     }
 
     _appendBody (g) {
         g.append('line')
-            .call(sel => this._bodyAttributes(sel))
+            .call(line => this._bodyAttributes(line))
     }
 
     _appendWick (g) {
         g.append('line')
-            .call(sel => this._wickAttributes(sel))
+            .call(line => this._wickAttributes(line))
     }
 
     _updateBody (g) {
         g.select('line')
-            .call(sel => this._bodyAttributes(sel))
+            .call(line => this._bodyAttributes(line))
     }
 
     _updateWick (g) {
         g.select('line:last-child')
-            .call(sel => this._wickAttributes(sel))
+            .call(line => this._wickAttributes(line))
     }
 
     _bodyAttributes (line) {
-        line.attr('class', (d, i) => 'body ' + this._getDirection(i))
+        line.attr('class', (d, i) => 'body ' + this._candleDirection(i))
             .attr('y1', d => this.yScale(d.open))
             .attr('y2', d => this.yScale(d.close))
-            // .attr('stroke-width', d => this.xScale(???))
+            .attr('stroke-width', d =>
+                Math.max(3, this.zoomScale * 1.5)
+            )
     }
 
     _wickAttributes (line) {
-        line.attr('class', (d, i) => 'wick ' + this._getDirection(i))
+        line.attr('class', (d, i) => 'wick ' + this._candleDirection(i))
             .attr('y1', d => this.yScale(d.low))
             .attr('y2', d => this.yScale(d.high))
-            // .attr('stroke-width', d => this.xScale(???))
     }
 
-    _getDirection (i) {
+    _candleDirection (i) {
         let { open, close } = this.haCandles[i]
         return open <= close ? 'up' : 'down'
+    }
+
+    get zoomScale () {
+        return d3.zoomTransform(this.wrapper.node()).k
     }
 }
 

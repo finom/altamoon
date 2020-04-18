@@ -29,21 +29,16 @@ svg text {
 */
 .plot .candle {
     stroke: #005dff;
-    stroke-linecap: round;
-}
-.plot .candle .body {
-    stroke-width: 3;
+    /* stroke-linecap: round; */
 }
 .plot .candle .wick {
     stroke-width: 2;
 }
 .plot .candle .up {
-    fill: #005dff;
-    stroke: #005dff;
+    stroke: #0075ff;
 }
 .plot .candle .down {
-    fill: #0025ff;
-    stroke: #0025ff;
+    stroke: #002fff;
 }
 /*
     Lines
