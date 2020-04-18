@@ -1,5 +1,5 @@
 'use strict'
-const heikinashi = require('./heikin-ashi')
+const ovoCandles = require('./ovo-candles')
 
 class Plot {
     constructor (container, xScale, yScale) {
@@ -9,7 +9,7 @@ class Plot {
         this.wrapper = this.appendWrapper()
 
         this.candles
-        this.haCandles // 'ha' for 'Heikin Ashi'
+        this.ovoCandles // 'ha' for 'Heikin Ashi'
     }
 
     appendWrapper () {
@@ -20,34 +20,38 @@ class Plot {
 
     draw (candles) {
         this.candles = candles
-        this.haCandles = heikinashi(candles)
+        this.ovoCandles = ovoCandles(candles)
 
-        let data = this.candles
-        // let data = this.haCandles
+        // let data = this.candles
+        let data = this.ovoCandles
 
         this.wrapper
             .selectAll('g')
             .data(data)
             .join(
                 enter => enter.append('g')
-                    .attr('class', (d, i) => 'candle ' + this._candleDirection(i))
+                    .attr('class', (d, i) => 'candle ' + this._direction(i))
                     .attr('transform',
                         d => 'translate(' + this.xScale(d.date) + ' 0)')
-                    .call(g => this._appendBody(g))
                     .call(g => this._appendWick(g))
+                    .call(g => this._appendBody(g))
                 ,
                 update => update
-                    .attr('class', (d, i) => 'candle ' + this._candleDirection(i))
-                    .attr('transform',
-                        d => 'translate(' + this.xScale(d.date) + ' 0)')
-                    .call(g => this._updateBody(g))
+                    .attr('class', (d, i) => 'candle ' + this._direction(i))
+                    .attr('transform', d =>
+                        'translate(' + this.xScale(d.date) + ' 0)')
                     .call(g => this._updateWick(g))
+                    .call(g => this._updateBody(g))
             )
     }
 
+    _direction (i) {
+        return this.ovoCandles[i].direction
+    }
+
     _appendBody (g) {
-        g.append('line')
-            .call(line => this._bodyAttributes(line))
+        g.append('rect')
+            .call(rect => this._bodyAttributes(rect))
     }
 
     _appendWick (g) {
@@ -56,33 +60,35 @@ class Plot {
     }
 
     _updateBody (g) {
-        g.select('line')
-            .call(line => this._bodyAttributes(line))
+        g.select('rect')
+            .call(rect => this._bodyAttributes(rect))
     }
 
     _updateWick (g) {
-        g.select('line:last-child')
+        g.select('line')
             .call(line => this._wickAttributes(line))
     }
 
-    _bodyAttributes (line) {
-        line.attr('class', 'body')
-            .attr('y1', d => this.yScale(d.open))
-            .attr('y2', d => this.yScale(d.close))
-            .attr('stroke-width', d =>
-                Math.max(3, this.zoomScale * 1.5)
+    _bodyAttributes (rect) {
+        let width = this.zoomScale
+
+             if (width < 0.8) width = 0
+        else if (width < 1.5) width = 2
+        else if (width < 3.0) width = 3
+
+        rect.attr('class', 'body')
+            .attr('x', -width / 2)
+            .attr('y', d => Math.min(this.yScale(d.open), this.yScale(d.close)))
+            .attr('height', d =>
+                Math.abs(this.yScale(d.close) - this.yScale(d.open))
             )
+            .attr('width', width)
     }
 
     _wickAttributes (line) {
         line.attr('class', 'wick')
             .attr('y1', d => this.yScale(d.low))
             .attr('y2', d => this.yScale(d.high))
-    }
-
-    _candleDirection (i) {
-        let { open, close } = this.haCandles[i]
-        return open <= close ? 'up' : 'down'
     }
 
     get zoomScale () {

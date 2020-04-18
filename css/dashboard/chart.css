@@ -1,7 +1,7 @@
 
 svg {
     font: 10px sans-serif;
-    background: #000113;
+    background: #000017;
     border-radius: 5px;
     height: 100%;
     shape-rendering: crispEdges;
@@ -28,17 +28,24 @@ svg text {
     Candles
 */
 .plot .candle {
-    stroke: #005dff;
-    /* stroke-linecap: round; */
+    stroke: #0077ff;
 }
 .plot .candle .wick {
-    stroke-width: 2;
+    stroke-width: 1px;
 }
-.plot .candle.up {
-    stroke: #0075ff;
+.plot .candle.up .body {
+    fill: #00a7ff;
+    stroke: #0068ff;
 }
-.plot .candle.down {
-    stroke: #002fff;
+.plot .candle.up .wick {
+    stroke: #00aeff;
+}
+.plot .candle.down .body {
+    fill: #003eff;
+    stroke: #003aff;
+}
+.plot .candle.down .wick {
+    stroke: #0046ff;
 }
 /*
     Lines

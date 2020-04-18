@@ -147,6 +147,7 @@ d3.json(lastCandlesURL)
             .map(d => {
                 return {
                     date: new Date(+d[0]),
+                    direction: (+d[1] <= +d[4]) ? 'up' : 'down',
                     open: +d[1],
                     high: +d[2],
                     low: +d[3],
@@ -286,8 +287,12 @@ function streamLastCandle () {
     stream.onmessage = event => {
         let d = JSON.parse(event.data).k
 
+        let direction = (parseFloat(d.o) <= parseFloat(d.c))
+            ? 'up' : 'down'
+
         let candle = {
                 date: new Date(d.t),
+                direction: direction,
                 open: parseFloat(d.o),
                 high: parseFloat(d.h),
                 low: parseFloat(d.l),
