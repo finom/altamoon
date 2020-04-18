@@ -30,13 +30,14 @@ class Plot {
             .data(data)
             .join(
                 enter => enter.append('g')
-                    .attr('class', 'candle')
+                    .attr('class', (d, i) => 'candle ' + this._candleDirection(i))
                     .attr('transform',
                         d => 'translate(' + this.xScale(d.date) + ' 0)')
                     .call(g => this._appendBody(g))
                     .call(g => this._appendWick(g))
                 ,
                 update => update
+                    .attr('class', (d, i) => 'candle ' + this._candleDirection(i))
                     .attr('transform',
                         d => 'translate(' + this.xScale(d.date) + ' 0)')
                     .call(g => this._updateBody(g))
@@ -65,7 +66,7 @@ class Plot {
     }
 
     _bodyAttributes (line) {
-        line.attr('class', (d, i) => 'body ' + this._candleDirection(i))
+        line.attr('class', 'body')
             .attr('y1', d => this.yScale(d.open))
             .attr('y2', d => this.yScale(d.close))
             .attr('stroke-width', d =>
@@ -74,7 +75,7 @@ class Plot {
     }
 
     _wickAttributes (line) {
-        line.attr('class', (d, i) => 'wick ' + this._candleDirection(i))
+        line.attr('class', 'wick')
             .attr('y1', d => this.yScale(d.low))
             .attr('y2', d => this.yScale(d.high))
     }

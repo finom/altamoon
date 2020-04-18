@@ -34,10 +34,10 @@ svg text {
 .plot .candle .wick {
     stroke-width: 2;
 }
-.plot .candle .up {
+.plot .candle.up {
     stroke: #0075ff;
 }
-.plot .candle .down {
+.plot .candle.down {
     stroke: #002fff;
 }
 /*
