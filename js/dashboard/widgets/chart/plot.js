@@ -1,4 +1,5 @@
 'use strict'
+const heikinashi = require('./heikin-ashi')
 
 class Plot {
     constructor (container, xScale, yScale) {
@@ -19,7 +20,7 @@ class Plot {
 
     draw (candles) {
         this.candles = candles
-        this.haCandles = this.candlesToHeikinashi(candles)
+        this.haCandles = heikinashi(candles)
 
         let data = this.candles
         // let data = this.haCandles
@@ -41,24 +42,6 @@ class Plot {
                     .call(g => this._updateBody(g))
                     .call(g => this._updateWick(g))
             )
-    }
-
-    candlesToHeikinashi(candles) {
-        /* Creates an array of Heikin Ashi candles */
-        let haCandles = []
-
-        for (let [i, d] of candles.entries()) {
-            let last = haCandles[i-1]
-
-            haCandles[i] = {
-                open : (last) ? (last.open + last.close) / 2
-                              : (d.open + d.close) / 2,
-                close : (d.open + d.close + d.high + d.low) / 4,
-                high : Math.max(d.high, open, close),
-                low : Math.min(d.low, open, close)
-            }
-        }
-        return haCandles
     }
 
     _appendBody (g) {
