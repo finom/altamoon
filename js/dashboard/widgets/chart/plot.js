@@ -36,14 +36,26 @@ class Plot {
             )
     }
 
+    update () {
+        this.mainWrapper.selectAll('g')
+            .call(sel => this._updateCandle(sel))
+    }
+
     updateLast (candle) {
+        let index = this.candles.lastIndex
         this.candles.last = candle
+
+        this.smoozCandles = smoozCandles(
+            this.candles,
+            this.smoozCandles,
+            index
+        )
 
         this.mainWrapper.selectAll('g')
             .data(this.candles)
 
         let selection = this.mainWrapper.select('g:last-child')
-        this._updateCandle(selection)
+        this._updateCandle(selection, index)
     }
 
     _appendCandle (selection) {
@@ -55,9 +67,9 @@ class Plot {
             .call(sel => this._appendBody(sel))
     }
 
-    _updateCandle (selection) {
+    _updateCandle (selection, index) {
         selection
-            .attr('class', (d, i) => 'candle ' + this._direction(i))
+            .attr('class', (d, i) => 'candle ' + this._direction(index || i))
             .attr('transform',
                 d => 'translate(' + this.xScale(d.date) + ' 0)')
             .call(sel => this._updateWick(sel))

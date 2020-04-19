@@ -6,16 +6,20 @@ module.exports = smoozCandles
  * Returns an array of smoothed candles.
  * (Based on heikin ashi candles, but keeps the real high & low)
  * */
-function smoozCandles (candles) {
-    let newCandles = []
+function smoozCandles (
+    candles,
+    prevSmooz = [],     // If updating
+    startIndex = 0,     // If updating
+) {
+    let newCandles = [...prevSmooz.slice(0, startIndex)]
 
-    for (let i = 0; i < candles.length; i++) {
+    for (let i = startIndex; i < candles.length; i++) {
         let { open, close, high, low, date, volume } = candles[i]
         let last = newCandles[i - 1]
 
         let newOpen = (last)
-                ? (last.open + last.close) / 2
-                : (open + close) / 2
+            ? (last.open + last.close) / 2
+            : (open + close) / 2
         let newClose = (open + close + high + low) / 4
 
         let newDirection = (newOpen <= newClose)
