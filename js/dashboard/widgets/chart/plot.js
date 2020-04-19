@@ -1,5 +1,5 @@
 'use strict'
-const ovoCandles = require('./ovo-candles')
+const smoozCandles = require('./smooz-candles')
 
 class Plot {
     constructor (container, xScale, yScale) {
@@ -9,7 +9,7 @@ class Plot {
         this.wrapper = this.appendWrapper()
 
         this.candles
-        this.ovoCandles // 'ha' for 'Heikin Ashi'
+        this.smoozCandles
     }
 
     appendWrapper () {
@@ -20,10 +20,10 @@ class Plot {
 
     draw (candles) {
         this.candles = candles
-        this.ovoCandles = ovoCandles(candles)
+        this.smoozCandles = smoozCandles(candles)
 
         // let data = this.candles
-        let data = this.ovoCandles
+        let data = this.smoozCandles
 
         this.wrapper
             .selectAll('g')
@@ -46,7 +46,7 @@ class Plot {
     }
 
     _direction (i) {
-        return this.ovoCandles[i].direction
+        return this.smoozCandles[i].direction
     }
 
     _appendBody (g) {

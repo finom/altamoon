@@ -1,12 +1,12 @@
 'use strict'
 
-module.exports = ovoCandles
+module.exports = smoozCandles
 
 /**
  * Returns an array of smoothed candles.
- * (Based on heikin ashi candles)
+ * (Based on heikin ashi candles, but keeps the real high & low)
  * */
-function ovoCandles (candles) {
+function smoozCandles (candles) {
     let newCandles = []
 
     for (let i = 0; i < candles.length; i++) {
@@ -27,12 +27,12 @@ function ovoCandles (candles) {
             : Math.min(newOpen, high)
 
         newCandles[i] = {
-            date: date,
             direction: newDirection,
-            open : newOpen,
-            close : newClose,
-            high : high,
-            low : low,
+            date: date,
+            open: newOpen,
+            close:  newClose,
+            high: high,
+            low: low,
             volume: volume
         }
 
