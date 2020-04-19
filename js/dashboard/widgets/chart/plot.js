@@ -51,8 +51,8 @@ class Plot {
             .attr('class', (d, i) => 'candle ' + this._direction(i))
             .attr('transform',
                 d => 'translate(' + this.xScale(d.date) + ' 0)')
-            .call(g => this._appendWick(g))
-            .call(g => this._appendBody(g))
+            .call(sel => this._appendWick(sel))
+            .call(sel => this._appendBody(sel))
     }
 
     _updateCandle (selection) {
@@ -60,8 +60,8 @@ class Plot {
             .attr('class', (d, i) => 'candle ' + this._direction(i))
             .attr('transform',
                 d => 'translate(' + this.xScale(d.date) + ' 0)')
-            .call(g => this._updateWick(g))
-            .call(g => this._updateBody(g))
+            .call(sel => this._updateWick(sel))
+            .call(sel => this._updateBody(sel))
     }
 
     _direction (i) {
@@ -70,22 +70,22 @@ class Plot {
 
     _appendBody (g) {
         g.append('rect')
-            .call(rect => this._bodyAttributes(rect))
+            .call(sel => this._bodyAttributes(sel))
     }
 
     _appendWick (g) {
         g.append('line')
-            .call(line => this._wickAttributes(line))
+            .call(sel => this._wickAttributes(sel))
     }
 
     _updateBody (g) {
         g.select('rect')
-            .call(rect => this._bodyAttributes(rect))
+            .call(sel => this._bodyAttributes(sel))
     }
 
     _updateWick (g) {
         g.select('line')
-            .call(line => this._wickAttributes(line))
+            .call(sel => this._wickAttributes(sel))
     }
 
     _bodyAttributes (rect) {

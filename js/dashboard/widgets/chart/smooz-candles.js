@@ -11,7 +11,7 @@ function smoozCandles (candles) {
 
     for (let i = 0; i < candles.length; i++) {
         let { open, close, high, low, date, volume } = candles[i]
-        let last = newCandles[i-1]
+        let last = newCandles[i - 1]
 
         let newOpen = (last)
                 ? (last.open + last.close) / 2
@@ -30,7 +30,7 @@ function smoozCandles (candles) {
             direction: newDirection,
             date: date,
             open: newOpen,
-            close:  newClose,
+            close: newClose,
             high: high,
             low: low,
             volume: volume

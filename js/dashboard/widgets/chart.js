@@ -191,9 +191,8 @@ function initDraw() {
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function draw() {
     let data = candles.slice(-350, candles.length)
-    let accessor = techan.plot.candlestick().accessor()
 
-    let xdomain = d3.extent(data.map(accessor.d))
+    let xdomain = [data[0].date, data.last.date]
     let ydomain = [d3.min(data, d => d.low), d3.max(data, d => d.high)]
 
     // Padding y axis
