@@ -370,7 +370,7 @@ function placeOrderDraft (price) {
     price = +(price.toFixed(2))
     let lastPrice = (api.lastPrice)
             ? api.lastPrice
-            : candles[candles.length - 1].close
+            : candles.last.close
     let side = (price <= lastPrice) ? 'buy' : 'sell'
     let qty = d3.select('#' + side + '-qty').property('value')
 
@@ -385,7 +385,7 @@ function onDragDraft (d) {
     let price = +(d.value.toFixed(2))
     let lastPrice = (api.lastPrice)
             ? api.lastPrice
-            : candles[candles.length - 1].close
+            : candles.last.close
     let qty = d3.select('#' + d.side + '-qty').property('value')
 
     draftLinesData[0].value = price
