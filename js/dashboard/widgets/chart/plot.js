@@ -2,47 +2,66 @@
 const smoozCandles = require('./smooz-candles')
 
 class Plot {
-    constructor (container, xScale, yScale) {
-        this.container = container
+    constructor (xScale, yScale) {
         this.xScale = xScale
         this.yScale = yScale
-        this.wrapper = this.appendWrapper()
+
+        this.mainWrapper
 
         this.candles
         this.smoozCandles
     }
 
-    appendWrapper () {
-        return this.container.append('g')
+    appendWrapper (container) {
+        this.mainWrapper = container.append('g')
             .attr('class', 'plot')
             .attr('clip-path', 'url(#clip)')
+
+        return this.mainWrapper
     }
 
     draw (candles) {
         this.candles = candles
         this.smoozCandles = smoozCandles(candles)
 
-        // let data = this.candles
-        let data = this.smoozCandles
+        candles = this.smoozCandles
 
-        this.wrapper
-            .selectAll('g')
-            .data(data)
+        this.mainWrapper.selectAll('g')
+            .data(candles)
             .join(
-                enter => enter.append('g')
-                    .attr('class', (d, i) => 'candle ' + this._direction(i))
-                    .attr('transform',
-                        d => 'translate(' + this.xScale(d.date) + ' 0)')
-                    .call(g => this._appendWick(g))
-                    .call(g => this._appendBody(g))
-                ,
+                enter =>  enter.append('g')
+                    .call(sel => this._appendCandle(sel)),
                 update => update
-                    .attr('class', (d, i) => 'candle ' + this._direction(i))
-                    .attr('transform', d =>
-                        'translate(' + this.xScale(d.date) + ' 0)')
-                    .call(g => this._updateWick(g))
-                    .call(g => this._updateBody(g))
+                    .call(sel => this._updateCandle(sel))
             )
+    }
+
+    updateLast (candle) {
+        this.candles.last = candle
+
+        this.mainWrapper.selectAll('g')
+            .data(this.candles)
+
+        let selection = this.mainWrapper.select('g:last-child')
+        this._updateCandle(selection)
+    }
+
+    _appendCandle (selection) {
+        selection
+            .attr('class', (d, i) => 'candle ' + this._direction(i))
+            .attr('transform',
+                d => 'translate(' + this.xScale(d.date) + ' 0)')
+            .call(g => this._appendWick(g))
+            .call(g => this._appendBody(g))
+    }
+
+    _updateCandle (selection) {
+        selection
+            .attr('class', (d, i) => 'candle ' + this._direction(i))
+            .attr('transform',
+                d => 'translate(' + this.xScale(d.date) + ' 0)')
+            .call(g => this._updateWick(g))
+            .call(g => this._updateBody(g))
     }
 
     _direction (i) {
@@ -72,6 +91,7 @@ class Plot {
     _bodyAttributes (rect) {
         let width = this.zoomScale
 
+        // Clamp width on high zoom out levels
              if (width < 0.8) width = 0
         else if (width < 1.5) width = 2
         else if (width < 3.0) width = 3
@@ -92,8 +112,8 @@ class Plot {
     }
 
     get zoomScale () {
-        return d3.zoomTransform(this.wrapper.node()).k
+        return d3.zoomTransform(this.mainWrapper.node()).k
     }
 }
 
-module.exports = { Plot }
+module.exports = Plot

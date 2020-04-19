@@ -2,8 +2,7 @@
 const techan = require('techan')
 const api = require('../../api-futures')
 const trading = require('./trading')
-
-const { Plot } = require('./chart/plot')
+const Plot = require('./chart/plot')
 
 let margin = { top: 0, right: 55, bottom: 30, left: 55 }
 let width = 960 - margin.left - margin.right
@@ -74,6 +73,8 @@ let crosshair = techan.plot.crosshair()
         .xAnnotation(axisLabelBottom)
         .yAnnotation([axisLabelLeft, axisLabelRight])
 
+let plot = new Plot(xScale, yScale)
+
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   PREPARE SVG CONTAINERS
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -114,7 +115,7 @@ let gLiquidationLine = svg.append('g').attr('class', 'liquidation-line')
 let gBidASkLines = svg.append('g').attr('class', 'bid-ask-lines')
 let gPriceLine = svg.append('g').attr('class', 'price-line')
 
-let plot = new Plot(svg, xScale, yScale)
+plot.appendWrapper(svg)
 
 let gCrosshair = svg.append('g').attr('class', 'crosshair')
 
@@ -168,6 +169,8 @@ function initDraw() {
     draw()
     // Right padding
     svg.call(zoom.translateBy, -100)
+    // svg.call(zoom.translateBy, -200)
+    // svg.call(zoom.scaleBy, 1.5)
 
     api.getPosition()
     api.getOpenOrders()
@@ -299,20 +302,17 @@ function streamLastCandle () {
                 close: parseFloat(d.c),
                 volume: parseFloat(d.q) }
 
-        let lastCandle = candles[candles.length - 1]
-        let newCandle = false
+        let isSameCandle = candle.date.getTime() === candles.last.date.getTime()
 
-        if (candle.date > lastCandle.date) {
-            candles.push(candle)
-            newCandle = true
+        if (isSameCandle) {
+            candles.last = candle
+            plot.updateLast(candle)
         } else {
-            candles[candles.length - 1] = candle
-        }
-        draw()
-
-        if (newCandle)
+            candles.push(candle)
+            draw()
             // Pan chart
             svg.call(zoom.translateBy, 0) // Ehh... ¯\_(°~°)_/¯
+        }
     }
 }
 
