@@ -27,24 +27,24 @@ svg text {
 /*
     Candles
 */
-.plot .candle {
+.plot {
     stroke: #0077ff;
 }
-.plot .candle .wick {
+.plot .wick {
     stroke-width: 1px;
 }
-.plot .candle.up .body {
+.plot .up.body {
     fill: #00a7ff;
     stroke: #0068ff;
 }
-.plot .candle.up .wick {
+.plot .up.wick {
     stroke: #00aeff;
 }
-.plot .candle.down .body {
+.plot .down.body {
     fill: #003eff;
     stroke: #003aff;
 }
-.plot .candle.down .wick {
+.plot .down.wick {
     stroke: #0046ff;
 }
 /*

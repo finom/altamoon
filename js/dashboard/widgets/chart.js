@@ -116,6 +116,7 @@ let gBidASkLines = svg.append('g').attr('class', 'bid-ask-lines')
 let gPriceLine = svg.append('g').attr('class', 'price-line')
 
 plot.appendWrapper(svg)
+plot.appendWrapper(svg)
 
 let gCrosshair = svg.append('g').attr('class', 'crosshair')
 
@@ -146,8 +147,10 @@ d3.json(lastCandlesURL)
     .then(jsonCandles => {
         candles = jsonCandles
             .map(d => {
+                let date = new Date(+d[0])
                 return {
-                    date: new Date(+d[0]),
+                    date: date,
+                    timestamp: date.getTime(),
                     direction: (+d[1] <= +d[4]) ? 'up' : 'down',
                     open: +d[1],
                     high: +d[2],
@@ -190,7 +193,7 @@ function initDraw() {
 //   RENDER CHART
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function draw() {
-    let data = candles.slice(-350, candles.length)
+    let data = candles.slice(-300, candles.length)
 
     let xdomain = [data[0].date, data.last.date]
     let ydomain = [d3.min(data, d => d.low), d3.max(data, d => d.high)]
@@ -226,7 +229,8 @@ function draw() {
 
     gCrosshair.call(crosshair)
 
-    plot.draw(data)
+    // plot.draw(data)
+    plot.draw(candles)
 
     // Color lines based on market side
     gPositionLine.selectAll('.position-line > g')
@@ -289,11 +293,13 @@ function streamLastCandle () {
     stream.onmessage = event => {
         let d = JSON.parse(event.data).k
 
+        let date = new Date(d.t)
         let direction = (parseFloat(d.o) <= parseFloat(d.c))
             ? 'up' : 'down'
 
         let candle = {
-                date: new Date(d.t),
+                date: date,
+                timestamp: date.getTime(),
                 direction: direction,
                 open: parseFloat(d.o),
                 high: parseFloat(d.h),
@@ -301,7 +307,7 @@ function streamLastCandle () {
                 close: parseFloat(d.c),
                 volume: parseFloat(d.q) }
 
-        let isSameCandle = candle.date.getTime() === candles.last.date.getTime()
+        let isSameCandle = candle.timestamp === candles.last.timestamp
 
         if (isSameCandle) {
             candles.last = candle
@@ -471,7 +477,6 @@ function onZoom() {
     xAxis.scale(scaledX)
     xGridlines.scale(scaledX)
     plot.xScale = scaledX
-    // plot.transformX(transform)
 
     // let scaledY = transform.rescaleY(yScale)
     // plot.yScale = scaledY

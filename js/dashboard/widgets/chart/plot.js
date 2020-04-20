@@ -6,39 +6,73 @@ class Plot {
         this.xScale = xScale
         this.yScale = yScale
 
-        this.mainWrapper
+        this.candles = []
+        this.smoozCandles = []
+        this.bodyStrings = {}
 
-        this.candles
-        this.smoozCandles
+        this.wrapper
+
+        this.pathBodiesUp
+        this.pathBodiesDown
+        this.pathWicksUp
+        this.pathWicksDown
     }
 
     appendWrapper (container) {
-        this.mainWrapper = container.append('g')
+        this.wrapper = container.append('g')
             .attr('class', 'plot')
             .attr('clip-path', 'url(#clip)')
 
-        return this.mainWrapper
+        this.pathBodiesUp = this.wrapper.append('path')
+                .attr('class', 'body up')
+        this.pathBodiesDown = this.wrapper.append('path')
+                .attr('class', 'body down')
+        this.pathWicksUp = this.wrapper.append('path')
+                .attr('class', 'wick up')
+        this.pathWicksDown = this.wrapper.append('path')
+                .attr('class', 'wick down')
+
+        this.lastBody = this.wrapper.append('path')
+        this.lastWick = this.wrapper.append('path')
+
+        return this.wrapper
     }
 
-    draw (candles) {
-        this.candles = candles
-        this.smoozCandles = smoozCandles(candles)
+    draw (candles, update = false) {
+        if (!candles.length)
+            return
 
-        candles = this.smoozCandles
+        if (update || !this.candles.length
+                   || candles.last.timestamp != this.candles.last.timestamp) {
+            this.candles = [...candles]
+            this.smoozCandles = smoozCandles(candles)
+        }
 
-        this.mainWrapper.selectAll('g')
-            .data(candles)
-            .join(
-                enter =>  enter.append('g')
-                    .call(sel => this._appendCandle(sel)),
-                update => update
-                    .call(sel => this._updateCandle(sel))
-            )
-    }
+        candles = [...this.smoozCandles]
+        let lastCandle = candles.pop()
 
-    update () {
-        this.mainWrapper.selectAll('g')
-            .call(sel => this._updateCandle(sel))
+        let upCandles = candles.filter(x => x.direction === 'up')
+        let downCandles = candles.filter(x => x.direction === 'down')
+
+        this.pathBodiesUp
+            .attr('d', this._getBodies(upCandles, 'up'))
+        this.pathBodiesDown
+            .attr('d', this._getBodies(downCandles, 'down'))
+        this.pathWicksUp
+            .attr('d', this._getWicks(upCandles, 'up'))
+        this.pathWicksDown
+            .attr('d', this._getWicks(downCandles, 'down'))
+
+        this.lastBody
+            .attr('d', this._getBodyString(
+                lastCandle,
+                lastCandle.direction,
+                this._bodyWidth
+            ))
+            .attr('class', 'body ' + lastCandle.direction)
+        this.lastWick
+            .attr('d', this._getWickString(lastCandle))
+            .attr('class', 'wick ' + lastCandle.direction)
     }
 
     updateLast (candle) {
@@ -51,56 +85,68 @@ class Plot {
             index
         )
 
-        this.mainWrapper.selectAll('g')
-            .data(this.candles)
+        let lastCandle = this.smoozCandles.last
 
-        let selection = this.mainWrapper.select('g:last-child')
-        this._updateCandle(selection, index)
+        this.lastBody
+            .attr('d', this._getBodyString(
+                lastCandle,
+                lastCandle.direction,
+                this._bodyWidth
+            ))
+            .attr('class', 'body ' + lastCandle.direction)
+        this.lastWick
+            .attr('d', this._getWickString(lastCandle))
+            .attr('class', 'wick ' + lastCandle.direction)
     }
 
-    _appendCandle (selection) {
-        selection
-            .attr('class', (d, i) => 'candle ' + this._direction(i))
-            .attr('transform',
-                d => 'translate(' + this.xScale(d.date) + ' 0)')
-            .call(sel => this._appendWick(sel))
-            .call(sel => this._appendBody(sel))
+    _getBodies (candles, direction) {
+        let width = this._bodyWidth
+        let string = ''
+
+        for (let candle of candles) {
+            string += this._getBodyString(candle, direction, width)
+        }
+        return string
     }
 
-    _updateCandle (selection, index) {
-        selection
-            .attr('class', (d, i) => 'candle ' + this._direction(index || i))
-            .attr('transform',
-                d => 'translate(' + this.xScale(d.date) + ' 0)')
-            .call(sel => this._updateWick(sel))
-            .call(sel => this._updateBody(sel))
+    _getBodyString(candle, direction, width) {
+        let open = Math.round(this.yScale(candle.open))
+        let close = Math.round(this.yScale(candle.close))
+        let top, bottom
+
+        if (direction === 'up')
+            bottom = open,
+                top = close
+        else
+            bottom = close,
+                top = open
+
+        let height = top - bottom
+        let x = Math.round(this.xScale(candle.date)) - width / 2
+        let y = top
+
+        return 'M' + x + ',' + y
+            + ' h' + width + 'v' + -height + 'h' + -width + 'z '
     }
 
-    _direction (i) {
-        return this.smoozCandles[i].direction
+    _getWicks (candles) {
+        let string = ''
+
+        for (let candle of candles) {
+            string += this._getWickString(candle)
+        }
+        return string
     }
 
-    _appendBody (g) {
-        g.append('rect')
-            .call(sel => this._bodyAttributes(sel))
+    _getWickString(candle) {
+        let x = Math.round(this.xScale(candle.date))
+        let y1 = Math.round(this.yScale(candle.high))
+        let y2 = Math.round(this.yScale(candle.low))
+
+        return 'M' + x + ',' + y1 + ' v' + (y2 - y1)
     }
 
-    _appendWick (g) {
-        g.append('line')
-            .call(sel => this._wickAttributes(sel))
-    }
-
-    _updateBody (g) {
-        g.select('rect')
-            .call(sel => this._bodyAttributes(sel))
-    }
-
-    _updateWick (g) {
-        g.select('line')
-            .call(sel => this._wickAttributes(sel))
-    }
-
-    _bodyAttributes (rect) {
+    get _bodyWidth () {
         let width = this.zoomScale
 
         // Clamp width on high zoom out levels
@@ -108,23 +154,11 @@ class Plot {
         else if (width < 1.5) width = 2
         else if (width < 3.0) width = 3
 
-        rect.attr('class', 'body')
-            .attr('x', -width / 2)
-            .attr('y', d => Math.min(this.yScale(d.open), this.yScale(d.close)))
-            .attr('height', d =>
-                Math.abs(this.yScale(d.close) - this.yScale(d.open))
-            )
-            .attr('width', width)
-    }
-
-    _wickAttributes (line) {
-        line.attr('class', 'wick')
-            .attr('y1', d => this.yScale(d.low))
-            .attr('y2', d => this.yScale(d.high))
+        return width
     }
 
     get zoomScale () {
-        return d3.zoomTransform(this.mainWrapper.node()).k
+        return d3.zoomTransform(this.wrapper.node()).k
     }
 }
 

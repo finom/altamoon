@@ -115,7 +115,7 @@ function cancelOrder (id) {
 
 function closePosition () {
     var qty = positions[0].qty
-OUT(positions)
+
     if (qty < 0)
         lib.futuresMarketBuy(SYMBOL, -qty, {'reduceOnly': true})
             .catch(error => console.error(error))
