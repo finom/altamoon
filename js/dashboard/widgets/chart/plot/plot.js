@@ -2,13 +2,13 @@
 const smoozCandles = require('./smooz-candles')
 
 class Plot {
+
     constructor (xScale, yScale) {
         this.xScale = xScale
         this.yScale = yScale
 
         this.candles = []
         this.smoozCandles = []
-        this.bodyStrings = {}
 
         this.wrapper
 
@@ -18,6 +18,9 @@ class Plot {
         this.pathWicksDown
     }
 
+    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    //   WRAPPER
+    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     appendWrapper (container) {
         this.wrapper = container.append('g')
             .attr('class', 'plot')
@@ -38,6 +41,9 @@ class Plot {
         return this.wrapper
     }
 
+    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    //   DRAW
+    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     draw (candles, update = false) {
         if (!candles.length)
             return
@@ -75,6 +81,9 @@ class Plot {
             .attr('class', 'wick ' + lastCandle.direction)
     }
 
+    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    //   UPDATE LAST CANDLE
+    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     updateLast (candle) {
         let index = this.candles.lastIndex
         this.candles.last = candle
@@ -99,6 +108,9 @@ class Plot {
             .attr('class', 'wick ' + lastCandle.direction)
     }
 
+    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    //   INTERNAL METHODS
+    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     _getBodies (candles, direction) {
         let width = this._bodyWidth
         let string = ''
@@ -116,10 +128,10 @@ class Plot {
 
         if (direction === 'up')
             bottom = open,
-                top = close
+            top = close
         else
             bottom = close,
-                top = open
+            top = open
 
         let height = top - bottom
         let x = Math.round(this.xScale(candle.date)) - width / 2
@@ -147,7 +159,7 @@ class Plot {
     }
 
     get _bodyWidth () {
-        let width = this.zoomScale
+        let width = this._zoomScale
 
         // Clamp width on high zoom out levels
              if (width < 0.8) width = 0
@@ -157,7 +169,7 @@ class Plot {
         return width
     }
 
-    get zoomScale () {
+    get _zoomScale () {
         return d3.zoomTransform(this.wrapper.node()).k
     }
 }

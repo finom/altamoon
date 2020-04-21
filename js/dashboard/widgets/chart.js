@@ -2,7 +2,7 @@
 const techan = require('techan')
 const api = require('../../api-futures')
 const trading = require('./trading')
-const Plot = require('./chart/plot')
+const Plot = require('./chart/plot/plot')
 
 let margin = { top: 0, right: 55, bottom: 30, left: 55 }
 let width = 960 - margin.left - margin.right
