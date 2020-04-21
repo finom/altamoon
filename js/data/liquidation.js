@@ -3,7 +3,7 @@
  * Calculate short & long liquidation previews based on position, open orders
  * and draft orders. See Binance docs for formula.
  * */
-const api = require('../api-futures')
+const api = require('../apis/futures')
 
 let leverage
 let maintenanceTable = [

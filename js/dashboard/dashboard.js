@@ -2,8 +2,8 @@
 require ('../globals')
 const settings = require('../../user/settings')
 
-const api = require('../api-futures')
-const chart = require('./widgets/chart')
+const api = require('../apis/futures')
+const chart = require('./widgets/chart/chart')
 const trading = require('./widgets/trading')
 const myOrders = require('./widgets/my-orders')
 const wallet = require('./widgets/wallet')

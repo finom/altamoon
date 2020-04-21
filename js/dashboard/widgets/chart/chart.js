@@ -1,6 +1,6 @@
 'use strict'
 const techan = require('techan')
-const api = require('../../../api-futures')
+const api = require('../../../apis/futures')
 const trading = require('../trading')
 const Plot = require('./plot/plot')
 

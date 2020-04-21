@@ -1,5 +1,5 @@
 'use strict'
-const api = require('../../api-futures')
+const api = require('../../apis/futures')
 const { getPnl } = require('../../data/stats')
 
 events.on('api.positionUpdate', updatePositions)
