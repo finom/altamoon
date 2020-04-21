@@ -99,35 +99,35 @@ let gClipPath = svg.append('clipPath')
         .attr('width', width)
         .attr('height', height)
 
-let gXGridlines = svg.append('g').attr('class', 'x gridlines')
-let gYGridlines = svg.append('g').attr('class', 'y gridlines')
+let gXGridlines = svg.append('g').class('x gridlines')
+let gYGridlines = svg.append('g').class('y gridlines')
 
-let gXAxis = svg.append('g').attr('class', 'x axis bottom')
+let gXAxis = svg.append('g').class('x axis bottom')
         .attr('transform', 'translate(0,' + height + ')')
 
-let gYAxisLeft = svg.append('g').attr('class', 'y axis left')
-let gYAxisRight = svg.append('g').attr('class', 'y axis right')
+let gYAxisLeft = svg.append('g').class('y axis left')
+let gYAxisRight = svg.append('g').class('y axis right')
         .attr('transform', 'translate(' + width + ',0)')
 
-let gPositionLine = svg.append('g').attr('class', 'position-line')
-let gLiquidationLine = svg.append('g').attr('class', 'liquidation-line')
+let gPositionLine = svg.append('g').class('position-line')
+let gLiquidationLine = svg.append('g').class('liquidation-line')
         .attr('clip-path', 'url(#clip)')
-let gBidASkLines = svg.append('g').attr('class', 'bid-ask-lines')
-let gPriceLine = svg.append('g').attr('class', 'price-line')
+let gBidASkLines = svg.append('g').class('bid-ask-lines')
+let gPriceLine = svg.append('g').class('price-line')
 
 plot.appendWrapper(svg)
 plot.appendWrapper(svg)
 
-let gCrosshair = svg.append('g').attr('class', 'crosshair')
+let gCrosshair = svg.append('g').class('crosshair')
 
-let gOrderLines = svg.append('g').attr('class', 'order-lines')
-let gDraftLines = svg.append('g').attr('class', 'draft-lines')
+let gOrderLines = svg.append('g').class('order-lines')
+let gDraftLines = svg.append('g').class('draft-lines')
 
-let gPositionLabel = svg.append('g').attr('class', 'position-label')
+let gPositionLabel = svg.append('g').class('position-label')
         .attr('clip-path', 'url(#clip)')
-let gOrderLabels = svg.append('g').attr('class', 'order-labels')
+let gOrderLabels = svg.append('g').class('order-labels')
         .attr('clip-path', 'url(#clip)')
-let gDraftLabels = svg.append('g').attr('class', 'draft-labels')
+let gDraftLabels = svg.append('g').class('draft-labels')
         .attr('clip-path', 'url(#clip)')
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

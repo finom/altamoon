@@ -6,16 +6,28 @@ globalThis.SYMBOL = 'BTC' + 'USDT'
 const EventEmitter = require('events')
 globalThis.events = new EventEmitter()
 
-// Add Array.last property to access the last item of the array
+// Add Array.last to access the last item of the array
 if (!Array.prototype.last)
-Object.defineProperty(Array.prototype, 'last', {
-    get: function () { return this[this.length - 1] },
-    set: function (item) { this[this.length - 1] = item },
-    enumerable: true
-})
+    Object.defineProperty(Array.prototype, 'last', {
+        get: function () { return this[this.length - 1] },
+        set: function (item) { this[this.length - 1] = item },
+        enumerable: true
+    })
 // Add Array.lastIndex
 if (!Array.prototype.lastIndex)
     Object.defineProperty(Array.prototype, 'lastIndex', {
         get: function () { return this.length - 1 },
+        enumerable: true
+    })
+
+// Add d3.selection.class() shortcut to d3.selection.attr('class')
+if (!d3.selection.prototype.class)
+    Object.defineProperty(d3.selection.prototype, 'class', {
+        value: function (classString) {
+            if (classString)
+                return this.attr('class', classString)
+            else
+                return this.attr('class')
+        },
         enumerable: true
     })

@@ -7,9 +7,9 @@ events.on('api.bookUpdate', assembleBook)
 let book
 
 let mainDiv = d3.select('#book').append('div')
-        .attr('class', 'something')
-let bids = mainDiv.append('div').attr('class', 'bids')
-let asks = mainDiv.append('div').attr('class', 'asks')
+        .class('something')
+let bids = mainDiv.append('div').class('bids')
+let asks = mainDiv.append('div').class('asks')
 
 let timer = 0
 let timer2 = 0
@@ -33,9 +33,9 @@ async function updateBook (d) {
         .data(book.bids.slice(0,13), d => d[0])
         .join(
             enter => enter.append('div')
-                .attr('class', 'row')
+                .class('row')
                 .call(row => {
-                    let cell = () => row.append('div').attr('class', 'cell')
+                    let cell = () => row.append('div').class('cell')
                     cell().html(d => d[1])
                     cell().html(d => d[0])
             }),
@@ -49,9 +49,9 @@ async function updateBook (d) {
         .data(book.asks.slice(0,13), d => d[0])
         .join(
             enter => enter.append('div')
-                .attr('class', 'row')
+                .class('row')
                 .call(row => {
-                    let cell = () => row.append('div').attr('class', 'cell')
+                    let cell = () => row.append('div').class('cell')
                     cell().html(d => d[0])
                     cell().html(d => d[1])
                 }),

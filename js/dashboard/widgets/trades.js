@@ -3,7 +3,7 @@ events.on('api.newTrade', updateTrades)
 
 let data = []
 let table = d3.select('#trades').append('div')
-        .attr('class', 'table')
+        .class('table')
 
 let timer = 0
 function updateTrades (d) {
@@ -17,7 +17,7 @@ function updateTrades (d) {
         .data(data)
         .join(
             enter => enter.append('div')
-                .attr('class', d => 'row ' + ((d.m) ? 'sell' : 'buy'))
+                .class(d => 'row ' + ((d.m) ? 'sell' : 'buy'))
                 .call(row => {
                     row.selectAll('div')
                         .data(d => [d.p, d.q])
@@ -26,7 +26,7 @@ function updateTrades (d) {
             }),
             update => update
                 .call(row => {
-                    row.attr('class', d => 'row ' + ((d.m) ? 'sell' : 'buy'))
+                    row.class(d => 'row ' + ((d.m) ? 'sell' : 'buy'))
                     row.selectAll('div')
                         .data(d => [d.p, d.q])
                             .html(d => d)

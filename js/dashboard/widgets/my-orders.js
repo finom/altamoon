@@ -22,7 +22,7 @@ function updatePositions (positions) {
         .data(openPositions, d => d.symbol)
         .join(
             enter => enter.append('tr').call(row => {
-                row.attr('class', d => d.side)
+                row.class(d => d.side)
 
                 let pnl = format(getPnl().pnl)
                 let pnlPercent = formatPercent(getPnl().percent)
@@ -39,7 +39,7 @@ function updatePositions (positions) {
                     .html('Market')
             }),
             update => update.call(row => {
-                row.attr('class', d => d.side)
+                row.class(d => d.side)
 
                 let pnl = format(getPnl().pnl)
                 let pnlPercent = formatPercent(getPnl().percent)
@@ -72,7 +72,7 @@ function updateOrders (orders) {
         .data(orders, d => d.id)
         .join(
             enter => enter.append('tr').call(row => {
-                row.attr('class', d => d.side)
+                row.class(d => d.side)
                 let td = () => row.append('td')
                 td().text(d => d.side)
                 td().text(d => d.qty)
@@ -86,7 +86,7 @@ function updateOrders (orders) {
                     .html('X')
             }),
             update => update.call(row => {
-                row.attr('class', d => d.side)
+                row.class(d => d.side)
                 let td = (i) => row.select('td:nth-child(' + i + ')')
                 td(1).text(d => d.side)
                 td(2).text(d => d.qty)

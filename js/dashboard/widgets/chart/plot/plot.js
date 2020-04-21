@@ -23,17 +23,17 @@ class Plot {
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     appendWrapper (container) {
         this.wrapper = container.append('g')
-            .attr('class', 'plot')
+            .class('plot')
             .attr('clip-path', 'url(#clip)')
 
         this.pathBodiesUp = this.wrapper.append('path')
-                .attr('class', 'body up')
+                .class('body up')
         this.pathBodiesDown = this.wrapper.append('path')
-                .attr('class', 'body down')
+                .class('body down')
         this.pathWicksUp = this.wrapper.append('path')
-                .attr('class', 'wick up')
+                .class('wick up')
         this.pathWicksDown = this.wrapper.append('path')
-                .attr('class', 'wick down')
+                .class('wick down')
 
         this.lastBody = this.wrapper.append('path')
         this.lastWick = this.wrapper.append('path')
@@ -70,15 +70,13 @@ class Plot {
             .attr('d', this._getWicks(downCandles, 'down'))
 
         this.lastBody
-            .attr('d', this._getBodyString(
-                lastCandle,
-                lastCandle.direction,
+            .attr('d', this._getBodyString( lastCandle, lastCandle.direction,
                 this._bodyWidth
             ))
-            .attr('class', 'body ' + lastCandle.direction)
+            .class('body ' + lastCandle.direction)
         this.lastWick
             .attr('d', this._getWickString(lastCandle))
-            .attr('class', 'wick ' + lastCandle.direction)
+            .class('wick ' + lastCandle.direction)
     }
 
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -102,10 +100,10 @@ class Plot {
                 lastCandle.direction,
                 this._bodyWidth
             ))
-            .attr('class', 'body ' + lastCandle.direction)
+            .class('body ' + lastCandle.direction)
         this.lastWick
             .attr('d', this._getWickString(lastCandle))
-            .attr('class', 'wick ' + lastCandle.direction)
+            .class('wick ' + lastCandle.direction)
     }
 
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––

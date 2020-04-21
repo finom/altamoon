@@ -40,7 +40,7 @@ async function updateWallet (data) {
         .data(data)
         .join(
             enter => enter.append('div').text(d => d)
-                .attr('class', (d, i) => (i%2) ? 'value' : 'label'),
+                .class((d, i) => (i%2) ? 'value' : 'label'),
             update => update.text(d => d)
         )
 }
