@@ -62,15 +62,17 @@ class Plot {
 
         this.pathBodiesUp
             .attr('d', this._getBodies(upCandles, 'up'))
-        this.pathBodiesDown
-            .attr('d', this._getBodies(downCandles, 'down'))
         this.pathWicksUp
             .attr('d', this._getWicks(upCandles, 'up'))
+        this.pathBodiesDown
+            .attr('d', this._getBodies(downCandles, 'down'))
         this.pathWicksDown
             .attr('d', this._getWicks(downCandles, 'down'))
 
         this.lastBody
-            .attr('d', this._getBodyString( lastCandle, lastCandle.direction,
+            .attr('d', this._getBodyString(
+                lastCandle,
+                lastCandle.direction,
                 this._bodyWidth
             ))
             .class('body ' + lastCandle.direction)

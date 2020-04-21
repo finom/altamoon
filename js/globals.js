@@ -23,9 +23,9 @@ if (!Array.prototype.lastIndex)
 // Add d3.selection.class() shortcut to d3.selection.attr('class')
 if (!d3.selection.prototype.class)
     Object.defineProperty(d3.selection.prototype, 'class', {
-        value: function (classString) {
-            if (classString)
-                return this.attr('class', classString)
+        value: function (string) {
+            if (string)
+                return this.attr('class', string)
             else
                 return this.attr('class')
         },
