@@ -15,6 +15,8 @@ const liquidation = require('../data/liquidation')
 api.getPosition()
 api.getOpenOrders()
 api.getAccount()
+// Open websocket streams
+api.streamLastCandle()
 api.streamLastTrade()
 api.streamUserData()
 api.streamBidAsk()

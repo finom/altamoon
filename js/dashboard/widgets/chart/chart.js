@@ -3,7 +3,7 @@ const techan = require('techan')
 const api = require('../../../apis/futures')
 const trading = require('../trading')
 const Plot = require('./plot/plot')
-const { LineLabel, OrderLabel, DraftLabel} = require('./items/line-label')
+const { LineLabel, OrderLabel, DraftLabel } = require('./items/line-label')
 
 let margin = { top: 0, right: 55, bottom: 30, left: 55 }
 let width = 960 - margin.left - margin.right
@@ -182,13 +182,12 @@ function initDraw() {
 
     // Event listeners
     events.on('api.priceUpdate', updatePrice)
+    events.on('api.lastCandleUpdate', updateLastCandle)
     events.on('api.positionUpdate', updatePosition)
     events.on('api.orderUpdate', updateOpenOrders)
     events.on('api.bidAskUpdate', updateBidAsk)
-    events.on('liquidation.update', onLiquidationUpdate)
+    events.on('liquidation.update', updateLiquidation)
     events.on('trading.qtyUpdate', onTradingQtyUpdate)
-
-    streamLastCandle()
 }
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -286,46 +285,44 @@ function updateBidAsk (data) {
     gBidASkLines.datum(bidAskLinesData).call(lines)
 }
 
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//   STREAM CANDLES (WEBSOCKET)
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-function streamLastCandle () {
-    let stream = new WebSocket(api.ws.wsURL + '@kline_1m')
+function updateLastCandle (candle) {
+    let isSameCandle = candle.timestamp === candles.last.timestamp
 
-    stream.onmessage = event => {
-        let d = JSON.parse(event.data).k
-
-        let date = new Date(d.t)
-        let direction = (parseFloat(d.o) <= parseFloat(d.c))
-            ? 'up' : 'down'
-
-        let candle = {
-                date: date,
-                timestamp: date.getTime(),
-                direction: direction,
-                open: parseFloat(d.o),
-                high: parseFloat(d.h),
-                low: parseFloat(d.l),
-                close: parseFloat(d.c),
-                volume: parseFloat(d.q) }
-
-        let isSameCandle = candle.timestamp === candles.last.timestamp
-
-        if (isSameCandle) {
-            candles.last = candle
-            plot.updateLast(candle)
-        } else {
-            candles.push(candle)
-            draw()
-            // Pan chart
-            svg.call(zoom.translateBy, 0) // Ehh... ¯\_(°~°)_/¯
-        }
+    if (isSameCandle) {
+        candles.last = candle
+        plot.updateLast(candle)
+    } else {
+        candles.push(candle)
+        draw()
+        // Pan chart
+        svg.call(zoom.translateBy, 0) // Ehh... ¯\_(°~°)_/¯
     }
+}
+
+function updateLiquidation (price, side) {
+    let index = liquidationLineData.findIndex(x => x.side === side)
+
+    if (!price && index >= 0)
+        // Remove
+        liquidationLineData.splice(index, 1)
+    else if (price && index >= 0)
+        // Update
+        liquidationLineData[index].value = price
+    else if (price)
+        // Add
+        liquidationLineData.push({ value: price, type: 'draft', side: side })
+
+    //Redraw
+    gLiquidationLine.datum(liquidationLineData).call(lines)
+    // Set style on liquidation lines
+    gLiquidationLine.selectAll('.liquidation-line > g')
+        .attr('data-type', d => d.type)
 }
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   EVENT HANDLERS
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+
 function placeOrderDraft (price) {
     price = +(price.toFixed(2))
     let lastPrice = (api.lastPrice)
@@ -403,26 +400,6 @@ function onDragOrderEnd (d) {
             'timeInForce': d.timeInForce
         })
         .catch(error => console.error(error))
-}
-
-function onLiquidationUpdate (price, side) {
-    let index = liquidationLineData.findIndex(x => x.side === side)
-
-    if (!price && index >= 0)
-        // Remove
-        liquidationLineData.splice(index, 1)
-    else if (price && index >= 0)
-        // Update
-        liquidationLineData[index].value = price
-    else if (price)
-        // Add
-        liquidationLineData.push({ value: price, type: 'draft', side: side })
-
-    //Redraw
-    gLiquidationLine.datum(liquidationLineData).call(lines)
-    // Set style on liquidation lines
-    gLiquidationLine.selectAll('.liquidation-line > g')
-        .attr('data-type', d => d.type)
 }
 
 function onZoom() {
