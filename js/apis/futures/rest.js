@@ -8,9 +8,52 @@ module.exports = class Rest {
         this.lib = lib
     }
 
+    //  –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    //   PUT
+    //  –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    cancelOrder (id) {
+        this.lib.futuresCancel(SYMBOL, {orderId: id})
+            // .then(r => console.log(r))
+            .catch(err => console.error(err))
+    }
+
+    closePosition () {
+        let qty = cache.positions[0].qty
+
+        if (qty < 0)
+            this.lib.futuresMarketBuy(SYMBOL, -qty, {'reduceOnly': true})
+                .catch(error => console.error(error))
+        else if (qty > 0)
+            this.lib.futuresMarketSell(SYMBOL, qty, {'reduceOnly': true})
+                .catch(error => console.error(error))
+    }
+
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     //   GET
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    getCandles (params = {}) {
+        let { interval = '1m', limit = 1500 } = params
+
+        this.lib.futuresCandles(SYMBOL, interval, {limit: limit})
+            .then(response => {
+                let candles = response .map(d => {
+                    let date = new Date(+d[0])
+                    return {
+                        date: date,
+                        timestamp: date.getTime(),
+                        direction: (+d[1] <= +d[4]) ? 'up' : 'down',
+                        open: +d[1],
+                        high: +d[2],
+                        low: +d[3],
+                        close: +d[4],
+                        volume: +d[7]
+                    }
+                })
+                events.emit('api.candlesUpdate', candles)
+            })
+            .catch(err => console.error(err))
+    }
+
     getAccount () {
         this.lib.futuresAccount()
             .then(response => {
@@ -66,25 +109,5 @@ module.exports = class Rest {
                 events.emit('api.positionUpdate', cache.positions)
             })
             .catch(err => console.error(err))
-    }
-
-    //  –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    //   PUT
-    //  –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    cancelOrder (id) {
-        this.lib.futuresCancel(SYMBOL, {orderId: id})
-            // .then(r => console.log(r))
-            .catch(err => console.error(err))
-    }
-
-    closePosition () {
-        let qty = cache.positions[0].qty
-
-        if (qty < 0)
-            this.lib.futuresMarketBuy(SYMBOL, -qty, {'reduceOnly': true})
-                .catch(error => console.error(error))
-        else if (qty > 0)
-            this.lib.futuresMarketSell(SYMBOL, qty, {'reduceOnly': true})
-                .catch(error => console.error(error))
     }
 }

@@ -143,34 +143,14 @@ let liquidationLineData = []
 let orderLinesData = []
 let draftLinesData = []
 
-let lastCandlesURL = 'https://fapi.binance.com/fapi/v1/klines?symbol=' + SYMBOL + '&limit=1500&interval=1m'
-
-d3.json(lastCandlesURL)
-    .then(jsonCandles => {
-        candles = jsonCandles
-            .map(d => {
-                let date = new Date(+d[0])
-                return {
-                    date: date,
-                    timestamp: date.getTime(),
-                    direction: (+d[1] <= +d[4]) ? 'up' : 'down',
-                    open: +d[1],
-                    high: +d[2],
-                    low: +d[3],
-                    close: +d[4],
-                    volume: +d[7]
-                }
-            })
-
-        // Draw with initial data
-        initDraw()
-    })
-    .catch(e => console.error(e)) // Fixme (load something on error)
+api.getCandles()
+events.on('api.candlesUpdate', initDraw)
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   INIT DRAW
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-function initDraw() {
+function initDraw(_candles) {
+    candles = _candles
     draw()
     // Right padding
     svg.call(zoom.translateBy, -100)

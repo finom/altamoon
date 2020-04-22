@@ -34,21 +34,22 @@ class ApiFutures {
     get lastPrice() { return cache.lastPrice }
     set lastPrice(value) { cache.lastPrice = value }
 
-    // GET
-    getAccount () { rest.getAccount() }
-    getOpenOrders () { rest.getOpenOrders() }
-    getPosition () { rest.getPosition() }
+    // GET methods
+    getCandles = (params) => rest.getCandles(params)
+    getAccount = () => rest.getAccount()
+    getOpenOrders = () => rest.getOpenOrders()
+    getPosition = () => rest.getPosition()
 
-    //  PUT
-    cancelOrder (id) { rest.cancelOrder(id) }
-    closePosition () { rest.closePosition() }
+    // PUT methods
+    cancelOrder = (id) => rest.cancelOrder(id)
+    closePosition = () => rest.closePosition()
 
-    // STREAM (WEBSOCKET)
-    streamBook () { ws.streamBook() }
-    streamBidAsk () { ws.streamBidAsk() }
-    streamLastTrade () { ws.streamLastTrade() }
-    streamUserData () { ws.streamUserData() }
-    streamLastCandle () { ws.streamLastCandle()}
+    // STREAM (WEBSOCKET) methods
+    streamBook = () => ws.streamBook()
+    streamBidAsk = () => ws.streamBidAsk()
+    streamLastTrade = () => ws.streamLastTrade()
+    streamUserData = () => ws.streamUserData()
+    streamLastCandle = () => ws.streamLastCandle()
 }
 
 module.exports = new ApiFutures()
