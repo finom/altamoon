@@ -3,6 +3,7 @@ const techan = require('techan')
 const api = require('../../../apis/futures')
 const trading = require('../trading')
 const Plot = require('./plot/plot')
+const { LineLabel, OrderLabel, DraftLabel} = require('./items/line-label')
 
 let margin = { top: 0, right: 55, bottom: 30, left: 55 }
 let width = 960 - margin.left - margin.right
@@ -75,6 +76,10 @@ let crosshair = techan.plot.crosshair()
 
 let plot = new Plot(xScale, yScale)
 
+let positionLabel = new LineLabel(width, yScale)
+let orderLabels = new OrderLabel(width, yScale)
+let draftLabels = new DraftLabel(width, yScale, draftToOrder)
+
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   PREPARE SVG CONTAINERS
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -123,12 +128,9 @@ let gCrosshair = svg.append('g').class('crosshair')
 let gOrderLines = svg.append('g').class('order-lines')
 let gDraftLines = svg.append('g').class('draft-lines')
 
-let gPositionLabel = svg.append('g').class('position-label')
-        .attr('clip-path', 'url(#clip)')
-let gOrderLabels = svg.append('g').class('order-labels')
-        .attr('clip-path', 'url(#clip)')
-let gDraftLabels = svg.append('g').class('draft-labels')
-        .attr('clip-path', 'url(#clip)')
+positionLabel.appendWrapper(svg, 'position-label')
+orderLabels.appendWrapper(svg, 'order-labels')
+draftLabels.appendWrapper(svg, 'draft-labels')
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   LOAD DATA
@@ -223,9 +225,9 @@ function draw() {
     gOrderLines.datum(orderLinesData).call(orderLines).call(orderLines.drag)
     gDraftLines.datum(draftLinesData).call(draftLines).call(draftLines.drag)
 
-    gPositionLabel.call(lineLabel, positionLineData)
-    gOrderLabels.call(lineLabel, orderLinesData, 'order')
-    gDraftLabels.call(lineLabel, draftLinesData, 'draft')
+    positionLabel.draw(positionLineData)
+    orderLabels.draw(orderLinesData)
+    draftLabels.draw(draftLinesData)
 
     gCrosshair.call(crosshair)
 
@@ -322,53 +324,6 @@ function streamLastCandle () {
 }
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//   CHART ITEM GENERATORS
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-function lineLabel (selection, data, type) {
-    selection.selectAll('g')
-        .data(data)
-        .join(
-            // Add label at y = price
-            enter => enter.append('g').call(g => {
-                let rect = g.append('rect')
-                    .attr('x', width - 80)
-                    .attr('y', d => yScale(d.value) - 10)
-
-                g.append('text')
-                    .text(d => +d.qty)
-                    .attr('x', width - 75)
-                    .attr('y', d => yScale(d.value) + 3)
-
-                g.attr('data-side', d => d.side)
-
-                // Order
-                if (type === 'order')
-                    rect.on('click', d =>  api.cancelOrder(d.id))
-                // Draft
-                if (type === 'draft') {
-                    rect.on('click', (d, i) => draftToOrder(d, i))
-                }
-            }),
-            // Update y
-            update => update.call(g => {
-                let rect = g.select('rect')
-                    .attr('y', d => yScale(d.value) - 10)
-                g.select('text')
-                    .attr('y', d => yScale(d.value) + 3)
-                    .text(d => +d.qty)
-                g.attr('data-side', d => d.side)
-
-                if (type === 'draft') {
-                    rect.on('click', (d, i) => {
-                        draftToOrder(d, i)
-                    })
-                }
-            })
-        )
-    return selection
-}
-
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   EVENT HANDLERS
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function placeOrderDraft (price) {
@@ -399,7 +354,7 @@ function onDragDraft (d) {
     events.emit('chart.draftOrderMoved', d.side, price, qty)
 
     // Redraw
-    gDraftLabels.call(lineLabel, draftLinesData, 'draft')
+    draftLabels.draw(draftLinesData)
 }
 
 function draftToOrder (d, i) {
@@ -429,7 +384,7 @@ function onDragOrder (d) {
     let currentOrder = orderLinesData.filter(x => x.id === d.id)[0]
     if (!currentOrder || currentOrder.price === d.value)
         return
-    gOrderLabels.call(lineLabel, orderLinesData, 'order')
+    orderLabels.draw(orderLinesData)
 }
 function onDragOrderEnd (d) {
     /* Delete order, recreate at new price */
