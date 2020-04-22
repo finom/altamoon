@@ -288,7 +288,7 @@ function updateBidAsk (data) {
 //   STREAM CANDLES (WEBSOCKET)
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function streamLastCandle () {
-    let stream = new WebSocket(api.wsURL + '@kline_1m')
+    let stream = new WebSocket(api.ws.wsURL + '@kline_1m')
 
     stream.onmessage = event => {
         let d = JSON.parse(event.data).k

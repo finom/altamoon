@@ -162,7 +162,8 @@ class Plot {
         let width = this._zoomScale
 
         // Clamp width on high zoom out levels
-             if (width < 0.8) width = 0
+             if (width < 0.5) width = 0
+        else if (width < 0.8) width = 1.5
         else if (width < 1.5) width = 2
         else if (width < 3.0) width = 3
 

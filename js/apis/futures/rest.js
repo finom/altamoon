@@ -1,0 +1,90 @@
+'use strict'
+const cache = require('./cache')
+
+
+module.exports = class Rest {
+
+    constructor (lib) {
+        this.lib = lib
+    }
+
+    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    //   GET
+    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    getAccount () {
+        this.lib.futuresAccount()
+            .then(response => {
+                cache.account = response
+                events.emit('api.balancesUpdate', cache.account)
+            })
+            .catch(err => {
+                if (err.code == 'ETIMEDOUT')
+                    console.warn('Warning: getAccount() request timed out')
+            })
+    }
+
+    getOpenOrders () {
+        this.lib.futuresOpenOrders(SYMBOL)
+            .then(response => {
+                cache.openOrders = response.map(o => { return {
+                    id: o.orderId,
+                    clientID: o.clientOrderId,
+                    filledQty: o.executedQty,
+                    price: o.price,
+                    value: o.price, // synonym, for feeding to techan.substance
+                    qty: o.origQty,
+                    reduceOnly: o.reduceOnly,
+                    side: o.side.toLowerCase(),
+                    status: o.status,
+                    stopPrice: o.stopPrice,
+                    symbol: o.symbol,
+                    time: o.time,
+                    timeInForce: o.timeInForce,
+                    type: o.type,
+                    updateTime: o.updateTime
+                } })
+                events.emit('api.orderUpdate', cache.openOrders)
+            })
+            .catch(err => console.error(err))
+    }
+
+    getPosition () {
+        this.lib.futuresPositionRisk()
+            .then(response => {
+                let p = response[SYMBOL]
+                cache.positions[0] = {
+                    leverage: p.leverage,
+                    liquidation: p.liquidationPrice,
+                    margin: p.isolatedMargin,
+                    marginType: p.marginType,
+                    price: p.entryPrice,
+                    value: p.entryPrice, // synonym, for feeding to techan.substance
+                    qty: p.positionAmt,
+                    side: (p.positionAmt >= 0) ? 'buy' : 'sell',
+                    symbol: p.symbol
+                }
+                events.emit('api.positionUpdate', cache.positions)
+            })
+            .catch(err => console.error(err))
+    }
+
+    //  –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    //   PUT
+    //  –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+    cancelOrder (id) {
+        this.lib.futuresCancel(SYMBOL, {orderId: id})
+            // .then(r => console.log(r))
+            .catch(err => console.error(err))
+    }
+
+    closePosition () {
+        let qty = cache.positions[0].qty
+
+        if (qty < 0)
+            this.lib.futuresMarketBuy(SYMBOL, -qty, {'reduceOnly': true})
+                .catch(error => console.error(error))
+        else if (qty > 0)
+            this.lib.futuresMarketSell(SYMBOL, qty, {'reduceOnly': true})
+                .catch(error => console.error(error))
+    }
+}
