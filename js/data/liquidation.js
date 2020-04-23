@@ -116,7 +116,7 @@ function updateDraft (side, price, qty) {
     updateLiquidation()
 }
 
-function onTradingQtyUpdate (side, qty) {
+function onTradingQtyUpdate (qty, side) {
     // Update draft qty
     if (draft[side]) {
         draft[side].qty = +qty

@@ -126,7 +126,7 @@ function onPriceUpdate (side, price) {
 function onInputQty (side) {
     qty[side] = parseNumber()
 
-    events.emit('trading.qtyUpdate', side, qty[side])
+    events.emit('trading.qtyUpdate', qty[side], side)
 
     updateMarginCost(side)
     updateDollarValue(side)

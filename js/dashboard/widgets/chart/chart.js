@@ -2,8 +2,13 @@
 const techan = require('techan')
 const api = require('../../../apis/futures')
 const trading = require('../trading')
+
+const Crosshair = require('./items/crosshair')
 const Plot = require('./plot/plot')
+const Lines = require('./items/lines')
 const { LineLabel, OrderLabel, DraftLabel } = require('./items/line-label')
+
+const Callbacks = require('./callbacks/callbacks')
 
 let margin = { top: 0, right: 55, bottom: 30, left: 55 }
 let width = 960 - margin.left - margin.right
@@ -32,53 +37,33 @@ let yGridlines = g => g.call(d3.axisLeft(yScale)
         .tickValues(d3.scaleLinear().domain(yScale.domain()).ticks())
     )
 
-let axisLabelBottom = techan.plot.axisannotation()
-        .axis(xAxis)
-        .orient('bottom')
-        .format(d3.timeFormat('%-d/%-m/%Y %-H:%M:%S'))
-        .width(94)
-        .translate([0, height])
+let newLines = () =>  new Lines(xScale, yScale, yAxisLeft, yAxisRight, width)
 
-let axisLabelLeft = techan.plot.axisannotation()
-        .axis(yAxisLeft)
-        .orient('left')
-        .format(d3.format(',.2f'))
-
-let axisLabelRight = techan.plot.axisannotation()
-        .axis(yAxisRight)
-        .orient('right')
-        .format(d3.format(',.2f'))
-        .translate([width, 0])
-
-let lines = techan.plot.supstance()
-        .xScale(xScale)
-        .yScale(yScale)
-        .annotation([axisLabelLeft, axisLabelRight])
-
-let orderLines = techan.plot.supstance()
-        .xScale(xScale)
-        .yScale(yScale)
-        .annotation([axisLabelLeft, axisLabelRight])
-        .on('drag', onDragOrder)
-        .on('dragend', onDragOrderEnd)
-
-let draftLines = techan.plot.supstance()
-        .xScale(xScale)
-        .yScale(yScale)
-        .annotation([axisLabelLeft, axisLabelRight])
-        .on('drag', onDragDraft)
-
-let crosshair = techan.plot.crosshair()
-        .xScale(xScale)
-        .yScale(yScale)
-        .xAnnotation(axisLabelBottom)
-        .yAnnotation([axisLabelLeft, axisLabelRight])
-
-let plot = new Plot(xScale, yScale)
+let priceLine = newLines()
+let bidAskLines = newLines()
+let draftLines = newLines()
+let orderLines = newLines()
+let positionLine = newLines()
+let liquidationLine = newLines()
 
 let positionLabel = new LineLabel(width, yScale)
 let orderLabels = new OrderLabel(width, yScale)
 let draftLabels = new DraftLabel(width, yScale, draftToOrder)
+
+let plot = new Plot(xScale, yScale)
+
+let crosshair = new Crosshair(
+    xScale, yScale, xAxis, yAxisLeft, yAxisRight, width, height
+)
+
+// Data
+let candles = []
+let priceLineData = []
+let positionLineData = []
+let bidAskLinesData = []
+let liquidationLineData = []
+let orderLinesData = []
+let draftLinesData = []
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   PREPARE SVG CONTAINERS
@@ -114,19 +99,21 @@ let gYAxisLeft = svg.append('g').class('y axis left')
 let gYAxisRight = svg.append('g').class('y axis right')
         .attr('transform', 'translate(' + width + ',0)')
 
-let gPositionLine = svg.append('g').class('position-line')
-let gLiquidationLine = svg.append('g').class('liquidation-line')
-        .attr('clip-path', 'url(#clip)')
-let gBidASkLines = svg.append('g').class('bid-ask-lines')
-let gPriceLine = svg.append('g').class('price-line')
+positionLine.appendWrapper(svg, 'position-line')
+liquidationLine.appendWrapper(svg, 'liquidation-line')
+bidAskLines.appendWrapper(svg, 'bid-ask-lines')
+priceLine.appendWrapper(svg, 'price-line')
 
 plot.appendWrapper(svg)
 plot.appendWrapper(svg)
 
-let gCrosshair = svg.append('g').class('crosshair')
+crosshair.appendWrapper(svg)
 
-let gOrderLines = svg.append('g').class('order-lines')
-let gDraftLines = svg.append('g').class('draft-lines')
+orderLines.appendWrapper(svg, 'order-lines')
+        .on('drag', onDragOrder)
+        .on('dragend', onDragOrderEnd)
+draftLines.appendWrapper(svg, 'draft-lines')
+        .on('drag', onDragDraft)
 
 positionLabel.appendWrapper(svg, 'position-label')
 orderLabels.appendWrapper(svg, 'order-labels')
@@ -135,14 +122,6 @@ draftLabels.appendWrapper(svg, 'draft-labels')
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   LOAD DATA
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-let candles = []
-let priceLineData = []
-let positionLineData = []
-let bidAskLinesData = []
-let liquidationLineData = []
-let orderLinesData = []
-let draftLinesData = []
-
 api.getCandles()
 events.on('api.candlesUpdate', initDraw)
 
@@ -161,13 +140,31 @@ function initDraw(_candles) {
     api.getOpenOrders()
 
     // Event listeners
-    events.on('api.priceUpdate', updatePrice)
-    events.on('api.lastCandleUpdate', updateLastCandle)
-    events.on('api.positionUpdate', updatePosition)
-    events.on('api.orderUpdate', updateOpenOrders)
-    events.on('api.bidAskUpdate', updateBidAsk)
-    events.on('liquidation.update', updateLiquidation)
-    events.on('trading.qtyUpdate', onTradingQtyUpdate)
+    let callbacks = new Callbacks(
+        candles,
+        {
+            priceLineData,
+            positionLineData,
+            bidAskLinesData,
+            liquidationLineData,
+            orderLinesData,
+            draftLinesData,
+        },
+        svg,
+        draw,
+        plot,
+        priceLine,
+        bidAskLines,
+        liquidationLine,
+        zoom,
+    )
+    events.on('api.lastCandleUpdate', callbacks.updateLastCandle)
+    events.on('api.priceUpdate', callbacks.updatePrice)
+    events.on('api.bidAskUpdate', callbacks.updateBidAsk)
+    events.on('trading.qtyUpdate', callbacks.updateDraft)
+    events.on('api.orderUpdate', callbacks.updateOpenOrders)
+    events.on('api.positionUpdate', callbacks.updatePosition)
+    events.on('liquidation.update', callbacks.updateLiquidation)
 }
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -197,106 +194,28 @@ function draw() {
     gXGridlines.call(xGridlines)
     gYGridlines.call(yGridlines)
 
-    gPriceLine.datum(priceLineData).call(lines)
-    gPositionLine.datum(positionLineData).call(lines)
-    gBidASkLines.datum(bidAskLinesData).call(lines)
-    gLiquidationLine.datum(liquidationLineData).call(lines)
-    gOrderLines.datum(orderLinesData).call(orderLines).call(orderLines.drag)
-    gDraftLines.datum(draftLinesData).call(draftLines).call(draftLines.drag)
+    priceLine.draw(priceLineData)
+    positionLine.draw(positionLineData)
+    bidAskLines.draw(bidAskLinesData)
+    liquidationLine.draw(liquidationLineData)
+    orderLines.draw(orderLinesData).drag
+    draftLines.draw(draftLinesData).drag
 
     positionLabel.draw(positionLineData)
     orderLabels.draw(orderLinesData)
     draftLabels.draw(draftLinesData)
 
-    gCrosshair.call(crosshair)
+    crosshair.draw()
 
-    // plot.draw(data)
     plot.draw(candles)
 
     // Color lines based on market side
-    gPositionLine.selectAll('.position-line > g')
+    positionLine.wrapper.selectAll('.position-line > g')
         .attr('data-side', d => d.side)
-    gOrderLines.selectAll('.order-lines > g')
+    orderLines.wrapper.selectAll('.order-lines > g')
         .attr('data-side', d => d.side)
-    gDraftLines.selectAll('.draft-lines > g')
+    draftLines.wrapper.selectAll('.draft-lines > g')
         .attr('data-side', d => d.side)
-}
-
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//   DATA UPDATE CALLBACKS
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-function updatePrice (price) {
-    priceLineData = [{value: price}]
-    gPriceLine.datum(priceLineData).call(lines)
-}
-
-function updatePosition (positions) {
-    let position = positions.filter(x => x.symbol === SYMBOL)[0]
-    let i = liquidationLineData.findIndex(x => x.type === 'real')
-
-    if (position.qty && position.liquidation) {
-        // Add new
-        if (i >= 0)
-            liquidationLineData[i].value = position.liquidation
-        else
-            liquidationLineData.push({ value: position.liquidation, type: 'real' })
-    }
-    else
-        // Remove
-        if (i >= 0) liquidationLineData.splice(i, 1)
-
-    positionLineData = (position.qty) ? [position] : []
-    draw()
-}
-
-function updateOpenOrders (orders) {
-    orderLinesData = orders
-    draw()
-}
-
-function updateBidAsk (data) {
-    if (bidAskLinesData[0]) {
-        if (bidAskLinesData[0].value === data.a
-            && bidAskLinesData[1].value === data.b)
-            return
-    }
-    bidAskLinesData = [{value: data.a}, {value: data.b}]
-
-    gBidASkLines.datum(bidAskLinesData).call(lines)
-}
-
-function updateLastCandle (candle) {
-    let isSameCandle = candle.timestamp === candles.last.timestamp
-
-    if (isSameCandle) {
-        candles.last = candle
-        plot.updateLast(candle)
-    } else {
-        candles.push(candle)
-        draw()
-        // Pan chart
-        svg.call(zoom.translateBy, 0) // Ehh... ¯\_(°~°)_/¯
-    }
-}
-
-function updateLiquidation (price, side) {
-    let index = liquidationLineData.findIndex(x => x.side === side)
-
-    if (!price && index >= 0)
-        // Remove
-        liquidationLineData.splice(index, 1)
-    else if (price && index >= 0)
-        // Update
-        liquidationLineData[index].value = price
-    else if (price)
-        // Add
-        liquidationLineData.push({ value: price, type: 'draft', side: side })
-
-    //Redraw
-    gLiquidationLine.datum(liquidationLineData).call(lines)
-    // Set style on liquidation lines
-    gLiquidationLine.selectAll('.liquidation-line > g')
-        .attr('data-type', d => d.type)
 }
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -320,9 +239,6 @@ function placeOrderDraft (price) {
 
 function onDragDraft (d) {
     let price = +(d.value.toFixed(2))
-    let lastPrice = (api.lastPrice)
-            ? api.lastPrice
-            : candles.last.close
     let qty = d3.select('#' + d.side + '-qty').property('value')
 
     draftLinesData[0].value = price
@@ -346,15 +262,6 @@ function draftToOrder (d, i) {
         : trading.onSell
 
     order('limit')
-}
-
-function onTradingQtyUpdate (side, qty) {
-    let draft = draftLinesData[0]
-    // Update qty on order draft line
-    if (draft && side === draft.side) {
-        draft.qty = +qty
-        draw()
-    }
 }
 
 function onDragOrder (d) {
