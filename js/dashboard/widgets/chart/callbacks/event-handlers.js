@@ -98,11 +98,11 @@ module.exports = class EventHandlers {
 
     onZoom() {
         let transform = d3.event.transform
-        let scaledX = transform.rescaleX(xScale)
+        let scaledX = transform.rescaleX(scales.x)
 
         this.xAxis.scale(scaledX)
         this.xGridlines.scale(scaledX)
-        this.plot.xScale = scaledX
+        this.plot.scales.x = scaledX
 
         // let scaledY = transform.rescaleY(yScale)
         // plot.yScale = scaledY

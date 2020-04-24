@@ -1,8 +1,10 @@
 'use strict'
-const techan = require('techan')
 const api = require('../../../apis/futures')
 const trading = require('../trading')
 
+const Axes = require('./items/axes')
+const GridLines = require('./items/grid-lines')
+const ClipPath = require('./items/clip-path')
 const Crosshair = require('./items/crosshair')
 const Plot = require('./plot/plot')
 const Lines = require('./items/lines')
@@ -14,47 +16,34 @@ let margin = { top: 0, right: 55, bottom: 30, left: 55 }
 let width = 960 - margin.left - margin.right
 let height = 700 - margin.top - margin.bottom
 
-let xScale = d3.scaleTime().range([0, width])
-let yScale = d3.scaleSymlog().range([height, 0])
+let scales = {
+    x: d3.scaleTime().range([0, width]),
+    y: d3.scaleSymlog().range([height, 0])
+}
 
 let zoom = d3.zoom().on('zoom', onZoom)
 
-let xAxis = d3.axisBottom(xScale)
+let axes = new Axes(scales, width, height)
 
-let yAxisLeft = d3.axisLeft(yScale)
-        .tickFormat(d3.format('.2f'))
+let gridLines = new GridLines(scales, width, height)
 
-let yAxisRight = d3.axisRight(yScale)
-        .tickFormat(d3.format('.2f'))
+let clipPath = new ClipPath(width, height)
 
-let xGridlines = d3.axisTop(xScale)
-        .tickFormat('')
-        .tickSize(-height)
+let linesArgs = [scales, axes, width, height, margin]
+let priceLine = new Lines(...linesArgs)
+let bidAskLines = new Lines(...linesArgs)
+let draftLines = new Lines(...linesArgs)
+let orderLines = new Lines(...linesArgs)
+let positionLine = new Lines(...linesArgs)
+let liquidationLine = new Lines(...linesArgs)
 
-let yGridlines = g => g.call(d3.axisLeft(yScale)
-        .tickFormat('')
-        .tickSize(-width)
-        .tickValues(d3.scaleLinear().domain(yScale.domain()).ticks())
-    )
+let positionLabel = new LineLabel(width, scales.y)
+let orderLabels = new OrderLabel(width, scales.y)
+let draftLabels = new DraftLabel(width, scales.y, draftToOrder)
 
-let newLines = () =>  new Lines(xScale, yScale, yAxisLeft, yAxisRight, width)
+let plot = new Plot(scales)
 
-let priceLine = newLines()
-let bidAskLines = newLines()
-let draftLines = newLines()
-let orderLines = newLines()
-let positionLine = newLines()
-let liquidationLine = newLines()
-
-let positionLabel = new LineLabel(width, yScale)
-let orderLabels = new OrderLabel(width, yScale)
-let draftLabels = new DraftLabel(width, yScale, draftToOrder)
-
-let plot = new Plot(xScale, yScale)
-
-let crosshair = new Crosshair(
-    xScale, yScale, xAxis, yAxisLeft, yAxisRight, width, height
-)
+let crosshair = new Crosshair(scales, axes, width, height)
 
 // Data
 let candles = []
@@ -78,26 +67,14 @@ svg.call(zoom)
 
 svg.on('dblclick.zoom', null)
     .on('dblclick', function () {
-        placeOrderDraft(yScale.invert(d3.mouse(this)[1]))
+        placeOrderDraft(scales.y.invert(d3.mouse(this)[1]))
     })
 
-let gClipPath = svg.append('clipPath')
-        .attr('id', 'clip')
-    .append('rect')
-        .attr('x', 0)
-        .attr('y', 0)
-        .attr('width', width)
-        .attr('height', height)
+clipPath.append(svg, 'clipChart')
 
-let gXGridlines = svg.append('g').class('x gridlines')
-let gYGridlines = svg.append('g').class('y gridlines')
+gridLines.appendWrapper(svg)
 
-let gXAxis = svg.append('g').class('x axis bottom')
-        .attr('transform', 'translate(0,' + height + ')')
-
-let gYAxisLeft = svg.append('g').class('y axis left')
-let gYAxisRight = svg.append('g').class('y axis right')
-        .attr('transform', 'translate(' + width + ',0)')
+axes.appendWrapper(svg)
 
 positionLine.appendWrapper(svg, 'position-line')
 liquidationLine.appendWrapper(svg, 'liquidation-line')
@@ -105,15 +82,11 @@ bidAskLines.appendWrapper(svg, 'bid-ask-lines')
 priceLine.appendWrapper(svg, 'price-line')
 
 plot.appendWrapper(svg)
-plot.appendWrapper(svg)
 
 crosshair.appendWrapper(svg)
 
 orderLines.appendWrapper(svg, 'order-lines')
-        .on('drag', onDragOrder)
-        .on('dragend', onDragOrderEnd)
 draftLines.appendWrapper(svg, 'draft-lines')
-        .on('drag', onDragDraft)
 
 positionLabel.appendWrapper(svg, 'position-label')
 orderLabels.appendWrapper(svg, 'order-labels')
@@ -133,8 +106,6 @@ function initDraw(_candles) {
     draw()
     // Right padding
     svg.call(zoom.translateBy, -100)
-    // svg.call(zoom.translateBy, -200)
-    // svg.call(zoom.scaleBy, 1.5)
 
     api.getPosition()
     api.getOpenOrders()
@@ -142,14 +113,7 @@ function initDraw(_candles) {
     // Event listeners
     let callbacks = new Callbacks(
         candles,
-        {
-            priceLineData,
-            positionLineData,
-            bidAskLinesData,
-            liquidationLineData,
-            orderLinesData,
-            draftLinesData,
-        },
+        { priceLineData, positionLineData, bidAskLinesData, liquidationLineData, orderLinesData, draftLinesData, },
         svg,
         draw,
         plot,
@@ -165,6 +129,10 @@ function initDraw(_candles) {
     events.on('api.orderUpdate', callbacks.updateOpenOrders)
     events.on('api.positionUpdate', callbacks.updatePosition)
     events.on('liquidation.update', callbacks.updateLiquidation)
+
+    draftLines.on('drag', onDragDraft)
+    orderLines.on('drag', onDragOrder)
+            .on('dragend', onDragOrderEnd)
 }
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -180,26 +148,19 @@ function draw() {
     ydomain[0] -= 50
     ydomain[1] += 50
 
-    xScale.domain(xdomain)
-    yScale.domain(ydomain)
+    scales.x.domain(xdomain)
+    scales.y.domain(ydomain)
 
-    gXAxis.call(xAxis)
-    gYAxisLeft.call(yAxisLeft
-        .tickValues(d3.scaleLinear().domain(yScale.domain()).ticks())
-    )
-    gYAxisRight.call(yAxisRight
-        .tickValues(d3.scaleLinear().domain(yScale.domain()).ticks())
-    )
+    axes.draw()
 
-    gXGridlines.call(xGridlines)
-    gYGridlines.call(yGridlines)
+    gridLines.draw(scales.y)
 
     priceLine.draw(priceLineData)
     positionLine.draw(positionLineData)
     bidAskLines.draw(bidAskLinesData)
     liquidationLine.draw(liquidationLineData)
-    orderLines.draw(orderLinesData).drag
-    draftLines.draw(draftLinesData).drag
+    orderLines.draw(orderLinesData).draggable()
+    draftLines.draw(draftLinesData).draggable()
 
     positionLabel.draw(positionLineData)
     orderLabels.draw(orderLinesData)
@@ -231,7 +192,7 @@ function placeOrderDraft (price) {
     let qty = d3.select('#' + side + '-qty').property('value')
 
     let data = { value: price, qty: Number(qty), side: side }
-    draftLinesData = [data]
+    draftLinesData[0] = data
 
     onDragDraft(data) // Wobbly coding <(°v°)<
     draw()
@@ -291,13 +252,13 @@ function onDragOrderEnd (d) {
 
 function onZoom() {
     let transform = d3.event.transform
-    let scaledX = transform.rescaleX(xScale)
+    let scaledX = transform.rescaleX(scales.x)
 
-    xAxis.scale(scaledX)
-    xGridlines.scale(scaledX)
+    axes.x.scale(scaledX)
+    gridLines.x.scale(scaledX)
     plot.xScale = scaledX
 
-    // let scaledY = transform.rescaleY(yScale)
+    // let scaledY = transform.rescaleY(scales.y)
     // plot.yScale = scaledY
     draw()
 }

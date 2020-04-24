@@ -13,7 +13,7 @@ class LineLabel {
     appendWrapper (container, className) {
         this.wrapper = container.append('g')
             .class(className)
-            .attr('clip-path', 'url(#clip)')
+            .attr('clip-path', 'url(#clipChart)')
     }
 
     draw (data) {
@@ -52,8 +52,6 @@ class LineLabel {
     _addOnClick (rect) { return }
 
     _updateOnClick (rect) { return }
-
-
 }
 
 class OrderLabel extends LineLabel {

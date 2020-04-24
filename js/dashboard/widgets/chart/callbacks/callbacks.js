@@ -41,7 +41,7 @@ module.exports = class ChartCallbacks {
     updateBidAsk = (data) => this.dataUpdates.updateBidAsk(data)
     updateLastCandle = (data) => this.dataUpdates.updateLastCandle(data)
     updatePosition = (data) => this.dataUpdates.updatePosition(data)
-    updateDraft = (data, side) => this.dataUpdates.updateDraft(data, side)
+    updateDraft = (...args) => this.dataUpdates.updateDraft(...args)
     updateOpenOrders = (data) => this.dataUpdates.updateOpenOrders(data)
     updateLiquidation = (data, side) => this.dataUpdates.updateLiquidation(data, side)
 }

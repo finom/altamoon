@@ -6,14 +6,20 @@ module.exports = class Crosshair {
 
     wrapper
 
-    constructor (xScale, yScale, xAxis, yAxisLeft, yAxisRight, width, height) {
-        this.xScale = xScale
-        this.yScale = yScale
-        this.xAxis = xAxis
-        this.yAxisLeft = yAxisLeft
-        this.yAxisRight = yAxisRight
+    constructor (scales, axes, width, height) {
+        this.scales = scales
+        this.axes = axes
         this.width = width
         this.height = height
+
+        this.techan = techan.plot.crosshair()
+                .xScale(this.scales.x)
+                .yScale(this.scales.y)
+                .xAnnotation(AxisLabel.bottom(this.axes.x, this.height))
+                .yAnnotation([
+                    AxisLabel.left(this.axes.yLeft),
+                    AxisLabel.right(this.axes.yRight, this.width)
+                ])
     }
 
     appendWrapper (container) {
@@ -22,14 +28,6 @@ module.exports = class Crosshair {
     }
 
     draw () {
-        this.wrapper.call(techan.plot.crosshair()
-            .xScale(this.xScale)
-            .yScale(this.yScale)
-            .xAnnotation(AxisLabel.bottom(this.xAxis, this.height))
-            .yAnnotation([
-                AxisLabel.left(this.yAxisLeft),
-                AxisLabel.right(this.yAxisRight, this.width)
-            ])
-        )
+        this.wrapper.call(this.techan)
     }
 }

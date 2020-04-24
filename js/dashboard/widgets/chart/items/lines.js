@@ -4,30 +4,55 @@ const AxisLabel = require('./axis-label')
 
 module.exports = class Lines {
 
-    constructor (xScale, yScale, yAxisLeft, yAxisRight, width) {
-        this.xScale = xScale
-        this.yScale = yScale
-        this.yAxisLeft = yAxisLeft
-        this.yAxisRight = yAxisRight
+    constructor (scales, axes, width, height, margin) {
+        this.axes = axes
         this.width = width
+        this.height = height
+        this.margin = margin
+
+        this.techan = techan.plot.supstance()
+                .xScale(scales.x)
+                .yScale(scales.y)
+                .annotation([
+                    AxisLabel.left(this.axes.yLeft),
+                    AxisLabel.right(this.axes.yRight, this.width)
+                ])
     }
 
     appendWrapper (container, className) {
-        return this.wrapper = container.append('g')
+        this.wrapper = container.append('g')
             .class(className)
+
+        this._clip(container)
+        return this
     }
 
     draw (data) {
         this.wrapper
             .datum(data)
-            .call(techan.plot.supstance()
-                .xScale(this.xScale)
-                .yScale(this.yScale)
-                .annotation([
-                    AxisLabel.left(this.yAxisLeft),
-                    AxisLabel.right(this.yAxisRight, this.width)
-                ])
-            )
-        return this.wrapper
+            .call(this.techan)
+        return this
+    }
+
+    on (event, callback, ...args) {
+        this.techan.on(event, callback, ...args)
+        return this
+    }
+
+    draggable () {
+        this.wrapper.call(this.techan.drag)
+    }
+
+    _clip (container) {
+        this.wrapper.attr('clip-path', 'url(#clipLines)')
+
+        if (!document.getElementById('clipLines'))
+            container.insert('clipPath', ':first-child')
+                    .attr('id', 'clipLines')
+                .append('rect')
+                    .attr('x', 0 - this.margin.left)
+                    .attr('y', 0)
+                    .attr('width', this.width + this.margin.left + this.margin.right)
+                    .attr('height', this.height)
     }
 }

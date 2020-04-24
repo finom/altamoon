@@ -3,9 +3,9 @@ const smoozCandles = require('./smooz-candles')
 
 class Plot {
 
-    constructor (xScale, yScale) {
-        this.xScale = xScale
-        this.yScale = yScale
+    constructor (scales) {
+        this.xScale = scales.x
+        this.yScale = scales.y
 
         this.candles = []
         this.smoozCandles = []
@@ -24,7 +24,7 @@ class Plot {
     appendWrapper (container) {
         this.wrapper = container.append('g')
             .class('plot')
-            .attr('clip-path', 'url(#clip)')
+            .attr('clip-path', 'url(#clipChart)')
 
         this.pathBodiesUp = this.wrapper.append('path')
                 .class('body up')
