@@ -6,21 +6,21 @@ module.exports = class DataUpdateCallbacks {
         candles,
         datasets,
         svg,
-        draw,
         plot,
         priceLine,
         bidAskLines,
         liquidationLine,
+        draw,
         zoom,
     ) {
         this.candles = candles
         this.datasets = datasets
         this.svg = svg
-        this.draw = draw
         this.plot = plot
         this.priceLine = priceLine
-        this.liquidationLine = liquidationLine
         this.bidAskLines = bidAskLines
+        this.liquidationLine = liquidationLine
+        this.draw = draw
         this.zoom = zoom
     }
 

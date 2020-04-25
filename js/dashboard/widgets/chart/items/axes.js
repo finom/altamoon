@@ -16,7 +16,7 @@ module.exports = class Axes {
                 .tickFormat(d3.format('.2f'))
     }
 
-    appendWrapper (container) {
+    appendTo (container) {
         this.gX = container.append('g').class('x axis bottom')
                 .attr('transform', 'translate(0,' + this.height + ')')
 

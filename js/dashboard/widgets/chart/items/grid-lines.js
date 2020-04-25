@@ -17,7 +17,7 @@ module.exports = class GridLines {
             )
     }
 
-    appendWrapper (container) {
+    appendTo (container) {
         this.xWrapper = container.append('g').class('x gridlines')
         this.yWrapper = container.append('g').class('y gridlines')
     }

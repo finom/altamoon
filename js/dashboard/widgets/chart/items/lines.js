@@ -19,7 +19,7 @@ module.exports = class Lines {
                 ])
     }
 
-    appendWrapper (container, className) {
+    appendTo (container, className) {
         this.wrapper = container.append('g')
             .class(className)
 

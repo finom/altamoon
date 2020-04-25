@@ -9,7 +9,7 @@ module.exports = class ClipPath {
         this.y = y
     }
 
-    append (container, id) {
+    appendTo (container, id) {
         container.append('clipPath')
                 .attr('id', id)
             .append('rect')

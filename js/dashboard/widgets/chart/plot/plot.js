@@ -21,7 +21,7 @@ class Plot {
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     //   WRAPPER
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    appendWrapper (container) {
+    appendTo (container) {
         this.wrapper = container.append('g')
             .class('plot')
             .attr('clip-path', 'url(#clipChart)')

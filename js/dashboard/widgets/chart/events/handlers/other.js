@@ -1,27 +1,31 @@
 'use strict'
-const api = require('../../../../apis/futures')
-const trading = require('../../trading')
+const api = require('../../../../../apis/futures')
+const trading = require('../../../trading')
 
 module.exports = class EventHandlers {
 
     constructor (
-        xAxis,
-        xGridlines,
         candles,
         datasets,
-        draw,
+        scales,
+        axes,
+        plot,
+        gridLines,
         draftLabels,
         orderLabels,
+        draw,
     ) {
-        this.xAxis = xAxis
-        this.xGridlines = xGridlines
         this.candles = candles
-        this.datasets = datasets
-        this.draw = draw
+        this.scales = scales
+        this.axes = axes
+        this.plot = plot
+        this.gridLines = gridLines
         this.draftLabels = draftLabels
         this.orderLabels = orderLabels
+        this.draw = draw
 
-        this.draftLinesData = this.datasets.draftLinesData
+        this.draftLinesData = datasets.draftLinesData
+        this.orderLinesData = datasets.orderLinesData
     }
 
     placeOrderDraft (price) {
@@ -33,9 +37,7 @@ module.exports = class EventHandlers {
         let qty = d3.select('#' + side + '-qty').property('value')
 
         let data = { value: price, qty: Number(qty), side: side }
-
-        this.draftLinesData.length = 0
-        this.draftLinesData.push(data)
+        this.draftLinesData[0] = data
 
         this.onDragDraft(data) // Wobbly coding <(°v°)<
         this.draw()
@@ -69,17 +71,14 @@ module.exports = class EventHandlers {
     }
 
     onDragOrder (d) {
-        let orderLinesData = this.datasets.orderLinesData
-        let currentOrder = orderLinesData.filter(x => x.id === d.id)[0]
+        let currentOrder = this.orderLinesData.filter(x => x.id === d.id)[0]
         if (!currentOrder || currentOrder.price === d.value)
             return
-        this.orderLabels.draw(orderLinesData)
+            this.orderLabels.draw(this.orderLinesData)
     }
-
     onDragOrderEnd (d) {
         /* Delete order, recreate at new price */
-        let orderLinesData = this.datasets.orderLinesData
-        let currentOrder = orderLinesData.filter(x => x.id === d.id)[0]
+        let currentOrder = this.orderLinesData.filter(x => x.id === d.id)[0]
         if (!currentOrder || currentOrder.price === d.value)
             return
 
@@ -96,15 +95,15 @@ module.exports = class EventHandlers {
             .catch(error => console.error(error))
     }
 
-    onZoom() {
+    onZoom () {
         let transform = d3.event.transform
-        let scaledX = transform.rescaleX(scales.x)
+        let scaledX = transform.rescaleX(this.scales.x)
 
-        this.xAxis.scale(scaledX)
-        this.xGridlines.scale(scaledX)
-        this.plot.scales.x = scaledX
+        this.axes.x.scale(scaledX)
+        this.gridLines.x.scale(scaledX)
+        this.plot.xScale = scaledX
 
-        // let scaledY = transform.rescaleY(yScale)
+        // let scaledY = transform.rescaleY(scales.y)
         // plot.yScale = scaledY
         this.draw()
     }

@@ -1,16 +1,17 @@
 'use strict'
 const api = require('../../../../apis/futures')
 
-class LineLabel {
+module.exports = class LineLabels {
 
     wrapper
+    eventListeners = {}
 
     constructor (chartWidth, yScale) {
         this.chartWidth = chartWidth
         this.yScale = yScale
     }
 
-    appendWrapper (container, className) {
+    appendTo (container, className) {
         this.wrapper = container.append('g')
             .class(className)
             .attr('clip-path', 'url(#clipChart)')
@@ -33,7 +34,7 @@ class LineLabel {
 
                     g.attr('data-side', d => d.side)
 
-                    this._addOnClick(rect)
+                    this._addEventListeners(rect)
                 }),
                 // Update y
                 update => update.call(g => {
@@ -44,41 +45,18 @@ class LineLabel {
                         .text(d => +d.qty)
                     g.attr('data-side', d => d.side)
 
-                    this._updateOnClick(rect)
+                    this._addEventListeners(rect)
                 })
             )
     }
 
-    _addOnClick (rect) { return }
-
-    _updateOnClick (rect) { return }
-}
-
-class OrderLabel extends LineLabel {
-
-    constructor (chartWidth, yScale) {
-        super(chartWidth, yScale)
+    on (event, callback) {
+        this.eventListeners[event] = callback
     }
 
-    _addOnClick (rect) {
-        rect.on('click', d => api.cancelOrder(d.id))
+
+    _addEventListeners (rect) {
+        for (let [event, callback] of Object.entries(this.eventListeners))
+            rect.on(event, callback)
     }
 }
-
-class DraftLabel extends LineLabel {
-
-    constructor (chartWidth, yScale, draftToOrder) {
-        super(chartWidth, yScale)
-        this.draftToOrder = draftToOrder
-    }
-
-    _addOnClick (rect) {
-        rect.on('click', (d, i) => this.draftToOrder(d, i))
-    }
-
-    _updateOnClick (rect) {
-        this._addOnClick(rect)
-    }
-}
-
-module.exports = { LineLabel, OrderLabel, DraftLabel}

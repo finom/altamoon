@@ -22,7 +22,7 @@ module.exports = class Crosshair {
                 ])
     }
 
-    appendWrapper (container) {
+    appendTo (container) {
         this.wrapper = container.append('g')
             .class('crosshair')
     }
