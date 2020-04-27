@@ -13,176 +13,150 @@ const LineLabels = require('./items/line-labels')
 const Listeners = require('./events/listeners')
 
 
-let margin = { top: 0, right: 55, bottom: 30, left: 55 }
-let width = 960 - margin.left - margin.right
-let height = 700 - margin.top - margin.bottom
+module.exports = class Chart {
 
-let scales = {
-    x: d3.scaleTime().range([0, width]),
-    y: d3.scaleSymlog().range([height, 0])
-}
+    constructor (container) {
+        this.container = container
 
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//   CREATE ITEMS
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-let svg = new Svg(width, height, margin)
+        this.margin = { top: 0, right: 55, bottom: 30, left: 55 }
+        this.width = 960 - this.margin.left - this.margin.right
+        this.height = 700 - this.margin.top - this.margin.bottom
 
-let axes = new Axes(scales, width, height)
+        this.scales = {
+            x: d3.scaleTime().range([0, this.width]),
+            y: d3.scaleSymlog().range([this.height, 0])
+        }
 
-let gridLines = new GridLines(scales, width, height)
+        this.createItems()
+        this.appendContainers()
+        this.loadData()
+        this.addEventListeners()
+    }
 
-let clipPath = new ClipPath(width, height)
+    createItems () {
+        this.svg = new Svg(this.width, this.height, this.margin)
 
-let linesArgs = [scales, axes, width, height, margin]
-let priceLine = new Lines(...linesArgs)
-let bidAskLines = new Lines(...linesArgs)
-let draftLines = new Lines(...linesArgs)
-let orderLines = new Lines(...linesArgs)
-let positionLine = new Lines(...linesArgs)
-let liquidationLine = new Lines(...linesArgs)
+        this.axes = new Axes(this.scales, this.width, this.height)
 
-let positionLabel = new LineLabels(width, scales.y)
-let orderLabels = new LineLabels(width, scales.y)
-let draftLabels = new LineLabels(width, scales.y)
+        this.gridLines = new GridLines(this.scales, this.width, this.height)
 
-let plot = new Plot(scales)
+        this.clipPath = new ClipPath(this.width, this.height)
 
-let crosshair = new Crosshair(scales, axes, width, height)
+        let linesArgs = [this.scales, this.axes, this.width, this.height, this.margin]
+        this.priceLine = new Lines(...linesArgs)
+        this.bidAskLines = new Lines(...linesArgs)
+        this.draftLines = new Lines(...linesArgs)
+        this.orderLines = new Lines(...linesArgs)
+        this.positionLine = new Lines(...linesArgs)
+        this.liquidationLine = new Lines(...linesArgs)
 
-let zoom = d3.zoom()
+        this.positionLabel = new LineLabels(this.width, this.scales.y)
+        this.orderLabels = new LineLabels(this.width, this.scales.y)
+        this.draftLabels = new LineLabels(this.width, this.scales.y)
 
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//   APPEND SVG CONTAINERS
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-/* Order of appending = visual z-order (last is top) */
-svg.appendTo('#chart')
+        this.plot = new Plot(this.scales)
 
-clipPath.appendTo(svg, 'clipChart')
+        this.crosshair = new Crosshair(this.scales, this.axes, this.width, this.height)
 
-gridLines.appendTo(svg)
+        this.zoom = d3.zoom()
+    }
 
-axes.appendTo(svg)
+    appendContainers () {
+        /* Order of appending = visual z-order (last is top) */
+        this.svg.appendTo(this.container)
 
-positionLine.appendTo(svg, 'position-line')
-liquidationLine.appendTo(svg, 'liquidation-line')
-bidAskLines.appendTo(svg, 'bid-ask-lines')
-priceLine.appendTo(svg, 'price-line')
+        this.clipPath.appendTo(this.svg, 'clipChart')
 
-plot.appendTo(svg)
+        this.gridLines.appendTo(this.svg)
 
-crosshair.appendTo(svg)
+        this.axes.appendTo(this.svg)
 
-orderLines.appendTo(svg, 'order-lines')
-draftLines.appendTo(svg, 'draft-lines')
+        this.positionLine.appendTo(this.svg, 'position-line')
+        this.liquidationLine.appendTo(this.svg, 'liquidation-line')
+        this.bidAskLines.appendTo(this.svg, 'bid-ask-lines')
+        this.priceLine.appendTo(this.svg, 'price-line')
 
-positionLabel.appendTo(svg, 'position-label')
-orderLabels.appendTo(svg, 'order-labels')
-draftLabels.appendTo(svg, 'draft-labels')
+        this.plot.appendTo(this.svg)
 
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//   LOAD DATA
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-let candles = []
-let priceLineData = []
-let positionLineData = []
-let bidAskLinesData = []
-let liquidationLineData = []
-let orderLinesData = []
-let draftLinesData = []
+        this.crosshair.appendTo(this.svg)
 
-api.getCandles()
-events.on('api.candlesUpdate', initDraw)
+        this.orderLines.appendTo(this.svg, 'order-lines')
+        this.draftLines.appendTo(this.svg, 'draft-lines')
 
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//   EVENT LISTENERS
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-let listeners = new Listeners(
-    candles,
-    { priceLineData, positionLineData, bidAskLinesData, liquidationLineData, orderLinesData, draftLinesData, },
-    svg,
-    scales,
-    axes,
-    plot,
-    gridLines,
-    priceLine,
-    bidAskLines,
-    liquidationLine,
-    draftLabels,
-    orderLabels,
-    draw,
-    zoom,
-)
+        this.positionLabel.appendTo(this.svg, 'position-label')
+        this.orderLabels.appendTo(this.svg, 'order-labels')
+        this.draftLabels.appendTo(this.svg, 'draft-labels')
+    }
 
-draftLines.on('drag', listeners.onDragDraft)
-orderLines.on('drag', listeners.onDragOrder)
-        .on('dragend', listeners.onDragOrderEnd)
-draftLabels.on('click', (d, i) => listeners.draftToOrder(d, i))
-orderLabels.on('click', d => api.cancelOrder(d.id))
+    loadData () {
+        this.data = {}
+        this.data.candles = []
+        this.data.priceLine = []
+        this.data.positionLine = []
+        this.data.bidAskLines = []
+        this.data.liquidationLine = []
+        this.data.orderLines = []
+        this.data.draftLines = []
 
-svg.call(zoom)
-svg.on('dblclick.zoom', null)
-        .on('dblclick', function () {
-            listeners.placeOrderDraft(scales.y.invert(d3.mouse(this)[1]))
-        })
+        api.getCandles()
+        events.on('api.candlesUpdate', d => this.initDraw(d))
+    }
 
-zoom.on('zoom', listeners.onZoom)
+    addEventListeners () {
+        this.listeners = new Listeners(this)
+    }
 
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//   INIT DRAW
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-function initDraw(_candles) {
-    candles.push(..._candles)
+    initDraw(candles) {
+        this.data.candles.push(...candles)
 
-    api.getPosition()
-    api.getOpenOrders()
+        api.getPosition()
+        api.getOpenOrders()
 
-    listeners.setEventListeners()
+        this.listeners.setEventListeners()
 
-    draw()
-    // Right padding
-    svg.call(zoom.translateBy, -100)
-}
+        this.draw()
+        // Right padding
+        this.svg.call(this.zoom.translateBy, -100)
+    }
 
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//   RENDER CHART
-// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-function draw() {
-    let data = candles.slice(-300, candles.length)
+    draw() {
+        let candles = this.data.candles.slice(-300, this.data.candles.length)
 
-    let xdomain = [data[0].date, data.last.date]
-    let ydomain = [d3.min(data, d => d.low), d3.max(data, d => d.high)]
+        let xdomain = [candles[0].date, candles.last.date]
+        let ydomain = [d3.min(candles, d => d.low), d3.max(candles, d => d.high)]
 
-    // Padding y axis
-    ydomain[0] -= 50
-    ydomain[1] += 50
+        // Padding y axis
+        ydomain[0] -= 50
+        ydomain[1] += 50
 
-    scales.x.domain(xdomain)
-    scales.y.domain(ydomain)
+        this.scales.x.domain(xdomain)
+        this.scales.y.domain(ydomain)
 
-    axes.draw()
+        this.axes.draw()
 
-    gridLines.draw(scales.y)
+        this.gridLines.draw(this.scales.y)
 
-    priceLine.draw(priceLineData)
-    positionLine.draw(positionLineData)
-    bidAskLines.draw(bidAskLinesData)
-    liquidationLine.draw(liquidationLineData)
-    orderLines.draw(orderLinesData).draggable()
-    draftLines.draw(draftLinesData).draggable()
+        this.priceLine.draw(this.data.priceLine)
+        this.positionLine.draw(this.data.positionLine)
+        this.bidAskLines.draw(this.data.bidAskLines)
+        this.liquidationLine.draw(this.data.liquidationLine)
+        this.orderLines.draw(this.data.orderLines).draggable()
+        this.draftLines.draw(this.data.draftLines).draggable()
 
-    positionLabel.draw(positionLineData)
-    orderLabels.draw(orderLinesData)
-    draftLabels.draw(draftLinesData)
+        this.positionLabel.draw(this.data.positionLine)
+        this.orderLabels.draw(this.data.orderLines)
+        this.draftLabels.draw(this.data.draftLines)
 
-    crosshair.draw()
+        this.crosshair.draw()
 
-    plot.draw(candles)
+        this.plot.draw(this.data.candles)
 
-    // Color lines based on market side
-    positionLine.wrapper.selectAll('.position-line > g')
-        .attr('data-side', d => d.side)
-    orderLines.wrapper.selectAll('.order-lines > g')
-        .attr('data-side', d => d.side)
-    draftLines.wrapper.selectAll('.draft-lines > g')
-        .attr('data-side', d => d.side)
+        // Color lines based on market side
+        this.positionLine.wrapper.selectAll('.position-line > g')
+            .attr('data-side', d => d.side)
+        this.orderLines.wrapper.selectAll('.order-lines > g')
+            .attr('data-side', d => d.side)
+        this.draftLines.wrapper.selectAll('.draft-lines > g')
+            .attr('data-side', d => d.side)
+    }
 }

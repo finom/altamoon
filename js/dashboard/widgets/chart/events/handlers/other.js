@@ -1,73 +1,16 @@
 'use strict'
 const api = require('../../../../../apis/futures')
-const trading = require('../../../trading')
 
-module.exports = class EventHandlers {
+module.exports = class OtherHandlers {
 
-    constructor (
-        candles,
-        datasets,
-        scales,
-        axes,
-        plot,
-        gridLines,
-        draftLabels,
-        orderLabels,
-        draw,
-    ) {
-        this.candles = candles
-        this.scales = scales
-        this.axes = axes
-        this.plot = plot
-        this.gridLines = gridLines
-        this.draftLabels = draftLabels
-        this.orderLabels = orderLabels
-        this.draw = draw
-
-        this.draftLinesData = datasets.draftLinesData
-        this.orderLinesData = datasets.orderLinesData
-    }
-
-    placeOrderDraft (price) {
-        price = +(price.toFixed(2))
-        let lastPrice = (api.lastPrice)
-                ? api.lastPrice
-                : this.candles.last.close
-        let side = (price <= lastPrice) ? 'buy' : 'sell'
-        let qty = d3.select('#' + side + '-qty').property('value')
-
-        let data = { value: price, qty: Number(qty), side: side }
-        this.draftLinesData[0] = data
-
-        this.onDragDraft(data) // Wobbly coding <(°v°)<
-        this.draw()
-    }
-
-    onDragDraft (d) {
-        let price = +(d.value.toFixed(2))
-        let qty = d3.select('#' + d.side + '-qty').property('value')
-
-        this.draftLinesData[0].value = price
-        this.draftLinesData[0].qty = Number(qty)
-
-        events.emit('chart.draftOrderMoved', d.side, price, qty)
-
-        // Redraw
-        this.draftLabels.draw(this.draftLinesData)
-    }
-
-    draftToOrder (d, i) {
-        this.draftLinesData.splice(i, 1)
-
-        events.emit('chart.draftOrderMoved', d.side, null, null)
-
-        this.draw()
-
-        let order = (d.side === 'buy')
-            ? trading.onBuy
-            : trading.onSell
-
-        order('limit')
+    constructor (chart) {
+        this.chart = chart
+        this.scales = chart.scales
+        this.axes = chart.axes
+        this.plot = chart.plot
+        this.gridLines = chart.gridLines
+        this.orderLabels = chart.orderLabels
+        this.orderLinesData = chart.data.orderLines
     }
 
     onDragOrder (d) {
@@ -105,7 +48,6 @@ module.exports = class EventHandlers {
 
         // let scaledY = transform.rescaleY(scales.y)
         // plot.yScale = scaledY
-        this.draw()
+        this.chart.draw()
     }
-
 }

@@ -1,48 +1,16 @@
 'use strict'
-const DataUpdates = require('./handlers/data-updates')
-const Other = require('./handlers/other')
+const api = require('../../../../apis/futures')
+const DataUpdateHandlers = require('./handlers/data-updates')
+const DrafOrderHandlers = require('./handlers/draft-order')
+const OtherHandlers = require('./handlers/other')
 
 module.exports = class Listeners {
 
-    constructor (
-        candles,
-        datasets,
-        svg,
-        scales,
-        axes,
-        plot,
-        gridLines,
-        priceLine,
-        bidAskLines,
-        liquidationLine,
-        draftLabels,
-        orderLabels,
-        draw,
-        zoom,
-    ) {
-        this.dataUpdates = new DataUpdates(
-            candles,
-            datasets,
-            svg,
-            plot,
-            priceLine,
-            bidAskLines,
-            liquidationLine,
-            draw,
-            zoom,
-        )
-
-        this.other = new Other(
-            candles,
-            datasets,
-            scales,
-            axes,
-            plot,
-            gridLines,
-            draftLabels,
-            orderLabels,
-            draw,
-        )
+    constructor (chart) {
+        this.chart = chart
+        this.dataUpdates = new DataUpdateHandlers(chart)
+        this.draftHandlers = new DrafOrderHandlers(chart)
+        this.other = new OtherHandlers(chart)
     }
 
     setEventListeners () {
@@ -53,6 +21,22 @@ module.exports = class Listeners {
         events.on('api.orderUpdate', this.updateOpenOrders)
         events.on('api.positionUpdate', this.updatePosition)
         events.on('liquidation.update', this.updateLiquidation)
+
+        this.chart.draftLines.on('drag', this.onDragDraft)
+        this.chart.orderLines.on('drag', this.onDragOrder)
+                .on('dragend', this.onDragOrderEnd)
+        this.chart.draftLabels.on('click', (d, i) => this.draftToOrder(d, i))
+        this.chart.orderLabels.on('click', d => api.cancelOrder(d.id))
+
+        this.chart.svg.call(this.chart.zoom)
+        this.chart.svg.on('dblclick.zoom', null)
+                .on('dblclick', (d, i, nodes) => {
+                    this.placeOrderDraft(
+                        this.chart.scales.y.invert( d3.mouse(nodes[i])[1] )
+                    )
+                })
+
+        this.chart.zoom.on('zoom', (d) => this.onZoom(d))
     }
 
     // Data update callbacks
@@ -65,9 +49,10 @@ module.exports = class Listeners {
     updateOpenOrders = (...args) => this.dataUpdates.updateOpenOrders(...args)
     updateLiquidation = (...args) => this.dataUpdates.updateLiquidation(...args)
 
-    placeOrderDraft = (...args) => this.other.placeOrderDraft(...args)
-    onDragDraft = (...args) => this.other.onDragDraft(...args)
-    draftToOrder = (...args) => this.other.draftToOrder(...args)
+    placeOrderDraft = (...args) => this.draftHandlers.placeOrderDraft(...args)
+    onDragDraft = (...args) => this.draftHandlers.onDragDraft(...args)
+    draftToOrder = (...args) => this.draftHandlers.draftToOrder(...args)
+
     onDragOrder = (...args) => this.other.onDragOrder(...args)
     onDragOrderEnd = (...args) => this.other.onDragOrderEnd(...args)
     onZoom = (...args) => this.other.onZoom(...args)

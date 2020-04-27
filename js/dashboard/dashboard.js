@@ -3,7 +3,7 @@ require ('../globals')
 const settings = require('../../user/settings')
 
 const api = require('../apis/futures')
-const chart = require('./widgets/chart/chart')
+const Chart = require('./widgets/chart/chart')
 const trading = require('./widgets/trading')
 const myOrders = require('./widgets/my-orders')
 const wallet = require('./widgets/wallet')
@@ -22,6 +22,9 @@ api.streamUserData()
 api.streamBidAsk()
 api.streamBook()
 book.updateBook()
+
+// Draw chart
+let chart = new Chart('#chart')
 
 // Inputs
 d3.selectAll('.num-input').on('input', trading.parseNumber)

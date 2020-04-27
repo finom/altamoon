@@ -1,38 +1,28 @@
 'use strict'
 
-module.exports = class DataUpdateCallbacks {
+module.exports = class DataUpdateHandlers {
 
-    constructor (
-        candles,
-        datasets,
-        svg,
-        plot,
-        priceLine,
-        bidAskLines,
-        liquidationLine,
-        draw,
-        zoom,
-    ) {
-        this.candles = candles
-        this.datasets = datasets
-        this.svg = svg
-        this.plot = plot
-        this.priceLine = priceLine
-        this.bidAskLines = bidAskLines
-        this.liquidationLine = liquidationLine
-        this.draw = draw
-        this.zoom = zoom
+    constructor (chart) {
+        this.chart = chart
+        this.data = chart.data
+        this.svg = chart.svg
+        this.plot = chart.plot
+        this.priceLine = chart.priceLine
+        this.bidAskLines = chart.bidAskLines
+        this.liquidationLine = chart.liquidationLine
+        this.draw = chart.draw
+        this.zoom = chart.zoom
     }
 
     updatePrice (price) {
-        let priceLineData = this.datasets.priceLineData
+        let priceLineData = this.data.priceLine
 
         priceLineData[0] = {value: price}
         this.priceLine.draw(priceLineData)
     }
 
     updateBidAsk (data) {
-        let baLinesData = this.datasets.bidAskLinesData
+        let baLinesData = this.data.bidAskLines
 
         if (baLinesData[0]) {
             if (baLinesData[0].value === data.a
@@ -46,22 +36,22 @@ module.exports = class DataUpdateCallbacks {
     }
 
     updateLastCandle (candle) {
-        let isSameCandle = candle.timestamp === this.candles.last.timestamp
+        let isSameCandle = candle.timestamp === this.data.candles.last.timestamp
 
         if (isSameCandle) {
-            this.candles.last = candle
+            this.data.candles.last = candle
             this.plot.updateLast(candle)
         } else {
-            this.candles.push(candle)
-            this.draw()
+            this.data.candles.push(candle)
+            this.chart.draw()
             // Pan chart
             this.svg.call(this.zoom.translateBy, 0) // Ehh... ¯\_(°~°)_/¯
         }
     }
 
     updatePosition (positions) {
-        let liquidationLineData = this.datasets.liquidationLineData
-        let positionLineData = this.datasets.positionLineData
+        let liquidationLineData = this.data.liquidationLine
+        let positionLineData = this.data.positionLine
 
         let position = positions.filter(x => x.symbol === SYMBOL)[0]
         let i = liquidationLineData.findIndex(x => x.type === 'real')
@@ -78,26 +68,26 @@ module.exports = class DataUpdateCallbacks {
 
         positionLineData.length = 0
         if (position.qty) positionLineData.push(position)
-        this.draw()
+        this.chart.draw()
     }
 
     updateDraft (qty, side) {
-        let draft = this.datasets.draftLinesData[0]
+        let draft = this.data.draftLines[0]
         if (draft && side === draft.side) {
             draft.qty = +qty
-            this.draw()
+            this.chart.draw()
         }
     }
 
     updateOpenOrders (orders) {
-        let dataset = this.datasets.orderLinesData
+        let dataset = this.data.orderLines
         dataset.length = 0
         dataset.push(...orders)
-        this.draw()
+        this.chart.draw()
     }
 
     updateLiquidation (price, side) {
-        let liquidationLineData = this.datasets.liquidationLineData
+        let liquidationLineData = this.data.liquidationLine
 
         let index = liquidationLineData.findIndex(x => x.side === side)
 
