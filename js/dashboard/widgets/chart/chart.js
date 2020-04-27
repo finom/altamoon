@@ -18,22 +18,25 @@ module.exports = class Chart {
     constructor (container) {
         this.container = container
 
+        this._getDimensions()
+        this._createItems()
+        this._appendContainers()
+        this._loadData()
+        this._addEventListeners()
+    }
+
+    _getDimensions() {
         this.margin = { top: 0, right: 55, bottom: 30, left: 55 }
         this.width = 960 - this.margin.left - this.margin.right
         this.height = 700 - this.margin.top - this.margin.bottom
+    }
 
+    _createItems () {
         this.scales = {
             x: d3.scaleTime().range([0, this.width]),
             y: d3.scaleSymlog().range([this.height, 0])
         }
 
-        this.createItems()
-        this.appendContainers()
-        this.loadData()
-        this.addEventListeners()
-    }
-
-    createItems () {
         this.svg = new Svg(this.width, this.height, this.margin)
 
         this.axes = new Axes(this.scales, this.width, this.height)
@@ -61,7 +64,7 @@ module.exports = class Chart {
         this.zoom = d3.zoom()
     }
 
-    appendContainers () {
+    _appendContainers () {
         /* Order of appending = visual z-order (last is top) */
         this.svg.appendTo(this.container)
 
@@ -88,7 +91,7 @@ module.exports = class Chart {
         this.draftLabels.appendTo(this.svg, 'draft-labels')
     }
 
-    loadData () {
+    _loadData () {
         this.data = {}
         this.data.candles = []
         this.data.priceLine = []
@@ -99,14 +102,14 @@ module.exports = class Chart {
         this.data.draftLines = []
 
         api.getCandles()
-        events.on('api.candlesUpdate', d => this.initDraw(d))
+        events.on('api.candlesUpdate', d => this._initDraw(d))
     }
 
-    addEventListeners () {
+    _addEventListeners () {
         this.listeners = new Listeners(this)
     }
 
-    initDraw(candles) {
+    _initDraw(candles) {
         this.data.candles.push(...candles)
 
         api.getPosition()
