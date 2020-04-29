@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <title>Biduul</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';" />
-    <link rel="stylesheet" type="text/css" href="css/main.css">
-    <link rel="stylesheet" type="text/css" href="css/dashboard/chart.css">
-    <link rel="stylesheet" type="text/css" href="css/dashboard/trading.css">
-    <link rel="stylesheet" type="text/css" href="css/dashboard/my-orders.css">
-    <link rel="stylesheet" type="text/css" href="css/dashboard/wallet.css">
-    <link rel="stylesheet" type="text/css" href="css/dashboard/book.css">
-    <link rel="stylesheet" type="text/css" href="css/dashboard/trades.css">
+    <link rel="stylesheet" href="node_modules/gridstack/dist/gridstack.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/dashboard/gridstack.css">
+    <link rel="stylesheet" href="css/dashboard/chart.css">
+    <link rel="stylesheet" href="css/dashboard/trading.css">
+    <link rel="stylesheet" href="css/dashboard/my-orders.css">
+    <link rel="stylesheet" href="css/dashboard/wallet.css">
+    <link rel="stylesheet" href="css/dashboard/book.css">
+    <link rel="stylesheet" href="css/dashboard/trades.css">
     <script>
       window.addEventListener('DOMContentLoaded', () => {
           require('./js/dashboard/dashboard')
@@ -21,9 +23,12 @@
   <body>
     <div id="main-grid">
 
-      <div id="chart"></div>
+      <div id="chart">
+        <header>Chart</header>
+      </div>
 
-      <div id="trading"><header>Trading</header>
+      <div id="trading">
+        <header>Trading</header>
         <main>
           <div>
             <form id="order-type">
@@ -86,10 +91,10 @@
             </div>
           </div>
         </main>
-
       </div>
 
-      <div id="position-orders"><header>Position & Orders</header>
+      <div id="position-orders">
+        <header>Position & Orders</header>
         <main>
           <table id="positions">
             <thead>
@@ -101,7 +106,7 @@
             <tbody></tbody>
           </table>
 
-          <table id="orders">
+          <table id="orders" class="grid-stack-item">
             <thead>
               <tr>
                 <th>Order</th><th>Qty</th><th>Price</th><th>Filled</th>
@@ -113,11 +118,16 @@
         </main>
       </div>
 
-      <div id="book"><header>Order Book</header></div>
+      <div id="book">
+        <header>Order Book</header>
+      </div>
 
-      <div id="trades"><header>Last Trades</header></div>
+      <div id="trades">
+        <header>Last Trades</header>
+      </div>
 
-      <div id="wallet"><header>Wallet</header>
+      <div id="wallet">
+        <header>Wallet</header>
         <main>
           <div id="balances"></div>
         </main>

@@ -1,8 +1,10 @@
 'use strict'
 require ('../globals')
 const settings = require('../../user/settings')
-
 const api = require('../apis/futures')
+
+const Gridstack = require('./gridstack')
+
 const Chart = require('./widgets/chart/chart')
 const trading = require('./widgets/trading')
 const myOrders = require('./widgets/my-orders')
@@ -25,6 +27,7 @@ book.updateBook()
 
 // Draw chart
 let chart = new Chart('#chart')
+new Gridstack('#main-grid')
 
 // Inputs
 d3.selectAll('.num-input').on('input', trading.parseNumber)

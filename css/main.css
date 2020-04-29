@@ -84,20 +84,13 @@ button {
     vertical-align:top;
 }
 
-#main-grid {
-    display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    grid-gap: 10px;
-    grid-auto-rows: minmax(200px, auto);
-    width: 100%;
-}
-#main-grid > div {
+#main-grid .grid-stack-item-content {
     background-color: #676767;
     border-radius: 5px;
     box-shadow: 2px 2px 6px #333;
 }
 
-#main-grid > div > header {
+#main-grid .grid-stack-item-content > header {
     background-color: #080e29;
     border-radius: 5px 5px 0px 0px;
     box-shadow: 0px 2px 4px #00000042;
@@ -108,8 +101,8 @@ button {
     text-shadow: 0 0 5px #2a3bb5;
 }
 
-#main-grid > div > main {
-    padding: 10px;
+#main-grid .grid-stack-item-content > main {
+    margin: 10px;
 }
 
 #chart {

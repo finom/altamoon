@@ -25,7 +25,7 @@ module.exports = class Chart {
         this._addEventListeners()
     }
 
-    _getDimensions() {
+    _getDimensions () {
         this.margin = { top: 0, right: 55, bottom: 30, left: 55 }
         this.width = 960 - this.margin.left - this.margin.right
         this.height = 700 - this.margin.top - this.margin.bottom
@@ -109,7 +109,7 @@ module.exports = class Chart {
         this.listeners = new Listeners(this)
     }
 
-    _initDraw(candles) {
+    _initDraw (candles) {
         this.data.candles.push(...candles)
 
         api.getPosition()
@@ -118,11 +118,11 @@ module.exports = class Chart {
         this.listeners.setEventListeners()
 
         this.draw()
-        // Right padding
-        this.svg.call(this.zoom.translateBy, -100)
+
+        this.svg.call(this.zoom.translateBy, -100) // Right padding
     }
 
-    draw() {
+    draw () {
         let candles = this.data.candles.slice(-300, this.data.candles.length)
 
         let xdomain = [candles[0].date, candles.last.date]

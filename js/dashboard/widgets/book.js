@@ -7,7 +7,6 @@ events.on('api.bookUpdate', assembleBook)
 let book
 
 let mainDiv = d3.select('#book').append('div')
-        .class('something')
 let bids = mainDiv.append('div').class('bids')
 let asks = mainDiv.append('div').class('asks')
 

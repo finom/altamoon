@@ -31,3 +31,15 @@ if (!d3.selection.prototype.class)
         },
         enumerable: true
     })
+
+// Add d3.selection.id() shortcut to d3.selection.attr('id')
+if (!d3.selection.prototype.id)
+    Object.defineProperty(d3.selection.prototype, 'id', {
+        value: function (string) {
+            if (string)
+                return this.attr('id', string)
+            else
+                return this.attr('id')
+        },
+        enumerable: true
+    })
