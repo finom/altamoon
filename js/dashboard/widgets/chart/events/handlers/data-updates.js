@@ -36,11 +36,17 @@ module.exports = class DataUpdateHandlers {
     }
 
     updateLastCandle (candle) {
-        let isSameCandle = candle.timestamp === this.data.candles.last.timestamp
+        let lastCandle = this.data.candles.last
+        let isSameCandle = candle.timestamp === lastCandle.timestamp
+        let newLow = candle.low < lastCandle.low
+        let newHigh = candle.high > lastCandle.high
 
         if (isSameCandle) {
             this.data.candles.last = candle
-            this.plot.updateLast(candle)
+            if (newHigh || newLow)
+                this.chart.draw() // y domain likely changes, redraw everything
+            else
+                this.plot.updateLast(candle) // Redraw just the candle
         } else {
             this.data.candles.push(candle)
             this.chart.draw()
