@@ -2,25 +2,33 @@
 
 module.exports = class Svg {
 
-    constructor (width, height, margin) {
-        this.width = width
-        this.height = height
-        this.margin = margin
+    constructor (chart) {
+        this.chart = chart
     }
 
     appendTo (selector = '#chart') {
-        this.selection = d3.select(selector).append('svg')
-                .attr('width', this.width + this.margin.left + this.margin.right)
-                .attr('height', this.height + this.margin.top + this.margin.bottom)
-            .append('g')
-                .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')')
+        this.svg = d3.select(selector).append('svg')
+        this.graph = this.svg.append('g')
+        this.resize()
     }
 
-    append = (...args) => this.selection.append(...args)
+    resize () {
+        let width = this.chart.width
+        let height = this.chart.height
+        let margin = this.chart.margin
 
-    insert = (...args) => this.selection.insert(...args)
+        this.svg
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top + margin.bottom)
+        this.graph
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+    }
 
-    call = (...args) => this.selection.call(...args)
+    append = (...args) => this.graph.append(...args)
 
-    on = (...args) => this.selection.on(...args)
+    insert = (...args) => this.graph.insert(...args)
+
+    call = (...args) => this.graph.call(...args)
+
+    on = (...args) => this.graph.on(...args)
 }

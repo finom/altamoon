@@ -15,8 +15,19 @@ const Listeners = require('./events/listeners')
 
 module.exports = class Chart {
 
-    constructor (container) {
-        this.container = container
+    constructor (containerId = '#chart') {
+        this.containerId = containerId
+        this.container = d3.select(containerId)
+
+        this.data = {
+            candles: [],
+            priceLine: [],
+            positionLine: [],
+            bidAskLines: [],
+            liquidationLine: [],
+            orderLines: [],
+            draftLines: [],
+        }
 
         this._getDimensions()
         this._createItems()
@@ -26,9 +37,14 @@ module.exports = class Chart {
     }
 
     _getDimensions () {
+        let container = this.container.node()
+        let header = d3.select(this.containerId + ' > header').node()
+        let width = container.offsetWidth
+        let height = container.offsetHeight - header.offsetHeight
+
         this.margin = { top: 0, right: 55, bottom: 30, left: 55 }
-        this.width = 960 - this.margin.left - this.margin.right
-        this.height = 700 - this.margin.top - this.margin.bottom
+        this.width = width - this.margin.left - this.margin.right
+        this.height = height - this.margin.top - this.margin.bottom
     }
 
     _createItems () {
@@ -37,36 +53,35 @@ module.exports = class Chart {
             y: d3.scaleSymlog().range([this.height, 0])
         }
 
-        this.svg = new Svg(this.width, this.height, this.margin)
+        this.svg = new Svg(this)
 
-        this.axes = new Axes(this.scales, this.width, this.height)
+        this.axes = new Axes(this)
 
-        this.gridLines = new GridLines(this.scales, this.width, this.height)
+        this.gridLines = new GridLines(this)
 
-        this.clipPath = new ClipPath(this.width, this.height)
+        this.clipPath = new ClipPath(this)
 
-        let linesArgs = [this.scales, this.axes, this.width, this.height, this.margin]
-        this.priceLine = new Lines(...linesArgs)
-        this.bidAskLines = new Lines(...linesArgs)
-        this.draftLines = new Lines(...linesArgs)
-        this.orderLines = new Lines(...linesArgs)
-        this.positionLine = new Lines(...linesArgs)
-        this.liquidationLine = new Lines(...linesArgs)
+        this.priceLine = new Lines(this)
+        this.bidAskLines = new Lines(this)
+        this.draftLines = new Lines(this)
+        this.orderLines = new Lines(this)
+        this.positionLine = new Lines(this)
+        this.liquidationLine = new Lines(this)
 
-        this.positionLabel = new LineLabels(this.width, this.scales.y)
-        this.orderLabels = new LineLabels(this.width, this.scales.y)
-        this.draftLabels = new LineLabels(this.width, this.scales.y)
+        this.positionLabel = new LineLabels(this)
+        this.orderLabels = new LineLabels(this)
+        this.draftLabels = new LineLabels(this)
 
         this.plot = new Plot(this.scales)
 
-        this.crosshair = new Crosshair(this.scales, this.axes, this.width, this.height)
+        this.crosshair = new Crosshair(this)
 
         this.zoom = d3.zoom()
     }
 
     _appendContainers () {
         /* Order of appending = visual z-order (last is top) */
-        this.svg.appendTo(this.container)
+        this.svg.appendTo(this.containerId)
 
         this.clipPath.appendTo(this.svg, 'clipChart')
 
@@ -92,16 +107,7 @@ module.exports = class Chart {
     }
 
     _loadData () {
-        this.data = {}
-        this.data.candles = []
-        this.data.priceLine = []
-        this.data.positionLine = []
-        this.data.bidAskLines = []
-        this.data.liquidationLine = []
-        this.data.orderLines = []
-        this.data.draftLines = []
-
-        api.getCandles()
+        api.getCandles({interval: '1m'})
         events.on('api.candlesUpdate', d => this._initDraw(d))
     }
 
@@ -161,5 +167,28 @@ module.exports = class Chart {
             .attr('data-side', d => d.side)
         this.draftLines.wrapper.selectAll('.draft-lines > g')
             .attr('data-side', d => d.side)
+    }
+
+    resize () {
+        this._getDimensions()
+        this.svg.resize()
+        this.scales.x.range([0, this.width])
+        this.scales.y.range([this.height, 0])
+        this.axes.resize()
+        this.gridLines.resize()
+        this.clipPath.resize()
+        this.priceLine.resize()
+        this.bidAskLines.resize()
+        this.draftLines.resize()
+        this.orderLines.resize()
+        this.positionLine.resize()
+        this.liquidationLine.resize()
+        this.crosshair.resize()
+
+        if (this.data.candles.length) {
+            this.draw()
+            // Pan chart
+            this.svg.call(this.zoom.translateBy, 0) // Ehh... ¯\_(°~°)_/¯
+        }
     }
 }

@@ -2,27 +2,26 @@
 
 module.exports = class Axes {
 
-    constructor (scales, width, height) {
-        this.scales = scales
-        this.width = width
-        this.height = height
+    constructor (chart) {
+        this.chart = chart
+        this._getDimensions()
 
-        this.x = d3.axisBottom(scales.x)
+        this.x = d3.axisBottom(this.scales.x)
 
-        this.yLeft = d3.axisLeft(scales.y)
+        this.yLeft = d3.axisLeft(this.scales.y)
                 .tickFormat(d3.format('.2f'))
 
-        this.yRight = d3.axisRight(scales.y)
+        this.yRight = d3.axisRight(this.scales.y)
                 .tickFormat(d3.format('.2f'))
     }
 
     appendTo (container) {
         this.gX = container.append('g').class('x axis bottom')
-                .attr('transform', 'translate(0,' + this.height + ')')
 
         this.gYLeft = container.append('g').class('y axis left')
         this.gYRight = container.append('g').class('y axis right')
-                .attr('transform', 'translate(' + this.width + ',0)')
+
+        this._resizeContainers()
     }
 
     draw () {
@@ -33,5 +32,24 @@ module.exports = class Axes {
         this.gYRight.call(this.yRight
             .tickValues(d3.scaleLinear().domain(this.scales.y.domain()).ticks())
         )
+    }
+
+    resize () {
+        this._getDimensions()
+        this.x.scale(this.scales.x)
+        this.yLeft.scale(this.scales.y)
+        this.yRight.scale(this.scales.y)
+        this._resizeContainers()
+    }
+
+    _resizeContainers () {
+        this.gX.attr('transform', 'translate(0,' + this.height + ')')
+        this.gYRight.attr('transform', 'translate(' + this.width + ',0)')
+    }
+
+    _getDimensions () {
+        this.scales = this.chart.scales
+        this.width = this.chart.width
+        this.height = this.chart.height
     }
 }

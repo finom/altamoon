@@ -6,9 +6,8 @@ module.exports = class LineLabels {
     wrapper
     eventListeners = {}
 
-    constructor (chartWidth, yScale) {
-        this.chartWidth = chartWidth
-        this.yScale = yScale
+    constructor (chart) {
+        this.chart = chart
     }
 
     appendTo (container, className) {
@@ -18,6 +17,8 @@ module.exports = class LineLabels {
     }
 
     draw (data) {
+        this._getDimensions()
+
         this.wrapper.selectAll('g')
             .data(data)
             .join(
@@ -39,10 +40,12 @@ module.exports = class LineLabels {
                 // Update y
                 update => update.call(g => {
                     let rect = g.select('rect')
+                        .attr('x', this.chartWidth - 80)
                         .attr('y', d => this.yScale(d.value) - 10)
                     g.select('text')
-                        .attr('y', d => this.yScale(d.value) + 3)
                         .text(d => +d.qty)
+                        .attr('x', this.chartWidth - 75)
+                        .attr('y', d => this.yScale(d.value) + 3)
                     g.attr('data-side', d => d.side)
 
                     this._addEventListeners(rect)
@@ -54,9 +57,13 @@ module.exports = class LineLabels {
         this.eventListeners[event] = callback
     }
 
-
     _addEventListeners (rect) {
         for (let [event, callback] of Object.entries(this.eventListeners))
             rect.on(event, callback)
+    }
+
+    _getDimensions () {
+        this.chartWidth = this.chart.width
+        this.yScale = this.chart.scales.y
     }
 }

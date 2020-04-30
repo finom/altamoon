@@ -4,15 +4,13 @@ const AxisLabel = require('./axis-label')
 
 module.exports = class Lines {
 
-    constructor (scales, axes, width, height, margin) {
-        this.axes = axes
-        this.width = width
-        this.height = height
-        this.margin = margin
+    constructor (chart) {
+        this.chart = chart
+        this._getDimensions()
 
         this.techan = techan.plot.supstance()
-                .xScale(scales.x)
-                .yScale(scales.y)
+                .xScale(this.scales.x)
+                .yScale(this.scales.y)
                 .annotation([
                     AxisLabel.left(this.axes.yLeft),
                     AxisLabel.right(this.axes.yRight, this.width)
@@ -34,6 +32,21 @@ module.exports = class Lines {
         return this
     }
 
+    resize () {
+        this._getDimensions()
+        this.techan
+            .xScale(this.scales.x)
+            .yScale(this.scales.y)
+            .annotation([
+                AxisLabel.left(this.axes.yLeft),
+                AxisLabel.right(this.axes.yRight, this.width)
+            ])
+        d3.select('#clipLines rect')
+            .attr('x', 0 - this.margin.left)
+            .attr('width', this.width + this.margin.left + this.margin.right)
+            .attr('height', this.height)
+    }
+
     on (event, callback, ...args) {
         this.techan.on(event, callback, ...args)
         return this
@@ -47,12 +60,20 @@ module.exports = class Lines {
         this.wrapper.attr('clip-path', 'url(#clipLines)')
 
         if (!document.getElementById('clipLines'))
-            container.insert('clipPath', ':first-child')
+            this.clipRect = container.insert('clipPath', ':first-child')
                     .attr('id', 'clipLines')
                 .append('rect')
                     .attr('x', 0 - this.margin.left)
                     .attr('y', 0)
                     .attr('width', this.width + this.margin.left + this.margin.right)
                     .attr('height', this.height)
+    }
+
+    _getDimensions () {
+        this.axes = this.chart.axes
+        this.scales = this.chart.scales
+        this.width = this.chart.width
+        this.height = this.chart.height
+        this.margin = this.chart.margin
     }
 }

@@ -2,18 +2,18 @@
 
 module.exports = class GridLines {
 
-    constructor (scales, width, height) {
-        this.width = width
-        this.height = height
+    constructor (chart) {
+        this.chart = chart
+        this._getDimensions()
 
-        this.x = d3.axisTop(scales.x)
+        this.x = d3.axisTop(this.scales.x)
                 .tickFormat('')
                 .tickSize(-this.height)
 
-        this.y = (g) => g.call(d3.axisLeft(scales.y)
+        this.y = g => g.call(d3.axisLeft(this.scales.y)
                 .tickFormat('')
                 .tickSize(-this.width)
-                .tickValues(d3.scaleLinear().domain(scales.y.domain()).ticks())
+                .tickValues(d3.scaleLinear().domain(this.scales.y.domain()).ticks())
             )
     }
 
@@ -22,8 +22,19 @@ module.exports = class GridLines {
         this.yWrapper = container.append('g').class('y gridlines')
     }
 
-    draw() {
+    draw () {
         this.xWrapper.call(this.x)
         this.yWrapper.call(this.y)
+    }
+
+    resize () {
+        this._getDimensions()
+        this.x.tickSize(-this.height)
+    }
+
+    _getDimensions () {
+        this.scales = this.chart.scales
+        this.width = this.chart.width
+        this.height = this.chart.height
     }
 }

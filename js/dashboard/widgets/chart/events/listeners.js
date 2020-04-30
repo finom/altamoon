@@ -37,6 +37,9 @@ module.exports = class Listeners {
                 })
 
         this.chart.zoom.on('zoom', (d) => this.onZoom(d))
+
+        new ResizeObserver(() => this.chart.resize())
+            .observe(this.chart.container.node())
     }
 
     // Data update callbacks

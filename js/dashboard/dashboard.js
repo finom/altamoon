@@ -26,8 +26,8 @@ api.streamBook()
 book.updateBook()
 
 // Draw chart
-let chart = new Chart('#chart')
 new Gridstack('#main-grid')
+new Chart('#chart')
 
 // Inputs
 d3.selectAll('.num-input').on('input', trading.parseNumber)

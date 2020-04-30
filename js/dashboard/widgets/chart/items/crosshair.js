@@ -6,11 +6,9 @@ module.exports = class Crosshair {
 
     wrapper
 
-    constructor (scales, axes, width, height) {
-        this.scales = scales
-        this.axes = axes
-        this.width = width
-        this.height = height
+    constructor (chart) {
+        this.chart = chart
+        this._getDimensions()
 
         this.techan = techan.plot.crosshair()
                 .xScale(this.scales.x)
@@ -29,5 +27,22 @@ module.exports = class Crosshair {
 
     draw () {
         this.wrapper.call(this.techan)
+    }
+
+    resize () {
+        this._getDimensions()
+        this.techan
+            .xAnnotation(AxisLabel.bottom(this.axes.x, this.height))
+            .yAnnotation([
+                AxisLabel.left(this.axes.yLeft),
+                AxisLabel.right(this.axes.yRight, this.width)
+            ])
+    }
+
+    _getDimensions () {
+        this.scales = this.chart.scales
+        this.axes = this.chart.axes
+        this.width = this.chart.width
+        this.height = this.chart.height
     }
 }

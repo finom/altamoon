@@ -2,20 +2,30 @@
 
 module.exports = class ClipPath {
 
-    constructor (width, height, x = 0, y = 0) {
-        this.width = width
-        this.height = height
+    constructor (chart, x = 0, y = 0) {
+        this.chart = chart
         this.x = x
         this.y = y
     }
 
     appendTo (container, id) {
-        container.append('clipPath')
+        this.rect = container.append('clipPath')
                 .attr('id', id)
             .append('rect')
-                .attr('x', this.x)
+
+        this.resize()
+    }
+
+    resize () {
+        this._getDimensions()
+        this.rect.attr('x', this.x)
                 .attr('y', this.y)
                 .attr('width', this.width)
                 .attr('height', this.height)
+    }
+
+    _getDimensions () {
+        this.width = this.chart.width
+        this.height = this.chart.height
     }
 }
