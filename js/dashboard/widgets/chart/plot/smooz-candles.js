@@ -30,6 +30,12 @@ function smoozCandles (
             ? Math.max(newOpen, low)
             : Math.min(newOpen, high)
 
+        // Keep last candle as standard candle (except direction)
+        if (i === candles.length - 1) {
+            newOpen = open
+            newClose = close
+        }
+
         newCandles[i] = {
             direction: newDirection,
             date: date,

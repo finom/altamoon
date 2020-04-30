@@ -94,18 +94,18 @@ class Plot {
             index
         )
 
-        let lastCandle = this.smoozCandles.last
+        candle = this.smoozCandles.last
 
         this.lastBody
             .attr('d', this._getBodyString(
-                lastCandle,
-                lastCandle.direction,
+                candle,
+                candle.direction,
                 this._bodyWidth
             ))
-            .class('body ' + lastCandle.direction)
+            .class('body ' + candle.direction)
         this.lastWick
-            .attr('d', this._getWickString(lastCandle))
-            .class('wick ' + lastCandle.direction)
+            .attr('d', this._getWickString(candle))
+            .class('wick ' + candle.direction)
     }
 
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
