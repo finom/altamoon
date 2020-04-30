@@ -3,6 +3,7 @@ body {
     background: #333333;
     color: #fff;
     font-family: sans-serif;
+    overflow: overlay;
 }
 .input {
     align-items: center;
@@ -88,6 +89,7 @@ button {
     background-color: #676767;
     border-radius: 5px;
     box-shadow: 2px 2px 6px #333;
+    overflow: hidden;
 }
 
 #main-grid .grid-stack-item-content > header {
@@ -105,30 +107,22 @@ button {
     margin: 10px;
 }
 
-#chart {
-    grid-column: 1 / 3;
-    grid-row: 1 / 3;
-}
+/* #chart {
+} */
 
 #trading {
-    grid-column: 3 / 5;
-    grid-row: 1;
     max-width: 500px;
 }
 
 #position-orders {
-    grid-column: 1 / 2;
-    grid-row: 3;
+    overflow: overlay !important;
 }
-#book {
-    grid-column: 3 / 5;
-    grid-row: 2 / 3;
-}
-#trades {
-    grid-column: 4;
-    grid-row: 3;
-}
-#wallet {
-    grid-column: 2 / 4;
-    grid-row: 3;
-}
+
+/* #book {
+} */
+
+/* #trades {
+} */
+
+/* #wallet {
+} */
