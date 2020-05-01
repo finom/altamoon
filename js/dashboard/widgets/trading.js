@@ -31,7 +31,10 @@ sellQty.on('input', () => onInputQty('sell'))
 buyBtn.on('click', onBuy)
 sellBtn.on('click', onSell)
 
+events.on('api.positionUpdate', updateLeverage)
 events.on('chart.draftOrderMoved', onPriceUpdate)
+events.on('api.priceUpdate', updateMarketMarginCost)
+events.on('api.priceUpdate', updateMarketDollarValue)
 
 let leverage
 let qty = { 'buy': undefined, 'sell': undefined }
@@ -47,6 +50,10 @@ function onOrderTypeChanged () {
         tradingDiv.classed('market', false)
         buyBtn.html('BUY')
         sellBtn.html('SELL')
+        updateMarginCost('buy')
+        updateMarginCost('sell')
+        updateDollarValue('buy')
+        updateDollarValue('sell')
     }
     else if (type == 'market') {
         tradingDiv.classed('market', true)
@@ -58,7 +65,6 @@ function onOrderTypeChanged () {
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   LEVERAGE
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-events.on('api.positionUpdate', updateLeverage)
 
 function updateLeverage (d) {
     let position = d.filter(x => x.symbol == SYMBOL)[0]
@@ -132,7 +138,7 @@ function onInputQty (side) {
     updateDollarValue(side)
 }
 
-function updateDollarValue(side, price){
+function updateDollarValue (side, price){
     if (!price)
         price = eval(side + 'Price').property('value')
     if (!qty[side])
@@ -143,6 +149,14 @@ function updateDollarValue(side, price){
 
     eval(side + 'DollarValue')
         .text('± ' + dollarValue + ' ₮')
+}
+
+function updateMarketDollarValue (price) {
+    if (orderType().property('value') != 'market')
+        return
+
+    updateDollarValue('buy', price)
+    updateDollarValue('sell', price)
 }
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -160,12 +174,27 @@ function getMarginCost (side, price) {
 }
 
 function updateMarginCost (side, price) {
+    if (!price)
+        price = eval(side + 'Price').property('value')
     let margin = getMarginCost(side, price)
     margin = d3.format(',.2f')(margin)
 
     d3.select('#trading .' + side +  ' .margin .val')
         .text(margin + ' ₮')
 }
+
+function updateMarketMarginCost (price) {
+    if (orderType().property('value') != 'market')
+        return
+
+    updateMarginCost('buy', price)
+    updateMarginCost('sell', price)
+}
+
+// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//   Fee
+// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   BUY
