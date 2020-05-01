@@ -97,6 +97,18 @@
 }
 
 /*
+    Fee
+*/
+#trading .fee {
+    font-size: .8em;
+    margin-left: 9px;
+}
+#trading .fee .val {
+    font-weight: bold;
+    color: #ffffff9a;
+}
+
+/*
     Buy/Sell buttons
 */
 #trading button {

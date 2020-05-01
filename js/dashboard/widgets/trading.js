@@ -32,7 +32,7 @@ buyBtn.on('click', onBuy)
 sellBtn.on('click', onSell)
 
 events.on('api.positionUpdate', updateLeverage)
-events.on('chart.draftOrderMoved', onPriceUpdate)
+events.on('chart.draftOrderMoved', updatePrice)
 events.on('api.priceUpdate', updateMarketMarginCost)
 events.on('api.priceUpdate', updateMarketDollarValue)
 
@@ -113,17 +113,19 @@ d3.select('#maker-only').on('change', function () {
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function onInputPrice (side) {
     let price = parseNumber()
-    updateMarginCost(side, price)
     updateDollarValue(side, price)
+    updateMarginCost(side, price)
+    updateFee(side, price)
 }
 
-function onPriceUpdate (side, price) {
+function updatePrice (side, price) {
     if (price === null)
         return
     let input = eval(side + 'Price')
     input.property('value', price)
-    updateMarginCost(side, price)
     updateDollarValue(side, price)
+    updateMarginCost(side, price)
+    updateFee(side, price)
 }
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -134,8 +136,9 @@ function onInputQty (side) {
 
     events.emit('trading.qtyUpdate', qty[side], side)
 
-    updateMarginCost(side)
     updateDollarValue(side)
+    updateMarginCost(side)
+    updateFee(side)
 }
 
 function updateDollarValue (side, price){
@@ -176,11 +179,15 @@ function getMarginCost (side, price) {
 function updateMarginCost (side, price) {
     if (!price)
         price = eval(side + 'Price').property('value')
+
     let margin = getMarginCost(side, price)
+    let percentage = margin / api.account.totalWalletBalance
     margin = d3.format(',.2f')(margin)
+    percentage = d3.format(',.1%')(percentage || 0)
+
 
     d3.select('#trading .' + side +  ' .margin .val')
-        .text(margin + ' ₮')
+        .text(margin + ' ₮ (' + percentage + ')')
 }
 
 function updateMarketMarginCost (price) {
@@ -194,7 +201,32 @@ function updateMarketMarginCost (price) {
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   Fee
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+function getFee (side, price) {
+    if (!price)
+        price = eval(side + 'Price').property('value')
+    if (!qty[side])
+        qty[side] = eval(side + 'Qty').property('value')
 
+    return qty[side] * price * 0.02 / 100
+}
+
+function updateFee (side, price) {
+    if (!price)
+        price = eval(side + 'Price').property('value')
+    let fee = getFee(side, price)
+    fee = d3.format(',.2f')(fee)
+
+    d3.select('#trading .' + side +  ' .fee .val')
+        .text(fee + ' ₮')
+}
+
+function updateMarketFee (price) {
+    if (orderType().property('value') != 'market')
+        return
+
+    updateFee('buy', price)
+    updateFee('sell', price)
+}
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   BUY
