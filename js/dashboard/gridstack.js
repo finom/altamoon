@@ -11,6 +11,7 @@ module.exports = class Gridstack {
         let options = {
             cellHeight: 10,
             column: 50,
+            float: true,
             handle: 'header',
             resizable: {
                 handles: 'se, sw'
