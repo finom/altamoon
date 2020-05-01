@@ -108,16 +108,17 @@ module.exports = class Chart {
 
     _loadData () {
         api.getCandles({interval: '1m'})
-        events.on('api.candlesUpdate', d => this._initDraw(d))
+        events.on('api.candlesUpdate', d => {
+            this.data.candles.push(...d)
+            this._initDraw(d)
+        })
     }
 
     _addEventListeners () {
         this.listeners = new Listeners(this)
     }
 
-    _initDraw (candles) {
-        this.data.candles.push(...candles)
-
+    _initDraw () {
         api.getPosition()
         api.getOpenOrders()
 
