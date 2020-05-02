@@ -1,10 +1,19 @@
 'use strict'
 const api = require('../apis/futures')
 
-module.exports = { getPnl, getDailyPnl }
+module.exports = { getFee, getPnl, getDailyPnl }
 
 function getBreakEven () {
     // TODO
+}
+
+function getFee (qty, type = 'limit') {
+    let feeTier = api.account.feeTier || 0
+    let feeRate = (type === 'market')
+        ? [.04, .04, .035, .032, .03, .027, .025, .022, .020, 0.017][feeTier]
+        : [.02, .016, .014, .012, .01, .008, .006, .004, .002, 0][feeTier]
+
+    return qty * feeRate / 100
 }
 
 function getPnl () {
@@ -14,11 +23,12 @@ function getPnl () {
     let qty = api.positions[0].qty
     let price = parseFloat(api.lastTrade.p)
     let entryPrice = parseFloat(api.positions[0].price)
+    let fee = getFee(qty, 'limit')
 
-    let pnl = (price - entryPrice) / entryPrice * qty * price
+    let pnl = (price - entryPrice) / entryPrice * qty * price - fee
     return {
-        pnl: pnl,
-        percent: pnl / api.account.totalWalletBalance
+        pnl: pnl || 0,
+        percent: pnl / api.account.totalWalletBalance || 0
     }
 }
 

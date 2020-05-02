@@ -1,6 +1,7 @@
 'use strict'
 const api = require('../../apis/futures')
 const { config } = require('../../config')
+const stats = require('../../data/stats')
 
 module.exports = { onBuy, onSell, getMarginCost }
 
@@ -9,6 +10,7 @@ let leverageInput = d3.select('[name="leverageInput"]')
 let leverageOutput = d3.select('[name="leverageOutput"]')
 let orderTypes = d3.selectAll('#order-type input[name="order-type"]')
 let orderType = () => d3.select('#order-type input[name="order-type"]:checked')
+        .property('value')
 let buyPrice = d3.select('#buy-price')
 let sellPrice = d3.select('#sell-price')
 let buyQty = d3.select('#buy-qty')
@@ -35,6 +37,7 @@ events.on('api.positionUpdate', updateLeverage)
 events.on('chart.draftOrderMoved', updatePrice)
 events.on('api.priceUpdate', updateMarketMarginCost)
 events.on('api.priceUpdate', updateMarketDollarValue)
+events.on('api.priceUpdate', updateMarketFee)
 
 let leverage
 let qty = { 'buy': undefined, 'sell': undefined }
@@ -43,17 +46,20 @@ let qty = { 'buy': undefined, 'sell': undefined }
 //   ORDER TYPE
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function onOrderTypeChanged () {
-    let type = orderType().property('value')
+    let type = orderType()
     let tradingDiv = d3.select('#trading')
 
     if (type == 'limit') {
         tradingDiv.classed('market', false)
         buyBtn.html('BUY')
         sellBtn.html('SELL')
+
         updateMarginCost('buy')
         updateMarginCost('sell')
         updateDollarValue('buy')
         updateDollarValue('sell')
+        updateFee('buy')
+        updateFee('sell')
     }
     else if (type == 'market') {
         tradingDiv.classed('market', true)
@@ -155,7 +161,7 @@ function updateDollarValue (side, price){
 }
 
 function updateMarketDollarValue (price) {
-    if (orderType().property('value') != 'market')
+    if (orderType() != 'market')
         return
 
     updateDollarValue('buy', price)
@@ -187,11 +193,11 @@ function updateMarginCost (side, price) {
 
 
     d3.select('#trading .' + side +  ' .margin .val')
-        .text(margin + ' ₮ (' + percentage + ')')
+        .text(percentage + '  (' + margin + ' ₮)')
 }
 
 function updateMarketMarginCost (price) {
-    if (orderType().property('value') != 'market')
+    if (orderType() != 'market')
         return
 
     updateMarginCost('buy', price)
@@ -199,31 +205,27 @@ function updateMarketMarginCost (price) {
 }
 
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-//   Fee
+//   FEE
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-function getFee (side, price) {
+function updateFee (side, price) {
     if (!price)
         price = eval(side + 'Price').property('value')
     if (!qty[side])
         qty[side] = eval(side + 'Qty').property('value')
 
-    return qty[side] * price * 0.02 / 100
-}
+    let fee = stats.getFee(qty[side] * price, orderType())
+    let percentage = fee / api.account.totalWalletBalance
 
-function updateFee (side, price) {
-    if (!price)
-        price = eval(side + 'Price').property('value')
-    let fee = getFee(side, price)
     fee = d3.format(',.2f')(fee)
+    percentage = d3.format(',.1%')(percentage || 0)
 
     d3.select('#trading .' + side +  ' .fee .val')
-        .text(fee + ' ₮')
+        .text(percentage + '  (' + fee + ' ₮)')
 }
 
 function updateMarketFee (price) {
-    if (orderType().property('value') != 'market')
+    if (orderType() != 'market')
         return
-
     updateFee('buy', price)
     updateFee('sell', price)
 }
@@ -234,7 +236,7 @@ function updateMarketFee (price) {
 function onBuy (type) {
     let price = parseFloat(buyPrice.property('value'))
     let qty = parseFloat(buyQty.property('value'))
-    type = (type) ? type : orderType().property('value')
+    type = (type) ? type : orderType()
 
     if (qty <= 0) return
 
@@ -259,7 +261,7 @@ function onBuy (type) {
 function onSell (type) {
     let price = parseFloat(sellPrice.property('value'))
     let qty = parseFloat(sellQty.property('value'))
-    type = (type) ? type : orderType().property('value')
+    type = (type) ? type : orderType()
 
     if (qty <= 0) return
 
