@@ -4,7 +4,7 @@
     display: grid;
     font-size: 0.9em;
     grid-template-columns: 50% 50%;
-    height: 342px;
+    /* height: 342px; */
     overflow: hidden;
 }
 

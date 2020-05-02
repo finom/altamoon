@@ -21,7 +21,7 @@ async function getSnapshot () {
         .then(r => book = r)
 }
 
-async function updateBook (d) {
+async function updateBook (d, length = 30) {
     if (timer2 && Date.now() < timer2 + 100) return
     timer2 = Date.now()
 
@@ -29,7 +29,7 @@ async function updateBook (d) {
         await getSnapshot() // Initial data
 
     bids.selectAll('.bids > div')
-        .data(book.bids.slice(0,13), d => d[0])
+        .data(book.bids.slice(0, length), d => d[0])
         .join(
             enter => enter.append('div')
                 .class('row')
@@ -45,7 +45,7 @@ async function updateBook (d) {
         )
 
     asks.selectAll('.asks > div')
-        .data(book.asks.slice(0,13), d => d[0])
+        .data(book.asks.slice(0, length), d => d[0])
         .join(
             enter => enter.append('div')
                 .class('row')

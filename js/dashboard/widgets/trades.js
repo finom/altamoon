@@ -8,7 +8,7 @@ let table = d3.select('#trades').append('div')
 let timer = 0
 function updateTrades (d) {
     data.unshift(d)
-    if (data.length > 10) data.pop()
+    if (data.length > 30) data.pop()
 
     if (Date.now() < timer + 16) return // throttle redraw to 60 fps
     timer = Date.now()

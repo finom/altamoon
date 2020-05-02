@@ -168,6 +168,10 @@ function updateMarketDollarValue (price) {
     updateDollarValue('sell', price)
 }
 
+// Submit order on Enter key
+buyQty.on('keyup', () => { if (event.keyCode === 13) onBuy() })
+sellQty.on('keyup', () => { if (event.keyCode === 13) onSell() })
+
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   MARGIN COST
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
