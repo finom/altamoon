@@ -21,7 +21,7 @@ function getPnl () {
         return {pnl: 0, percent: 0}
 
     let qty = api.positions[0].qty
-    let price = parseFloat(api.lastTrade.p)
+    let price = parseFloat(api.lastTrade.price)
     let entryPrice = parseFloat(api.positions[0].price)
     let fee = getFee(qty, 'limit')
 

@@ -17,18 +17,18 @@ function updateTrades (d) {
         .data(data)
         .join(
             enter => enter.append('div')
-                .class(d => 'row ' + ((d.m) ? 'sell' : 'buy'))
+                .class(d => 'row ' + ((d.maker) ? 'sell' : 'buy'))
                 .call(row => {
                     row.selectAll('div')
-                        .data(d => [d.p, d.q])
+                        .data(d => [d.price, d.amount])
                         .enter().append('div')
                             .html(d => d)
             }),
             update => update
                 .call(row => {
-                    row.class(d => 'row ' + ((d.m) ? 'sell' : 'buy'))
+                    row.class(d => 'row ' + ((d.maker) ? 'sell' : 'buy'))
                     row.selectAll('div')
-                        .data(d => [d.p, d.q])
+                        .data(d => [d.price, d.amount])
                             .html(d => d)
             })
     )
