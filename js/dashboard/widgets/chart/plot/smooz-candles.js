@@ -30,9 +30,8 @@ function smoozCandles (
             ? Math.max(newOpen, low)
             : Math.min(newOpen, high)
 
-        // Keep last candle as standard candle (except direction)
+        // Keep last candle close as standard (to visually keep track of last price)
         if (i === candles.length - 1) {
-            newOpen = open
             newClose = close
         }
 
