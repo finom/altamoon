@@ -12,26 +12,32 @@ module.exports = class Rest {
     }
 
     streamBook () {
-        this.lib.futuresSubscribe(SYMBOL.toLowerCase() + '@depth@0ms',
-            r => { events.emit('api.bookUpdate', r) }
+        this.lib.futuresSubscribe(
+            SYMBOL.toLowerCase() + '@depth@0ms',
+            r => { events.emit('api.bookUpdate', r) },
+            { reconnect: true }
         )
     }
 
     streamBidAsk () {
-        this.lib.futuresSubscribe(SYMBOL.toLowerCase() + '@bookTicker',
-            r => { events.emit('api.bidAskUpdate', r) }
+        this.lib.futuresSubscribe(
+            SYMBOL.toLowerCase() + '@bookTicker',
+            r => { events.emit('api.bidAskUpdate', r) },
+            { reconnect: true }
         )
     }
 
     streamLastTrade () {
         /* Last aggregated taker trade. Gives price, refreshed 100ms */
-        this.lib.futuresAggTradeStream(SYMBOL,
+        this.lib.futuresAggTradeStream(
+            SYMBOL,
             r => {
                 cache.lastTrade = r
                 cache.lastPrice = cache.lastTrade.price
                 events.emit('api.priceUpdate', cache.lastPrice)
                 events.emit('api.newTrade', cache.lastTrade)
-            }
+            },
+            { reconnect: true }
         )
     }
 
@@ -40,7 +46,8 @@ module.exports = class Rest {
     }
 
     streamLastCandle () {
-        this.lib.futuresSubscribe(SYMBOL.toLowerCase() + '@kline_1m',
+        this.lib.futuresSubscribe(
+            SYMBOL.toLowerCase() + '@kline_1m',
             r => {
                 let d = r.k
 
@@ -59,7 +66,8 @@ module.exports = class Rest {
                         volume: parseFloat(d.q) }
 
                 events.emit('api.lastCandleUpdate', candle)
-            }
+            },
+            { reconnect: true }
         )
     }
 }
