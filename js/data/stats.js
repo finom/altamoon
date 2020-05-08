@@ -84,9 +84,14 @@ async function getDailyPnl () {
     totalPnl += totalFee + totalFunding
 
     let oldBalance = currentBalance - totalPnl
+    let percent = (totalPnl > 0)
+            ? totalPnl / oldBalance
+            // if in loss, show % required to recover loss
+            // instead of % lost
+            : totalPnl / currentBalance
 
     return {
         pnl: totalPnl,
-        percent: totalPnl / oldBalance
+        percent: percent
     }
 }
