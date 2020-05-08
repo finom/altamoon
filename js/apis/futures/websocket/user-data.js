@@ -44,7 +44,7 @@ module.exports = class UserData {
         )
 
         // Reopen if closed
-        stream.onclose = this.stream
+        stream.onclose = () => this.stream()
     }
 
     _balancesUpdate (data) {
