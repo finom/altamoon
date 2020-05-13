@@ -3,12 +3,12 @@ const api = require('../../../apis/futures')
 
 const Svg = require('./items/svg')
 const Axes = require('./items/axes')
-const GridLines = require('./items/grid-lines')
 const ClipPath = require('./items/clip-path')
 const Crosshair = require('./items/crosshair')
-const Plot = require('./plot/plot')
+const GridLines = require('./items/grid-lines')
 const Lines = require('./items/lines')
 const LineLabels = require('./items/line-labels')
+const Plot = require('./plot/plot')
 
 const Listeners = require('./events/listeners')
 
@@ -34,6 +34,8 @@ module.exports = class Chart {
         this._appendContainers()
         this._addEventListeners()
         this._loadData()
+        this._initDraw()
+        this.draw()
     }
 
     _getDimensions () {
@@ -113,20 +115,18 @@ module.exports = class Chart {
     _loadData () {
         events.on('api.candlesUpdate', d => {
             this.data.candles.push(...d)
-            this._initDraw()
+            this._calcXDomain()
+            this.svg.call(this.zoom.translateBy, 0)
         })
         api.getCandles({interval: '1m'})
     }
 
     _initDraw () {
+        this.listeners.setEventListeners()
         api.getPosition()
         api.getOpenOrders()
 
-        this.listeners.setEventListeners()
-
         this._calcXDomain()
-
-        this.draw()
 
         this.svg.call(this.zoom.translateBy, -100) // Right padding
     }
@@ -181,13 +181,15 @@ module.exports = class Chart {
         if (this.data.candles.length) {
             this.draw()
             // Pan chart
-            this.svg.call(this.zoom.translateBy, 0) // Ehh... ¯\_(°~°)_/¯
+            this.svg.call(this.zoom.translateBy, 0)
         }
     }
 
     _calcXDomain() {
         let candles = this.data.candles.slice(-Math.round(this.width / 2), this.data.candles.length)
-        let xdomain = [candles[0].date, candles.last.date]
+        let xdomain = (candles.length)
+                ? [candles[0].date, candles.last.date]
+                : [new Date(0), new Date()]
         this.scales.x.domain(xdomain)
     }
 
@@ -197,16 +199,18 @@ module.exports = class Chart {
             x.timestamp >= xDomain[0].getTime()
             && x.timestamp <= xDomain[1].getTime()
         )
-        let ydomain = [
-            d3.min(candles, d => d.low),
-            d3.max(candles, d => d.high)
-        ]
+        let ydomain = (candles.length)
+                ? [d3.min(candles, d => d.low), d3.max(candles, d => d.high)]
+                : [0,1]
 
-        // Padding y axis
+        this.scales.y.domain(ydomain)
+
+        // Padding
         let yPadding = this.scales.y.invert(0) - this.scales.y.invert(100)
         yPadding = Math.round(yPadding)
         ydomain[0] -= yPadding
         ydomain[1] += yPadding
+
         this.scales.y.domain(ydomain)
     }
 }
