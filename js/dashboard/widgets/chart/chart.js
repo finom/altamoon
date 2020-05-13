@@ -124,23 +124,15 @@ module.exports = class Chart {
 
         this.listeners.setEventListeners()
 
+        this._calcXDomain()
+
         this.draw()
 
         this.svg.call(this.zoom.translateBy, -100) // Right padding
     }
 
     draw () {
-        let candles = this.data.candles.slice(-300, this.data.candles.length)
-
-        let xdomain = [candles[0].date, candles.last.date]
-        let ydomain = [d3.min(candles, d => d.low), d3.max(candles, d => d.high)]
-
-        // Padding y axis
-        ydomain[0] -= 50
-        ydomain[1] += 50
-
-        this.scales.x.domain(xdomain)
-        this.scales.y.domain(ydomain)
+        this._calcYDomain()
 
         this.axes.draw()
 
@@ -191,5 +183,30 @@ module.exports = class Chart {
             // Pan chart
             this.svg.call(this.zoom.translateBy, 0) // Ehh... ¯\_(°~°)_/¯
         }
+    }
+
+    _calcXDomain() {
+        let candles = this.data.candles.slice(-Math.round(this.width / 2), this.data.candles.length)
+        let xdomain = [candles[0].date, candles.last.date]
+        this.scales.x.domain(xdomain)
+    }
+
+    _calcYDomain() {
+        let xDomain = this.plot.xScale.domain()
+        let candles = this.data.candles.filter(x =>
+            x.timestamp >= xDomain[0].getTime()
+            && x.timestamp <= xDomain[1].getTime()
+        )
+        let ydomain = [
+            d3.min(candles, d => d.low),
+            d3.max(candles, d => d.high)
+        ]
+
+        // Padding y axis
+        let yPadding = this.scales.y.invert(0) - this.scales.y.invert(100)
+        yPadding = Math.round(yPadding)
+        ydomain[0] -= yPadding
+        ydomain[1] += yPadding
+        this.scales.y.domain(ydomain)
     }
 }
