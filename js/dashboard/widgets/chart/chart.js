@@ -32,8 +32,8 @@ module.exports = class Chart {
         this._getDimensions()
         this._createItems()
         this._appendContainers()
-        this._loadData()
         this._addEventListeners()
+        this._loadData()
     }
 
     _getDimensions () {
@@ -106,16 +106,16 @@ module.exports = class Chart {
         this.draftLabels.appendTo(this.svg, 'draft-labels')
     }
 
-    _loadData () {
-        api.getCandles({interval: '1m'})
-        events.on('api.candlesUpdate', d => {
-            this.data.candles.push(...d)
-            this._initDraw(d)
-        })
-    }
-
     _addEventListeners () {
         this.listeners = new Listeners(this)
+    }
+
+    _loadData () {
+        events.on('api.candlesUpdate', d => {
+            this.data.candles.push(...d)
+            this._initDraw()
+        })
+        api.getCandles({interval: '1m'})
     }
 
     _initDraw () {
