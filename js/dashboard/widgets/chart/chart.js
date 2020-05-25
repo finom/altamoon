@@ -126,12 +126,11 @@ module.exports = class Chart {
         api.getPosition()
         api.getOpenOrders()
 
-        this._calcXDomain()
-
         this.svg.call(this.zoom.translateBy, -100) // Right padding
     }
 
     draw () {
+        this._calcXDomain()
         this._calcYDomain()
 
         this.axes.draw()
@@ -186,11 +185,11 @@ module.exports = class Chart {
     }
 
     _calcXDomain() {
-        let candles = this.data.candles.slice(-Math.round(this.width / 2), this.data.candles.length)
-        let xdomain = (candles.length)
+        let candles = this.data.candles.slice(-Math.round(this.width / 3), this.data.candles.length)
+        let xDomain = (candles.length)
                 ? [candles[0].date, candles.last.date]
                 : [new Date(0), new Date()]
-        this.scales.x.domain(xdomain)
+        this.scales.x.domain(xDomain)
     }
 
     _calcYDomain() {
@@ -199,18 +198,18 @@ module.exports = class Chart {
             x.timestamp >= xDomain[0].getTime()
             && x.timestamp <= xDomain[1].getTime()
         )
-        let ydomain = (candles.length)
+        let yDomain = (candles.length)
                 ? [d3.min(candles, d => d.low), d3.max(candles, d => d.high)]
                 : [0,1]
 
-        this.scales.y.domain(ydomain)
+        this.scales.y.domain(yDomain)
 
         // Padding
         let yPadding = this.scales.y.invert(0) - this.scales.y.invert(100)
         yPadding = Math.round(yPadding)
-        ydomain[0] -= yPadding
-        ydomain[1] += yPadding
+        yDomain[0] -= yPadding
+        yDomain[1] += yPadding
 
-        this.scales.y.domain(ydomain)
+        this.scales.y.domain(yDomain)
     }
 }

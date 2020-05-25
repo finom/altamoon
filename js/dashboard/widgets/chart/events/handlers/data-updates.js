@@ -51,7 +51,7 @@ module.exports = class DataUpdateHandlers {
             this.data.candles.push(candle)
             this.chart.draw()
             // Pan chart
-            this.svg.call(this.zoom.translateBy, 0) // Ehh... ¯\_(°~°)_/¯
+            this.svg.call(this.zoom.translateBy, 0)
         }
     }
 
