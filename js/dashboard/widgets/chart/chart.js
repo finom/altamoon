@@ -205,7 +205,7 @@ module.exports = class Chart {
         this.scales.y.domain(yDomain)
 
         // Padding
-        let yPadding = this.scales.y.invert(0) - this.scales.y.invert(100)
+        let yPadding = this.scales.y.invert(0) - this.scales.y.invert(200)
         yPadding = Math.round(yPadding)
         yDomain[0] -= yPadding
         yDomain[1] += yPadding
