@@ -38,7 +38,7 @@ module.exports = class OtherHandlers {
             .catch(error => console.error(error))
     }
 
-    onZoom () {
+    onZoomOrDrag () {
         let transform = d3.event.transform
         let scaledX = transform.rescaleX(this.scales.x)
 
@@ -49,5 +49,15 @@ module.exports = class OtherHandlers {
         // let scaledY = transform.rescaleY(scales.y)
         // plot.yScale = scaledY
         this.chart.draw()
+    }
+
+    drawMeasureTool () {
+        if (!event.shiftKey)
+            return
+
+        let coords = d3.mouse(this.chart.svg.graph.node())
+        coords = { x: coords[0], y: coords[1] }
+
+        this.chart.measureTool.draw(coords)
     }
 }

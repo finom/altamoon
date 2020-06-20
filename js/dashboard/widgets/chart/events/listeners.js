@@ -24,27 +24,55 @@ module.exports = class Listeners {
 
         this.chart.draftLines.on('drag', this.onDragDraft)
         this.chart.orderLines.on('drag', this.onDragOrder)
-                .on('dragend', this.onDragOrderEnd)
+                             .on('dragend', this.onDragOrderEnd)
         this.chart.draftLabels.on('click', (d, i) => this.draftToOrder(d, i))
         this.chart.orderLabels.on('click', d => api.cancelOrder(d.id))
 
-        this.chart.svg.call(this.chart.zoom)
-        this.chart.svg.on('dblclick.zoom', null)
-                .on('dblclick', (d, i, nodes) => {
-                    this.placeOrderDraft(
-                        this.chart.scales.y.invert( d3.mouse(nodes[i])[1] )
-                    )
-                })
+        // Measure tool
+        this.chart.svg
+            .on('mousedown', () => this.removeZoom())
+            .on('click.measurer', () => this.chart.measureTool.hide())
+        this.chart.svg.svg
+            .call(d3.drag()
+                .on('start', () => this.chart.measureTool.start = null)
+                .on('drag', () => this.drawMeasureTool())
+                .on('end', () => this.addZoom())
+            )
 
-        this.chart.zoom.on('zoom', (d) => this.onZoom(d))
+        // Zoom
+        this.addZoom()
 
+        // Place order on double click
+        this.chart.svg
+            .on('dblclick', (d, i, nodes) => {
+                this.placeOrderDraft(nodes[i])
+        })
+
+        // Chart resize
         new ResizeObserver(() => this.chart.resize())
             .observe(this.chart.container.node())
     }
 
+    addZoom () {
+        this.chart.svg.call(
+            this.chart.zoom.on('zoom', () => this.onZoomOrDrag())
+        )
+        // Disable double-click zoom
+        this.chart.svg
+            .on('dblclick.zoom', null)
+    }
+
+    removeZoom () {
+        if (event.shiftKey)
+            this.chart.svg.call(
+                this.chart.zoom.on('zoom', null)
+            )
+    }
+
+
     // Data update callbacks
     updateLastCandle = (...args) => this.dataUpdates.updateLastCandle(...args)
-    updatePrice = (...args) =>this.dataUpdates.updatePrice(...args)
+    updatePrice = (...args) => this.dataUpdates.updatePrice(...args)
     updateBidAsk = (...args) => this.dataUpdates.updateBidAsk(...args)
     updateLastCandle = (...args) => this.dataUpdates.updateLastCandle(...args)
     updatePosition = (...args) => this.dataUpdates.updatePosition(...args)
@@ -58,5 +86,6 @@ module.exports = class Listeners {
 
     onDragOrder = (...args) => this.other.onDragOrder(...args)
     onDragOrderEnd = (...args) => this.other.onDragOrderEnd(...args)
-    onZoom = (...args) => this.other.onZoom(...args)
+    onZoomOrDrag = (...args) => this.other.onZoomOrDrag(...args)
+    drawMeasureTool = (...args) => this.other.drawMeasureTool(...args)
 }

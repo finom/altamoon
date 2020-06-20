@@ -11,8 +11,10 @@ module.exports = class DraftOrderHandlers {
         this.draftLinesData = chart.data.draftLines
     }
 
-    placeOrderDraft (price) {
+    placeOrderDraft (node) {
+        let price = this.chart.scales.y.invert( d3.mouse(node)[1] )
         price = +(price.toFixed(2))
+
         let lastPrice = (api.lastPrice)
                 ? api.lastPrice
                 : this.candles.last.close

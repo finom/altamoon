@@ -184,3 +184,27 @@ svg text {
 .crosshair .axisannotation text {
     fill: #fff;
 }
+/* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+/*   Measure tool
+/* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+.measurer rect {
+    fill: rgb(0, 68, 255);
+    opacity: 0.3;
+}
+.measurer foreignObject {
+    overflow: visible;
+}
+.measurer-label {
+    color: rgb(255, 255, 255);
+    display: inline-block;
+    font-size: 1.4em;
+    font-weight: bold;
+    padding: 8px 0;
+    text-align: center;
+}
+.measurer-label div {
+    background: rgb(52, 106, 255);
+    border-radius: 10px;
+    display: inline-block;
+    padding: 10px;
+}
