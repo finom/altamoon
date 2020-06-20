@@ -13,7 +13,7 @@ module.exports = class Rest {
 
     streamBook () {
         this.lib.futuresSubscribe(
-            SYMBOL.toLowerCase() + '@depth@0ms',
+            SYMBOL.toLowerCase() + '@depth@500ms',
             r => { events.emit('api.bookUpdate', r) },
             { reconnect: true }
         )
