@@ -35,8 +35,6 @@ module.exports = class Lines {
     resize () {
         this._getDimensions()
         this.techan
-            .xScale(this.scales.x)
-            .yScale(this.scales.y)
             .annotation([
                 AxisLabel.left(this.axes.yLeft),
                 AxisLabel.right(this.axes.yRight, this.width)

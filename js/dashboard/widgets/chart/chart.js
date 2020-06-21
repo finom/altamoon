@@ -153,9 +153,9 @@ module.exports = class Chart {
         this.orderLabels.draw(this.data.orderLines)
         this.draftLabels.draw(this.data.draftLines)
 
-        this.crosshair.draw()
-
         this.plot.draw(this.data.candles)
+
+        this.crosshair.draw()
 
         // Color lines based on market side
         this.positionLine.wrapper.selectAll('.position-line > g')
