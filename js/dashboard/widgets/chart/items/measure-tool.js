@@ -25,14 +25,14 @@ module.exports = class MeasureTool {
     draw (coords) {
         this.wrapper.attr('display', 'visible')
 
-        this.start = this.start || coords
         this.coords = coords
+        this.start = this.start || this.coords
 
-        let x = Math.min(this.start.x, coords.x)
-        let y = Math.min(this.start.y, coords.y)
+        let x = Math.min(this.start.x, this.coords.x)
+        let y = Math.min(this.start.y, this.coords.y)
 
-        let width = Math.abs(coords.x - this.start.x)
-        let height = Math.abs(coords.y - this.start.y)
+        let width = Math.abs(this.coords.x - this.start.x)
+        let height = Math.abs(this.coords.y - this.start.y)
 
         this._drawRect(x, y, width, height)
         this._drawLabel(x, y, width, height)

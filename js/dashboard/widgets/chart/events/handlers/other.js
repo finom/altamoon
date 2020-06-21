@@ -46,6 +46,8 @@ module.exports = class OtherHandlers {
         this.gridLines.x.scale(scaledX)
         this.plot.xScale = scaledX
 
+        this.chart.measureTool.hide()
+
         // let scaledY = transform.rescaleY(scales.y)
         // plot.yScale = scaledY
         this.chart.draw()
