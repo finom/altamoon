@@ -31,11 +31,11 @@ module.exports = class Listeners {
         // Measure tool
         this.chart.svg
             .on('mousedown', () => this.removeZoom())
-            .on('click.measurer', () => this.chart.measureTool.hide())
+            .on('click.measurer', () => this.chart.measurer.hide())
         this.chart.svg.svg
             .call(d3.drag()
-                .on('start', () => this.chart.measureTool.start = null)
-                .on('drag', () => this.drawMeasureTool())
+                .on('start', () => this.chart.measurer.start = null)
+                .on('drag', () => this.drawMeasurer())
                 .on('end', () => this.addZoom())
             )
 
@@ -87,5 +87,5 @@ module.exports = class Listeners {
     onDragOrder = (...args) => this.other.onDragOrder(...args)
     onDragOrderEnd = (...args) => this.other.onDragOrderEnd(...args)
     onZoomOrDrag = (...args) => this.other.onZoomOrDrag(...args)
-    drawMeasureTool = (...args) => this.other.drawMeasureTool(...args)
+    drawMeasurer = (...args) => this.other.drawMeasurer(...args)
 }

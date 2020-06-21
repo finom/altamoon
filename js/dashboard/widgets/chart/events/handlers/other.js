@@ -46,20 +46,20 @@ module.exports = class OtherHandlers {
         this.gridLines.x.scale(scaledX)
         this.plot.xScale = scaledX
 
-        this.chart.measureTool.hide()
+        this.chart.measurer.hide()
 
         // let scaledY = transform.rescaleY(scales.y)
         // plot.yScale = scaledY
         this.chart.draw()
     }
 
-    drawMeasureTool () {
+    drawMeasurer () {
         if (!event.shiftKey)
             return
 
         let coords = d3.mouse(this.chart.svg.graph.node())
         coords = { x: coords[0], y: coords[1] }
 
-        this.chart.measureTool.draw(coords)
+        this.chart.measurer.draw(coords)
     }
 }

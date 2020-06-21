@@ -8,7 +8,7 @@ const Crosshair = require('./items/crosshair')
 const GridLines = require('./items/grid-lines')
 const Lines = require('./items/lines')
 const LineLabels = require('./items/line-labels')
-const MeasureTool = require('./items/measure-tool')
+const Measurer = require('./items/measurer')
 const Plot = require('./plot/plot')
 
 const Listeners = require('./events/listeners')
@@ -77,7 +77,7 @@ module.exports = class Chart {
 
         this.plot = new Plot(this.scales)
 
-        this.measureTool = new MeasureTool(this)
+        this.measurer = new Measurer(this)
 
         this.crosshair = new Crosshair(this)
 
@@ -101,7 +101,7 @@ module.exports = class Chart {
 
         this.plot.appendTo(this.svg)
 
-        this.measureTool.appendTo(this.svg, 'measurer')
+        this.measurer.appendTo(this.svg, 'measurer')
 
         this.crosshair.appendTo(this.svg)
 
@@ -180,7 +180,7 @@ module.exports = class Chart {
         this.orderLines.resize()
         this.positionLine.resize()
         this.liquidationLine.resize()
-        this.measureTool.resize()
+        this.measurer.resize()
         this.crosshair.resize()
 
         if (this.data.candles.length) {

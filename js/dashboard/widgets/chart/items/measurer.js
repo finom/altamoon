@@ -2,7 +2,7 @@
 const api = require('../../../../apis/futures')
 
 
-module.exports = class MeasureTool {
+module.exports = class Measurer {
 
     constructor (chart) {
         this.chart = chart
