@@ -1,4 +1,5 @@
 'use strict'
+const api = require('../../../../apis/futures')
 
 
 module.exports = class MeasureTool {
@@ -64,7 +65,6 @@ module.exports = class MeasureTool {
             .style('transform', 'translateY(-100%)')
         this.label
             .html(this._labelText)
-
     }
 
     _labelText = () => {
@@ -76,9 +76,16 @@ module.exports = class MeasureTool {
         let amount = d3.format(',.2f')(y2 - y1)
         let percentage = d3.format('+,.2%')((y2 - y1) / y1)
 
+        let position = api.positions.filter(x => x.symbol == SYMBOL)[0]
+        let leverage = position.leverage
+        let leveragedPercent = d3.format('+,.1%')((y2 - y1) / y1 * leverage)
+
         let time = this._getTimeInterval(Math.abs(x2 - x1))
 
-        return time + '<br>' + amount + ' (' + percentage + ')'
+        return `<b>${time}</b><br>`
+            + `<b>${amount}</b> USDT<br>`
+            + `<b>${percentage}</b><br>`
+            + `<b>${leveragedPercent}</b> at ${leverage}x`
     }
 
     _getTimeInterval(milliseconds) {
@@ -95,7 +102,7 @@ module.exports = class MeasureTool {
 
         return (days ? days + 'd ' : '')
             + (hours ? hours + 'h ' : '')
-            + (minutes ? minutes + 'm ' : '')
+            + (minutes ? minutes + 'm' : '')
             // + (seconds ? seconds + 's ' : '')
     }
 
