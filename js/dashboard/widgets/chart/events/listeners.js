@@ -30,14 +30,8 @@ module.exports = class Listeners {
 
         // Measure tool
         this.chart.svg
-            .on('mousedown', () => this.removeZoom())
-            .on('click.measurer', () => this.chart.measurer.hide())
-        this.chart.svg.svg
-            .call(d3.drag()
-                .on('start', () => this.chart.measurer.start = null)
-                .on('drag', () => this.drawMeasurer())
-                .on('end', () => this.addZoom())
-            )
+            .on('click.measurer', () => this.measurerOnClick())
+            .on('mousemove.measurer', () => this.drawMeasurer())
 
         // Zoom
         this.addZoom()
@@ -62,13 +56,6 @@ module.exports = class Listeners {
             .on('dblclick.zoom', null)
     }
 
-    removeZoom () {
-        if (event.shiftKey)
-            this.chart.svg.call(
-                this.chart.zoom.on('zoom', null)
-            )
-    }
-
 
     // Data update callbacks
     updateLastCandle = (...args) => this.dataUpdates.updateLastCandle(...args)
@@ -80,12 +67,15 @@ module.exports = class Listeners {
     updateOpenOrders = (...args) => this.dataUpdates.updateOpenOrders(...args)
     updateLiquidation = (...args) => this.dataUpdates.updateLiquidation(...args)
 
+    // Order draft callbacks
     placeOrderDraft = (...args) => this.draftHandlers.placeOrderDraft(...args)
     onDragDraft = (...args) => this.draftHandlers.onDragDraft(...args)
     draftToOrder = (...args) => this.draftHandlers.draftToOrder(...args)
 
+    // Other callbacks
     onDragOrder = (...args) => this.other.onDragOrder(...args)
     onDragOrderEnd = (...args) => this.other.onDragOrderEnd(...args)
     onZoomOrDrag = (...args) => this.other.onZoomOrDrag(...args)
+    measurerOnClick = (...args) => this.other.measurerOnClick(...args)
     drawMeasurer = (...args) => this.other.drawMeasurer(...args)
 }

@@ -155,6 +155,8 @@ module.exports = class Chart {
 
         this.plot.draw(this.data.candles)
 
+        this.measurer.resize()
+
         this.crosshair.draw()
 
         // Color lines based on market side

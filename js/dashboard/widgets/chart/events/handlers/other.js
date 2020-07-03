@@ -11,6 +11,7 @@ module.exports = class OtherHandlers {
         this.gridLines = chart.gridLines
         this.orderLabels = chart.orderLabels
         this.orderLinesData = chart.data.orderLines
+        this.measurer = this.chart.measurer
     }
 
     onDragOrder (d) {
@@ -42,24 +43,41 @@ module.exports = class OtherHandlers {
         let transform = d3.event.transform
         let scaledX = transform.rescaleX(this.scales.x)
 
+        this.scales.scaledX = scaledX
         this.axes.x.scale(scaledX)
         this.gridLines.x.scale(scaledX)
         this.plot.xScale = scaledX
-
-        this.chart.measurer.hide()
 
         // let scaledY = transform.rescaleY(scales.y)
         // plot.yScale = scaledY
         this.chart.draw()
     }
 
+    measurerOnClick () {
+        if (event.shiftKey) {
+            if (this.measurer.drawing)
+                this.measurer.drawing = false
+            else {
+                this.measurer.drawing = true
+                this.measurer.start = null
+                this.drawMeasurer()
+            }
+        }
+        else if (this.measurer.drawing) {
+            this.measurer.drawing = false
+            this.measurer.start = null
+        }
+        else if (!this.measurer.hidden)
+            this.measurer.hide()
+    }
+
     drawMeasurer () {
-        if (!event.shiftKey)
+        if (!this.measurer.drawing)
             return
 
         let coords = d3.mouse(this.chart.svg.graph.node())
         coords = { x: coords[0], y: coords[1] }
 
-        this.chart.measurer.draw(coords)
+        this.measurer.draw(coords)
     }
 }

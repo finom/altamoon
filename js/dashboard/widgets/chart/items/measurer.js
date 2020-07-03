@@ -5,13 +5,15 @@ const api = require('../../../../apis/futures')
 module.exports = class Measurer {
 
     constructor (chart) {
-        this.chart = chart
+        this.scales = chart.scales
+        this.drawing = false
     }
 
     appendTo (container, className) {
         this.wrapper = container.append('g')
                 .class(className)
                 .attr('clip-path', 'url(#clipChart)')
+                .attr('display', 'none')
         this.rect = this.wrapper.append('rect')
 
         this.labelWrapper = this.wrapper.append('foreignObject')
@@ -19,31 +21,49 @@ module.exports = class Measurer {
             .append('xhtml:div')
                 .class('measurer-label')
             .append('xhtml:div')
-        this.hide()
     }
 
     draw (coords) {
         this.wrapper.attr('display', 'visible')
 
-        this.coords = coords
-        this.start = this.start || this.coords
+        this.end = {
+            x: this.scales.scaledX.invert(coords.x),
+            y: this.scales.y.invert(coords.y)
+        }
+        this.start = this.start || this.end
 
-        let x = Math.min(this.start.x, this.coords.x)
-        let y = Math.min(this.start.y, this.coords.y)
-
-        let width = Math.abs(this.coords.x - this.start.x)
-        let height = Math.abs(this.coords.y - this.start.y)
-
-        this._drawRect(x, y, width, height)
-        this._drawLabel(x, y, width, height)
+        this.resize()
     }
 
     hide () {
         this.wrapper.attr('display', 'none')
     }
 
+    get hidden () {
+        return (this.wrapper.attr('display') == 'none') ? true : false
+    }
+
     resize () {
-        this.hide()
+        if (this.wrapper.attr('display') === 'none')
+            return
+
+        let start = {
+            x: this.scales.scaledX(this.start.x),
+            y: this.scales.y(this.start.y)
+        }
+        let end = {
+            x: this.scales.scaledX(this.end.x),
+            y: this.scales.y(this.end.y)
+        }
+
+        let x = Math.min(start.x, end.x)
+        let y = Math.min(start.y, end.y)
+
+        let width = Math.abs(end.x - start.x)
+        let height = Math.abs(end.y - start.y)
+
+        this._drawRect(x, y, width, height)
+        this._drawLabel(x, y, width, height)
     }
 
     _drawRect (x, y, width, height) {
@@ -64,20 +84,20 @@ module.exports = class Measurer {
             .style('width', width + 'px')
             .style('transform', 'translateY(-100%)')
         this.label
-            .html(this._labelText)
+            .html(this._getLabelText())
     }
 
-    _labelText = () => {
-        let x1 = this.chart.plot.xScale.invert(this.start.x)
-        let x2 = this.chart.plot.xScale.invert(this.coords.x)
-        let y1 = this.chart.scales.y.invert(this.start.y)
-        let y2 = this.chart.scales.y.invert(this.coords.y)
+    _getLabelText () {
+        let x1 = this.start.x
+        let y1 = this.start.y
+        let x2 = this.end.x
+        let y2 = this.end.y
 
         let amount = d3.format(',.2f')(y2 - y1)
         let percentage = d3.format('+,.2%')((y2 - y1) / y1)
 
         let position = api.positions.filter(x => x.symbol == SYMBOL)[0]
-        let leverage = position.leverage
+        let leverage = position.leverage || 1
         let leveragedPercent = d3.format('+,.1%')((y2 - y1) / y1 * leverage)
 
         let time = this._getTimeInterval(Math.abs(x2 - x1))
@@ -88,7 +108,7 @@ module.exports = class Measurer {
             + `<b>${leveragedPercent}</b> at ${leverage}x`
     }
 
-    _getTimeInterval(milliseconds) {
+    _getTimeInterval (milliseconds) {
         let days, hours, minutes, seconds, total_hours, total_minutes, total_seconds
 
         total_seconds = parseInt(Math.floor(milliseconds / 1000))
