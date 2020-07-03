@@ -63,7 +63,7 @@ module.exports = class Measurer {
         let height = Math.abs(end.y - start.y)
 
         this._drawRect(x, y, width, height)
-        this._drawLabel(x, y, width, height)
+        this._drawLabel(x, end.y, width, height)
     }
 
     _drawRect (x, y, width, height) {
@@ -75,16 +75,24 @@ module.exports = class Measurer {
     }
 
     _drawLabel (x, y, width) {
+        this.label
+            .html(this._getLabelText())
+
         this.labelWrapper
                 .attr('x', x)
                 .attr('y', y)
                 .attr('width', 0)
                 .attr('height', 0)
+
+
+        let transform =
+            (this.end.y >= this.start.y) // Positive Y
+                ? 'translateY(-100%)' // Move label above rect
+                : null
+
         this.labelWrapper.select('div')
             .style('width', width + 'px')
-            .style('transform', 'translateY(-100%)')
-        this.label
-            .html(this._getLabelText())
+            .style('transform', transform)
     }
 
     _getLabelText () {
@@ -125,9 +133,4 @@ module.exports = class Measurer {
             + (minutes ? minutes + 'm' : '')
             // + (seconds ? seconds + 's ' : '')
     }
-
-    // _getDimensions () {
-    //     this.width = this.chart.width
-    //     this.height = this.chart.height
-    // }
 }
