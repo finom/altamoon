@@ -65,7 +65,6 @@ module.exports = class OtherHandlers {
         }
         else if (this.measurer.drawing) {
             this.measurer.drawing = false
-            this.measurer.start = null
         }
         else if (!this.measurer.hidden)
             this.measurer.hide()
