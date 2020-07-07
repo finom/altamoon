@@ -7,11 +7,11 @@ const Gridstack = require('./gridstack')
 
 const Chart = require('./widgets/chart/chart')
 const trading = require('./widgets/trading')
-const myOrders = require('./widgets/my-orders')
-const wallet = require('./widgets/wallet')
 const book = require('./widgets/book')
-const trades = require('./widgets/trades')
-const liquidation = require('../data/liquidation')
+require('./widgets/my-orders')
+require('./widgets/wallet')
+require('./widgets/trades')
+require('../data/liquidation')
 
 // Get initial data
 api.getPosition()
