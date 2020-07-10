@@ -34,7 +34,8 @@
 }
 
 #positions .buy {
-    background-color: #4ab94c;
+    background-color: #40a842;
+    font-weight: bold;
 }
 #positions .sell  {
     background: #ab257c;
@@ -50,7 +51,7 @@
 /* Button */
 #position-orders button {
     padding: 1px 15px;
-    box-shadow: 1px 3px 2px #0000004a;
+    box-shadow: 1px 3px 2px #0000006c;
     border: none;
     cursor: pointer;
 }
