@@ -66,6 +66,9 @@ module.exports = class TransferModal extends Modal {
                 if (err)
                     return console.error(error)
 
+                if (this.direction === 2)
+                    return
+
                 let max = balances[this._getCurrency()].available
                 this.maxQty = Number(d3.format('~f')(max))
                 this.max.html(d3.format(',~f')(this.maxQty))
