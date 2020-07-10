@@ -59,9 +59,19 @@
     box-shadow: 3px 4px 6px #00000050;
     color: #fff78c;
     cursor: pointer;
+    display: inline;
     font-size: 35px;
     margin: 5px;
-    padding: 6px 10px;
+    padding: 6px 0;
+}
+.modal .switch > div {
+    border-radius: 26px;
+    display: inline-block;
+    padding: 0 10px;
+    transition: transform 0.2s;
+}
+.modal .switch > div:hover {
+    transform: rotateZ(180deg)
 }
 .modal .currency {
     border-radius: 3px;

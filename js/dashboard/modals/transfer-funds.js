@@ -22,7 +22,7 @@ module.exports = class TransferModal extends Modal {
             </tr>
             <tr class="direction">
                 <td><div class="source">  Spot  </div></td>
-                <td><span class="switch">⇄</span></td>
+                <td><div class="switch"><div>⇌</div></div></td>
                 <td><div class="target">Futures</div></td>
             </tr>
         </table>
