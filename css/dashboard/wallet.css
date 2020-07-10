@@ -35,9 +35,19 @@
     text-align: center;
     width: 100%;
 }
-.modal .source, .modal .target {
+.modal tr:first-child td {
+    padding: 6px;
+}
+.modal .direction td {
     background-color: #383838;
-    border-radius: 25px;
+}
+.modal .direction td:first-child {
+    border-radius: 25px 0 0 25px;
+}
+.modal .direction td:last-child {
+    border-radius: 0 25px 25px 0;
+}
+.modal .source, .modal .target {
     font-weight: bold;
     min-width: 135px;
     padding: 10px;

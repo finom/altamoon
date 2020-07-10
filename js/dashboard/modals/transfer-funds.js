@@ -7,7 +7,7 @@ module.exports = class TransferModal extends Modal {
 
     constructor () {
         super()
-        this.title('Transfer')
+        this.title('Transfer between wallets')
         this.direction = 1 // 1 = Spot to Futures | 2 = The opposite
         this._createBody()
     }
@@ -20,7 +20,7 @@ module.exports = class TransferModal extends Modal {
                 <td></td>
                 <td>To</td>
             </tr>
-            <tr>
+            <tr class="direction">
                 <td><div class="source">  Spot  </div></td>
                 <td><span class="switch">⇄</span></td>
                 <td><div class="target">Futures</div></td>
@@ -34,7 +34,7 @@ module.exports = class TransferModal extends Modal {
                 <option value="BNB">BNB</option>
             </select>
         </div>
-        <div class="max">Available: <span class="link">Retrieving amount...</span></div>
+        <div class="max">Available: <span class="link"></span></div>
         <button class="btn">Confirm transfer</button></div>
         `)
 
@@ -59,24 +59,24 @@ module.exports = class TransferModal extends Modal {
     }
 
     _getMax () {
-        let max
+        this.max.html('Retrieving amount...')
 
         if (this.direction === 1) {
             api.lib.balance((err, balances) => {
                 if (err)
                     return console.error(error)
 
-                max = balances[this._getCurrency()].available
-                this.maxQty = Number(d3.format('.2~f')(max))
-                this.max.html(d3.format(',.2~f')(this.maxQty))
+                let max = balances[this._getCurrency()].available
+                this.maxQty = Number(d3.format('~f')(max))
+                this.max.html(d3.format(',~f')(this.maxQty))
             })
         }
         else {
             let data = api.account.assets.filter(x => x.asset == this._getCurrency())
 
-            max = data[0].maxWithdrawAmount
-            this.maxQty = Number(d3.format('.2~f')(max))
-            this.max.html(d3.format(',.2~f')(this.maxQty))
+            let max = data[0].maxWithdrawAmount
+            this.maxQty = Number(d3.format('~f')(max))
+            this.max.html(d3.format(',~f')(this.maxQty))
         }
     }
 
@@ -99,19 +99,18 @@ module.exports = class TransferModal extends Modal {
     _onSwitchDirection () {
         if (this.direction === 1) {
             this.direction = 2
-            this.target.html('Futures')
-            this.source.html('Spot')
+            this.source.html('Futures')
+            this.target.html('Spot')
         }
         else {
             this.direction = 1
-            this.target.html('Spot')
-            this.source.html('Futures')
+            this.source.html('Spot')
+            this.target.html('Futures')
         }
         this._getMax()
     }
 
     _onCurrencyChange () {
-        this.max.html('Retrieving amount...')
         this._getMax()
     }
 }
