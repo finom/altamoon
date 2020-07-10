@@ -1,6 +1,7 @@
 'use strict'
 const api = require('../../apis/futures')
 const stats = require('../../data/stats')
+const TransferModal = require('../modals/transfer-funds')
 
 events.on('api.balancesUpdate', updateWallet)
 events.on('api.priceUpdate', updateWallet)
@@ -50,3 +51,9 @@ async function updateWallet (data) {
             update => update.text(d => d)
         )
 }
+
+// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+//   Funds transfer
+// –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+d3.select('#transfer-funds > span')
+    .on('click', () => new TransferModal().display())
