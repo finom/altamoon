@@ -23,9 +23,9 @@ if (!Array.prototype.lastIndex)
 // Add d3.selection.class() shortcut to d3.selection.attr('class')
 if (!d3.selection.prototype.class)
     Object.defineProperty(d3.selection.prototype, 'class', {
-        value: function (string) {
-            if (string)
-                return this.attr('class', string)
+        value: function (value) {
+            if (value !== undefined)
+                return this.attr('class', value)
             else
                 return this.attr('class')
         },
@@ -35,11 +35,23 @@ if (!d3.selection.prototype.class)
 // Add d3.selection.id() shortcut to d3.selection.attr('id')
 if (!d3.selection.prototype.id)
     Object.defineProperty(d3.selection.prototype, 'id', {
-        value: function (string) {
-            if (string)
-                return this.attr('id', string)
+        value: function (value) {
+            if (value !== undefined)
+                return this.attr('id', value)
             else
                 return this.attr('id')
+        },
+        enumerable: true
+    })
+
+// Add d3.selection.value() shortcut to d3.selection.property('value')
+if (!d3.selection.prototype.value)
+    Object.defineProperty(d3.selection.prototype, 'value', {
+        value: function (value) {
+            if (value !== undefined)
+                return this.property('value', value)
+            else
+                return this.property('value')
         },
         enumerable: true
     })

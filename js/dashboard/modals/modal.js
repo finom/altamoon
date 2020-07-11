@@ -17,6 +17,11 @@ module.exports = class Modal {
         return this
     }
 
+    id (string) {
+        this.box.id(string)
+        return this
+    }
+
     display () {
         this.overlay.style('display', 'flex')
 
@@ -29,5 +34,9 @@ module.exports = class Modal {
 
     destroy () {
         this.overlay.remove()
+    }
+
+    _createBody () {
+        return null
     }
 }

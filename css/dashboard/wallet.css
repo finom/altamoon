@@ -29,30 +29,30 @@
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Transfer Funds modal
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.modal table {
+#transfer-modal table {
     border-collapse: collapse;
     margin-bottom: 20px;
     text-align: center;
     width: 100%;
 }
-.modal tr:first-child td {
+#transfer-modal tr:first-child td {
     padding: 6px;
 }
-.modal .direction td {
+#transfer-modal .direction td {
     background-color: #383838;
 }
-.modal .direction td:first-child {
+#transfer-modal .direction td:first-child {
     border-radius: 25px 0 0 25px;
 }
-.modal .direction td:last-child {
+#transfer-modal .direction td:last-child {
     border-radius: 0 25px 25px 0;
 }
-.modal .source, .modal .target {
+#transfer-modal .source, #transfer-modal .target {
     font-weight: bold;
     min-width: 135px;
     padding: 10px;
 }
-.modal .switch {
+#transfer-modal .switch {
     background-color: #414141;
     border: 2px solid #b9a65f;
     border-radius: 26px;
@@ -62,35 +62,48 @@
     display: inline;
     font-size: 35px;
     margin: 5px;
-    padding: 6px 0;
+    padding: 6px 10px;
+    transition: background-color 0.2s, box-shadow 0.1s;
 }
-.modal .switch > div {
+#transfer-modal .switch:hover {
+    background-color: #8a7735;
+}
+#transfer-modal .switch:active {
+    box-shadow: 3px 4px 6px #00000050,
+                inset 2px 3px 4px #00000050;
+}
+#transfer-modal .switch > div {
     border-radius: 26px;
     display: inline-block;
-    padding: 0 10px;
     transition: transform 0.2s;
 }
-.modal .switch > div:hover {
+#transfer-modal .switch:hover > div {
     transform: rotateZ(180deg)
 }
-.modal .currency {
+#transfer-modal .switch:active > div {
+    transform: translate(1px, 1px) rotateZ(180deg);
+}
+#transfer-modal .invalid {
+    color: rgb(255, 39, 39);
+}
+#transfer-modal .currency {
     border-radius: 3px;
     padding: 4px 6px;
 }
-.modal .max {
+#transfer-modal .max {
     margin-bottom: 20px;
 }
-.modal .input {
+#transfer-modal .input {
     margin-left: auto;
     margin-right: auto;
     width: 80%;
 }
-.modal .max {
+#transfer-modal .max {
     margin-left: auto;
     margin-right: auto;
     width: 70%;
 }
-.modal button {
+#transfer-modal button {
     border: #383838 solid 2px;
     box-shadow: 3px 3px 3px #00000050,
                 inset 3px 3px 5px #ffffff2e,
@@ -98,4 +111,7 @@
     border-radius: 30px;
     font-size: 16px;
     width: 100%;
+}
+#transfer-modal button.invalid {
+    cursor: not-allowed;
 }

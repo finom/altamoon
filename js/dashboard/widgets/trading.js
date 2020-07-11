@@ -2,6 +2,7 @@
 const api = require('../../apis/futures')
 const { config } = require('../../config')
 const stats = require('../../data/stats')
+const { parseInputNumber } = require('../../snippets')
 
 module.exports = { onBuy, onSell, getMarginCost }
 
@@ -118,7 +119,7 @@ d3.select('#maker-only').on('change', function () {
 //   PRICE
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function onInputPrice (side) {
-    let price = parseNumber()
+    let price = parseInputNumber()
     updateDollarValue(side, price)
     updateMarginCost(side, price)
     updateFee(side, price)
@@ -138,7 +139,7 @@ function updatePrice (side, price) {
 //   QUANTITY
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function onInputQty (side) {
-    qty[side] = parseNumber()
+    qty[side] = parseInputNumber()
 
     events.emit('trading.qtyUpdate', qty[side], side)
 
@@ -287,19 +288,6 @@ function onSell (type) {
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   GENERIC FUNCTIONS
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-function parseNumber () {
-    let string = event.target.value
-
-    let regex = /[0-9]|\./
-    for (let i = 0; i < string.length; i++) {
-        if (!regex.test(string[i])) {
-            string = string.replace(string[i], '')
-            i--
-        }
-    }
-    return event.target.value = string
-}
-
 function increment (side) {
     let qty = parseFloat(event.target.value)
     let direction = Math.sign(-event.deltaY)
