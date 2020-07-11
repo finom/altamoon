@@ -2,6 +2,7 @@
 const api = require('../../apis/futures')
 const stats = require('../../data/stats')
 const TransferModal = require('../modals/transfer-funds')
+const { truncateDecimals } = require('../../snippets')
 
 events.on('api.balancesUpdate', updateWallet)
 events.on('api.priceUpdate', updateWallet)
@@ -17,7 +18,7 @@ async function updateWallet (data) {
 
     if(!data) return
 
-    let format = value => d3.format(',.2f')(value)
+    let format = value => d3.format(',.2f')(truncateDecimals(value, 2))
 
     let pnl = stats.getPnl()
     let pnlPercent = d3.format(',.1%')(pnl.percent)
