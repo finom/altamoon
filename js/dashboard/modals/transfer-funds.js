@@ -32,7 +32,7 @@ module.exports = class TransferModal extends Modal {
         <div class="input">
             <label for="transfer-qty">Qty</label>
             <input id="transfer-qty" />
-            <select name="currency" class="currency">
+            <select class="currency">
                 <option value="USDT">USDT</option>
                 <option value="BNB">BNB</option>
             </select>
