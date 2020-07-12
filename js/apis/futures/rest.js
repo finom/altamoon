@@ -94,7 +94,7 @@ module.exports = class Rest {
     getPosition () {
         this.lib.futuresPositionRisk()
             .then(response => {
-                let p = response[SYMBOL]
+                let p = response.filter(x => x.symbol === SYMBOL)[0]
                 cache.positions[0] = {
                     leverage: p.leverage,
                     liquidation: p.liquidationPrice,

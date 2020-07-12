@@ -25,12 +25,12 @@ module.exports = class DataUpdateHandlers {
         let baLinesData = this.data.bidAskLines
 
         if (baLinesData[0]) {
-            if (baLinesData[0].value === data.a
-                && baLinesData[1].value === data.b)
+            if (baLinesData[0].value === data.bestAsk
+                && baLinesData[1].value === data.bestBid)
                 return
         }
         baLinesData.length = 0
-        baLinesData.push({value: data.a}, {value: data.b})
+        baLinesData.push({value: data.bestAsk}, {value: data.bestBid})
 
         this.bidAskLines.draw(baLinesData)
     }

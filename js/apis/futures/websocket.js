@@ -14,40 +14,30 @@ module.exports = class Rest {
     streamBook () {
         this.lib.futuresSubscribe(
             SYMBOL.toLowerCase() + '@depth@500ms',
-            r => { events.emit('api.bookUpdate', r) },
-            { reconnect: true }
+            r => { events.emit('api.bookUpdate', r) }
         )
     }
 
     streamBidAsk () {
-        this.lib.futuresSubscribe(
-            SYMBOL.toLowerCase() + '@bookTicker',
-            r => { events.emit('api.bidAskUpdate', r) },
-            { reconnect: true }
+        this.lib.futuresBookTickerStream(SYMBOL,
+            r => { events.emit('api.bidAskUpdate', r) }
         )
     }
 
     streamLastTrade () {
         /* Last aggregated taker trade. Gives price, refreshed 100ms */
-        this.lib.futuresAggTradeStream(
-            SYMBOL,
+        this.lib.futuresAggTradeStream(SYMBOL,
             r => {
                 cache.lastTrade = r
                 cache.lastPrice = cache.lastTrade.price
                 events.emit('api.priceUpdate', cache.lastPrice)
                 events.emit('api.newTrade', cache.lastTrade)
-            },
-            { reconnect: true }
+            }
         )
     }
 
-    streamUserData () {
-        this.userData.stream()
-    }
-
-    streamLastCandle () {
-        this.lib.futuresSubscribe(
-            SYMBOL.toLowerCase() + '@kline_1m',
+    streamLastCandle (interval = '1m') {
+        this.lib.futuresCandlesticks(SYMBOL, interval,
             r => {
                 let d = r.k
 
@@ -66,8 +56,11 @@ module.exports = class Rest {
                         volume: parseFloat(d.q) }
 
                 events.emit('api.lastCandleUpdate', candle)
-            },
-            { reconnect: true }
+            }
         )
+    }
+
+    streamUserData () {
+        this.userData.stream()
     }
 }
