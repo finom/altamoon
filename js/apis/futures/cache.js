@@ -1,5 +1,6 @@
 'use strict'
 
+let _exchangeInfo = {}
 let _account = {}
 let _positions = []
 let _openOrders = []
@@ -7,6 +8,9 @@ let _lastTrade = {}
 let _lastPrice
 
 module.exports = {
+    get exchangeInfo() { return _exchangeInfo },
+    set exchangeInfo(value) { _exchangeInfo = value },
+
     get account() { return _account },
     set account(value) { _account = value },
 

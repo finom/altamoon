@@ -13,7 +13,12 @@ require('./widgets/wallet')
 require('./widgets/trades')
 require('../data/liquidation')
 
+// Draw chart
+new Gridstack('#main-grid')
+new Chart('#chart')
+
 // Get initial data
+api.getExchangeInfo()
 api.getPosition()
 api.getOpenOrders()
 api.getAccount()
@@ -24,10 +29,6 @@ api.streamUserData()
 api.streamBidAsk()
 api.streamBook()
 book.updateBook()
-
-// Draw chart
-new Gridstack('#main-grid')
-new Chart('#chart')
 
 // Inputs
 d3.selectAll('.num-input').on('input', trading.parseNumber)

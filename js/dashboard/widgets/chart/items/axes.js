@@ -8,11 +8,13 @@ module.exports = class Axes {
 
         this.x = d3.axisBottom(this.scales.x)
 
+        let tickFormat = d3.format('.' + chart.yPrecision + 'f')
+
         this.yLeft = d3.axisLeft(this.scales.y)
-                .tickFormat(d3.format('.2f'))
+                .tickFormat(tickFormat)
 
         this.yRight = d3.axisRight(this.scales.y)
-                .tickFormat(d3.format('.2f'))
+                .tickFormat(tickFormat)
     }
 
     appendTo (container) {

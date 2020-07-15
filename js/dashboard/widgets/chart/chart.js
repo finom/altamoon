@@ -30,11 +30,25 @@ module.exports = class Chart {
             draftLines: [],
         }
 
+        this._load()
+    }
+
+    _load () {
+        // Wait for symbol info from the API then proceed with loading.
+        events.once('api.exchangeInfoUpdate', d => {
+            this.symbolInfo = d.symbols.filter(x => x.symbol === SYMBOL)[0]
+            this.yPrecision = this.symbolInfo.pricePrecision
+            this._proceedLoading()
+        })
+        api.getExchangeInfo()
+    }
+
+    _proceedLoading () {
         this._getDimensions()
         this._createItems()
         this._appendContainers()
         this._addEventListeners()
-        this._loadData()
+        this._fetchData()
         this._initDraw()
         this.draw()
     }
@@ -115,22 +129,16 @@ module.exports = class Chart {
 
     _addEventListeners () {
         this.listeners = new Listeners(this)
+        this.listeners.setEventListeners()
     }
 
-    _loadData () {
-        events.on('api.candlesUpdate', d => {
-            this.data.candles.push(...d)
-            this._calcXDomain()
-            this.svg.call(this.zoom.translateBy, 0)
-        })
+    _fetchData () {
         api.getCandles({interval: '1m'})
+        api.getPosition()
+        api.getOpenOrders()
     }
 
     _initDraw () {
-        this.listeners.setEventListeners()
-        api.getPosition()
-        api.getOpenOrders()
-
         this.svg.call(this.zoom.translateBy, -100) // Right padding
     }
 
@@ -187,8 +195,7 @@ module.exports = class Chart {
 
         if (this.data.candles.length) {
             this.draw()
-            // Pan chart
-            this.svg.call(this.zoom.translateBy, 0)
+            this.svg.call(this.zoom.translateBy, 0) // Pan chart
         }
     }
 

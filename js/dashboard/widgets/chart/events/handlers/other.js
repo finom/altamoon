@@ -32,7 +32,7 @@ module.exports = class OtherHandlers {
             ? api.lib.futuresBuy
             : api.lib.futuresSell
 
-        order(d.symbol, d.qty, d.value.toFixed(2), {
+        order(d.symbol, d.qty, d.value.toFixed(this.chart.yPrecision), {
                 'reduceOnly': d.reduceOnly,
                 'timeInForce': d.timeInForce
             })

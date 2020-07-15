@@ -3,7 +3,11 @@ const techan = require('techan')
 
 module.exports = class AxisLabel {
 
-    static bottom (xAxis, height) {
+    constructor (chart) {
+        this.chart = chart
+    }
+
+    bottom (xAxis, height) {
         return techan.plot.axisannotation()
         .axis(xAxis)
         .orient('bottom')
@@ -12,18 +16,18 @@ module.exports = class AxisLabel {
         .translate([0, height])
     }
 
-    static left (yAxisLeft) {
+    left (yAxisLeft) {
         return techan.plot.axisannotation()
             .axis(yAxisLeft)
             .orient('left')
-            .format(d3.format(',.2f'))
+            .format(d3.format(',.' + this.chart.yPrecision + 'f'))
     }
 
-    static right (yAxisRight, width) {
+    right (yAxisRight, width) {
         return techan.plot.axisannotation()
             .axis(yAxisRight)
             .orient('right')
-            .format(d3.format(',.2f'))
+            .format(d3.format(',.' + this.chart.yPrecision + 'f'))
             .translate([width, 0])
     }
 }

@@ -6,14 +6,15 @@ module.exports = class Lines {
 
     constructor (chart) {
         this.chart = chart
+        this.axisLabel = new AxisLabel(chart)
         this._getDimensions()
 
         this.techan = techan.plot.supstance()
                 .xScale(this.scales.x)
                 .yScale(this.scales.y)
                 .annotation([
-                    AxisLabel.left(this.axes.yLeft),
-                    AxisLabel.right(this.axes.yRight, this.width)
+                    this.axisLabel.left(this.axes.yLeft),
+                    this.axisLabel.right(this.axes.yRight, this.width)
                 ])
     }
 
@@ -36,8 +37,8 @@ module.exports = class Lines {
         this._getDimensions()
         this.techan
             .annotation([
-                AxisLabel.left(this.axes.yLeft),
-                AxisLabel.right(this.axes.yRight, this.width)
+                this.axisLabel.left(this.axes.yLeft),
+                this.axisLabel.right(this.axes.yRight, this.width)
             ])
         d3.select('#clipLines rect')
             .attr('x', 0 - this.margin.left)

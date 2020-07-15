@@ -35,6 +35,12 @@ module.exports = class DataUpdateHandlers {
         this.bidAskLines.draw(baLinesData)
     }
 
+    updateCandles (candles) {
+        this.data.candles = candles
+        this.chart._calcXDomain()
+        this.svg.call(this.zoom.translateBy, 0)
+    }
+
     updateLastCandle (candle) {
         let lastCandle = this.data.candles.last
         let isSameCandle = candle.timestamp === lastCandle.timestamp

@@ -19,6 +19,9 @@ class ApiFutures {
     ws = ws
 
     // CACHED DATA
+    get exchangeInfo() { return cache.exchangeInfo }
+    set exchangeInfo(value) { cache.exchangeInfo = value }
+
     get account() { return cache.account }
     set account(value) { cache.account = value }
 
@@ -37,6 +40,7 @@ class ApiFutures {
     // GET methods
     getCandles = (params) => rest.getCandles(params)
     getAccount = () => rest.getAccount()
+    getExchangeInfo = () => rest.getExchangeInfo()
     getOpenOrders = () => rest.getOpenOrders()
     getPosition = () => rest.getPosition()
 

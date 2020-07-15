@@ -58,12 +58,21 @@ module.exports = class Rest {
         this.lib.futuresAccount()
             .then(response => {
                 cache.account = response
-                events.emit('api.balancesUpdate', cache.account)
+                events.emit('api.balancesUpdate', response)
             })
             .catch(err => {
                 if (err.code == 'ETIMEDOUT')
                     console.warn('Warning: getAccount() request timed out')
             })
+    }
+
+    getExchangeInfo () {
+        this.lib.futuresExchangeInfo()
+            .then(response => {
+                cache.exchangeInfo = response
+                events.emit('api.exchangeInfoUpdate', response)
+            })
+            .catch(err => console.error(err))
     }
 
     getOpenOrders () {

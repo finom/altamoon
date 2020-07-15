@@ -14,6 +14,8 @@ module.exports = class Listeners {
     }
 
     setEventListeners () {
+
+        events.on('api.candlesUpdate', this.updateCandles)
         events.on('api.lastCandleUpdate', this.updateLastCandle)
         events.on('api.priceUpdate', this.updatePrice)
         events.on('api.bidAskUpdate', this.updateBidAsk)
@@ -58,6 +60,7 @@ module.exports = class Listeners {
 
 
     // Data update callbacks
+    updateCandles = (...args) => this.dataUpdates.updateCandles(...args)
     updateLastCandle = (...args) => this.dataUpdates.updateLastCandle(...args)
     updatePrice = (...args) => this.dataUpdates.updatePrice(...args)
     updateBidAsk = (...args) => this.dataUpdates.updateBidAsk(...args)

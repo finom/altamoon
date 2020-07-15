@@ -8,15 +8,16 @@ module.exports = class Crosshair {
 
     constructor (chart) {
         this.chart = chart
+        this.axisLabel = new AxisLabel(chart)
         this._getDimensions()
 
         this.techan = techan.plot.crosshair()
                 .xScale(this.scales.x)
                 .yScale(this.scales.y)
-                .xAnnotation(AxisLabel.bottom(this.axes.x, this.height))
+                .xAnnotation(this.axisLabel.bottom(this.axes.x, this.height))
                 .yAnnotation([
-                    AxisLabel.left(this.axes.yLeft),
-                    AxisLabel.right(this.axes.yRight, this.width)
+                    this.axisLabel.left(this.axes.yLeft),
+                    this.axisLabel.right(this.axes.yRight, this.width)
                 ])
     }
 
@@ -32,10 +33,10 @@ module.exports = class Crosshair {
     resize () {
         this._getDimensions()
         this.techan
-            .xAnnotation(AxisLabel.bottom(this.axes.x, this.height))
+            .xAnnotation(this.axisLabel.bottom(this.axes.x, this.height))
             .yAnnotation([
-                AxisLabel.left(this.axes.yLeft),
-                AxisLabel.right(this.axes.yRight, this.width)
+                this.axisLabel.left(this.axes.yLeft),
+                this.axisLabel.right(this.axes.yRight, this.width)
             ])
     }
 

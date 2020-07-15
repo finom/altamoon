@@ -13,7 +13,7 @@ module.exports = class DraftOrderHandlers {
 
     placeOrderDraft (node) {
         let price = this.chart.scales.y.invert( d3.mouse(node)[1] )
-        price = +(price.toFixed(2))
+        price = +(price.toFixed(this.chart.yPrecision))
 
         let lastPrice = (api.lastPrice)
                 ? api.lastPrice
@@ -29,7 +29,7 @@ module.exports = class DraftOrderHandlers {
     }
 
     onDragDraft (d) {
-        let price = +(d.value.toFixed(2))
+        let price = +(d.value.toFixed(this.chart.yPrecision))
         let qty = d3.select('#' + d.side + '-qty').property('value')
 
         this.draftLinesData[0].value = price
