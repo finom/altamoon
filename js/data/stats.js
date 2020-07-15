@@ -41,10 +41,10 @@ async function getDailyPnl () {
     // Throttle api calls
     if (!timer || Date.now() > timer + 5 * 1000) {
         timer = Date.now()
-        // Get all balance modifying events since 4am
+        // Get all balance modifying events since last 4am.
         let response = await api.lib.futuresIncome({
                 symbol: SYMBOL,
-                startTime: new Date().setHours(4),
+                startTime: new Date(Date.now() - 4*3600000).setHours(4),
                 endTime: Date.now(),
                 limit: 1000
             })
