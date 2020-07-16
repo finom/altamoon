@@ -208,6 +208,7 @@ module.exports = class Chart {
     }
 
     _calcYDomain() {
+        let y = this.scales.y
         let xDomain = this.plot.xScale.domain()
         let candles = this.data.candles.filter(x =>
             x.timestamp >= xDomain[0].getTime()
@@ -217,14 +218,16 @@ module.exports = class Chart {
                 ? [d3.min(candles, d => d.low), d3.max(candles, d => d.high)]
                 : [0,1]
 
-        this.scales.y.domain(yDomain)
+        y.domain(yDomain)
 
         // Padding
-        let yPadding = this.scales.y.invert(0) - this.scales.y.invert(200)
-        yPadding = Math.round(yPadding)
-        yDomain[0] -= yPadding
-        yDomain[1] += yPadding
+        let yPaddingTop = y.invert(-200) - y.invert(0)
+        let yPaddingBot = y.invert(this.height)
+                          - y.invert(this.height +200)
 
-        this.scales.y.domain(yDomain)
+        yDomain[1] += +yPaddingTop.toFixed(this.yPrecision)
+        yDomain[0] -= +yPaddingBot.toFixed(this.yPrecision)
+
+        y.domain(yDomain)
     }
 }
