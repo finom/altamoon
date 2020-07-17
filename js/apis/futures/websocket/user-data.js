@@ -80,6 +80,7 @@ module.exports = class UserData {
             price: o.p,
             value: o.p, // synonym, for feeding to techan.supstance
             qty: o.q,
+            baseValue: o.q * o.p,
             reduceOnly: o.R,
             side: o.S.toLowerCase(),
             status: o.X,

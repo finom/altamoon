@@ -108,12 +108,19 @@ module.exports = class Measurer {
         let leverage = position.leverage || 1
         let leveragedPercent = d3.format('+,.1%')((y2 - y1) / y1 * leverage)
 
+        let trueLeverage = position.baseValue / api.account.totalWalletBalance
+        let trueLeveragePercent = d3.format('+,.1%')((y2 - y1) / y1 * trueLeverage)
+        let formatedTrueLeverage = (trueLeverage < 10)
+                ? trueLeverage.toFixed(1)
+                : trueLeverage
+
         let time = this._getTimeInterval(Math.abs(x2 - x1))
 
         return `<b>${time}</b><br>`
             + `<b>${amount}</b> USDT<br>`
             + `<b>${percentage}</b><br>`
-            + `<b>${leveragedPercent}</b> at ${leverage}x`
+            + `<b>${leveragedPercent}</b> at ${leverage}x<br>`
+            + `<b>${trueLeveragePercent}</b> at ${formatedTrueLeverage}x (position)`
     }
 
     _getTimeInterval (milliseconds) {

@@ -112,6 +112,7 @@ module.exports = class Rest {
                     price: p.entryPrice,
                     value: p.entryPrice, // synonym, for feeding to techan.substance
                     qty: p.positionAmt,
+                    baseValue: p.positionAmt * p.entryPrice,
                     side: (p.positionAmt >= 0) ? 'buy' : 'sell',
                     symbol: p.symbol
                 }
