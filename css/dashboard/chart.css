@@ -106,6 +106,17 @@ svg text {
     fill: #fff;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+/*   Break-even line
+/* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+.break-even-line .supstance path {
+    stroke: #5c4d39;
+    stroke-dasharray: 4px 7px;
+}
+.break-even-line .axisannotation path,
+.break-even-line .axisannotation text {
+    visibility: hidden;
+}
+/* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Liquidation lines
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 .liquidation-line .supstance path {

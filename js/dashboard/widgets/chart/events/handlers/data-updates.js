@@ -1,4 +1,5 @@
 'use strict'
+const stats = require('../../../../../data/stats')
 
 module.exports = class DataUpdateHandlers {
 
@@ -81,6 +82,13 @@ module.exports = class DataUpdateHandlers {
         positionLineData.length = 0
         if (position.qty) positionLineData.push(position)
         this.chart.draw()
+    }
+
+    async updateBreakEven (positions) {
+        let breakEven = await stats.getBreakEven(SYMBOL)
+        let lineData = this.data.breakEvenLine
+        lineData.length = 0
+        if (breakEven) lineData.push({ value: breakEven })
     }
 
     updateDraft (qty, side) {

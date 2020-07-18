@@ -1,10 +1,24 @@
 'use strict'
 const api = require('../apis/futures')
 
-module.exports = { getFee, getPnl, getDailyPnl }
+module.exports = { getFee, getBreakEven, getPnl, getDailyPnl }
 
-function getBreakEven () {
-    // TODO
+async function getBreakEven (symbol = SYMBOL) {
+    let position = api.positions.filter(x => x.symbol === symbol)[0]
+
+    if (!position || position.qty == 0)
+        return 0
+
+    let qty = position.qty
+    let entryPrice = +position.price
+    let baseValue = +position.baseValue
+    let fee = getFee(qty, 'limit')
+    let dailyPnl = await getDailyPnl(symbol)
+    dailyPnl = dailyPnl.value
+
+    let breakEven = ((fee - dailyPnl) / baseValue * entryPrice) + entryPrice
+
+    return breakEven
 }
 
 function getFee (qty, type = 'limit') {

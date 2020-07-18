@@ -26,6 +26,7 @@ module.exports = class Chart {
             positionLine: [],
             bidAskLines: [],
             liquidationLine: [],
+            breakEvenLine: [],
             orderLines: [],
             draftLines: [],
         }
@@ -84,6 +85,7 @@ module.exports = class Chart {
         this.orderLines = new Lines(this)
         this.positionLine = new Lines(this)
         this.liquidationLine = new Lines(this)
+        this.breakEvenLine = new Lines(this)
 
         this.positionLabel = new LineLabels(this)
         this.orderLabels = new LineLabels(this)
@@ -108,6 +110,7 @@ module.exports = class Chart {
 
         this.axes.appendTo(this.svg)
 
+        this.breakEvenLine.appendTo(this.svg, 'break-even-line')
         this.positionLine.appendTo(this.svg, 'position-line')
         this.liquidationLine.appendTo(this.svg, 'liquidation-line')
         this.bidAskLines.appendTo(this.svg, 'bid-ask-lines')
@@ -151,6 +154,7 @@ module.exports = class Chart {
         this.gridLines.draw(this.scales.y)
 
         this.priceLine.draw(this.data.priceLine)
+        this.breakEvenLine.draw(this.data.breakEvenLine)
         this.positionLine.draw(this.data.positionLine)
         this.bidAskLines.draw(this.data.bidAskLines)
         this.liquidationLine.draw(this.data.liquidationLine)
@@ -188,6 +192,7 @@ module.exports = class Chart {
         this.bidAskLines.resize()
         this.draftLines.resize()
         this.orderLines.resize()
+        this.breakEvenLine.resize()
         this.positionLine.resize()
         this.liquidationLine.resize()
         this.measurer.resize()

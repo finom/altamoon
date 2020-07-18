@@ -22,6 +22,7 @@ module.exports = class Listeners {
         events.on('trading.qtyUpdate', this.updateDraft)
         events.on('api.orderUpdate', this.updateOpenOrders)
         events.on('api.positionUpdate', this.updatePosition)
+        events.on('api.positionUpdate', this.updateBreakEven)
         events.on('liquidation.update', this.updateLiquidation)
 
         this.chart.draftLines.on('drag', this.onDragDraft)
@@ -66,6 +67,7 @@ module.exports = class Listeners {
     updateBidAsk = (...args) => this.dataUpdates.updateBidAsk(...args)
     updateLastCandle = (...args) => this.dataUpdates.updateLastCandle(...args)
     updatePosition = (...args) => this.dataUpdates.updatePosition(...args)
+    updateBreakEven = (...args) => this.dataUpdates.updateBreakEven(...args)
     updateDraft = (...args) => this.dataUpdates.updateDraft(...args)
     updateOpenOrders = (...args) => this.dataUpdates.updateOpenOrders(...args)
     updateLiquidation = (...args) => this.dataUpdates.updateLiquidation(...args)
