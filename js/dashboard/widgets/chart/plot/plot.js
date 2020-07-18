@@ -159,13 +159,14 @@ class Plot {
     }
 
     get _bodyWidth () {
-        let width = this._zoomScale
+        let scale = this._zoomScale
 
         // Clamp width on high zoom out levels
-             if (width < 0.3) width = 1
-        else if (width < 0.8) width = 1.5
-        else if (width < 1.5) width = 2
-        else if (width < 3.0) width = 3
+        let width = (scale < 0.3) ? 1 :
+                    (scale < 0.8) ? 1.5 :
+                    (scale < 1.5) ? 2 :
+                    (scale < 3.0) ? 3 :
+                    scale
 
         return width
     }
