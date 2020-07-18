@@ -22,6 +22,9 @@ function updatePositions (positions) {
         .data(openPositions, d => d.symbol)
         .join(
             enter => enter.append('tr').call(row => {
+                if (enter.empty())
+                    return
+
                 row.class(d => d.side)
 
                 let pnl = format(getPnl().pnl)
@@ -39,6 +42,9 @@ function updatePositions (positions) {
                     .html('Market')
             }),
             update => update.call(row => {
+                if (update.empty())
+                    return
+
                 row.class(d => d.side)
 
                 let pnl = format(getPnl().pnl)
@@ -72,6 +78,9 @@ function updateOrders (orders) {
         .data(orders, d => d.id)
         .join(
             enter => enter.append('tr').call(row => {
+                if (enter.empty())
+                    return
+
                 row.class(d => d.side)
                 let td = () => row.append('td')
                 td().text(d => d.side)
@@ -86,6 +95,9 @@ function updateOrders (orders) {
                     .html('X')
             }),
             update => update.call(row => {
+                if (update.empty())
+                    return
+
                 row.class(d => d.side)
                 let td = (i) => row.select('td:nth-child(' + i + ')')
                 td(1).text(d => d.side)
