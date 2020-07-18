@@ -16,18 +16,21 @@ function getFee (qty, type = 'limit') {
     return qty * feeRate / 100
 }
 
-function getPnl () {
-    if (!api.positions[0] || api.positions[0].qty == 0)
-        return {pnl: 0, percent: 0}
+function getPnl (symbol = SYMBOL) {
+    let position = api.positions.filter(x => x.symbol === symbol)[0]
 
-    let qty = api.positions[0].qty
-    let price = parseFloat(api.lastTrade.price)
-    let entryPrice = parseFloat(api.positions[0].price)
-    let fee = getFee(qty, 'limit')
+    if (!position || position.qty == 0)
+        return {value: 0, percent: 0}
 
-    let pnl = (price - entryPrice) / entryPrice * qty * price - fee
+    let qty = position.qty
+    let price = api.lastTrade.price
+    let entryPrice = +position.price
+    let baseValue = +position.baseValue
+    let fee = getFee(qty, 'limit') // Todo: get fee sum from order histo
+
+    let pnl = (price - entryPrice) / entryPrice * baseValue - fee
     return {
-        pnl: pnl || 0,
+        value: pnl || 0,
         percent: pnl / api.account.totalWalletBalance || 0
     }
 }
@@ -35,7 +38,7 @@ function getPnl () {
 let timer
 let incomeHistory = []
 
-async function getDailyPnl () {
+async function getDailyPnl (symbol = SYMBOL) {
     let currentBalance = api.account.totalWalletBalance
 
     // Throttle api calls
@@ -43,7 +46,7 @@ async function getDailyPnl () {
         timer = Date.now()
         // Get all balance modifying events since last 4am.
         let response = await api.lib.futuresIncome({
-                symbol: SYMBOL,
+                symbol: symbol,
                 startTime: new Date(Date.now() - 4*3600000).setHours(4),
                 endTime: Date.now(),
                 limit: 1000
@@ -60,13 +63,13 @@ async function getDailyPnl () {
     }
 
     let pnlArray = incomeHistory.filter(
-        x => x.incomeType == 'REALIZED_PNL' && x.symbol == SYMBOL
+        x => x.incomeType == 'REALIZED_PNL' && x.symbol == symbol
     )
     let feesArray = incomeHistory.filter(
-        x => x.incomeType == 'COMMISSION' && x.symbol == SYMBOL
+        x => x.incomeType == 'COMMISSION' && x.symbol == symbol
     )
     let fundingArray = incomeHistory.filter(
-        x => x.incomeType == 'FUNDING_FEE' && x.symbol == SYMBOL
+        x => x.incomeType == 'FUNDING_FEE' && x.symbol == symbol
     )
 
     let totalPnl = 0
@@ -91,7 +94,7 @@ async function getDailyPnl () {
             : totalPnl / currentBalance
 
     return {
-        pnl: totalPnl,
+        value: totalPnl,
         percent: percent
     }
 }

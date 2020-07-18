@@ -24,7 +24,7 @@ async function updateWallet (data) {
     let pnlPercent = d3.format(',.1%')(pnl.percent)
 
     let balance = parseFloat(data.totalWalletBalance)
-    let unrealizedBalance = pnl.pnl + balance
+    let unrealizedBalance = pnl.value + balance
 
     let dailyPnl = await stats.getDailyPnl()
     let dailyPnlPercent = d3.format(',.1%')(dailyPnl.percent)
@@ -38,8 +38,8 @@ async function updateWallet (data) {
     data = [
         'Balance: ', format(balance),
         'Equity: ', format(unrealizedBalance),
-        'Unrealized PNL: ', format(pnl.pnl) + ' (' + pnlPercent + ')',
-        'Daily PNL: ', format(dailyPnl.pnl) + ' (' + dailyPnlPercent + ')',
+        'Unrealized PNL: ', format(pnl.value) + ' (' + pnlPercent + ')',
+        'Daily PNL: ', format(dailyPnl.value) + ' (' + dailyPnlPercent + ')',
         'Position margin: ', format(positionMargin) + ' (' + posMarginPercent + ')',
         'Order margin: ', format(orderMargin) + ' (' + orderMarginPercent + ')',
     ]
