@@ -31,7 +31,7 @@ function updatePositions (positions) {
                 let pnlPercent = formatPercent(getPnl().percent)
 
                 let td = () => row.append('td')
-                td().text(d => d.symbol.slice(0,3))
+                td().text(d => d.symbol.slice(0,-4))
                 td().text(d => d.qty)
                 td().text(d => format(d.price))
                 td().text(d => format(d.liquidation))
