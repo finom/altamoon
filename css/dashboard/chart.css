@@ -1,4 +1,10 @@
 
+#chart .toolbar {
+    background: #000017;
+    height: 40px;
+    padding: 5px 15px;
+}
+
 svg {
     font: 10px sans-serif;
     background: #000017;

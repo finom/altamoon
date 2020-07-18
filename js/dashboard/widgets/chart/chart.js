@@ -1,6 +1,7 @@
 'use strict'
 const api = require('../../../apis/futures')
 
+const Toolbar = require('./items/toolbar')
 const Svg = require('./items/svg')
 const Axes = require('./items/axes')
 const ClipPath = require('./items/clip-path')
@@ -57,8 +58,9 @@ module.exports = class Chart {
     _getDimensions () {
         let container = this.container.node()
         let header = d3.select(this.containerId + ' > header').node()
+        let toolbarHeight = 40 // Like in the css
         let width = container.offsetWidth
-        let height = container.offsetHeight - header.offsetHeight
+        let height = container.offsetHeight - header.offsetHeight - toolbarHeight
 
         this.margin = { top: 0, right: 55, bottom: 30, left: 55 }
         this.width = width - this.margin.left - this.margin.right
@@ -70,6 +72,8 @@ module.exports = class Chart {
             x: d3.scaleTime().range([0, this.width]),
             y: d3.scaleSymlog().range([this.height, 0])
         }
+
+        this.toolbar = new Toolbar(this)
 
         this.svg = new Svg(this)
 

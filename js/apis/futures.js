@@ -53,7 +53,8 @@ class ApiFutures {
     streamBidAsk = () => ws.streamBidAsk()
     streamLastTrade = () => ws.streamLastTrade()
     streamUserData = () => ws.streamUserData()
-    streamLastCandle = () => ws.streamLastCandle()
+    streamLastCandle = (...args) => ws.streamLastCandle(...args)
+    terminateStream = (...args) => ws.terminateStream(...args)
 }
 
 module.exports = new ApiFutures()

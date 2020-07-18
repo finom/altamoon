@@ -60,6 +60,14 @@ module.exports = class Rest {
         )
     }
 
+    terminateStream (streamName) {
+        let subs = this.lib.futuresSubscriptions()
+        for (let x in subs) {
+            if (x.includes(SYMBOL.toLowerCase() + '@' + streamName))
+                this.lib.futuresTerminate(x)
+        }
+    }
+
     streamUserData () {
         this.userData.stream()
     }
