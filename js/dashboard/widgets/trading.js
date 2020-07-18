@@ -72,7 +72,6 @@ function onOrderTypeChanged () {
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 //   LEVERAGE
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-
 function updateLeverage (d) {
     let position = d.filter(x => x.symbol == SYMBOL)[0]
     leverage = position.leverage
@@ -95,6 +94,7 @@ function onLeverageChanged () {
     leverage = this.value
 
     api.lib.futuresLeverage(SYMBOL, leverage)
+        .then(r => api.getPosition())
         .catch(err => OUT(err))
 
     events.emit('trading.leverageUpdate', leverage)
