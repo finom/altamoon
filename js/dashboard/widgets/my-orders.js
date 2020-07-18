@@ -6,6 +6,9 @@ events.on('api.positionUpdate', updatePositions)
 events.on('api.orderUpdate', updateOrders)
 events.on('api.priceUpdate', updatePnl)
 
+let positionsTable = d3.select('#positions tbody')
+let ordersTable = d3.select('#orders tbody')
+
 function updatePnl () {
     let openPositions = api.positions.filter(x => x.qty != 0)
     if (openPositions.length)
@@ -18,7 +21,14 @@ function updatePositions (positions) {
 
     let openPositions = positions.filter(x => x.qty != 0)
 
-    let rows = d3.select('#positions tbody').selectAll('tr')
+    let trueLeverage = d => {
+        let leverage = d.qty * d.price / api.account.totalWalletBalance
+        return (leverage < 10)
+                ? d3.format('.1~f')(leverage)
+                : Math.floor(leverage) || 0
+    }
+
+    positionsTable.selectAll('tr')
         .data(openPositions, d => d.symbol)
         .join(
             enter => enter.append('tr').call(row => {
@@ -27,8 +37,9 @@ function updatePositions (positions) {
 
                 row.class(d => d.side)
 
-                let pnl = format(getPnl().pnl)
-                let pnlPercent = formatPercent(getPnl().percent)
+                let pnl = getPnl()
+                let pnlValue = format(pnl.value)
+                let pnlPercent = formatPercent(pnl.percent)
 
                 let td = () => row.append('td')
                 td().text(d => d.symbol.slice(0,-4))
@@ -36,7 +47,8 @@ function updatePositions (positions) {
                 td().text(d => format(d.price))
                 td().text(d => format(d.liquidation))
                 td().text(d => format(d.margin))
-                td().text(d => `${ pnl } (${ pnlPercent })`)
+                td().text(d => trueLeverage(d) + 'x')
+                td().text(d => pnlValue + ` (${ pnlPercent })`)
                 td().append('button')
                     .on('click', d => api.closePosition(d.symbol))
                     .html('Market')
@@ -47,16 +59,18 @@ function updatePositions (positions) {
 
                 row.class(d => d.side)
 
-                let pnl = format(getPnl().pnl)
-                let pnlPercent = formatPercent(getPnl().percent)
+                let pnl = getPnl()
+                let pnlValue = format(pnl.value)
+                let pnlPercent = formatPercent(pnl.percent)
 
                 let td = (i) => row.select('td:nth-child(' + i + ')')
-                td(1).text(d => d.symbol.slice(0,3))
+                td(1).text(d => d.symbol.slice(0,-4))
                 td(2).text(d => d.qty)
                 td(3).text(d => format(d.price))
                 td(4).text(d => format(d.liquidation))
                 td(5).text(d => format(d.margin))
-                td(6).text(d => `${ pnl } (${ pnlPercent })`)
+                td(6).text(d => trueLeverage(d) + 'x')
+                td(7).text(d => pnlValue + ` (${ pnlPercent })`)
                 row.select('button')
                     .on('click', d => api.closePosition(d.symbol))
             }),
@@ -74,7 +88,7 @@ function updatePositions (positions) {
 function updateOrders (orders) {
     orders.sort((a, b) => b.price - a.price)
 
-    let rows = d3.select('#orders tbody').selectAll('tr')
+    ordersTable.selectAll('tr')
         .data(orders, d => d.id)
         .join(
             enter => enter.append('tr').call(row => {
