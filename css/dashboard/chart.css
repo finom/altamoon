@@ -1,13 +1,13 @@
 
 #chart .toolbar {
-    background: #000017;
+    background: #010025;
     height: 40px;
     padding: 5px 15px;
 }
 
 svg {
     font: 10px sans-serif;
-    background: #000017;
+    background: #010025;
     /* height: 100%; */
     shape-rendering: crispEdges;
 }
@@ -27,7 +27,7 @@ svg text {
 /*   Grid
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 .gridlines line, .gridlines path {
-    stroke: #000940;
+    stroke: #001242;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Candles
@@ -40,14 +40,14 @@ svg text {
 }
 .plot .up.body {
     fill: #00a7ff;
-    stroke: #0068ff;
+    stroke: #0098ff;
 }
 .plot .up.wick {
     stroke: #00aeff;
 }
 .plot .down.body {
     fill: #003eff;
-    stroke: #0004ff;
+    stroke: #0022ff;
 }
 .plot .down.wick {
     stroke: #0046ff;
