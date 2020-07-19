@@ -17,14 +17,15 @@ module.exports = class Rest {
             .catch(err => console.error(err))
     }
 
-    closePosition () {
-        let qty = cache.positions[0].qty
+    closePosition (symbol = SYMBOL) {
+        let position = cache.positions.filter(x => x.symbol === symbol)[0]
+        let qty = position.qty
 
         if (qty < 0)
-            this.lib.futuresMarketBuy(SYMBOL, -qty, {'reduceOnly': true})
+            this.lib.futuresMarketBuy(symbol, -qty, {'reduceOnly': true})
                 .catch(error => console.error(error))
         else if (qty > 0)
-            this.lib.futuresMarketSell(SYMBOL, qty, {'reduceOnly': true})
+            this.lib.futuresMarketSell(symbol, qty, {'reduceOnly': true})
                 .catch(error => console.error(error))
     }
 

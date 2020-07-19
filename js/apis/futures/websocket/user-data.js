@@ -54,17 +54,22 @@ module.exports = class UserData {
     }
 
     _positionUpdate (data) {
-        let p = data.a.P.filter(x => x.s == SYMBOL)[0]
+        let positions = data.a.P
 
-        if (!cache.positions[0]) cache.positions[0] = {}
-        Object.assign(cache.positions[0], {
-            margin: p.iw,
-            marginType: p.mt,
-            price: p.ep,
-            value: p.ep, // synonym, for feeding to techan.substance
-            qty: p.pa,
-            side: (p.pa >= 0) ? 'buy' : 'sell',
-            symbol: p.s
+        positions.forEach(p => {
+            let i = cache.positions.findIndex(x => x.symbol === p.s)
+            if (i === -1)
+                i = cache.positions.push({}) - 1
+
+            Object.assign(cache.positions[i], {
+                margin: p.iw,
+                marginType: p.mt,
+                price: p.ep,
+                value: p.ep, // synonym, for feeding to techan.substance
+                qty: p.pa,
+                side: (p.pa >= 0) ? 'buy' : 'sell',
+                symbol: p.s
+            })
         })
         this.rest.getPosition() // REST update for missing data
 
