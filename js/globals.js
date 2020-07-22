@@ -2,6 +2,7 @@
 globalThis.d3 = require('d3')
 globalThis.OUT = console.log
 globalThis.SYMBOL = 'BTC' + 'USDT'
+globalThis.nFormat = (f, n) => d3.format(f)(n)
 
 const EventEmitter = require('events')
 globalThis.events = new EventEmitter()
