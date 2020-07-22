@@ -1,10 +1,12 @@
 'use strict'
 const api = require('../../../../apis/futures')
+const { buyQty, sellQty } = require('../../trading')
 
 
 module.exports = class Measurer {
 
     constructor (chart) {
+        this.chart = chart
         this.scales = chart.scales
         this.drawing = false
     }
@@ -16,16 +18,16 @@ module.exports = class Measurer {
                 .attr('display', 'none')
         this.rect = this.wrapper.append('rect')
 
-        this.labelWrapper = this.wrapper.append('foreignObject')
-        this.label = this.labelWrapper
-            .append('xhtml:div')
+        this.labelContainer = this.wrapper.append('foreignObject')
+        this.labelWrapper = this.labelContainer.append('xhtml:div')
                 .class('measurer-label')
-            .append('xhtml:div')
+        this.label = this.labelWrapper.append('xhtml:div')
     }
 
     draw (coords) {
         this.wrapper.attr('display', 'visible')
 
+        // Store chart-space coords for start and end points
         this.end = {
             x: this.scales.scaledX.invert(coords.x),
             y: this.scales.y.invert(coords.y)
@@ -47,6 +49,7 @@ module.exports = class Measurer {
         if (this.wrapper.attr('display') === 'none')
             return
 
+        // Get pixel coords for start and end points
         let start = {
             x: this.scales.scaledX(this.start.x),
             y: this.scales.y(this.start.y)
@@ -74,25 +77,35 @@ module.exports = class Measurer {
             .attr('height', height)
     }
 
-    _drawLabel (x, y, width) {
-        this.label
-            .html(this._getLabelText())
+    _drawLabel (x, y, rectWidth) {
+        this.label.html(this._getLabelText())
 
-        this.labelWrapper
+        let yDirection = (this.end.y >= this.start.y) ? 1 : 0
+        let { width, height } = this.label.node().getBoundingClientRect()
+        let margin = 8
+
+        // x
+        if (x + width > this.chart.width) // Keep within svg bounds
+            x = this.chart.width - width
+
+        // y
+        if (yDirection) {
+            y = y - height - margin
+            if (y < 0) y = 0 // Keep within svg bounds
+        }
+        else {
+            y = y + margin
+            if (y + height > this.chart.height) // Same
+                y = this.chart.height - height
+        }
+
+        // Go place it
+        this.labelContainer
                 .attr('x', x)
                 .attr('y', y)
-                .attr('width', 0)
-                .attr('height', 0)
 
-
-        let transform =
-            (this.end.y >= this.start.y) // Positive Y
-                ? 'translateY(-100%)' // Move label above rect
-                : null
-
-        this.labelWrapper.select('div')
-            .style('width', width + 'px')
-            .style('transform', transform)
+        this.labelWrapper
+            .style('width', rectWidth + 'px')
     }
 
     _getLabelText () {
@@ -101,26 +114,37 @@ module.exports = class Measurer {
         let x2 = this.end.x
         let y2 = this.end.y
 
+        let time = this._getTimeInterval(Math.abs(x2 - x1))
+
         let amount = d3.format(',.2f')(y2 - y1)
+
         let percentage = d3.format('+,.2%')((y2 - y1) / y1)
 
-        let position = api.positions.filter(x => x.symbol == SYMBOL)[0]
+        let position = api.positions.filter(x => x.symbol === SYMBOL)[0]
         let leverage = position.leverage || 1
         let leveragedPercent = d3.format('+,.1%')((y2 - y1) / y1 * leverage)
 
-        let trueLeverage = position.baseValue / api.account.totalWalletBalance
-        let trueLeveragedPercent = d3.format('+,.1~%')((y2 - y1) / y1 * trueLeverage)
+        let trueLeverage = position.baseValue / api.account.balance
+        let trueLeveragedPercent = d3.format('+,.1%')((y2 - y1) / y1 * trueLeverage)
         trueLeverage = (trueLeverage < 10)
                 ? d3.format('.1~f')(trueLeverage)
                 : d3.format('d')(trueLeverage)
 
-        let time = this._getTimeInterval(Math.abs(x2 - x1))
+        let side = (y2 >= y1) ? 'buy' : 'sell'
+        let orderQty = (y2 >= y1) ? buyQty : sellQty
+        let orderValue = orderQty.value() * y1
+        let orderLeverage = orderValue / api.account.balance
+        let orderLeveragedPercent = d3.format('+,.1%')((y2 - y1) / y1 * orderLeverage)
+        orderLeverage = (orderLeverage < 10)
+                ? d3.format('.1~f')(orderLeverage)
+                : d3.format('d')(orderLeverage)
 
         return `<b>${time}</b><br>`
             + `<b>${amount}</b> USDT<br>`
             + `<b>${percentage}</b><br>`
             + `<b>${leveragedPercent}</b> at ${leverage}x<br>`
-            + `<b>${trueLeveragedPercent}</b> at ${trueLeverage}x (position)`
+            + `<b>${trueLeveragedPercent}</b> at ${trueLeverage}x (position)<br>`
+            + `<b>${orderLeveragedPercent}</b> at ${orderLeverage}x (${side} qty)`
     }
 
     _getTimeInterval (milliseconds) {
