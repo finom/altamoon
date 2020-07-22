@@ -9,11 +9,11 @@ module.exports = class AxisLabel {
 
     bottom (xAxis, height) {
         return techan.plot.axisannotation()
-        .axis(xAxis)
-        .orient('bottom')
-        .format(d3.timeFormat('%-d/%-m/%Y %-H:%M:%S'))
-        .width(94)
-        .translate([0, height])
+            .axis(xAxis)
+            .orient('bottom')
+            .format(d3.timeFormat('%-d/%-m/%Y %-H:%M:%S'))
+            .width(94)
+            .translate([0, height])
     }
 
     left (yAxisLeft) {

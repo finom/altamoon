@@ -16,15 +16,15 @@ function updatePnl () {
 }
 
 function updatePositions (positions) {
-    let format = d3.format(',.2f')
-    let formatPercent = d3.format(',.1%')
+    let format = n => nFormat(',.2f', n)
+    let formatPercent = n => nFormat(',.1%', n)
 
     let openPositions = positions.filter(x => x.qty != 0)
 
     let trueLeverage = d => {
         let leverage = d.qty * d.price / api.account.balance
         return (leverage < 10)
-                ? d3.format('.1~f')(leverage)
+                ? nFormat('.1~f', leverage)
                 : Math.floor(leverage) || 0
     }
 
@@ -99,7 +99,7 @@ function updateOrders (orders) {
                 let td = () => row.append('td')
                 td().text(d => d.side)
                 td().text(d => d.qty)
-                td().text(d => d3.format(',.2~f')(d.price))
+                td().text(d => nFormat(',.2~f', d.price))
                 td().text(d => d.filledQty)
                 td().text(d => d.type.toLowerCase())
                 td().text(d => d.stopPrice)
@@ -116,7 +116,7 @@ function updateOrders (orders) {
                 let td = (i) => row.select('td:nth-child(' + i + ')')
                 td(1).text(d => d.side)
                 td(2).text(d => d.qty)
-                td(3).text(d => d3.format(',.2~f')(d.price))
+                td(3).text(d => nFormat(',.2~f', d.price))
                 td(4).text(d => d.filledQty)
                 td(5).text(d => d.type.toLowerCase())
                 td(6).text(d => d.stopPrice)

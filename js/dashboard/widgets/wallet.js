@@ -18,22 +18,22 @@ async function updateWallet (data) {
 
     if(!data) return
 
-    let format = value => d3.format(',.2f')(truncateDecimals(value, 2))
+    let format = value => nFormat(',.2f', truncateDecimals(value, 2))
 
     let pnl = stats.getPnl()
-    let pnlPercent = d3.format(',.1%')(pnl.percent)
+    let pnlPercent = nFormat(',.1%', pnl.percent)
 
     let balance = parseFloat(data.totalWalletBalance)
     let unrealizedBalance = pnl.value + balance
 
     let dailyPnl = await stats.getDailyPnl()
-    let dailyPnlPercent = d3.format(',.1%')(dailyPnl.percent)
+    let dailyPnlPercent = nFormat(',.1%', dailyPnl.percent)
 
     let positionMargin = data.totalPositionInitialMargin
-    let posMarginPercent = d3.format(',.1%')(positionMargin / balance)
+    let posMarginPercent = nFormat(',.1%', positionMargin / balance)
 
     let orderMargin = data.totalOpenOrderInitialMargin
-    let orderMarginPercent = d3.format(',.1%')(orderMargin / balance)
+    let orderMarginPercent = nFormat(',.1%', orderMargin / balance)
 
     data = [
         'Balance: ', format(balance),

@@ -133,14 +133,14 @@ module.exports = class Measurer {
         let orderLeveragedPercent = (y2 - y1) / y1 * orderLeverage
 
         // Formatting
-        amount = d3.format(',.2f')(amount)
-        percentage = d3.format('+,.2%')(percentage)
-        leveragedPercent = d3.format('+,.1%')(leveragedPercent)
+        amount = nFormat(',.2f', amount)
+        percentage = nFormat('+,.2%', percentage)
+        leveragedPercent = nFormat('+,.1%', leveragedPercent)
 
-        trueLeveragedPercent = d3.format('+,.1%')(trueLeveragedPercent)
+        trueLeveragedPercent = nFormat('+,.1%', trueLeveragedPercent)
         trueLeverage = this._formatLeverage(trueLeverage)
 
-        orderLeveragedPercent = d3.format('+,.1%')(orderLeveragedPercent)
+        orderLeveragedPercent = nFormat('+,.1%', orderLeveragedPercent)
         orderLeverage = this._formatLeverage(orderLeverage)
 
         return `<b>${time}</b><br>`
@@ -169,7 +169,7 @@ module.exports = class Measurer {
 
     _formatLeverage (leverage) {
         return (leverage < 10)
-                ? d3.format('.1~f')(leverage)
-                : d3.format('d')(leverage)
+                ? nFormat('.1~f', leverage)
+                : nFormat('d', leverage)
     }
 }

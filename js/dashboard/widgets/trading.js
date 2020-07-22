@@ -158,7 +158,7 @@ function updateDollarValue (side, price){
         qty[side] = eval(side + 'Qty').property('value')
 
     let dollarValue = qty[side] * price
-    dollarValue = d3.format(',d')(dollarValue)
+    dollarValue = nFormat(',d', dollarValue)
 
     eval(side + 'DollarValue')
         .text('± ' + dollarValue + ' ₮')
@@ -196,8 +196,8 @@ function updateMarginCost (side, price) {
 
     let margin = getMarginCost(side, price)
     let percentage = margin / api.account.balance
-    margin = d3.format(',.2f')(margin)
-    percentage = d3.format(',.1%')(percentage || 0)
+    margin = nFormat(',.2f', margin)
+    percentage = nFormat(',.1%', percentage || 0)
 
 
     d3.select('#trading .' + side +  ' .margin .val')
@@ -224,8 +224,8 @@ function updateFee (side, price) {
     let fee = stats.getFee(qty[side] * price, orderType())
     let percentage = fee / api.account.balance
 
-    fee = d3.format(',.2f')(fee)
-    percentage = d3.format(',.1%')(percentage || 0)
+    fee = nFormat(',.2f', fee)
+    percentage = nFormat(',.1%', percentage || 0)
 
     d3.select('#trading .' + side +  ' .fee .val')
         .text(percentage + '  (' + fee + ' ₮)')

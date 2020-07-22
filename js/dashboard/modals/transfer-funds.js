@@ -91,7 +91,7 @@ module.exports = class TransferModal extends Modal {
     _formatMax(max) {
         let currency = ' ' + this._getCurrency()
         this.maxQty = truncateDecimals(max, 2)
-        this.max.html(d3.format(',~f')(this.maxQty) + currency)
+        this.max.html(nFormat(',~f', this.maxQty) + currency)
 
         this._checkQty()
     }
