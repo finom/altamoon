@@ -3,6 +3,7 @@
 let _exchangeInfo = {}
 let _account = {}
 let _positions = []
+let _position = {}
 let _openOrders = []
 let _lastTrade = {}
 let _lastPrice
@@ -16,6 +17,9 @@ module.exports = {
 
     get positions() { return _positions },
     set positions(value) { _positions = value },
+
+    get position() { return _position },
+    set position(value) { _position = value },
 
     get openOrders() { return _openOrders },
     set openOrders(value) { _openOrders = value },

@@ -139,34 +139,34 @@ function updateOrders () {
     updateLiquidation()
 }
 
-function updatePosition (d) {
-    d = d.filter(x => x.symbol === SYMBOL)[0]
+function updatePosition () {
+    let p = api.position
 
-    let qty = Math.abs(d.qty)
+    let qty = Math.abs(p.qty)
 
     // Remove other side if existing
-    let otherSide = d.side === 'buy' ? 'sell' : 'buy'
+    let otherSide = p.side === 'buy' ? 'sell' : 'buy'
     position[otherSide] = undefined
 
     // Calculate margin from liquidation, qty and price, because Binance
     // peeps are unable to provide the proper margin nor leverage values.
     // -------------------------------------------------------------------------
-    let direction = { buy: 1, sell: -1}[d.side]
-    let positionValue = qty * d.price * direction
+    let direction = { buy: 1, sell: -1}[p.side]
+    let positionValue = qty * p.price * direction
 
     let maintenance
     for (let y of maintenanceTable)
-        if (qty * d.price < y[0] * 1000) {
+        if (qty * p.price < y[0] * 1000) {
             maintenance = { rate: y[1], amount: y[2] }
             break
         }
 
-    let margin = d.liquidation * qty * (maintenance.rate - direction)
+    let margin = p.liquidation * qty * (maintenance.rate - direction)
             - maintenance.amount + positionValue
     // -------------------------------------------------------------------------
 
-    position[d.side] = {
-        price: +d.price,
+    position[p.side] = {
+        price: +p.price,
         qty: qty,
         margin: margin
     }

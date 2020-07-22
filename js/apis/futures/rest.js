@@ -105,7 +105,7 @@ module.exports = class Rest {
     getPosition () {
         this.lib.futuresPositionRisk()
             .then(response => {
-                cache.positions = response.map(p => { return {
+                let positions = response.map(p => { return {
                     leverage: p.leverage,
                     liquidation: p.liquidationPrice,
                     margin: p.isolatedMargin,
@@ -117,6 +117,8 @@ module.exports = class Rest {
                     side: (p.positionAmt >= 0) ? 'buy' : 'sell',
                     symbol: p.symbol
                 } })
+                cache.positions = positions
+                cache.position = positions .filter(x => x.symbol === SYMBOL)[0]
                 events.emit('api.positionUpdate', cache.positions)
             })
             .catch(err => console.error(err))

@@ -57,9 +57,9 @@ module.exports = class UserData {
     }
 
     _positionUpdate (data) {
-        let positions = data.a.P
+        let updatedPositions = data.a.P
 
-        positions.forEach(p => {
+        updatedPositions.forEach(p => {
             let i = cache.positions.findIndex(x => x.symbol === p.s)
             if (i === -1)
                 i = cache.positions.push({}) - 1

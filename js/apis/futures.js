@@ -28,6 +28,9 @@ class ApiFutures {
     get positions() { return cache.positions }
     set positions(value) { cache.positions = value }
 
+    get position() { return cache.position }
+    set position(value) { cache.position = value }
+
     get openOrders() { return cache.openOrders }
     set openOrders(value) { cache.openOrders = value }
 

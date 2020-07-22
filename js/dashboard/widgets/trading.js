@@ -77,8 +77,7 @@ function onOrderTypeChanged () {
 //   LEVERAGE
 // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 function updateLeverage (d) {
-    let position = d.filter(x => x.symbol == SYMBOL)[0]
-    leverage = position.leverage
+    leverage = api.position.leverage
     leverageInput.property('value', leverage)
     leverageOutput.property('value', leverage)
 

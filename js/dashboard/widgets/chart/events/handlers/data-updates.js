@@ -1,4 +1,5 @@
 'use strict'
+const api = require('../../../../../apis/futures')
 const stats = require('../../../../../data/stats')
 
 module.exports = class DataUpdateHandlers {
@@ -62,11 +63,11 @@ module.exports = class DataUpdateHandlers {
         }
     }
 
-    updatePosition (positions) {
+    updatePosition () {
         let liquidationLineData = this.data.liquidationLine
         let positionLineData = this.data.positionLine
 
-        let position = positions.filter(x => x.symbol === SYMBOL)[0]
+        let position = api.position
         let i = liquidationLineData.findIndex(x => x.type === 'real')
 
         if (position.qty && position.liquidation) {
@@ -84,7 +85,7 @@ module.exports = class DataUpdateHandlers {
         this.chart.draw()
     }
 
-    async updateBreakEven (positions) {
+    async updateBreakEven () {
         let breakEven = await stats.getBreakEven(SYMBOL)
         let lineData = this.data.breakEvenLine
         lineData.length = 0
