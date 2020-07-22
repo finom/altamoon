@@ -4,7 +4,11 @@ const { config } = require('../../config')
 const stats = require('../../data/stats')
 const { parseInputNumber } = require('../../snippets')
 
-module.exports = { onBuy, onSell, getMarginCost }
+module.exports = {
+    onBuy, onSell, getMarginCost,
+    get buyQty () { return buyQty},
+    get sellQty () { return sellQty}
+}
 
 // HTML nodes
 let leverageInput = d3.select('[name="leverageInput"]')
