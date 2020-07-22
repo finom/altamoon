@@ -45,6 +45,7 @@ module.exports = class Toolbar {
         api.getCandles({interval: interval})
         events.once('api.candlesUpdate', () => {
             this.chart.draw()
+            this.chart.plot.draw(this.chart.data.candles, true)
             this.chart.svg.call(this.chart.zoom.translateBy, 0)
         })
     }
