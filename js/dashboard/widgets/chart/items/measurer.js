@@ -116,28 +116,32 @@ module.exports = class Measurer {
 
         let time = this._getTimeInterval(Math.abs(x2 - x1))
 
-        let amount = d3.format(',.2f')(y2 - y1)
+        let amount = y2 - y1
 
-        let percentage = d3.format('+,.2%')((y2 - y1) / y1)
+        let percentage = (y2 - y1) / y1
 
-        let position = api.positions.filter(x => x.symbol === SYMBOL)[0]
-        let leverage = position.leverage || 1
-        let leveragedPercent = d3.format('+,.1%')((y2 - y1) / y1 * leverage)
+        let leverage = api.position.leverage || 1
+        let leveragedPercent = (y2 - y1) / y1 * leverage
 
-        let trueLeverage = position.baseValue / api.account.balance
-        let trueLeveragedPercent = d3.format('+,.1%')((y2 - y1) / y1 * trueLeverage)
-        trueLeverage = (trueLeverage < 10)
-                ? d3.format('.1~f')(trueLeverage)
-                : d3.format('d')(trueLeverage)
+        let trueLeverage = api.position.baseValue / api.account.balance
+        let trueLeveragedPercent = (y2 - y1) / y1 * trueLeverage
 
         let side = (y2 >= y1) ? 'buy' : 'sell'
         let orderQty = (y2 >= y1) ? buyQty : sellQty
         let orderValue = orderQty.value() * y1
         let orderLeverage = orderValue / api.account.balance
-        let orderLeveragedPercent = d3.format('+,.1%')((y2 - y1) / y1 * orderLeverage)
-        orderLeverage = (orderLeverage < 10)
-                ? d3.format('.1~f')(orderLeverage)
-                : d3.format('d')(orderLeverage)
+        let orderLeveragedPercent = (y2 - y1) / y1 * orderLeverage
+
+        // Formatting
+        amount = d3.format(',.2f')(amount)
+        percentage = d3.format('+,.2%')(percentage)
+        leveragedPercent = d3.format('+,.1%')(leveragedPercent)
+
+        trueLeveragedPercent = d3.format('+,.1%')(trueLeveragedPercent)
+        trueLeverage = this._formatLeverage(trueLeverage)
+
+        orderLeveragedPercent = d3.format('+,.1%')(orderLeveragedPercent)
+        orderLeverage = this._formatLeverage(orderLeverage)
 
         return `<b>${time}</b><br>`
             + `<b>${amount}</b> USDT<br>`
@@ -161,5 +165,11 @@ module.exports = class Measurer {
         return (days ? days + 'd ' : '')
             + (hours ? hours + 'h ' : '')
             + (minutes ? minutes + 'm' : '')
+    }
+
+    _formatLeverage (leverage) {
+        return (leverage < 10)
+                ? d3.format('.1~f')(leverage)
+                : d3.format('d')(leverage)
     }
 }
