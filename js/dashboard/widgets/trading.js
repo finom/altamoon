@@ -192,7 +192,7 @@ function updateMarginCost (side, price) {
         price = eval(side + 'Price').property('value')
 
     let margin = getMarginCost(side, price)
-    let percentage = margin / api.account.totalWalletBalance
+    let percentage = margin / api.account.balance
     margin = d3.format(',.2f')(margin)
     percentage = d3.format(',.1%')(percentage || 0)
 
@@ -219,7 +219,7 @@ function updateFee (side, price) {
         qty[side] = eval(side + 'Qty').property('value')
 
     let fee = stats.getFee(qty[side] * price, orderType())
-    let percentage = fee / api.account.totalWalletBalance
+    let percentage = fee / api.account.balance
 
     fee = d3.format(',.2f')(fee)
     percentage = d3.format(',.1%')(percentage || 0)

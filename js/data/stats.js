@@ -45,7 +45,7 @@ function getPnl (symbol = SYMBOL) {
     let pnl = (price - entryPrice) / entryPrice * baseValue - fee
     return {
         value: pnl || 0,
-        percent: pnl / api.account.totalWalletBalance || 0
+        percent: pnl / api.account.balance || 0
     }
 }
 
@@ -53,7 +53,7 @@ let timer
 let incomeHistory = []
 
 async function getDailyPnl (symbol = SYMBOL) {
-    let currentBalance = api.account.totalWalletBalance
+    let currentBalance = api.account.balance
 
     // Throttle api calls
     if (!timer || Date.now() > timer + 5 * 1000) {

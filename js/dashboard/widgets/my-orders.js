@@ -22,7 +22,7 @@ function updatePositions (positions) {
     let openPositions = positions.filter(x => x.qty != 0)
 
     let trueLeverage = d => {
-        let leverage = d.qty * d.price / api.account.totalWalletBalance
+        let leverage = d.qty * d.price / api.account.balance
         return (leverage < 10)
                 ? d3.format('.1~f')(leverage)
                 : Math.floor(leverage) || 0

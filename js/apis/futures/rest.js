@@ -58,6 +58,7 @@ module.exports = class Rest {
     getAccount () {
         this.lib.futuresAccount()
             .then(response => {
+                response.balance = response.totalWalletBalance // Add alias
                 cache.account = response
                 events.emit('api.balancesUpdate', response)
             })

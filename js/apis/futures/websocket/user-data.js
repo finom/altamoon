@@ -48,9 +48,12 @@ module.exports = class UserData {
     }
 
     _balancesUpdate (data) {
-        if (cache.account.totalWalletBalance != data.a.B[0].wb)
+        if (cache.account.balance != data.a.B[0].wb) {
+            cache.account.balance = data.a.B[0].wb
+            events.emit('api.balancesUpdate', cache.account)
             // Get full data from Rest Api
             this.rest.getAccount()
+        }
     }
 
     _positionUpdate (data) {
@@ -65,7 +68,7 @@ module.exports = class UserData {
                 margin: p.iw,
                 marginType: p.mt,
                 price: p.ep,
-                value: p.ep, // synonym, for feeding to techan.substance
+                value: p.ep, // Alias, for feeding to techan.substance
                 qty: p.pa,
                 side: (p.pa >= 0) ? 'buy' : 'sell',
                 symbol: p.s
@@ -83,7 +86,7 @@ module.exports = class UserData {
             clientID: o.c,
             filledQty: o.z,
             price: o.p,
-            value: o.p, // synonym, for feeding to techan.supstance
+            value: o.p, // Alias, for feeding to techan.supstance
             qty: o.q,
             baseValue: o.q * o.p,
             reduceOnly: o.R,
