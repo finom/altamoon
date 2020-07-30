@@ -1,5 +1,6 @@
 'use strict'
 const api = require('../../../../apis/futures')
+const { config } = require('../../../../config')
 
 module.exports = class Toolbar {
 
@@ -8,45 +9,33 @@ module.exports = class Toolbar {
         this.div = chart.container.append('div')
                 .class('toolbar')
 
-        this._addHtml()
-        this._addListeners()
+        this._addIntervalSelector()
     }
 
-    _addHtml () {
-        this.div.html(`
-            <select class="interval">
-                <option value="1m">1m</option>
-                <option value="3m">3m</option>
-                <option value="5m">5m</option>
-                <option value="15m">15m</option>
-                <option value="30m">30m</option>
-                <option value="1h">1h</option>
-                <option value="2h">2h</option>
-                <option value="4h">4h</option>
-                <option value="6h">6h</option>
-                <option value="12h">12h</option>
-                <option value="1d">1d</option>
-                <option value="3d">3d</option>
-                <option value="1w">1w</option>
-                <option value="1M">1M</option>
-            </input>
-        `)
+    _addIntervalSelector () {
+        let intervals = ['1m','3m','5m', '15m','30m','1h', '2h','4h','6h', '12h','1d']
 
-        this.interval = this.div.select('.interval')
-    }
+        let savedValue = config.get('chart.interval')
 
-    _addListeners () {
-        this.interval.on('change', () => this._changeInterval(event.target.value))
-    }
+        this.interval = this.div.append('div')
+            .class('interval')
 
-    _changeInterval (interval) {
-        api.terminateStream('kline')
-        api.streamLastCandle(interval)
-        api.getCandles({interval: interval})
-        events.once('api.candlesUpdate', () => {
-            this.chart.draw()
-            this.chart.plot.draw(this.chart.data.candles, true)
-            this.chart.svg.call(this.chart.zoom.translateBy, 0)
-        })
+        this.interval.selectAll('span')
+            .data(intervals)
+            .join(enter => {
+                    let span = enter.append('span')
+
+                    span.append('input')
+                        .attr('type', 'radio')
+                        .attr('name', 'interval')
+                        .property('checked', d => d === savedValue)
+                        .id(d => 'interval-' + d)
+
+                    span.append('label')
+                        .attr('for', d => 'interval-' + d)
+                        .html(d => d)
+                        .on('click', d => this.chart.changeInterval(d))
+                }
+            )
     }
 }

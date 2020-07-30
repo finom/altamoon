@@ -2,6 +2,7 @@
 require ('../globals')
 const settings = require('../../user/settings')
 const api = require('../apis/futures')
+const { config } = require('../config')
 
 const Gridstack = require('./gridstack')
 
@@ -23,7 +24,7 @@ api.getPosition()
 api.getOpenOrders()
 api.getAccount()
 // Open websocket streams
-api.streamLastCandle()
+api.streamLastCandle(config.get('chart.interval'))
 api.streamLastTrade()
 api.streamUserData()
 api.streamBidAsk()

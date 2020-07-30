@@ -1,5 +1,6 @@
 'use strict'
 const api = require('../../../apis/futures')
+const { config } = require('../../../config')
 
 const Toolbar = require('./items/toolbar')
 const Svg = require('./items/svg')
@@ -140,7 +141,7 @@ module.exports = class Chart {
     }
 
     _fetchData () {
-        api.getCandles({interval: '1m'})
+        api.getCandles({interval: config.get('chart.interval')})
         api.getPosition()
         api.getOpenOrders()
     }
@@ -206,6 +207,20 @@ module.exports = class Chart {
             this.draw()
             this.svg.call(this.zoom.translateBy, 0) // Pan chart
         }
+    }
+
+    changeInterval (interval) {
+        config.set('chart.interval', interval)
+
+        api.terminateStream('kline')
+        api.streamLastCandle(interval)
+        api.getCandles({interval: interval})
+
+        events.once('api.candlesUpdate', () => {
+            this.draw()
+            this.plot.draw(this.data.candles, true)
+            this.svg.call(this.zoom.translateBy, 0)
+        })
     }
 
     _calcXDomain() {

@@ -19,6 +19,16 @@ const schema = {
         },
         default: {} // See https://github.com/sindresorhus/electron-store/issues/102
     },
+    chart: {
+        type: 'object',
+        properties: {
+            interval: {
+                type: 'string',
+                default: '1h'
+            },
+        },
+        default: {}
+    },
     order: {
         type: 'object',
         properties: {
