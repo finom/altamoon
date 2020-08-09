@@ -15,10 +15,10 @@ function smoozCandles (
 
     for (let i = startIndex; i < candles.length; i++) {
         let { open, close, high, low, date, volume } = candles[i]
-        let last = newCandles[i - 1]
+        let previous = newCandles[i - 1]
 
-        let newOpen = (last)
-            ? (last.open + last.close) / 2
+        let newOpen = (previous)
+            ? (previous.open + previous.close) / 2
             : (open + close) / 2
         let newClose = (open + close + high + low) / 4
 
@@ -30,7 +30,7 @@ function smoozCandles (
             ? Math.max(newOpen, low)
             : Math.min(newOpen, high)
 
-        // Keep last candle close as standard (to visually keep track of last price)
+        // Keep last candle close as vanilla (to visually keep track of price)
         if (i === candles.length - 1) {
             newClose = close
         }
@@ -45,11 +45,16 @@ function smoozCandles (
             volume: volume
         }
 
-        // Adjust close of last candle, we don't want gaps
-        if (last)
-            last.close = (last.direction === 'up')
-                ? Math.max(last.close, newOpen)
-                : Math.min(last.close, newOpen)
+        // Adjust close/open of previous candle, we don't want gaps
+        if (previous)
+            if (newDirection === previous.direction)
+                previous.close = (previous.direction === 'up')
+                    ? Math.max(previous.close, newOpen)
+                    : Math.min(previous.close, newOpen)
+            else
+                previous.open = (previous.direction === 'down')
+                    ? Math.max(previous.open, newOpen)
+                    : Math.min(previous.open, newOpen)
     }
     return newCandles
 }
