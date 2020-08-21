@@ -2,22 +2,27 @@
     padding: 0 0 0 0 !important;
 } */
 
-#trades .table {
+#trades table {
+    border-collapse: collapse;
     border-radius: 0px 0px 5px 5px;
     font-size: 0.9em;
-    overflow: hidden;
+    width: 100%;
 }
 
-#trades .row {
-    display: flex;
-    flex-wrap: nowrap;
+#trades th {
+    padding: 4px;
+}
+
+#trades tr {
     padding: 0px 5px;
 }
 
-#trades .row > div {
+#trades td {
     padding: 5px 10px;
+    text-align: right;
 }
-#trades .row > div:not(:last-child) {
+#trades th:not(:last-child),
+#trades td:not(:last-child) {
     border-right: 2px solid #00000012;
 }
 
