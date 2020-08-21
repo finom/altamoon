@@ -70,6 +70,7 @@ module.exports = class UserData {
                 price: p.ep,
                 value: p.ep, // Alias, for feeding to techan.substance
                 qty: p.pa,
+                baseValue: p.pa * p.ep,
                 side: (p.pa >= 0) ? 'buy' : 'sell',
                 symbol: p.s
             })
