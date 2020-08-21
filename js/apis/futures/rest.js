@@ -123,4 +123,29 @@ module.exports = class Rest {
             })
             .catch(err => console.error(err))
     }
+
+    /**
+     * Returns all trades associated with the open position
+     * for @symbol.
+     */
+    async getPositionTrades (symbol = SYMBOL) {
+        let p = cache.positions.filter(x => x.symbol === symbol)[0]
+        let direction = (p.side == "buy") ? 1 : -1
+
+        let trades = await this.lib.futuresUserTrades(symbol)
+
+        let orderSum = 0
+        let i = trades.lastIndex
+
+        for (i; i >= 0 ; i--) {
+            let orderDirection = (trades[i].side == "BUY") ? 1 : -1
+            orderSum += orderDirection * trades[i].qty
+
+            if (direction * (p.qty - orderSum) <= 0)
+                break
+        }
+        trades = trades.slice(i, trades.length)
+
+        return trades
+    }
 }

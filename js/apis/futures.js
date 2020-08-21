@@ -46,6 +46,7 @@ class ApiFutures {
     getExchangeInfo = () => rest.getExchangeInfo()
     getOpenOrders = () => rest.getOpenOrders()
     getPosition = () => rest.getPosition()
+    getPositionTrades = () => rest.getPositionTrades()
 
     // PUT methods
     cancelOrder = (id) => rest.cancelOrder(id)

@@ -29,6 +29,8 @@ async function updateWallet (data) {
     let dailyPnl = await stats.getDailyPnl()
     let dailyPnlPercent = nFormat(',.1%', dailyPnl.percent)
 
+    let dailyBreakEven = await stats.getDailyBreakEven()
+
     let positionMargin = data.totalPositionInitialMargin
     let posMarginPercent = nFormat(',.1%', positionMargin / balance)
 
@@ -40,6 +42,7 @@ async function updateWallet (data) {
         'Equity: ', format(unrealizedBalance),
         'Unrealized PNL: ', format(pnl.value) + ' (' + pnlPercent + ')',
         'Daily PNL: ', format(dailyPnl.value) + ' (' + dailyPnlPercent + ')',
+        'Daily break-even: ', format(dailyBreakEven),
         'Position margin: ', format(positionMargin) + ' (' + posMarginPercent + ')',
         'Order margin: ', format(orderMargin) + ' (' + orderMarginPercent + ')',
     ]

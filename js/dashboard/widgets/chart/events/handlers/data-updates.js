@@ -85,11 +85,15 @@ module.exports = class DataUpdateHandlers {
         this.chart.draw()
     }
 
-    async updateBreakEven () {
-        let breakEven = await stats.getBreakEven(SYMBOL)
-        let lineData = this.data.breakEvenLine
-        lineData.length = 0
-        if (breakEven) lineData.push({ value: breakEven })
+    updateBreakEven () {
+        stats.getBreakEven(SYMBOL)
+            .then(breakEven => {
+                let lineData = this.data.breakEvenLine
+
+                lineData.length = 0
+                if (breakEven) lineData.push({ value: breakEven })
+                this.chart.draw()
+            })
     }
 
     updateDraft (qty, side) {

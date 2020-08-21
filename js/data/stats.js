@@ -1,25 +1,7 @@
 'use strict'
 const api = require('../apis/futures')
 
-module.exports = { getFee, getBreakEven, getPnl, getDailyPnl }
-
-async function getBreakEven (symbol = SYMBOL) {
-    let position = api.positions.filter(x => x.symbol === symbol)[0]
-
-    if (!position || position.qty == 0)
-        return 0
-
-    let qty = position.qty
-    let entryPrice = +position.price
-    let baseValue = +position.baseValue
-    let fee = getFee(qty, 'limit')
-    let dailyPnl = await getDailyPnl(symbol)
-    dailyPnl = dailyPnl.value
-
-    let breakEven = ((fee - dailyPnl) / baseValue * entryPrice) + entryPrice
-
-    return breakEven
-}
+module.exports = { getFee, getBreakEven, getPnl, getDailyPnl, getDailyBreakEven }
 
 function getFee (qty, type = 'limit') {
     let feeTier = api.account.feeTier || 0
@@ -111,4 +93,44 @@ async function getDailyPnl (symbol = SYMBOL) {
         value: totalPnl,
         percent: percent
     }
+}
+
+async function getBreakEven (symbol = SYMBOL) {
+    let position = api.positions.filter(x => x.symbol === symbol)[0]
+
+    if (!position || position.qty == 0)
+        return 0
+
+    let trades = await api.getPositionTrades(symbol)
+
+    let entryPrice = +position.price
+    let baseValue = +position.baseValue
+
+    let pnl = 0
+    trades.forEach(x => pnl += +x.realizedPnl)
+
+    let fees = 0
+    trades.forEach(x => fees += +x.commission)
+    fees += getFee(Math.abs(baseValue)) // position closing fee
+
+    let breakEven = entryPrice * (fees - pnl) / baseValue + entryPrice
+
+    return breakEven
+}
+
+async function getDailyBreakEven (symbol = SYMBOL) {
+    let position = api.positions.filter(x => x.symbol === symbol)[0]
+
+    if (!position || position.qty == 0)
+        return 0
+
+    let entryPrice = +position.price
+    let baseValue = +position.baseValue
+    let fee = getFee(Math.abs(baseValue))
+    let dailyPnl = await getDailyPnl(symbol)
+    dailyPnl = dailyPnl.value
+
+    let breakEven = entryPrice * (fee - dailyPnl) / baseValue + entryPrice
+
+    return breakEven
 }
