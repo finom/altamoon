@@ -85,7 +85,7 @@ module.exports = class Rest {
                     clientID: o.clientOrderId,
                     filledQty: o.executedQty,
                     price: o.price,
-                    value: o.price, // synonym, for feeding to techan.substance
+                    value: o.price, // synonym, for techan.substance
                     qty: o.origQty,
                     reduceOnly: o.reduceOnly,
                     side: o.side.toLowerCase(),
@@ -106,13 +106,13 @@ module.exports = class Rest {
         this.lib.futuresPositionRisk()
             .then(response => {
                 let positions = response.map(p => { return {
-                    leverage: p.leverage,
-                    liquidation: p.liquidationPrice,
-                    margin: p.isolatedMargin,
+                    leverage: +p.leverage,
+                    liquidation: +p.liquidationPrice,
+                    margin: +p.isolatedMargin,
                     marginType: p.marginType,
-                    price: p.entryPrice,
-                    value: p.entryPrice, // synonym, for feeding to techan.substance
-                    qty: p.positionAmt,
+                    price: +p.entryPrice,
+                    value: +p.entryPrice, // synonym, for techan.substance
+                    qty: +p.positionAmt,
                     baseValue: p.positionAmt * p.entryPrice,
                     side: (p.positionAmt >= 0) ? 'buy' : 'sell',
                     symbol: p.symbol
