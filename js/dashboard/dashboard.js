@@ -7,8 +7,8 @@ const { config } = require('../config')
 const Gridstack = require('./gridstack')
 
 const Chart = require('./widgets/chart/chart')
-const trading = require('./widgets/trading')
 const book = require('./widgets/book')
+require('./widgets/trading/trading')
 require('./widgets/my-orders')
 require('./widgets/wallet')
 require('./widgets/trades')
@@ -30,9 +30,6 @@ api.streamUserData()
 api.streamBidAsk()
 api.streamBook()
 book.updateBook()
-
-// Inputs
-d3.selectAll('.num-input').on('input', trading.parseNumber)
 
 // Inject custom CSS
 for (let url of settings.customCss) {

@@ -1,6 +1,6 @@
 'use strict'
 const api = require('../../../../apis/futures')
-const { buyQty, sellQty } = require('../../trading')
+const trading = require('../../trading/trading')
 
 
 module.exports = class Measurer {
@@ -127,7 +127,9 @@ module.exports = class Measurer {
         let trueLeveragedPercent = (y2 - y1) / y1 * trueLeverage
 
         let side = (y2 >= y1) ? 'buy' : 'sell'
-        let orderQty = (y2 >= y1) ? buyQty : sellQty
+        let orderQty = (y2 >= y1)
+                ? trading.buyQty
+                : trading.sellQty
         let orderValue = orderQty.value() * y1
         let orderLeverage = orderValue / api.account.balance
         let orderLeveragedPercent = (y2 - y1) / y1 * orderLeverage
