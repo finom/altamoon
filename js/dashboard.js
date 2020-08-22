@@ -1,18 +1,18 @@
 'use strict'
-require ('../globals')
-const settings = require('../../user/settings')
-const api = require('../apis/futures')
-const { config } = require('../config')
+require ('./globals')
+const settings = require('../user/settings')
+const api = require('./apis/futures')
+const { config } = require('./config')
 
-const Gridstack = require('./gridstack')
+const Gridstack = require('./dashboard/gridstack')
 
-const Chart = require('./widgets/chart')
-const book = require('./widgets/book')
-require('./widgets/trading')
-require('./widgets/my-orders')
-require('./widgets/wallet')
-require('./widgets/last-trades')
-require('../data/liquidation')
+const Chart = require('./dashboard/widgets/chart')
+const book = require('./dashboard/widgets/book')
+require('./dashboard/widgets/trading')
+require('./dashboard/widgets/my-orders')
+require('./dashboard/widgets/wallet')
+require('./dashboard/widgets/last-trades')
+require('./data/liquidation')
 
 // Draw chart
 new Gridstack('#main-grid')
