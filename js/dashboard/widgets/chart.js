@@ -1,19 +1,19 @@
 'use strict'
-const api = require('../../../apis/futures')
-const { config } = require('../../../config')
+const api = require('../../apis/futures')
+const { config } = require('../../config')
 
-const Toolbar = require('./items/toolbar')
-const Svg = require('./items/svg')
-const Axes = require('./items/axes')
-const ClipPath = require('./items/clip-path')
-const Crosshair = require('./items/crosshair')
-const GridLines = require('./items/grid-lines')
-const Lines = require('./items/lines')
-const LineLabels = require('./items/line-labels')
-const Measurer = require('./items/measurer')
-const Plot = require('./plot/plot')
+const Toolbar = require('./chart/items/toolbar')
+const Svg = require('./chart/items/svg')
+const Axes = require('./chart/items/axes')
+const ClipPath = require('./chart/items/clip-path')
+const Crosshair = require('./chart/items/crosshair')
+const GridLines = require('./chart/items/grid-lines')
+const Lines = require('./chart/items/lines')
+const LineLabels = require('./chart/items/line-labels')
+const Measurer = require('./chart/items/measurer')
+const Plot = require('./chart/plot/plot')
 
-const Listeners = require('./events/listeners')
+const Listeners = require('./chart/events/listeners')
 
 
 module.exports = class Chart {

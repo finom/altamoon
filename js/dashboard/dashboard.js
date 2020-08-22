@@ -6,12 +6,12 @@ const { config } = require('../config')
 
 const Gridstack = require('./gridstack')
 
-const Chart = require('./widgets/chart/chart')
+const Chart = require('./widgets/chart')
 const book = require('./widgets/book')
-require('./widgets/trading/trading')
+require('./widgets/trading')
 require('./widgets/my-orders')
 require('./widgets/wallet')
-require('./widgets/trades')
+require('./widgets/last-trades')
 require('../data/liquidation')
 
 // Draw chart

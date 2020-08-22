@@ -1,6 +1,6 @@
 'use strict'
 const api = require('../../../../../apis/futures')
-const trading = require('../../../trading/trading')
+const trading = require('../../../trading')
 
 module.exports = class DraftOrderHandlers {
 

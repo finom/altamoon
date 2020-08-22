@@ -1,8 +1,8 @@
 'use strict'
-const api = require('../../../apis/futures')
-const { config } = require('../../../config')
-const stats = require('../../../data/stats')
-const { parseInputNumber } = require('../../../snippets')
+const api = require('../../apis/futures')
+const { config } = require('../../config')
+const stats = require('../../data/stats')
+const { parseInputNumber } = require('../../snippets')
 
 
 class Trading {
