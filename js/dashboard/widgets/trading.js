@@ -37,8 +37,8 @@ class Trading {
                    .on('wheel', () => this.increment('buy'))
         this.sellQty.on('input', () => this.onInputQty('sell'))
                     .on('wheel', () => this.increment('sell'))
-        this.buyBtn.on('click', this.onBuy.bind(this))
-        this.sellBtn.on('click', this.onSell.bind(this))
+        this.buyBtn.on('click', () => this.onBuySell('buy'))
+        this.sellBtn.on('click', () => this.onBuySell('sell'))
 
         events.on('api.positionUpdate', this.updateLeverage.bind(this))
         events.on('chart.draftOrderMoved', this.updatePrice.bind(this))
@@ -47,8 +47,12 @@ class Trading {
         events.on('api.priceUpdate', this.updateMarketFee.bind(this))
 
         // Submit buy/sell on Enter key
-        this.buyQty.on('keyup', () => { if (event.keyCode === 13) this.onBuy() })
-        this.sellQty.on('keyup', () => { if (event.keyCode === 13) this.onSell() })
+        this.buyQty.on('keyup', () => {
+            if (event.keyCode === 13) this.onBuySell('buy')
+        })
+        this.sellQty.on('keyup', () => {
+            if (event.keyCode === 13) this.onBuySell('sell')
+        })
 
         // ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
         //   OPTIONS
@@ -256,48 +260,35 @@ class Trading {
     }
 
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    //   BUY
+    //   BUY / SELL
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    onBuy (type) {
-        let price = parseFloat(this.buyPrice.property('value'))
-        let qty = parseFloat(this.buyQty.property('value'))
-        type = type | this.orderType()
+    onBuySell (side, type) {
+        let priceInput = this.buyPrice
+        let qtyInput = this.buyQty
+        let marketOrder = api.lib.futuresMarketBuy
+        let order = api.lib.futuresBuy
 
-        if (qty <= 0) return
-
-        if (type == 'market') {
-            api.lib.futuresMarketBuy(SYMBOL, qty, {
-                    'reduceOnly': this.reduceOnly().toString()
-                })
-                .catch(error => console.error(error))
-        }
-        else if (price > 0) {
-            api.lib.futuresBuy(SYMBOL, qty, price, {
-                    'timeInForce': (this.makerOnly()) ? 'GTX' : 'GTC',
-                    'reduceOnly': this.reduceOnly().toString()
-                })
-                .catch(error => console.error(error))
-        }
+        if (side === 'sell') {
+            priceInput = this.sellPrice
+            qtyInput = this.sellQty
+            marketOrder = api.lib.futuresMarketSell
+            order = api.lib.futuresSell
     }
 
-    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    //   SELL
-    // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    onSell (type) {
-        let price = parseFloat(this.sellPrice.property('value'))
-        let qty = parseFloat(this.sellQty.property('value'))
-        type = type | this.orderType()
+        let price = parseFloat(priceInput.property('value'))
+        let qty = parseFloat(qtyInput.property('value'))
+        type = type || this.orderType()
 
         if (qty <= 0) return
 
         if (type == 'market') {
-            api.lib.futuresMarketSell(SYMBOL, qty, {
+            marketOrder(SYMBOL, qty, {
                     'reduceOnly': this.reduceOnly().toString()
                 })
                 .catch(error => console.error(error))
         }
         else if (price > 0) {
-            api.lib.futuresSell(SYMBOL, qty, price, {
+            order(SYMBOL, qty, price, {
                     'timeInForce': (this.makerOnly()) ? 'GTX' : 'GTC',
                     'reduceOnly': this.reduceOnly().toString()
                 })

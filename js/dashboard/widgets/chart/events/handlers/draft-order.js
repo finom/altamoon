@@ -48,10 +48,6 @@ module.exports = class DraftOrderHandlers {
 
         this.chart.draw()
 
-        let order = (d.side === 'buy')
-            ? () => trading.onBuy('limit')
-            : () => trading.onSell('limit')
-
-        order()
+        trading.onBuySell(d.side, 'limit')
     }
 }
