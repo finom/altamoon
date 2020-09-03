@@ -141,7 +141,7 @@ module.exports = class Rest {
             let orderDirection = (trades[i].side == "BUY") ? 1 : -1
             orderSum += orderDirection * trades[i].qty
 
-            if (direction * (p.qty - orderSum) <= 0)
+            if (direction * (p.qty - orderSum) <= 0.001)
                 break
         }
         trades = trades.slice(i, trades.length)

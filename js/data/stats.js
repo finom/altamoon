@@ -114,7 +114,6 @@ async function getBreakEven (symbol = SYMBOL) {
     fees += getFee(Math.abs(baseValue)) // position closing fee
 
     let breakEven = entryPrice * (fees - pnl) / baseValue + entryPrice
-
     return breakEven
 }
 
