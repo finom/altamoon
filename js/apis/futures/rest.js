@@ -141,6 +141,7 @@ module.exports = class Rest {
             let orderDirection = (trades[i].side == "BUY") ? 1 : -1
             orderSum += orderDirection * trades[i].qty
 
+            // Fixme: find proper fix for the very small values
             if (direction * (p.qty - orderSum) <= 0.001)
                 break
         }
