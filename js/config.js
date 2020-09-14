@@ -32,7 +32,11 @@ const schema = {
     order: {
         type: 'object',
         properties: {
-            makerOnly: {
+            reduceOnly: {
+                type: 'boolean',
+                default: false
+            },
+            postOnly: {
                 type: 'boolean',
                 default: true
             },

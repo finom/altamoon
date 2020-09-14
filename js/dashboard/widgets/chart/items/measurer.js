@@ -128,8 +128,8 @@ module.exports = class Measurer {
 
         let side = (y2 >= y1) ? 'buy' : 'sell'
         let orderQty = (y2 >= y1)
-                ? trading.buyQty
-                : trading.sellQty
+                ? trading.order.buyQty
+                : trading.order.sellQty
         let orderValue = orderQty.value() * y1
         let orderLeverage = orderValue / api.account.balance
         let orderLeveragedPercent = (y2 - y1) / y1 * orderLeverage

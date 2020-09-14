@@ -58,12 +58,12 @@
 /*
     Leverage
 */
-#trading .leverage {
+#order .leverage {
     margin: 10px;
     margin-bottom: 15px;
     text-align: center;
 }
-#trading .leverage input  {
+#order .leverage input  {
     width: 65%;
     cursor: pointer;
 }
@@ -71,14 +71,14 @@
 /*
     Input fields
 */
-#trading .buy input {
+#order .buy input {
     color: #71e8a2;
 }
-#trading .sell input {
+#order .sell input {
     color: #bca0ff;
 }
 
-#trading .dollar-qty {
+#order .dollar-qty {
     font-size: .8em;
     color: #ffffff6e;
 }
@@ -86,7 +86,7 @@
 /*
     Margin cost
 */
-#trading .margin {
+#order .margin {
     font-size: .8em;
     margin-left: 9px;
 }
@@ -94,11 +94,11 @@
 /*
     Fee
 */
-#trading .fee {
+#order .fee {
     font-size: .8em;
     margin-left: 9px;
 }
-#trading .fee .val {
+#order .fee .val {
     /* font-weight: bold; */
     color: #ffffff9a;
 }
@@ -106,7 +106,7 @@
 /*
     Buy/Sell buttons
 */
-#trading button {
+#order button {
     border: 2px solid #333;
     border-left: 2px solid #404040;
     border-top: 2px solid #404040;
@@ -121,17 +121,17 @@
     text-shadow: 1px 2px 3px #000000a6;
 }
 
-#trading button:active {
+#order button:active {
     box-shadow: 1px 1px 3px #ffffff10,
                 inset 2px 3px 4px #0c0c0c3d;
     line-height: 11px;
     padding: 14px 6px 10px 10px;
 }
-#trading .buy .btn {
+#order .buy .btn {
     background-color: #14bf70;
     color: white;
 }
-#trading .sell .btn {
+#order .sell .btn {
     background-color: #914cec;
     color: white;
 }
@@ -139,16 +139,16 @@
 /*
     Market order
 */
-#trading.market .buy .price,
-#trading.market .sell .price {
+#order.market .buy .price,
+#order.market .sell .price {
     background: #636363;
     color: #888;
     display: none;
     pointer-events: none;
 }
-#trading.market .buy .btn {
+#order.market .buy .btn {
     background-color: #005bff;
 }
-#trading.market .sell .btn {
+#order.market .sell .btn {
     background-color: #f72424;
 }

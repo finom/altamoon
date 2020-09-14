@@ -1,6 +1,6 @@
 'use strict'
 const api = require('../../../../../apis/futures')
-const trading = require('../../../trading')
+const {OrderLimit} = require('../../../trading/order-limit')
 
 module.exports = class DraftOrderHandlers {
 
@@ -48,6 +48,6 @@ module.exports = class DraftOrderHandlers {
 
         this.chart.draw()
 
-        trading.onBuySell(d.side, 'limit')
+        new OrderLimit().onBuySell(d.side, 'limit')
     }
 }
