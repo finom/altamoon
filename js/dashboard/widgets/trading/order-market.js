@@ -60,12 +60,12 @@ module.exports = class OrderMarket extends Order {
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     //   BUY / SELL
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    sendOrder (side, qty) {
+    sendOrder (side) {
         let order = (side === 'buy')
                 ? api.lib.futuresMarketBuy
                 : api.lib.futuresMarketSell
 
-        order(SYMBOL, qty, {
+        order(SYMBOL, data.qty[side], {
                 'reduceOnly': data.reduceOnly.toString()
             })
             .catch(error => console.error(error))

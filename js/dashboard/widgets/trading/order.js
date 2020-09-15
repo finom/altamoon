@@ -25,19 +25,6 @@ class Order {
         )
     }
 
-    updateUIData() {
-        this.updateLeverage()
-
-        this.postOnly.property('checked', data.postOnly)
-        this.reduceOnly.property('checked', data.reduceOnly)
-
-        this.updatePrice('buy', data.price['buy'])
-        this.updatePrice('sell', data.price['sell'])
-
-        this.buyQty.value(data.qty['buy'])
-        this.sellQty.value(data.qty['sell'])
-    }
-
     _addHTML (html) {
         this.container.html('') // Clear (not sure if necessary)
         this.container.html(html)
@@ -47,8 +34,6 @@ class Order {
         this.leverageOutput = d3.select('[name="leverageOutput"]')
         this.reduceOnly = d3.select('#reduce-only')
         this.postOnly = d3.select('#post-only')
-        this.buyPrice = d3.select('#buy-price')
-        this.sellPrice = d3.select('#sell-price')
         this.buyQty = d3.select('#buy-qty')
         this.sellQty = d3.select('#sell-qty')
         this.buyDollarValue = d3.select('#trading .buy .dollar-qty .val')
@@ -62,8 +47,6 @@ class Order {
         this.leverageInput.on('change', this.onLeverageChanged.bind(this))
         this.reduceOnly.on('change', this.onReduceOnlyChanged.bind(this))
         this.postOnly.on('change', this.onPostOnlyChanged.bind(this))
-        this.buyPrice.on('input', () => this.onInputPrice('buy'))
-        this.sellPrice.on('input', () => this.onInputPrice('sell'))
         this.buyQty.on('input', () => this.onInputQty('buy'))
                    .on('wheel', () => this.increment('buy'))
         this.sellQty.on('input', () => this.onInputQty('sell'))
@@ -84,6 +67,19 @@ class Order {
         this.sellQty.on('keyup', () => {
             if (event.keyCode === 13) this.onBuySell('sell')
         })
+    }
+
+    updateUIData () {
+        this.updateLeverage()
+
+        this.postOnly.property('checked', data.postOnly)
+        this.reduceOnly.property('checked', data.reduceOnly)
+
+        this.updatePrice('buy', data.price['buy'])
+        this.updatePrice('sell', data.price['sell'])
+
+        this.buyQty.value(data.qty['buy'])
+        this.sellQty.value(data.qty['sell'])
     }
 
     cleanupBeforeRemoval () {
@@ -126,12 +122,12 @@ class Order {
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     //   OPTIONS
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    onReduceOnlyChanged (target) {
+    onReduceOnlyChanged () {
         data.reduceOnly = event.target.checked
         config.set({'order.reduceOnly': data.reduceOnly})
     }
 
-    onPostOnlyChanged (target) {
+    onPostOnlyChanged () {
         data.postOnly = event.target.checked
         config.set({'order.postOnly': data.postOnly})
     }
@@ -139,24 +135,10 @@ class Order {
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     //   PRICE
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    onInputPrice (side) {
-        let price = data.price[side] = parseInputNumber()
-        this.updateDollarValue(side, price)
-        this.updateMarginCost(side, price)
-        this.updateFee(side, price)
-    }
-
     updatePrice (side, price) {
         if (price === null) return
 
         data.price[side] = price
-
-        let input = (side == 'buy') ? this.buyPrice : this.sellPrice
-        input.value(price)
-
-        this.updateDollarValue(side, price)
-        this.updateMarginCost(side, price)
-        this.updateFee(side, price)
     }
 
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
@@ -228,25 +210,13 @@ class Order {
     //   BUY / SELL
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     onBuySell (side) {
-        let qty = data.qty[side]
-        if (qty <= 0) return
-
+        if (data.qty[side] <= 0)
+            return
         this.sendOrder(side, qty)
     }
 
     sendOrder (side, qty) {
-        let price = data.price[side]
-        if (price <= 0) return
-
-        let order = (side === 'buy')
-                ? api.lib.futuresBuy
-                : api.lib.futuresSell
-
-        order(SYMBOL, qty, price, {
-                'timeInForce': (data.postOnly) ? 'GTX' : 'GTC',
-                'reduceOnly': data.reduceOnly.toString()
-            })
-            .catch(error => console.error(error))
+        // Implement in subclass
     }
 
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
