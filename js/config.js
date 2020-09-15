@@ -3,6 +3,10 @@
 const Store = require('electron-store')
 
 const schema = {
+    symbol: {
+        type: 'string',
+        default: 'BTCUSDT'
+    },
     window: {
         type: 'object',
         properties: {

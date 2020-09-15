@@ -1,11 +1,13 @@
 'use strict'
+const EventEmitter = require('events')
+const {config} = require('./config')
+
+globalThis.events = new EventEmitter()
 globalThis.d3 = require('d3')
 globalThis.OUT = console.log
-globalThis.SYMBOL = 'BTC' + 'USDT'
+globalThis.SYMBOL = config.get('symbol')
 globalThis.nFormat = (f, n) => d3.format(f)(n)
 
-const EventEmitter = require('events')
-globalThis.events = new EventEmitter()
 
 // Add Array.last to access the last item of the array
 if (!Array.prototype.last)
