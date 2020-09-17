@@ -1,11 +1,9 @@
 'use strict'
-const api = require('../../apis/futures')
-const {config} = require('../../config')
-
 const {OrderLimit} = require('./trading/order-limit')
-const OrderMarket = require('./trading/order-market')
-const OrderStop = require('./trading/order-stop-limit')
-const OrderStopMarket = require('./trading/order-stop-market')
+const {OrderMarket} = require('./trading/order-market')
+const {OrderStop} = require('./trading/order-stop-limit')
+const {OrderStopMarket} = require('./trading/order-stop-market')
+const {OrderTrailingStop} = require('./trading/order-trailing')
 
 
 class Trading {
@@ -31,6 +29,7 @@ class Trading {
                 : (type === 'market') ? new OrderMarket()
                 : (type === 'stop') ? new OrderStop()
                 : (type === 'stop-market') ? new OrderStopMarket()
+                : (type === 'trailing-stop') ? new OrderTrailingStop()
                 : console.error('Invalid order type')
 
         this.order.buildUI()

@@ -3,7 +3,8 @@ const api = require('../../../apis/futures')
 const {Order} = require('./order')
 const data = require('./data')
 
-module.exports = class OrderMarket extends Order {
+
+class OrderMarket extends Order {
 
     constructor () {
         super()
@@ -71,3 +72,5 @@ module.exports = class OrderMarket extends Order {
             .catch(error => console.error(error))
     }
 }
+
+module.exports = { OrderMarket }
