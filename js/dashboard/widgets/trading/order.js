@@ -60,6 +60,9 @@ class Order {
         this.onDraftOrderMoved = this.updatePrice.bind(this)
         events.on('chart.draftOrderMoved', this.onDraftOrderMoved)
 
+        // Update base min qty
+        events.once('api.exchangeInfoUpdate', () => this.updateUIData())
+
         // Submit buy/sell on Enter key
         this.buyQty.on('keyup', () => {
             if (event.keyCode === 13) this.onBuySell('buy')
