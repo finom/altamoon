@@ -215,7 +215,7 @@ class Order {
     onBuySell (side) {
         if (data.qty[side] <= 0)
             return
-        this.sendOrder(side, qty)
+        this.sendOrder(side, data.qty[side])
     }
 
     sendOrder (side, qty) {

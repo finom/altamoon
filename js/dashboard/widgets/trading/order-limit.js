@@ -1,5 +1,8 @@
 'use strict'
+const api = require('../../../apis/futures')
+const {parseInputNumber} = require('../../../snippets')
 const {Order} = require('./order')
+const data = require('./data')
 
 class OrderLimit extends Order {
 
@@ -46,7 +49,9 @@ class OrderLimit extends Order {
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     //   BUY / SELL
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    sendOrder (side) {
+    sendOrder (side, qty) {
+        qty = qty || data.qty[side]
+
         let price = data.price[side]
         if (price <= 0) return
 
@@ -54,7 +59,7 @@ class OrderLimit extends Order {
                 ? api.lib.futuresBuy
                 : api.lib.futuresSell
 
-        order(SYMBOL, data.qty[side], price, {
+        order(SYMBOL, qty, price, {
                 'timeInForce': (data.postOnly) ? 'GTX' : 'GTC',
                 'reduceOnly': data.reduceOnly.toString()
             })
