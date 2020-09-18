@@ -24,31 +24,45 @@ module.exports = class LineLabels {
             .join(
                 // Add label at y = price
                 enter => enter.append('g').call(g => {
-                    let rect = g.append('rect')
-                        .attr('x', this.chartWidth - 80)
-                        .attr('y', d => this.yScale(d.value) - 10)
+                    let foreign = g.append('foreignObject')
+                            .attr('x', this.chartWidth - 80)
+                            .attr('y', d => this.yScale(d.value) - 10)
+                            .style('overflow', 'visible')
+                    let wrapper = foreign.append('xhtml:div')
+                            .class('line-label')
 
-                    g.append('text')
-                        .text(d => +d.qty)
-                        .attr('x', this.chartWidth - 75)
-                        .attr('y', d => this.yScale(d.value) + 3)
+                    wrapper.append('xhtml:div')
+                            .class('name')
+                            .html('TEMP')
+
+                    wrapper.append('xhtml:div')
+                            .class('qty')
+                            .html(d => +d.qty)
 
                     g.attr('data-side', d => d.side)
 
-                    this._addEventListeners(rect)
+                    this._addEventListeners(wrapper)
                 }),
                 // Update y
                 update => update.call(g => {
-                    let rect = g.select('rect')
-                        .attr('x', this.chartWidth - 80)
-                        .attr('y', d => this.yScale(d.value) - 10)
+                    g.select('foreignObject')
+                            .attr('x', this.chartWidth - 80)
+                            .attr('y', d => this.yScale(d.value) - 10)
+
+                    let wrapper = g.select('.line-label')
+
+                    g.select('qty')
+                            .html(d => +d.qty)
+
+                    g.attr('data-side', d => d.side)
+
                     g.select('text')
                         .text(d => +d.qty)
                         .attr('x', this.chartWidth - 75)
                         .attr('y', d => this.yScale(d.value) + 3)
                     g.attr('data-side', d => d.side)
 
-                    this._addEventListeners(rect)
+                    this._addEventListeners(wrapper)
                 })
             )
     }
@@ -57,9 +71,9 @@ module.exports = class LineLabels {
         this.eventListeners[event] = callback
     }
 
-    _addEventListeners (rect) {
+    _addEventListeners (node) {
         for (let [event, callback] of Object.entries(this.eventListeners))
-            rect.on(event, callback)
+            node.on(event, callback)
     }
 
     _getDimensions () {

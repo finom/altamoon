@@ -169,19 +169,20 @@ svg text {
     fill: #20884c;
     stroke: #20884c;
 }
-.order-labels rect {
-    fill: #20884c;
-    stroke: #20884c;
-    stroke-width: 0;
-    width: 70px;
+.line-label  {
+    background-color: #20884c;
+    border-radius: 5px;
+    min-width: 70px;
     height: 19px;
-    rx: 6px;
-    ry: 6px;
+}
+.line-label div {
+    display: inline-block;
+    height: 19px;
+    padding: 4px 2px;
 }
 .order-lines [data-side='sell'] path,
-.order-labels [data-side='sell'] rect {
-    fill: #6d28d2;
-    stroke: #6d28d2;
+.order-labels [data-side='sell'] .line-label {
+    background-color: #6d28d2;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Draft lines
