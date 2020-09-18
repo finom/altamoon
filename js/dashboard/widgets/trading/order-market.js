@@ -61,12 +61,14 @@ class OrderMarket extends Order {
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
     //   BUY / SELL
     // –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
-    sendOrder (side) {
+    sendOrder (side, qty) {
+        qty = qty || data.qty[side]
+
         let order = (side === 'buy')
                 ? api.lib.futuresMarketBuy
                 : api.lib.futuresMarketSell
 
-        order(SYMBOL, data.qty[side], {
+        order(SYMBOL, qty, {
                 'reduceOnly': data.reduceOnly.toString()
             })
             .catch(error => console.error(error))

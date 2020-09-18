@@ -1,7 +1,7 @@
 'use strict'
 const {OrderLimit} = require('./trading/order-limit')
 const {OrderMarket} = require('./trading/order-market')
-const {OrderStop} = require('./trading/order-stop-limit')
+const {OrderStopLimit} = require('./trading/order-stop-limit')
 const {OrderStopMarket} = require('./trading/order-stop-market')
 const {OrderTrailingStop} = require('./trading/order-trailing')
 
@@ -27,7 +27,7 @@ class Trading {
 
         this.order = (type === 'limit') ? new OrderLimit()
                 : (type === 'market') ? new OrderMarket()
-                : (type === 'stop') ? new OrderStop()
+                : (type === 'stop') ? new OrderStopLimit()
                 : (type === 'stop-market') ? new OrderStopMarket()
                 : (type === 'trailing-stop') ? new OrderTrailingStop()
                 : console.error('Invalid order type')
