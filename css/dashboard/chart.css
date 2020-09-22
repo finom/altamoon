@@ -6,7 +6,18 @@
     display: flex;
     align-items: center;
     height: 40px;
-    padding: 12px 65px;
+    padding: 0px 15px;
+}
+.toolbar .symbol {
+    margin-right: 20px;
+}
+.toolbar .symbol select {
+    background-color: #0c3ba5;
+    border: none;
+    border-radius: 5px;
+    color: #ffffff;
+    font-weight: bold;
+    height: 27px;
 }
 .toolbar .interval {
     cursor: pointer;

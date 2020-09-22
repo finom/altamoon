@@ -1,6 +1,6 @@
 'use strict'
-const api = require('../../../../apis/futures')
-const { config } = require('../../../../config')
+const {config} = require('../../../../config')
+const {remote} = require('electron')
 
 module.exports = class Toolbar {
 
@@ -9,7 +9,38 @@ module.exports = class Toolbar {
         this.div = chart.container.append('div')
                 .class('toolbar')
 
+        this.symbolSelect = this.div.append('div')
+            .class('symbol')
+
+        this._addSymbolsMenu()
         this._addIntervalSelector()
+    }
+
+    _addSymbolsMenu () {
+        events.once('api.exchangeInfoUpdate', d => {
+            let symbols = []
+
+            for(let x of d.symbols)
+                symbols.push({
+                    symbol: x.symbol,
+                    base: x.baseAsset,
+                    quote: x.quoteAsset
+                })
+            symbols.sort((a, b) => d3.ascending(a.base, b.base))
+
+            this.symbolSelect.append('select')
+                .on('change', () => {
+                    config.set('symbol', event.target.value)
+                    remote.BrowserWindow.getFocusedWindow().reload()
+                })
+                .selectAll('option')
+                    .data(symbols)
+                    .enter()
+                .append('option')
+                    .value(d => d.symbol)
+                    .html(d => d.base + ' / ' + d.quote)
+                    .property('selected', d => d.symbol === config.get('symbol'))
+        })
     }
 
     _addIntervalSelector () {
