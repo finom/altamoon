@@ -33,6 +33,7 @@ function getPnl (symbol = SYMBOL) {
 
 let timer
 let incomeHistory = []
+let historyStart = new Date(Date.now() - 4*3600000).setHours(4)
 
 async function getDailyPnl (symbol = SYMBOL) {
     let currentBalance = api.account.balance
@@ -41,21 +42,37 @@ async function getDailyPnl (symbol = SYMBOL) {
     if (!timer || Date.now() > timer + 5 * 1000) {
         timer = Date.now()
         // Get all balance modifying events since last 4am.
-        let response = await api.lib.futuresIncome({
+        let start = historyStart
+        let end = Date.now()
+        let response
+        let error
+        let data = incomeHistory
+
+        do {
+            response = await api.lib.futuresIncome({
                 symbol: symbol,
-                startTime: new Date(Date.now() - 4*3600000).setHours(4),
-                endTime: Date.now(),
+                startTime: start,
+                endTime: end,
                 limit: 1000
             })
             .catch(err => {
+                error = err
                 if (err.code == 'ETIMEDOUT')
                     console.warn('Warning: futuresIncome() request timed out')
             })
 
-        if (Array.isArray(response))
-            incomeHistory = response
-            if (incomeHistory.length >= 999)
-                console.warn('Income history request reached limit :(')
+            if (error || !response.length)
+                break
+
+            data = [].concat(response, data)
+            start = response.last.time + 1
+        }
+        while (response.length >= 999) // API limit reached
+
+        if (!error) {
+            incomeHistory = data
+            historyStart = start
+        }
     }
 
     let pnlArray = incomeHistory.filter(
@@ -131,5 +148,5 @@ async function getDailyBreakEven (symbol = SYMBOL) {
 
     let breakEven = entryPrice * (fee - dailyPnl) / baseValue + entryPrice
 
-    return breakEven
+    return Math.max(breakEven, 0)
 }
