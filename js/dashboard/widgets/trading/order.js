@@ -228,8 +228,9 @@ class Order {
     increment (side) {
         let qty = parseFloat(event.target.value)
         let direction = Math.sign(-event.deltaY)
+        let interval = config.get('order.qtyInterval.' + SYMBOL) || 1
 
-        qty = (qty + config.get('order.qtyInterval') * direction).toFixed(3)
+        qty = (qty + interval * direction).toFixed(3)
         event.target.value = Math.max(0, qty)
         this.onInputQty(side)
     }

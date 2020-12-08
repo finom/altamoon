@@ -45,8 +45,8 @@ const schema = {
                 default: true
             },
             qtyInterval: {
-                type: 'number',
-                default: 0.01
+                type: 'object',
+                default: {}
             },
         },
         default: {}
