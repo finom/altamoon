@@ -1,3 +1,9 @@
+/* Copyright 2020-2021 Pascal Reinhard
+
+This file is published under the terms of the GNU Affero General Public License
+as published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version. See <https://www.gnu.org/licenses/>. */
+
 'use strict'
 const cache = require('./cache')
 
@@ -145,7 +151,7 @@ module.exports = class Rest {
             if (direction * (p.qty - orderSum) <= 0.001)
                 break
         }
-        trades = trades.slice(i, trades.length)
+            trades = trades.slice(i, trades.length)
 
         return trades
     }

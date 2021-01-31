@@ -1,3 +1,9 @@
+/* Copyright 2020-2021 Pascal Reinhard
+
+This file is published under the terms of the GNU Affero General Public License
+as published by the Free Software Foundation, either version 3 of the License,
+or (at your option) any later version. See <https://www.gnu.org/licenses/>. */
+
 'use strict'
 const Modal = require('./modal')
 const api = require('../../apis/futures')
