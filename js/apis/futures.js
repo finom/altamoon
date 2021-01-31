@@ -6,13 +6,16 @@ or (at your option) any later version. See <https://www.gnu.org/licenses/>. */
 
 'use strict'
 const Lib = require('node-binance-api')
-const settings = require('../../user/settings')
+const {config} = require('../config')
 const Rest = require('./futures/rest')
 const Ws = require('./futures/websocket')
 const cache = require('./futures/cache')
 
 const lib = new Lib()
-lib.options({ APIKEY: settings.apiKey, APISECRET: settings.apiSecret })
+lib.options({
+    APIKEY: config.get('apiKey'),
+    APISECRET: config.get('apiSecret')
+})
 
 const rest = new Rest(lib)
 const ws = new Ws(lib, rest)
