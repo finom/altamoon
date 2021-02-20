@@ -1,8 +1,15 @@
 module.exports = {
-  extends: 'erb',
+  extends: [
+    // 'erb',
+    'airbnb-typescript',
+    'airbnb/hooks',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+  ],
   rules: {
     // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
+    'no-void': 'off', // allows to ignore floating promises
   },
   parserOptions: {
     ecmaVersion: 2020,
@@ -11,6 +18,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     createDefaultProgram: true,
   },
+  /*
   settings: {
     'import/resolver': {
       // See https://github.com/benmosher/eslint-plugin-import/issues/1396#issuecomment-575727774 for line below
@@ -22,5 +30,5 @@ module.exports = {
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
-  },
+  }, */
 };
