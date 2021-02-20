@@ -4,15 +4,14 @@ import { HashRouter } from 'react-router-dom';
 
 import routes from './routes';
 import ErrorBoundary from './ErrorBoundary';
+import './Root.global.css';
 
 const Root = (): ReactElement => (
-  <HashRouter>
-    <ErrorBoundary>
-
+  <ErrorBoundary>
+    <HashRouter>
       {renderRoutes(routes)}
-
-    </ErrorBoundary>
-  </HashRouter>
+    </HashRouter>
+  </ErrorBoundary>
 );
 
 export default Root;
