@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import icon from '../assets/icon.svg';
-import './App.global.css';
+import './_App.global.css';
 
 const Hello = () => (
   <div>

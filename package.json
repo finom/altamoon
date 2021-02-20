@@ -3,14 +3,14 @@
   "productName": "ElectronReact",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Fast Refresh for rapid application development",
   "scripts": {
-    "build": "concurrently \"yarn build:main\" \"yarn build:renderer\"",
+    "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.babel.js",
     "build:renderer": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.renderer.prod.babel.js",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir src",
     "lint": "cross-env NODE_ENV=development eslint ./src --cache --ext .js,.jsx,.ts,.tsx",
-    "package": "rm -rf src/dist && yarn build && electron-builder build --publish never",
-    "postinstall": "node -r @babel/register .erb/scripts/CheckNativeDep.js && electron-builder install-app-deps && yarn cross-env NODE_ENV=development webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.babel.js && opencollective-postinstall && yarn-deduplicate yarn.lock",
-    "start": "node -r @babel/register ./.erb/scripts/CheckPortInUse.js && cross-env yarn start:renderer",
+    "package": "rm -rf src/dist && npm run build && electron-builder build --publish never",
+    "postinstall": "node -r @babel/register .erb/scripts/CheckNativeDep.js && electron-builder install-app-deps && cross-env NODE_ENV=development webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.babel.js && opencollective-postinstall",
+    "start": "node -r @babel/register ./.erb/scripts/CheckPortInUse.js && cross-env npm run start:renderer",
     "start:main": "cross-env NODE_ENV=development electron -r ./.erb/scripts/BabelRegister ./src/main.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.renderer.dev.babel.js",
     "test": "jest"
@@ -184,6 +184,7 @@
     "@types/node": "14.14.10",
     "@types/react": "^16.9.44",
     "@types/react-dom": "^16.9.9",
+    "@types/react-router-config": "^5.0.2",
     "@types/react-router-dom": "^5.1.6",
     "@types/react-test-renderer": "^16.9.3",
     "@types/source-map-support": "^0.5.3",
@@ -246,8 +247,7 @@
     "webpack-bundle-analyzer": "^4.1.0",
     "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.0",
-    "webpack-merge": "^5.4.0",
-    "yarn-deduplicate": "^3.1.0"
+    "webpack-merge": "^5.4.0"
   },
   "dependencies": {
     "electron-debug": "^3.1.0",
@@ -256,14 +256,14 @@
     "history": "^5.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-router-config": "^5.1.1",
     "react-router-dom": "^5.2.0",
     "regenerator-runtime": "^0.13.5",
     "source-map-support": "^0.5.19"
   },
   "devEngines": {
     "node": ">=10.x",
-    "npm": ">=6.x",
-    "yarn": ">=1.21.3"
+    "npm": ">=6.x"
   },
   "collective": {
     "url": "https://opencollective.com/electron-react-boilerplate-594"
