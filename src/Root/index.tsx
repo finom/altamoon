@@ -4,7 +4,8 @@ import { HashRouter } from 'react-router-dom';
 
 import routes from './routes';
 import ErrorBoundary from './ErrorBoundary';
-import './Root.global.css';
+import './root.global.css';
+import './theme.global.css';
 
 const Root = (): ReactElement => (
   <ErrorBoundary>

@@ -1,8 +1,7 @@
-import React, { ReactElement } from 'react';
 import { RouteConfig } from 'react-router-config';
-import { Link } from 'react-router-dom';
-import { Button } from 'reactstrap';
+import FeatureTradingScreen from '../screens/FeatureTradingScreen';
 
+/*
 const Foo = (): ReactElement => (
   <div>
     <h1>This is Foo</h1>
@@ -20,10 +19,10 @@ const Bar = (): ReactElement => (
     </Link>
   </div>
 );
+*/
 
 const routes: RouteConfig[] = [
-  { path: '/', exact: true, component: Foo },
-  { path: '/bar', component: Bar },
+  { path: '/', exact: true, component: FeatureTradingScreen },
 ];
 
 export default routes;
