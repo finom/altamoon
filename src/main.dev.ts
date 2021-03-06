@@ -20,6 +20,8 @@ import MenuBuilder from './menu';
 
 Store.initRenderer();
 
+console.log('app.getPath(\'userData\')', app.getPath('userData'));
+
 export default class AppUpdater {
   constructor() {
     log.transports.file.level = 'info';

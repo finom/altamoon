@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 import { WidthProvider, Responsive, Layout } from 'react-grid-layout';
-import persistentStore from '../persistentStore';
+import persistentStore from '../_persistentStore';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 

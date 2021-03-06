@@ -259,6 +259,7 @@
     "electron-store": "^7.0.2",
     "electron-updater": "^4.3.5",
     "history": "^5.0.0",
+    "node-binance-api": "^0.12.4",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-grid-layout": "^1.2.0",

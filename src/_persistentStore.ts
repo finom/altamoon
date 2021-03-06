@@ -6,6 +6,8 @@ interface StoreType {
 }
 
 const schema = {
+  binanceApiKey: { type: 'string' },
+  binanceApiSecret: { type: 'string' },
   layout: {
     type: 'array',
     items: {
