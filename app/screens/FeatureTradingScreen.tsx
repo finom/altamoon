@@ -1,16 +1,16 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 import { WidthProvider, Responsive, Layout } from 'react-grid-layout';
-import persistentStore from '../_persistentStore';
+import PersistentStore from '../PersistentStore';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const style = { background: 'red' };
 
 const FeatureTradingScreen = (): ReactElement => {
-  const [layout, setLayout] = useState<Layout[]>(persistentStore.get('layout'));
+  const [layout, setLayout] = useState<Layout[]>(PersistentStore.get('layout'));
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
     // console.log('layout, layouts', changedLayout, changedLayouts);
-    persistentStore.set('layout', changedLayout);
+    PersistentStore.set('layout', changedLayout);
     setLayout(changedLayout);
   }, []);
 
