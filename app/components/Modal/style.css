@@ -1,0 +1,51 @@
+.overlay {
+  z-index: 10000;
+  display: block!important;
+  background-color: rgba(0, 0, 0, 0.75);
+  overflow: auto;
+}
+
+.header {
+  display: block;
+}
+
+.body {
+  &:empty {
+    display: none;
+  }
+}
+
+.hide {
+  opacity: 0!important;
+}
+
+.show {
+  opacity: 1;
+  display: block;
+}
+
+.wide {
+  width: 95vw!important;
+  max-width: 1024px!important;
+}
+
+.modalDialog {
+}
+
+.title {
+  font-size: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  :global(.modal-fill-in) .modalDialog > * {
+      width: 800px;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  padding: 0;
+  margin: 0;
+}

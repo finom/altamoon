@@ -1,5 +1,6 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 import { WidthProvider, Responsive, Layout } from 'react-grid-layout';
+import Modal, { ModalBody, ModalFooter, ModalHeader } from '../components/Modal';
 import PersistentStore from '../PersistentStore';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
@@ -8,6 +9,7 @@ const style = { background: 'red' };
 
 const FeatureTradingScreen = (): ReactElement => {
   const [layout, setLayout] = useState<Layout[]>(PersistentStore.get('layout'));
+  const [isModalShown, setIsMobileShown] = useState(false);
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
     // console.log('layout, layouts', changedLayout, changedLayouts);
     PersistentStore.set('layout', changedLayout);
@@ -21,6 +23,14 @@ const FeatureTradingScreen = (): ReactElement => {
   return (
     <div>
       <button type="button" onClick={onResetLayout}>Reset Layout</button>
+      <button type="button" onClick={() => setIsMobileShown(true)}>Show modal</button>
+
+      <Modal isOpen={isModalShown} onRequestClose={() => setIsMobileShown(false)}>
+        <ModalHeader onRequestClose={() => setIsMobileShown(false)}>ModalHeader</ModalHeader>
+        <ModalBody>ModalBody</ModalBody>
+        <ModalFooter>ModalFooter</ModalFooter>
+      </Modal>
+
       <ResponsiveReactGridLayout
         className="layout"
         breakpoints={{
