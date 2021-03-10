@@ -11,6 +11,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
     'no-void': 'off', // allows to ignore floating promises
     'react/require-default-props': 0,
+    "@typescript-eslint/unbound-method": 0
   },
   parserOptions: {
     ecmaVersion: 2020,

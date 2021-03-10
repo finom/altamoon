@@ -1,36 +1,30 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { WidthProvider, Responsive, Layout } from 'react-grid-layout';
-import Modal, { ModalBody, ModalFooter, ModalHeader } from '../components/Modal';
-import PersistentStore from '../PersistentStore';
+import { SettingsModal } from '../components';
+import useChange, { useSet } from '../hooks/useChange';
+import { RootStore } from '../lib/store';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const style = { background: 'red' };
 
 const FeatureTradingScreen = (): ReactElement => {
-  const [layout, setLayout] = useState<Layout[]>(PersistentStore.get('layout'));
-  const [isModalShown, setIsMobileShown] = useState(false);
+  const [layout, setLayout] = useChange(({ persistent }: RootStore) => persistent, 'layout');
+  const setIsSettingsModalOpen = useSet((store: RootStore) => store, 'isSettingsModalOpen');
+
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
-    // console.log('layout, layouts', changedLayout, changedLayouts);
-    PersistentStore.set('layout', changedLayout);
     setLayout(changedLayout);
-  }, []);
+  }, [setLayout]);
 
   const onResetLayout = useCallback(() => {
     setLayout([]);
-  }, []);
+  }, [setLayout]);
 
   return (
     <div>
+      <SettingsModal />
       <button type="button" onClick={onResetLayout}>Reset Layout</button>
-      <button type="button" onClick={() => setIsMobileShown(true)}>Show modal</button>
-
-      <Modal isOpen={isModalShown} onRequestClose={() => setIsMobileShown(false)}>
-        <ModalHeader onRequestClose={() => setIsMobileShown(false)}>ModalHeader</ModalHeader>
-        <ModalBody>ModalBody</ModalBody>
-        <ModalFooter>ModalFooter</ModalFooter>
-      </Modal>
-
+      <button type="button" onClick={() => setIsSettingsModalOpen(true)}>Open settigns</button>
       <ResponsiveReactGridLayout
         className="layout"
         breakpoints={{

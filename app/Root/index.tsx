@@ -6,11 +6,15 @@ import routes from './routes';
 import ErrorBoundary from './ErrorBoundary';
 import './root.global.css';
 import './theme.global.css';
+import { Provider as UseChangeProvider } from '../hooks/useChange';
+import store from '../lib/store';
 
 const Root = (): ReactElement => (
   <ErrorBoundary>
     <HashRouter>
-      {renderRoutes(routes)}
+      <UseChangeProvider value={store}>
+        {renderRoutes(routes)}
+      </UseChangeProvider>
     </HashRouter>
   </ErrorBoundary>
 );

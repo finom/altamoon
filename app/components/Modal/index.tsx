@@ -13,7 +13,6 @@ ReactModal.setAppElement('body');
 interface Props {
   fillIn?: boolean,
   isOpen: boolean;
-  isWide?: boolean;
   title?: string;
   overlayClassName?: string;
   modalContentClassName?: string;
@@ -33,7 +32,6 @@ const style = {
 const Modal = ({
   fillIn,
   isOpen,
-  isWide,
   title,
   overlayClassName,
   dialogClassName,
@@ -60,7 +58,6 @@ const Modal = ({
     className: {
       base: classNames({
         'modal-dialog': true,
-        [css.modalDialog]: true,
         [String(dialogClassName)]: !!dialogClassName,
       }),
       afterOpen: '',
@@ -68,10 +65,9 @@ const Modal = ({
     },
     modalContentClassName: classNames({
       'modal-content': true,
-      [css.wide]: !!isWide,
       [String(modalContentClassName)]: !!modalContentClassName,
     }),
-  }), [color, fillIn, overlayClassName, dialogClassName, isWide, modalContentClassName]);
+  }), [color, fillIn, overlayClassName, dialogClassName, modalContentClassName]);
 
   return (
     <ReactModal

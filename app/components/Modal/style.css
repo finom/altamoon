@@ -19,19 +19,6 @@
   opacity: 0!important;
 }
 
-.show {
-  opacity: 1;
-  display: block;
-}
-
-.wide {
-  width: 95vw!important;
-  max-width: 1024px!important;
-}
-
-.modalDialog {
-}
-
 .title {
   font-size: 1.5rem;
 }
