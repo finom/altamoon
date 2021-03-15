@@ -5,8 +5,8 @@ import {
 } from 'reactstrap';
 import useChange from '../hooks/useChange';
 import isType from '../lib/isType';
-import { RootStore } from '../lib/store';
-import Modal, { ModalHeader, ModalFooter, ModalBody } from './Modal';
+import { RootStore } from '../store';
+import Modal, { ModalHeader, ModalFooter, ModalBody } from './layout/Modal';
 
 const fakeSecretValue = Array(50).fill('1').join('');
 
@@ -14,26 +14,46 @@ const SettingsModal = (): ReactElement => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useChange<RootStore, 'isSettingsModalOpen'>('isSettingsModalOpen');
   const [existingApiKey, setApiKey] = useChange(({ persistent }: RootStore) => persistent, 'binanceApiKey');
   const [existingApiSecret, setApiSecret] = useChange(({ persistent }: RootStore) => persistent, 'binanceApiSecret');
+  const [existingTheme, setTheme] = useChange(({ persistent }: RootStore) => persistent, 'theme');
   const closeModal = useCallback(() => {
     setIsSettingsModalOpen(false);
   }, [setIsSettingsModalOpen]);
   const {
     register, handleSubmit, getValues,
-  } = useForm<Pick<RootStore['persistent'], 'binanceApiKey' | 'binanceApiSecret'>>();
+  } = useForm<Pick<RootStore['persistent'], 'binanceApiKey' | 'binanceApiSecret' | 'theme'>>();
   const onSubmit = handleSubmit(useCallback(() => {
-    const { binanceApiKey, binanceApiSecret } = getValues();
+    const { binanceApiKey, binanceApiSecret, theme } = getValues();
+    setTheme(theme);
     setApiKey(binanceApiKey);
     if (binanceApiSecret !== fakeSecretValue) {
       setApiSecret(binanceApiSecret);
     }
     closeModal();
-  }, [closeModal, getValues, setApiKey, setApiSecret]));
+  }, [closeModal, getValues, setApiKey, setApiSecret, setTheme]));
 
   return (
     <Modal isOpen={isSettingsModalOpen} onRequestClose={closeModal}>
       <ModalHeader onRequestClose={closeModal}>Settings</ModalHeader>
       <ModalBody>
         <Form id="settings" onSubmit={onSubmit}>
+          <Label
+            htmlFor={isType<keyof RootStore['persistent']>('theme')}
+            className="form-label"
+          >
+            Binance API Key
+          </Label>
+          <Input
+            type="select"
+            name={isType<keyof RootStore['persistent']>('theme')}
+            id={isType<keyof RootStore['persistent']>('theme')}
+            innerRef={register}
+            className="mb-3"
+            defaultValue={existingTheme}
+          >
+            <option value="default">Default</option>
+            <option value="dark">Dark</option>
+          </Input>
+
           <Label
             htmlFor={isType<keyof RootStore['persistent']>('binanceApiKey')}
             className="form-label"

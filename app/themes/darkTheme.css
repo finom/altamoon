@@ -1,0 +1,87 @@
+:root {
+}
+
+/* common */
+.react-grid-placeholder {
+  background-color: rgba(105, 60, 186, 0.5);
+}
+
+/* temporary fix of modal close button for bootswatch@5-beta */
+button.close {
+  background-color: transparent;
+  border: 0;
+  color: inherit;
+}
+
+/* add custom "sell" color */
+.btn-sell {
+  background-color: #673ab7;
+  border-color: #6a3eb8;
+}
+
+.btn-sell:hover {
+  background-color: #6537b8;
+  border-color: #693cba;
+}
+
+.btn-sell:focus, .btn-sell.focus {
+  background-color: #6537b8;
+  border-color: #693cba;
+  box-shadow: 0 0 0 0.2rem rgba(105, 60, 186, 0.5);
+}
+
+.btn-sell.disabled, .btn-sell:disabled {
+  background-color: #6c42b8;
+  border-color: #6c42b8;
+}
+
+.btn-sell:not(:disabled):not(.disabled):active, .btn-sell:not(:disabled):not(.disabled).active,
+.show > .btn-sell.dropdown-toggle {
+  background-color: #6537b8;
+  border-color: #693cba;
+}
+
+.btn-sell:not(:disabled):not(.disabled):active:focus, .btn-sell:not(:disabled):not(.disabled).active:focus,
+.show > .btn-sell.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.2rem rgba(105, 60, 186, 0.5);
+}
+
+.table-sell,
+.table-sell > th,
+.table-sell > td {
+  background-color: #9077b8;
+}
+
+.table-sell th,
+.table-sell td,
+.table-sell thead th,
+.table-sell tbody + tbody {
+  border-color: #8d72ba;
+}
+
+.table-hover .table-sell:hover {
+  background-color: #8d72ba;
+}
+
+.table-hover .table-sell:hover > td,
+.table-hover .table-sell:hover > th {
+  background-color: #8d72ba;
+}
+.table-sell,
+.table-sell > th,
+.table-sell > td {
+  background-color: #6c3fba;
+}
+
+.table-hover .table-sell:hover,
+.table-hover .table-sell:hover > th,
+.table-hover .table-sell:hover > td {
+  background-color: #673ab7;
+}
+
+.form-control, .form-control:focus {
+  border-color: #888;
+  background: #222;
+  color: #fff;
+}
+

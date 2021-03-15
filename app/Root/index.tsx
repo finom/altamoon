@@ -5,9 +5,10 @@ import { HashRouter } from 'react-router-dom';
 import routes from './routes';
 import ErrorBoundary from './ErrorBoundary';
 import './root.global.css';
-import './theme.global.css';
 import { Provider as UseChangeProvider } from '../hooks/useChange';
-import store from '../lib/store';
+import store from '../store';
+
+import '../lib/binance';
 
 const Root = (): ReactElement => (
   <ErrorBoundary>

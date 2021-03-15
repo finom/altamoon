@@ -17,12 +17,12 @@ type Key<SLICE, KEY> = keyof SLICE & string & KEY;
 
 type ReturnTuple<T> = [T, (value: T | ((value: T) => T)) => void];
 
-type Handler = (value: any) => void;
+type Handler<SLICE = any, KEY = any> = (value: SLICE[Key<SLICE, KEY>]) => void;
 
 const changeMap = new WeakMap<any, Record<string, Handler[]>>();
 
-function onChange(
-  givenObject: any, key: string, handler: Handler,
+function listenChange<SLICE, KEY>(
+  givenObject: SLICE, key: Key<SLICE, KEY>, handler: Handler<SLICE, KEY>,
 ): void {
   const all: Record<string, Handler[]> = changeMap.get(givenObject) ?? {};
 
@@ -57,8 +57,8 @@ function onChange(
   handlers.push(handler);
 }
 
-function offChange(
-  object: any, key: string, handler: Handler,
+function unlistenChange<SLICE, KEY>(
+  object: SLICE, key: Key<SLICE, KEY>, handler: Handler,
 ): void {
   const all: Record<string, Handler[]> | undefined = changeMap.get(object);
 
@@ -148,9 +148,9 @@ function useChange<STORE, KEY, SLICE = STORE>(
       handler();
     }
 
-    onChange(slice, key, handler);
+    listenChange(slice, key, handler);
 
-    return () => { offChange(slice, key, handler); };
+    return () => { unlistenChange(slice, key, handler); };
   }, [key, slice, stateValue]);
 
   return [stateValue, setValue];
@@ -219,5 +219,5 @@ function useSet<STORE, KEY, SLICE = STORE>(
 export default useChange;
 
 export {
-  useValue, useSet, onChange, offChange,
+  useValue, useSet, listenChange, unlistenChange,
 };

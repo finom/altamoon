@@ -1,0 +1,17 @@
+.widgetBody {
+  display: flex;
+  flex-direction: column;
+}
+
+table.tableHeadTable {
+  margin-bottom: 0;
+}
+
+.tableContainer {
+  flex: 1;
+  overflow: auto;
+}
+
+.tableContainer > table {
+  margin-bottom: 0;
+}

@@ -1,0 +1,4 @@
+.header {
+  /* react-grid-layout also gives 10px padding */
+  padding: 0 10px;
+}

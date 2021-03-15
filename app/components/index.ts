@@ -1,4 +1,5 @@
 export {
   default as Modal, ModalHeader, ModalFooter, ModalBody,
-} from './Modal';
+} from './layout/Modal';
+
 export { default as SettingsModal } from './SettingsModal';
