@@ -6,7 +6,7 @@ import getPersistentStorageValue from '../lib/getPersistentStorageValue';
 export default class Persistent {
   public symbol = getPersistentStorageValue<string, keyof Persistent>('symbol', 'BTCUSDT');
 
-  public theme = getPersistentStorageValue<'dark' | 'default', keyof Persistent>('theme', 'default');
+  public theme = getPersistentStorageValue<'dark' | 'light', keyof Persistent>('theme', 'light');
 
   public layout = getPersistentStorageValue<Layout[], keyof Persistent>('layout', []);
 

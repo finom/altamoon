@@ -40,7 +40,7 @@ const SettingsModal = (): ReactElement => {
             htmlFor={isType<keyof RootStore['persistent']>('theme')}
             className="form-label"
           >
-            Binance API Key
+            Theme
           </Label>
           <Input
             type="select"
@@ -50,8 +50,8 @@ const SettingsModal = (): ReactElement => {
             className="mb-3"
             defaultValue={existingTheme}
           >
-            <option value="default">Default</option>
-            <option value="dark">Dark</option>
+            <option value={isType<RootStore['persistent']['theme']>('light')}>Light</option>
+            <option value={isType<RootStore['persistent']['theme']>('dark')}>Dark</option>
           </Input>
 
           <Label
