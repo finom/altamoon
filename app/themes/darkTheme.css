@@ -46,12 +46,6 @@ button.close {
   box-shadow: 0 0 0 0.2rem rgba(105, 60, 186, 0.5);
 }
 
-.table-sell,
-.table-sell > th,
-.table-sell > td {
-  background-color: #9077b8;
-}
-
 .table-sell th,
 .table-sell td,
 .table-sell thead th,
@@ -59,17 +53,13 @@ button.close {
   border-color: #8d72ba;
 }
 
-.table-hover .table-sell:hover {
-  background-color: #8d72ba;
-}
-
-.table-hover .table-sell:hover > td,
-.table-hover .table-sell:hover > th {
-  background-color: #8d72ba;
-}
 .table-sell,
 .table-sell > th,
 .table-sell > td {
+  background-color: #6c3fba;
+}
+
+td.table-sell {
   background-color: #6c3fba;
 }
 

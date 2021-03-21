@@ -3,25 +3,31 @@ import { WidthProvider, Responsive, Layout } from 'react-grid-layout';
 import { Button, Input, Navbar } from 'reactstrap';
 import { Gear } from 'react-bootstrap-icons';
 import classNames from 'classnames';
+import useChange, { useSet, useValue } from 'use-change';
+
 import { SettingsModal } from '../../components';
 import LastTradesWidget from '../../components/widgets/LastTradesWidget';
-import useChange, { useSet, useValue } from '../../hooks/useChange';
 import { RootStore } from '../../store';
 import { darkTheme, defaultTheme } from '../../themes';
 import css from './style.css';
+import OrderBookWidget from '../../components/widgets/OrderBookWidget';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const FeatureTradingScreen = (): ReactElement => {
   const [layout, setLayout] = useChange(({ persistent }: RootStore) => persistent, 'layout');
   const [existingSymbol, setSymbol] = useChange(({ persistent }: RootStore) => persistent, 'symbol');
-  const [theme] = useChange(({ persistent }: RootStore) => persistent, 'theme');
+  const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
   const futuresExchangeSymbols = useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols');
 
   const setIsSettingsModalOpen = useSet((store: RootStore) => store, 'isSettingsModalOpen');
 
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
     setLayout(changedLayout);
+  }, [setLayout]);
+
+  const resetLayout = useCallback(() => {
+    setLayout([]);
   }, [setLayout]);
 
   return (
@@ -49,14 +55,20 @@ const FeatureTradingScreen = (): ReactElement => {
         </div>
         <div>
           <Button
-            onClick={() => setIsSettingsModalOpen(true)}
             color={theme === 'dark' ? 'dark' : 'light'}
+            onClick={resetLayout}
+          >
+            Reset Layout
+          </Button>
+          {' '}
+          <Button
+            color={theme === 'dark' ? 'dark' : 'light'}
+            onClick={() => setIsSettingsModalOpen(true)}
           >
             <Gear size={16} />
             {' '}
             Settings
           </Button>
-
         </div>
       </Navbar>
 
@@ -80,6 +92,14 @@ const FeatureTradingScreen = (): ReactElement => {
           }}
         >
           <LastTradesWidget />
+        </div>
+        <div
+          key="orderBook"
+          data-grid={{
+            w: 3, h: 3, x: 0, y: 0, minW: 2, minH: 3,
+          }}
+        >
+          <OrderBookWidget />
         </div>
       </ResponsiveReactGridLayout>
     </div>

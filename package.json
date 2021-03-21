@@ -278,7 +278,8 @@
     "react-router-config": "^5.1.1",
     "react-router-dom": "^5.2.0",
     "reactstrap": "^8.9.0",
-    "regenerator-runtime": "^0.13.7"
+    "regenerator-runtime": "^0.13.7",
+    "use-change": "0.0.5"
   },
   "devEngines": {
     "node": ">=10.x",

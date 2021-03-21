@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import {
   Button, Form, Input, Label,
 } from 'reactstrap';
-import useChange from '../hooks/useChange';
+import useChange from 'use-change';
 import isType from '../lib/isType';
 import { RootStore } from '../store';
 import Modal, { ModalHeader, ModalFooter, ModalBody } from './layout/Modal';

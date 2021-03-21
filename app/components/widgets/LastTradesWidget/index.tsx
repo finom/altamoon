@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import { Input, Label, Table } from 'reactstrap';
 import { format } from 'd3-format';
-import useChange, { useValue } from '../../../hooks/useChange';
+import useChange, { useValue } from 'use-change';
 import { RootStore } from '../../../store';
 import Widget from '../../layout/Widget';
 import css from './style.css';

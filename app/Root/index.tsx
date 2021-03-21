@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
 import { renderRoutes } from 'react-router-config';
 import { HashRouter } from 'react-router-dom';
+import { Provider as UseChangeProvider } from 'use-change';
 
 import routes from './routes';
 import ErrorBoundary from './ErrorBoundary';
 import './root.global.css';
-import { Provider as UseChangeProvider } from '../hooks/useChange';
 import store from '../store';
 
 import '../lib/binance';

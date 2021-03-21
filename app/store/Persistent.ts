@@ -1,5 +1,5 @@
 import { Layout } from 'react-grid-layout';
-import { listenChange } from '../hooks/useChange';
+import { listenChange } from 'use-change';
 import binance from '../lib/binance';
 import getPersistentStorageValue from '../lib/getPersistentStorageValue';
 

@@ -60,6 +60,14 @@ declare module 'node-binance-api' {
     timezone: string;
   }
 
+  export interface FuturesDepth {
+    E: number;
+    T: number;
+    asks: [string, string][];
+    bids: [string, string][];
+    lastUpdateId: number;
+  }
+
   export default class Binance {
     options: (options: Partial<Options>) => void;
 
@@ -91,7 +99,7 @@ declare module 'node-binance-api' {
 
     futuresCandles : (symbol: string, interval?: string) => unknown;
 
-    futuresDepth : (symbol: string) => unknown;
+    futuresDepth : (symbol: string) => Promise<FuturesDepth>;
 
     futuresQuote : (symbol?: string) => unknown;
 
@@ -171,13 +179,13 @@ declare module 'node-binance-api' {
       limit: number
     ) => unknown;
 
-    futuresSubscribe: (
+    futuresSubscribe: <T = unknown>(
       streams: string | string[],
-      callback: (data: unknown) => void,
+      callback: (data: T) => void,
       params?: { params?: boolean, openCallback?: (e: unknown) => void; }
-    ) => unknown;
+    ) => void;
 
-    futuresTerminate: (endpoint: string, reconnect: boolean) => unknown;
+    futuresTerminate: (endpoint: string, reconnect?: boolean) => unknown;
 
     promiseRequest : (
       url: string, data?: Record<string, string>, flags?: Record<string, string>,
