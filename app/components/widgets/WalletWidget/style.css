@@ -1,0 +1,17 @@
+.table {
+  border-collapse: separate;
+  border-spacing: 10px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.labelCell {
+  text-align: right;
+  line-height: 1;
+}
+
+.valueCell {
+  background: rgba(0, 0, 0, 0.15)!important;
+  border: 0!important;
+  line-height: 1!important;
+}

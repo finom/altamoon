@@ -11,6 +11,7 @@ import { RootStore } from '../../store';
 import { darkTheme, defaultTheme } from '../../themes';
 import css from './style.css';
 import OrderBookWidget from '../../components/widgets/OrderBookWidget';
+import WalletWidget from '../../components/widgets/WalletWidget';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -100,6 +101,14 @@ const FeatureTradingScreen = (): ReactElement => {
           }}
         >
           <OrderBookWidget />
+        </div>
+        <div
+          key="wallet"
+          data-grid={{
+            w: 3, h: 3, x: 0, y: 0, minW: 2, minH: 3,
+          }}
+        >
+          <WalletWidget />
         </div>
       </ResponsiveReactGridLayout>
     </div>
