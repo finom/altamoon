@@ -6,13 +6,6 @@
   background-color: rgba(105, 60, 186, 0.5);
 }
 
-/* temporary fix of modal close button for bootswatch@5-beta */
-button.close {
-  background-color: transparent;
-  border: 0;
-  color: inherit;
-}
-
 /* add custom "sell" color */
 .btn-sell {
   background-color: #673ab7;
@@ -75,3 +68,7 @@ td.table-sell {
   color: #fff;
 }
 
+/* inherit placeholder style for the component label */
+.labeled-input > label {
+  color: #888;
+}

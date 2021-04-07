@@ -46,3 +46,8 @@
   color: #000;
   border-color: #dfc2c4;
 }
+
+/* inherit placeholder style for the component label */
+.labeled-input > label {
+  color: #6c757d;
+}

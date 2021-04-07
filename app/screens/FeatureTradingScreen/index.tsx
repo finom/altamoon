@@ -20,7 +20,6 @@ const FeatureTradingScreen = (): ReactElement => {
   const [existingSymbol, setSymbol] = useChange(({ persistent }: RootStore) => persistent, 'symbol');
   const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
   const futuresExchangeSymbols = useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols');
-
   const setIsSettingsModalOpen = useSet((store: RootStore) => store, 'isSettingsModalOpen');
 
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {

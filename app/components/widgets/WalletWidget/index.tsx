@@ -4,10 +4,12 @@ import { useValue } from 'use-change';
 import truncateDecimals from '../../../lib/truncateDecimals';
 import { RootStore } from '../../../store';
 import Widget from '../../layout/Widget';
+import TransferFunds from './TransferFunds';
 
 import css from './style.css';
 
 const formatNumber = (value: number) => format(',.2f')(truncateDecimals(value, 2));
+
 const accountSelector = ({ account }: RootStore) => account;
 const statsSelector = ({ stats }: RootStore) => stats;
 
@@ -99,6 +101,9 @@ const WalletWidget = (): ReactElement => {
           </tr>
         </tbody>
       </table>
+      <div className="text-center">
+        <TransferFunds />
+      </div>
     </Widget>
   );
 };

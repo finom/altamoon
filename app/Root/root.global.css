@@ -55,32 +55,11 @@
   display: none;
 }
 
-
-/*
-.table-fixed tbody {
-  height: 300px;
-  overflow-y: auto;
-  width: 100%;
+/* temporary fix until reactstrap is updated */
+button.close {
+  background-color: transparent;
+  border: 0;
+  color: inherit;
+  font-size: 2rem;
+  line-height: 1;
 }
-
-.table-fixed thead,
-.table-fixed tbody,
-.table-fixed tr,
-.table-fixed td,
-.table-fixed th {
-  display: block;
-}
-
-.table-fixed tbody td,
-.table-fixed tbody th,
-.table-fixed thead > tr > th {
-  float: left;
-  position: relative;
-
-  &::after {
-      content: '';
-      clear: both;
-      display: block;
-  }
-}
-*/

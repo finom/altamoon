@@ -33,6 +33,16 @@ declare module 'node-binance-api' {
     log: (msg: string) => void;
   }
 
+  export interface Depth {
+    bids: Record<string, string>;
+    asks: Record<string, string>;
+  }
+
+  export interface BalanceItem {
+    available: string;
+    onOrder: string;
+  }
+
   export interface FuturesAggTradeStreamTicker {
     aggTradeId: number;
     amount: string;
@@ -175,13 +185,134 @@ declare module 'node-binance-api' {
   }
 
   export default class Binance {
+    // GENERAL & SPOT API
     options: (options: Partial<Options>) => void;
 
-    futuresPrices: () => unknown;
+    promiseRequest: (
+      url: string, data?: Record<string, string>, flags?: Record<string, string>,
+    ) => unknown;
+
+    signedRequest: <T = unknown, E = unknown>(
+      url: string,
+      data?: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+      callback?: (error: E | null, resp: T | null) => void,
+      method?: string,
+      noDataInSignature?: boolean
+    ) => void | Promise<T>;
+
+    prices: (...args: unknown[]) => unknown;
+
+    balance: () => Promise<Record<string, BalanceItem>>;
+
+    bookTickers: (
+      symbolOrCallback?: string | ((ticker: unknown) => void),
+      callback?: (ticker: unknown) => void
+    ) => void;
+
+    depth: (
+      symbol: string,
+      callback?: (depth: Depth) => void,
+      limit?: number,
+    ) => void | Promise<Depth>;
+
+    buy: (
+      symbol: string,
+      quantity: number,
+      price: number,
+      flags?: Record<string, string>,
+      callback?: (...args: unknown[]) => unknown
+    ) => void | Promise<unknown>;
+
+    sell: (
+      symbol: string,
+      quantity: number,
+      price: number,
+      flags?: Record<string, string>,
+      callback?: (...args: unknown[]) => unknown
+    ) => void | Promise<unknown>;
+
+    marketBuy: (
+      symbol: string,
+      quantity: number,
+      flags?: Record<string, string>,
+      callback?: (...args: unknown[]) => unknown
+    ) => void | Promise<unknown>;
+
+    marketSell: (
+      symbol: string,
+      quantity: number,
+      flags?: Record<string, string>,
+      callback?: (...args: unknown[]) => unknown
+    ) => void | Promise<unknown>;
+
+    cancel: (...args: unknown[]) => unknown;
+
+    cancelAll: (...args: unknown[]) => unknown;
+
+    openOrders: (...args: unknown[]) => unknown;
+
+    orderStatus: (...args: unknown[]) => unknown;
+
+    trades: (...args: unknown[]) => unknown;
+
+    allOrders: (...args: unknown[]) => unknown;
+
+    dustLog: (...args: unknown[]) => unknown;
+
+    prevDay: (...args: unknown[]) => unknown;
+
+    candlesticks: (...args: unknown[]) => unknown;
+
+    websockets: {
+      depth: (...args: unknown[]) => unknown;
+      depthCache: (...args: unknown[]) => unknown;
+      chart: (...args: unknown[]) => unknown;
+      candlesticks: (...args: unknown[]) => unknown;
+      trades: (...args: unknown[]) => unknown;
+      miniTicker: (...args: unknown[]) => unknown;
+      prevDay: (...args: unknown[]) => unknown;
+    };
+
+    sortBids: (...args: unknown[]) => unknown;
+
+    sortAsks: (...args: unknown[]) => unknown;
+
+    first: (...args: unknown[]) => unknown;
+
+    depositAddress: (...args: unknown[]) => unknown;
+
+    depositHistory: (...args: unknown[]) => unknown;
+
+    withdrawHistory: (...args: unknown[]) => unknown;
+
+    withdraw: (...args: unknown[]) => unknown;
+
+    // MARGIN API
+    mgTransferMainToMargin: (...args: unknown[]) => unknown;
+
+    mgTransferMarginToMain: (...args: unknown[]) => unknown;
+
+    maxTransferable: (...args: unknown[]) => unknown;
+
+    maxBorrowable: (...args: unknown[]) => unknown;
+
+    mgBorrow: (...args: unknown[]) => unknown;
+
+    mgRepay: (...args: unknown[]) => unknown;
+
+    mgAccount: (...args: unknown[]) => unknown;
+
+    // LENDING API
+
+    lending: (...args: unknown[]) => unknown;
+
+    // FUTURES API
+
+    futuresPrices: (...args: unknown[]) => unknown;
 
     futuresAccount: () => Promise<FuturesAccount>;
 
-    futuresBalance: () => unknown;
+    futuresBalance: (...args: unknown[]) => unknown;
 
     futuresBuy: (symbol: string, quantity: number, price: number) => unknown;
 
@@ -191,7 +322,7 @@ declare module 'node-binance-api' {
 
     futuresMarketSell: (symbol: string, quantity: number) => unknown;
 
-    futuresPositionRisk: () => unknown;
+    futuresPositionRisk: (...args: unknown[]) => unknown;
 
     futuresLeverage: (symbol: string, leverage: number) => unknown;
 
@@ -199,7 +330,7 @@ declare module 'node-binance-api' {
 
     futuresPositionMargin: (symbol: string, amount: number, type: string) => unknown;
 
-    futuresTime: () => unknown;
+    futuresTime: (...args: unknown[]) => unknown;
 
     futuresExchangeInfo: () => Promise<FuturesExchangeInfo>;
 
@@ -209,7 +340,7 @@ declare module 'node-binance-api' {
 
     futuresQuote: (symbol?: string) => unknown;
 
-    futuresDaily: () => unknown;
+    futuresDaily: (...args: unknown[]) => unknown;
 
     futuresOpenInterest: (symbol: string) => unknown;
 
@@ -219,9 +350,9 @@ declare module 'node-binance-api' {
 
     futuresAggTrades: (symbol: string) => unknown;
 
-    futuresLiquidationOrders: () => unknown;
+    futuresLiquidationOrders: (...args: unknown[]) => unknown;
 
-    futuresFundingRate: () => unknown;
+    futuresFundingRate: (...args: unknown[]) => unknown;
 
     futuresHistoricalTrades: (symbol: string) => unknown;
 
@@ -251,7 +382,7 @@ declare module 'node-binance-api' {
 
     futuresUserTrades: (symbol: string) => Promise<FuturesUserTrades[]>;
 
-    futuresGetDataStream: () => unknown;
+    futuresGetDataStream: (...args: unknown[]) => unknown;
 
     futuresPositionMarginHistory: (symbol: string) => unknown;
 
@@ -301,8 +432,90 @@ declare module 'node-binance-api' {
 
     futuresTerminate: (endpoint: string, reconnect?: boolean) => unknown;
 
-    promiseRequest: (
-      url: string, data?: Record<string, string>, flags?: Record<string, string>,
-    ) => unknown;
+    futuresSubscriptions: (...args: unknown[]) => unknown;
+
+    // DELIVERY API
+
+    deliveryBuy: (...args: unknown[]) => unknown;
+
+    deliverySell: (...args: unknown[]) => unknown;
+
+    deliveryMarketBuy: (...args: unknown[]) => unknown;
+
+    deliveryMarketSell: (...args: unknown[]) => unknown;
+
+    deliveryPrices: (...args: unknown[]) => unknown;
+
+    deliveryDaily: (...args: unknown[]) => unknown;
+
+    deliveryOpenInterest: (...args: unknown[]) => unknown;
+
+    deliveryExchangeInfo: (...args: unknown[]) => unknown;
+
+    deliveryOpenOrders: (...args: unknown[]) => unknown;
+
+    deliveryAllOrders: (...args: unknown[]) => unknown;
+
+    deliveryCandles: (...args: unknown[]) => unknown;
+
+    deliveryIndexKlines: (...args: unknown[]) => unknown;
+
+    deliveryContinuousKlines: (...args: unknown[]) => unknown;
+
+    deliveryMarkPriceKlines: (...args: unknown[]) => unknown;
+
+    deliveryMarkPrice: (...args: unknown[]) => unknown;
+
+    deliveryHistoricalTrades: (...args: unknown[]) => unknown;
+
+    deliveryTrades: (...args: unknown[]) => unknown;
+
+    deliveryAggTrades: (...args: unknown[]) => unknown;
+
+    deliveryUserTrades: (...args: unknown[]) => unknown;
+
+    deliveryLiquidationOrders: (...args: unknown[]) => unknown;
+
+    deliveryPositionRisk: (...args: unknown[]) => unknown;
+
+    deliveryLeverage: (...args: unknown[]) => unknown;
+
+    deliveryMarginType: (...args: unknown[]) => unknown;
+
+    deliveryPositionMargin: (...args: unknown[]) => unknown;
+
+    deliveryPositionMarginHistory: (...args: unknown[]) => unknown;
+
+    deliveryIncome: (...args: unknown[]) => unknown;
+
+    deliveryBalance: (...args: unknown[]) => unknown;
+
+    deliveryAccount: (...args: unknown[]) => unknown;
+
+    deliveryDepth: (...args: unknown[]) => unknown;
+
+    deliveryQuote: (...args: unknown[]) => unknown;
+
+    deliveryLeverageBracket: (...args: unknown[]) => unknown;
+
+    deliveryOrderStatus: (...args: unknown[]) => unknown;
+
+    deliveryCancel: (...args: unknown[]) => unknown;
+
+    deliveryCancelAll: (...args: unknown[]) => unknown;
+
+    deliveryCountdownCancelAll: (...args: unknown[]) => unknown;
+
+    deliveryOrder: (...args: unknown[]) => unknown;
+
+    deliveryGetDataStream: (...args: unknown[]) => unknown;
+
+    deliveryCloseDataStream: (...args: unknown[]) => unknown;
+
+    deliveryKeepDataStream: (...args: unknown[]) => unknown;
+
+    deliveryPing: (...args: unknown[]) => unknown;
+
+    deliveryTime: (...args: unknown[]) => unknown;
   }
 }
