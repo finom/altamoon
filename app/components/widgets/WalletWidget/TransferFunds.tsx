@@ -16,7 +16,7 @@ import { RootStore } from '../../../store';
 import truncateDecimals from '../../../lib/truncateDecimals';
 
 const TransferFunds = (): ReactElement => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [isFromSpotToFutures, setIsFromSpotToFutures] = useState(true);
   const [currency, setCurrency] = useState<'USDT' | 'BNB'>('USDT');
   const [quantity, setQuantity] = useState(0);
@@ -28,7 +28,7 @@ const TransferFunds = (): ReactElement => {
     [isOpen, lastTransactionId],
   );
   const available: string | undefined = useMemo(() => (isFromSpotToFutures
-    ? spotBalance?.[currency].available
+    ? spotBalance?.[currency]?.available
     : futuresAccount?.assets.find(({ asset }) => asset === currency)?.maxWithdrawAmount),
   [spotBalance, currency, futuresAccount?.assets, isFromSpotToFutures]);
 
