@@ -15,12 +15,7 @@ import path from 'path';
 import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import Store from 'electron-store';
 import MenuBuilder from './menu';
-
-Store.initRenderer();
-
-console.log('app.getPath(\'userData\')', app.getPath('userData'));
 
 export default class AppUpdater {
   constructor() {

@@ -1,3 +1,4 @@
+import { CandlestickChartInterval } from 'node-binance-api';
 import { Layout } from 'react-grid-layout';
 import { listenChange } from 'use-change';
 import binance from '../lib/binance';
@@ -5,6 +6,8 @@ import getPersistentStorageValue from '../lib/getPersistentStorageValue';
 
 export default class Persistent {
   public symbol = getPersistentStorageValue<string, keyof Persistent>('symbol', 'BTCUSDT');
+
+  public interval = getPersistentStorageValue<CandlestickChartInterval, keyof Persistent>('interval', '1d');
 
   public theme = getPersistentStorageValue<'dark' | 'light', keyof Persistent>('theme', 'light');
 

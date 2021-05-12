@@ -1,3 +1,24 @@
+/* ==== Utilities ==== */
+
+.flex-one {
+  flex: 1;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* temporary fix until reactstrap is updated */
+button.close {
+  background-color: transparent;
+  border: 0;
+  color: inherit;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+
+/* ==== react-grid ==== */
 .react-grid-layout {
   position: relative;
   transition: height 200ms ease;
@@ -55,11 +76,3 @@
   display: none;
 }
 
-/* temporary fix until reactstrap is updated */
-button.close {
-  background-color: transparent;
-  border: 0;
-  color: inherit;
-  font-size: 2rem;
-  line-height: 1;
-}

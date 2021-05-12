@@ -2,7 +2,7 @@ import React, {
   memo, ReactElement, SyntheticEvent, useCallback, useState,
 } from 'react';
 import { Input, Label, Table } from 'reactstrap';
-import { format } from 'd3-format';
+import { format } from 'd3';
 import useChange, { useValue } from 'use-change';
 import { RootStore } from '../../../store';
 import Widget from '../../layout/Widget';

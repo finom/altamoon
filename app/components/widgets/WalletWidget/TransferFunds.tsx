@@ -6,7 +6,7 @@ import {
 } from 'reactstrap';
 import usePromise from 'react-use-promise';
 import { BalanceItem } from 'node-binance-api';
-import { format } from 'd3-format';
+import { format } from 'd3';
 
 import { useSilent, useValue } from 'use-change';
 import LabeledInput from '../../controls/LabeledInput';

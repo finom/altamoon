@@ -1,5 +1,5 @@
 import React, { memo, ReactElement } from 'react';
-import { format } from 'd3-format';
+import { format } from 'd3';
 import { useValue } from 'use-change';
 import truncateDecimals from '../../../lib/truncateDecimals';
 import { RootStore } from '../../../store';

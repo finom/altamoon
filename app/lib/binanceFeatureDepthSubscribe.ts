@@ -34,7 +34,7 @@ interface DepthUpdateTicker {
 export default function binanceFeatureDepthSubscribe(
   symbol: string,
   callback: (asks: [number, number][], bids: [number, number][]) => void,
-): () => void {
+): string {
   let depth: FuturesDepth;
   let lastTicker: DepthUpdateTicker;
   let isProcessing = false;
@@ -103,7 +103,5 @@ export default function binanceFeatureDepthSubscribe(
     updateMaps(ticker.a, ticker.b);
   });
 
-  return () => {
-    binance.futuresTerminate(endpoint);
-  };
+  return endpoint;
 }

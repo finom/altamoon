@@ -18,7 +18,7 @@ declare module 'node-binance-api' {
 
   export type WorkingType = 'MARK_PRICE' | 'CONTRACT_PRICE';
 
-  export type CandlestickChartIntervals = '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '6h' | '8h' | '12h' | '1d' | '3d' | '1w' | '1M';
+  export type CandlestickChartInterval = '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '6h' | '8h' | '12h' | '1d' | '3d' | '1w' | '1M';
 
   export type RateLimiter = 'REQUEST_WEIGHT' | 'ORDERS';
 
@@ -182,6 +182,20 @@ declare module 'node-binance-api' {
     realizedPnl: string;
     side: OrderSide;
     symbol: string;
+  }
+
+  export interface FuturesChartCandle {
+    close: string;
+    closeTime: number;
+    high: string;
+    low: string;
+    open: string;
+    quoteVolume: string;
+    takerBuyBaseVolume: string;
+    takerBuyQuoteVolume: string;
+    time: number;
+    trades: number;
+    volume: string;
   }
 
   export default class Binance {
@@ -419,10 +433,14 @@ declare module 'node-binance-api' {
 
     futuresChart: (
       symbols: string | string[],
-      interval: string,
-      callback: (symbol: string, interval: string, futuresKlineConcat: unknown) => void,
-      limit: number
-    ) => unknown;
+      interval: CandlestickChartInterval,
+      callback: (
+        symbol: string,
+        interval: CandlestickChartInterval,
+        futuresKlineConcat: Record<number, FuturesChartCandle>,
+      ) => void,
+      limit?: number
+    ) => Promise<string>;
 
     futuresSubscribe: <T = unknown>(
       streams: string | string[],

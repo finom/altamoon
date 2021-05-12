@@ -31,13 +31,13 @@ export default class Account {
     this.totalWalletBalance = +futuresAccount.totalWalletBalance;
     this.totalPositionInitialMargin = +futuresAccount.totalPositionInitialMargin;
     this.totalOpenOrderInitialMargin = +futuresAccount.totalOpenOrderInitialMargin;
-    this.positions = futuresAccount.positions.map((p) => ({
+    this.positions = futuresAccount.positions?.map((p) => ({
       leverage: +p.leverage,
       price: +p.entryPrice,
       qty: +p.positionAmt,
       baseValue: +p.positionAmt * +p.entryPrice,
       side: +p.positionAmt >= 0 ? 'BUY' : 'SELL',
       symbol: p.symbol,
-    }));
+    })) ?? [];
   };
 }

@@ -14,13 +14,14 @@ interface Props {
   noPadding?: boolean;
   bodyClassName?: string;
   settings?: ReactNode;
-  children: ReactNode;
+  children?: ReactNode;
+  bodyRef?: (node: HTMLDivElement) => void;
   onSettingsClose?: () => void;
   onSettingsSave?: () => void;
 }
 
 const Widget = ({
-  title, noPadding, bodyClassName, settings, children, onSettingsClose, onSettingsSave,
+  title, noPadding, bodyClassName, settings, children, bodyRef, onSettingsClose, onSettingsSave,
 }: Props): ReactElement => {
   const [isSettingsOpen, setIsSettignsOpen] = useState(false);
 
@@ -53,18 +54,21 @@ const Widget = ({
           </span>
         )}
       </CardHeader>
-      <CardBody className={classNames({
-        'p-0': !!noPadding,
-        [css.cardBody]: true,
-        [String(bodyClassName)]: !!bodyClassName,
-      })}
+      <CardBody
+        innerRef={bodyRef}
+        className={classNames({
+          'p-0': !!noPadding,
+          [css.cardBody]: true,
+          [String(bodyClassName)]: !!bodyClassName,
+        })}
       >
         {!!settings && (
-        <div className={classNames({
-          'card-body': true,
-          [css.settings]: true,
-          [css.settingsOpen]: isSettingsOpen,
-        })}
+        <div
+          className={classNames({
+            'card-body': true,
+            [css.settings]: true,
+            [css.settingsOpen]: isSettingsOpen,
+          })}
         >
           {settings}
           <Button

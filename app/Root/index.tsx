@@ -5,6 +5,7 @@ import { Provider as UseChangeProvider } from 'use-change';
 
 import routes from './routes';
 import ErrorBoundary from './ErrorBoundary';
+import './chart.global.css';
 import './root.global.css';
 import store from '../store';
 
