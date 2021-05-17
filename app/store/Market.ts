@@ -1,4 +1,6 @@
-import { FuturesAggTradeStreamTicker, FuturesChartCandle, FuturesExchangeInfo } from 'node-binance-api';
+import {
+  FuturesAggTradeStreamTicker, FuturesChartCandle, FuturesExchangeInfo, FuturesExchangeInfoSymbol,
+} from 'node-binance-api';
 import { listenChange } from 'use-change';
 import binance from '../lib/binance';
 import binanceFeatureDepthSubscribe from '../lib/binanceFeatureDepthSubscribe';
@@ -13,6 +15,8 @@ export default class Market {
   public lastPrice: number | null = null;
 
   public futuresExchangeSymbols: FuturesExchangeInfo['symbols'] = [];
+
+  public currentSymbolInfo: FuturesExchangeInfoSymbol | null = null;
 
   public asks: [number, number][] = [];
 
@@ -31,12 +35,21 @@ export default class Market {
   constructor(store: Store) {
     this.#store = store;
 
+    // call onSymbolChange on every symbol change and on load
     listenChange(store.persistent, 'symbol', this.#onSymbolChange);
-
     void this.#onSymbolChange(store.persistent.symbol);
+
+    // call the handler on every symbol change but not on load
+    listenChange(store.persistent, 'symbol', () => {
+      this.#store.persistent.alerts = [];
+    });
 
     void binance.futuresExchangeInfo().then(({ symbols }) => {
       this.futuresExchangeSymbols = symbols.sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
+
+      this.currentSymbolInfo = this.futuresExchangeSymbols.find(
+        ({ symbol: s }) => s === store.persistent.symbol,
+      ) ?? null;
     });
 
     listenChange(store.persistent, 'interval', async (interval) => {
@@ -77,6 +90,10 @@ export default class Market {
         this.candles = Object.values(data);
       }, 200,
     );
+
+    this.currentSymbolInfo = this.futuresExchangeSymbols.find(
+      ({ symbol: s }) => s === symbol,
+    ) ?? null;
   };
 
   #onAggTradeStreamTick = (ticker: FuturesAggTradeStreamTicker): void => {

@@ -2,7 +2,11 @@ import { CandlestickChartInterval } from 'node-binance-api';
 import { Layout } from 'react-grid-layout';
 import { listenChange } from 'use-change';
 import binance from '../lib/binance';
-import getPersistentStorageValue from '../lib/getPersistentStorageValue';
+
+function getPersistentStorageValue<T, K extends string>(key: K, defaultValue: T): T {
+  const storageValue = localStorage.getItem(key);
+  return storageValue ? JSON.parse(storageValue) as T : defaultValue;
+}
 
 export default class Persistent {
   public symbol = getPersistentStorageValue<string, keyof Persistent>('symbol', 'BTCUSDT');
@@ -18,6 +22,8 @@ export default class Persistent {
   public binanceApiSecret = getPersistentStorageValue<string | null, keyof Persistent>('binanceApiSecret', null);
 
   public ignoreValuesBelowNumber = getPersistentStorageValue<number, keyof Persistent>('ignoreValuesBelowNumber', 10);
+
+  public alerts = getPersistentStorageValue<number[], keyof Persistent>('alerts', []);
 
   constructor() {
     Object.getOwnPropertyNames(this).forEach((key) => {

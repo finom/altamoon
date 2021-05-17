@@ -13,22 +13,36 @@ const intervals: CandlestickChartInterval[] = ['1m', '3m', '5m', '15m', '30m', '
 const ChartWidget = (): ReactElement => {
   const [interval, setCandleInterval] = useChange(({ persistent }: RootStore) => persistent, 'interval');
   const ref = useRef<HTMLDivElement | null>(null);
+  const previousSymbolRef = useRef<string | null>(null);
   const candleChartRef = useRef<CandlestickChart | null>(null);
   const candles = useValue(({ market }: RootStore) => market, 'candles');
+  const currentSymbolInfo = useValue(({ market }: RootStore) => market, 'currentSymbolInfo');
   const symbol = useValue(({ persistent }: RootStore) => persistent, 'symbol');
+  const [alerts, onUpdateAlerts] = useChange(({ persistent }: RootStore) => persistent, 'alerts');
 
   useEffect(() => {
     if (candleChartRef.current) {
-      candleChartRef.current.update({ candles, symbol });
+      candleChartRef.current.update({
+        candles, symbol, yPrecision: currentSymbolInfo?.pricePrecision ?? 1,
+      });
     }
-  }, [candles, symbol]);
+  }, [alerts, candles, currentSymbolInfo?.pricePrecision, symbol]);
 
   useEffect(() => {
     if (ref.current && !candleChartRef.current) {
-      candleChartRef.current = new CandlestickChart(ref.current);
-      candleChartRef.current.update({ candles, symbol });
+      candleChartRef.current = new CandlestickChart(ref.current, { onUpdateAlerts, alerts });
+      candleChartRef.current.update({
+        candles, symbol, yPrecision: currentSymbolInfo?.pricePrecision ?? 1,
+      });
     }
   });
+
+  // reset alerts when symbol is changed, but not on load
+  useEffect(() => {
+    if (previousSymbolRef.current && previousSymbolRef.current !== symbol) {
+      candleChartRef.current?.resetAlerts();
+    }
+  }, [symbol]);
 
   return (
     <Widget title="Chart">

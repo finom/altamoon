@@ -6,7 +6,6 @@ import { FuturesChartCandle } from 'node-binance-api';
 import Axes from './items/Axes';
 import ClipPath from './items/ClipPath';
 import GridLines from './items/GridLines';
-import Measurer from './items/Measurer';
 import Plot from './items/Plot';
 import Svg from './items/Svg';
 // import Crosshair from './items/Crosshair';
@@ -14,9 +13,14 @@ import Svg from './items/Svg';
 import {
   ResizeData, DrawData, Scales, StyleMargin, D3Selection,
 } from './types';
-import PriceLines, { PriceLinesDatum } from './items/PriceLines';
+import PriceLines from './items/PriceLines';
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
+
+interface Params {
+  onUpdateAlerts: (y: number[]) => void;
+  alerts: number[];
+}
 
 export default class CandlestickChart {
   #symbol?: string;
@@ -28,8 +32,6 @@ export default class CandlestickChart {
   #axes: Axes;
 
   #gridLines: GridLines;
-
-  #measurer: Measurer;
 
   #plot: Plot;
 
@@ -47,9 +49,18 @@ export default class CandlestickChart {
 
   #currentPriceLines: PriceLines;
 
-  #data = {
+  #crosshairPriceLines: PriceLines;
+
+  #alertLines: PriceLines;
+
+  #lastPrice?: number;
+
+  #yPrecision = 1;
+
+  #candles: FuturesChartCandle[] = [];
+
+  /* #data = {
     candles: [] as FuturesChartCandle[],
-    currentPriceLines: [{ yValue: -100 }] as PriceLinesDatum[],
     positionLine: [],
     bidAskLines: [],
     liquidationLine: [],
@@ -58,11 +69,14 @@ export default class CandlestickChart {
     draftLines: [],
     alertLines: [],
     yPrecision: 1,
-  };
+  }; */
 
   #zoom = d3.zoom();
 
-  constructor(container: string | Node | HTMLElement | HTMLElement[] | Node[]) {
+  constructor(
+    container: string | Node | HTMLElement | HTMLElement[] | Node[],
+    { alerts, onUpdateAlerts }: Params,
+  ) {
     const containerElement = $.one(container);
     if (!containerElement) {
       throw new Error('Element not found');
@@ -82,11 +96,29 @@ export default class CandlestickChart {
     this.#axes = new Axes({ scales: this.#scales });
     this.#clipPath = new ClipPath();
     this.#gridLines = new GridLines({ scales: this.#scales });
-    this.#measurer = new Measurer({ scales: this.#scales });
 
     this.#currentPriceLines = new PriceLines({
       axis: this.#axes.getAxis(),
+      items: [{}],
+      color: '#ff0000',
+    }, resizeData);
+
+    this.#crosshairPriceLines = new PriceLines({
+      axis: this.#axes.getAxis(),
       items: [],
+      showX: true,
+      isVisible: false,
+      color: '#00ff00',
+      lineStyle: 'dotted',
+    }, resizeData);
+
+    this.#alertLines = new PriceLines({
+      axis: this.#axes.getAxis(),
+      items: alerts.map((yValue) => ({ yValue, title: 'Alert' })),
+      color: '#828282',
+      isTitleVisible: true,
+      isDraggable: true,
+      onUpdate: onUpdateAlerts,
     }, resizeData);
 
     // console.log(this.#axes.getAxis().yRight.tickSizeInner());
@@ -124,21 +156,28 @@ export default class CandlestickChart {
   public update(data: {
     yPrecision?: number; candles?: FuturesChartCandle[], symbol?: string;
   }): void {
-    // const drawData: DrawData = { candles: this.#data.candles };
-
-    Object.assign(this.#data, data);
-    if (this.#symbol !== data.symbol) {
-      this.#draw();
-      return;
-    }
-    if (typeof data.yPrecision !== 'undefined' && data.yPrecision !== this.#data.yPrecision) {
+    if (typeof data.yPrecision !== 'undefined' && data.yPrecision !== this.#yPrecision) {
+      this.#yPrecision = data.yPrecision;
       this.#axes.update({ yPrecision: data.yPrecision });
+      this.#currentPriceLines.update({ yPrecision: data.yPrecision });
+      this.#crosshairPriceLines.update({ yPrecision: data.yPrecision });
+      this.#alertLines.update({ yPrecision: data.yPrecision });
     }
-    if (typeof data.candles !== 'undefined' && !isEqual(data.candles, this.#data.candles)) {
+
+    if (typeof data.candles !== 'undefined') {
+      this.#candles = data.candles;
+      const lastPrice = +(last(data.candles ?? [])?.close ?? 0);
+      if (lastPrice) {
+        this.#checkAlerts(lastPrice);
+        this.#lastPrice = lastPrice;
+        this.#svg.groupSelection?.call(
+          this.#zoom.translateBy as ZooomTranslateBy, 0,
+        );
+      }
+    }
+
+    if (this.#symbol !== data.symbol || !isEqual(data.candles, this.#candles)) {
       this.#draw();
-      this.#svg.groupSelection?.call(
-        this.#zoom.translateBy as ZooomTranslateBy, 0,
-      );
     }
   }
 
@@ -149,6 +188,10 @@ export default class CandlestickChart {
     d3.select(this.#container).select('svg').remove();
   }
 
+  public resetAlerts = (): void => {
+    this.#alertLines.update({ items: [] });
+  };
+
   #draw = (): void => {
     this.#calcXDomain();
     this.#calcYDomain();
@@ -156,7 +199,7 @@ export default class CandlestickChart {
       width: this.#width, height: this.#height, margin: this.#margin, scales: this.#scales,
     };
 
-    const drawData: DrawData = { candles: this.#data.candles };
+    const drawData: DrawData = { candles: this.#candles };
 
     this.#axes.draw(resizeData);
 
@@ -181,14 +224,10 @@ export default class CandlestickChart {
 
     this.#plot.draw(drawData);
 
-    this.#measurer.resize(resizeData);
-
-    this.#data.currentPriceLines[0].yValue = +(
-      this.#data.candles[this.#data.candles.length - 1]?.close ?? 0
-    );
-
-    this.#currentPriceLines.update({
-      items: this.#data.currentPriceLines,
+    this.#currentPriceLines.updateItem(0, {
+      yValue: +(
+        this.#candles[this.#candles.length - 1]?.close ?? 0
+      ),
     });
 
     // this.#crosshair.draw();
@@ -216,9 +255,10 @@ export default class CandlestickChart {
     this.#clipPath.resize(resizeData);
     this.#gridLines.resize(resizeData);
     this.#currentPriceLines.resize(resizeData);
+    this.#crosshairPriceLines.resize(resizeData);
+    this.#alertLines.resize(resizeData);
 
     /*
-
     this.priceLine.resize()
     this.bidAskLines.resize()
     this.draftLines.resize()
@@ -228,10 +268,9 @@ export default class CandlestickChart {
     this.positionLine.resize()
     this.liquidationLine.resize()
     */
-    this.#measurer.resize(resizeData);
     // this.#crosshair.resize(resizeData);
 
-    if (this.#data.candles.length) {
+    if (this.#candles.length) {
       this.#draw();
       d3.select(this.#container).select('svg').call(
         this.#zoom.translateBy as ZooomTranslateBy, 0,
@@ -247,12 +286,13 @@ export default class CandlestickChart {
 
     const svgContainer = this.#svg.appendTo(this.#container, resizeData);
 
-    this.#clipPath.appendTo(svgContainer, resizeData);
     this.#gridLines.appendTo(svgContainer, resizeData);
     this.#axes.appendTo(svgContainer, resizeData);
     this.#plot.appendTo(svgContainer);
-    this.#measurer.appendTo(svgContainer);
-    this.#currentPriceLines.appendTo(svgContainer, resizeData);
+    this.#crosshairPriceLines.appendTo(svgContainer, resizeData);
+    this.#clipPath.appendTo(svgContainer, resizeData);
+    this.#currentPriceLines.appendTo(svgContainer, resizeData, { wrapperCSSStyle: { pointerEvents: 'none' } });
+    this.#alertLines.appendTo(svgContainer, resizeData);
 
     /*
      this.svg.appendTo(this.containerId)
@@ -287,6 +327,11 @@ export default class CandlestickChart {
      */
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);
+
+    d3.select(this.#container).select('svg #plotMouseEventsArea')
+      .on('mousemove', this.#onMouseMove)
+      .on('mouseleave', this.#onMouseLeave)
+      .on('dblclick', this.#onDoubleClick);
   };
 
   #calcDimensions = (): ResizeData => {
@@ -299,8 +344,8 @@ export default class CandlestickChart {
   };
 
   #calcXDomain = (): void => {
-    const candles = this.#data.candles
-      .slice(-Math.round(this.#width / 3), this.#data.candles.length);
+    const candles = this.#candles
+      .slice(-Math.round(this.#width / 3), this.#candles.length);
     const xDomain = (candles.length)
       ? [candles[0].time, last(candles)?.time]
       : [new Date(0), new Date()];
@@ -310,9 +355,10 @@ export default class CandlestickChart {
   #calcYDomain = (): void => {
     const { y } = this.#scales;
     const xDomain = this.#scales.x.domain();
-    const candles = this.#data.candles.filter((x) => x.time >= xDomain[0].getTime()
+    const candles = this.#candles.filter((x) => x.time >= xDomain[0].getTime()
           && x.time <= xDomain[1].getTime());
-    const yDomain: [number, number] = (candles.length)
+
+    const yDomain: [number, number] = candles.length
       ? [d3.min(candles, (d) => +d.low) as number, d3.max(candles, (d) => +d.high) as number]
       : [0, 1];
 
@@ -322,9 +368,59 @@ export default class CandlestickChart {
     const yPaddingTop = y.invert(-200) - y.invert(0);
     const yPaddingBot = y.invert(this.#height) - y.invert(this.#height + 200);
 
-    yDomain[1] = (yDomain[1] ?? 0) + (+yPaddingTop.toFixed(this.#data.yPrecision));
-    yDomain[0] = (yDomain[0] ?? 0) - (+yPaddingBot.toFixed(this.#data.yPrecision));
+    yDomain[1] = (yDomain[1] ?? 0) + (+yPaddingTop.toFixed(this.#yPrecision));
+    yDomain[0] = (yDomain[0] ?? 0) - (+yPaddingBot.toFixed(this.#yPrecision));
 
     y.domain(yDomain);
+  };
+
+  #checkAlerts = (lastPrice: number): void => {
+    const previousLastPrice = this.#lastPrice;
+    const items = this.#alertLines.getItems();
+
+    if (lastPrice && previousLastPrice) {
+      const up = items.find(
+        ({ yValue }) => yValue && lastPrice >= yValue && previousLastPrice < yValue,
+      );
+      const down = items.find(
+        ({ yValue }) => yValue && lastPrice <= yValue && previousLastPrice > yValue,
+      );
+      if (up) {
+        void new Audio('../assets/audio/alert-up.mp3').play();
+        this.#alertLines.removeItem(up);
+      } else if (down) {
+        void new Audio('../assets/audio/alert-down.mp3').play();
+        this.#alertLines.removeItem(down);
+      }
+    }
+  };
+
+  #onDoubleClick = (event: MouseEvent): void => {
+    event.stopPropagation();
+    const coords = d3.pointer(event);
+
+    this.#alertLines.addItem({
+      yValue: this.#crosshairPriceLines.invertY(coords[1]),
+      title: 'Alert',
+    });
+  };
+
+  #onMouseMove = (event: MouseEvent): void => {
+    const coords = d3.pointer(event);
+
+    this.#crosshairPriceLines.update({
+      isVisible: true,
+    });
+
+    this.#crosshairPriceLines.updateItem(0, {
+      xValue: this.#crosshairPriceLines.invertX(coords[0]),
+      yValue: this.#crosshairPriceLines.invertY(coords[1]),
+    });
+  };
+
+  #onMouseLeave = (): void => {
+    this.#crosshairPriceLines.update({
+      isVisible: false,
+    });
   };
 }
