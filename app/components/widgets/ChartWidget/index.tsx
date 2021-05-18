@@ -13,7 +13,6 @@ const intervals: CandlestickChartInterval[] = ['1m', '3m', '5m', '15m', '30m', '
 const ChartWidget = (): ReactElement => {
   const [interval, setCandleInterval] = useChange(({ persistent }: RootStore) => persistent, 'interval');
   const ref = useRef<HTMLDivElement | null>(null);
-  const previousSymbolRef = useRef<string | null>(null);
   const candleChartRef = useRef<CandlestickChart | null>(null);
   const candles = useValue(({ market }: RootStore) => market, 'candles');
   const currentSymbolInfo = useValue(({ market }: RootStore) => market, 'currentSymbolInfo');
@@ -23,35 +22,32 @@ const ChartWidget = (): ReactElement => {
   useEffect(() => {
     if (candleChartRef.current) {
       candleChartRef.current.update({
-        candles, symbol, yPrecision: currentSymbolInfo?.pricePrecision ?? 1,
+        candles, symbol, yPrecision: currentSymbolInfo?.pricePrecision ?? 1, interval,
       });
     }
-  }, [alerts, candles, currentSymbolInfo?.pricePrecision, symbol]);
+  }, [candles, currentSymbolInfo?.pricePrecision, interval, symbol]);
 
   useEffect(() => {
     if (ref.current && !candleChartRef.current) {
-      candleChartRef.current = new CandlestickChart(ref.current, { onUpdateAlerts, alerts });
-      candleChartRef.current.update({
-        candles, symbol, yPrecision: currentSymbolInfo?.pricePrecision ?? 1,
+      candleChartRef.current = new CandlestickChart(ref.current, {
+        onUpdateAlerts,
+        alerts,
+        symbol,
+        interval,
+        yPrecision: currentSymbolInfo?.pricePrecision ?? 1,
       });
+      candleChartRef.current.update({ candles });
     }
   });
 
-  // reset alerts when symbol is changed, but not on load
-  useEffect(() => {
-    if (previousSymbolRef.current && previousSymbolRef.current !== symbol) {
-      candleChartRef.current?.resetAlerts();
-    }
-  }, [symbol]);
-
   return (
     <Widget title="Chart">
-      <div className="nav nav-pills">
+      <div className={`nav nav-pills ${css.intervals}`}>
         {intervals.map((intervalsItem, index) => (
           <div
             role="button"
             tabIndex={index}
-            className="nav-item cursor-pointer"
+            className={`nav-item cursor-pointer ${css.intervalItem}`}
             key={intervalsItem}
             onClick={() => { setCandleInterval(intervalsItem); }}
             onKeyDown={() => { setCandleInterval(intervalsItem); }}

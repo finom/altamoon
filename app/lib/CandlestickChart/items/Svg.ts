@@ -1,26 +1,19 @@
-import $ from 'balajs';
 import * as d3 from 'd3';
-import convertType from '../../convertType';
 import { ChartItem, D3Selection, ResizeData } from '../types';
 
 export default class Svg implements ChartItem {
-  public groupSelection?: D3Selection<d3.BaseType>;
-
   #svg?: D3Selection<SVGSVGElement>;
 
+  #groupSelection?: D3Selection<SVGGElement>;
+
   public appendTo = (parent: Element, resizeData: ResizeData): SVGGElement => {
-    this.#svg = d3.select(parent).append('svg');
-    this.groupSelection = this.#svg.append('g').attr('id', 'mainGroup');
+    this.#svg = d3.select(parent).append('svg').attr('class', 'chart-svg');
+
+    this.#groupSelection = this.#svg.append('g').attr('id', 'mainGroup');
 
     this.resize(resizeData);
 
-    const groupHTMLElement = $.one('#mainGroup', convertType<HTMLElement>(parent));
-
-    if (!groupHTMLElement) {
-      throw new Error('Group HTML Element is not found');
-    }
-
-    return convertType<SVGGElement>(groupHTMLElement);
+    return this.#groupSelection.node() as SVGGElement;
   };
 
   public resize = ({ width, height, margin }: ResizeData): void => {
@@ -28,7 +21,7 @@ export default class Svg implements ChartItem {
       ?.attr('width', width + margin.left + margin.right)
       .attr('height', height + margin.top + margin.bottom);
 
-    this.groupSelection
+    this.#groupSelection
       ?.attr('transform', `translate(${margin.left},${margin.top})`);
   };
 }

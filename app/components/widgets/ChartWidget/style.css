@@ -1,3 +1,13 @@
+.intervals {
+  padding-bottom: 1rem;
+  flex-wrap: nowrap!important;
+  overflow: auto;
+}
+
+.intervalItem > span {
+  padding: 0.5rem 0.75rem;
+}
+
 .chartContainer {
-  height: calc(100% - 40px);
+  height: calc(100% - 50px);
 }

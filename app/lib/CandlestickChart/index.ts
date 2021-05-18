@@ -1,14 +1,15 @@
 import $ from 'balajs';
 import * as d3 from 'd3';
 
-import { isEqual, last } from 'lodash';
+import { last } from 'lodash';
 import { FuturesChartCandle } from 'node-binance-api';
 import Axes from './items/Axes';
 import ClipPath from './items/ClipPath';
 import GridLines from './items/GridLines';
 import Plot from './items/Plot';
 import Svg from './items/Svg';
-// import Crosshair from './items/Crosshair';
+
+import './chart.global.css';
 
 import {
   ResizeData, DrawData, Scales, StyleMargin, D3Selection,
@@ -18,12 +19,17 @@ import PriceLines from './items/PriceLines';
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
 interface Params {
+  symbol: string;
   onUpdateAlerts: (y: number[]) => void;
   alerts: number[];
+  interval: string;
+  yPrecision: number;
 }
 
 export default class CandlestickChart {
-  #symbol?: string;
+  #symbol: string;
+
+  #interval: string;
 
   #svg: Svg;
 
@@ -55,7 +61,9 @@ export default class CandlestickChart {
 
   #lastPrice?: number;
 
-  #yPrecision = 1;
+  #yPrecision: number;
+
+  #isDrawn = false;
 
   #candles: FuturesChartCandle[] = [];
 
@@ -75,7 +83,9 @@ export default class CandlestickChart {
 
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
-    { alerts, onUpdateAlerts }: Params,
+    {
+      yPrecision, symbol, interval, alerts, onUpdateAlerts,
+    }: Params,
   ) {
     const containerElement = $.one(container);
     if (!containerElement) {
@@ -92,6 +102,9 @@ export default class CandlestickChart {
       y: d3.scaleSymlog().range([this.#height, 0]),
     };
 
+    this.#symbol = symbol;
+    this.#interval = interval;
+    this.#yPrecision = yPrecision;
     this.#svg = new Svg();
     this.#axes = new Axes({ scales: this.#scales });
     this.#clipPath = new ClipPath();
@@ -100,7 +113,7 @@ export default class CandlestickChart {
     this.#currentPriceLines = new PriceLines({
       axis: this.#axes.getAxis(),
       items: [{}],
-      color: '#ff0000',
+      color: '#0000ff',
     }, resizeData);
 
     this.#crosshairPriceLines = new PriceLines({
@@ -108,7 +121,7 @@ export default class CandlestickChart {
       items: [],
       showX: true,
       isVisible: false,
-      color: '#00ff00',
+      color: '#3F51B5',
       lineStyle: 'dotted',
     }, resizeData);
 
@@ -118,6 +131,7 @@ export default class CandlestickChart {
       color: '#828282',
       isTitleVisible: true,
       isDraggable: true,
+      lineStyle: 'dashed',
       onUpdate: onUpdateAlerts,
     }, resizeData);
 
@@ -133,7 +147,7 @@ export default class CandlestickChart {
 
     type ZoomEvent = { transform: { rescaleX: (s: Scales['x']) => Scales['x'] } };
 
-    d3.select(this.#container).select('svg')?.call(
+    d3.select(this.#container).select('svg').call(
       this.#zoom.on('zoom', (event: ZoomEvent) => {
         const { transform } = event;
         const scaledX = transform.rescaleX(this.#scales.x);
@@ -154,7 +168,7 @@ export default class CandlestickChart {
    * @param properties - New chart properties
    */
   public update(data: {
-    yPrecision?: number; candles?: FuturesChartCandle[], symbol?: string;
+    yPrecision?: number; candles?: FuturesChartCandle[], symbol?: string; interval?: string;
   }): void {
     if (typeof data.yPrecision !== 'undefined' && data.yPrecision !== this.#yPrecision) {
       this.#yPrecision = data.yPrecision;
@@ -170,14 +184,20 @@ export default class CandlestickChart {
       if (lastPrice) {
         this.#checkAlerts(lastPrice);
         this.#lastPrice = lastPrice;
-        this.#svg.groupSelection?.call(
-          this.#zoom.translateBy as ZooomTranslateBy, 0,
-        );
       }
     }
 
-    if (this.#symbol !== data.symbol || !isEqual(data.candles, this.#candles)) {
+    if (typeof data.symbol !== 'undefined' && this.#symbol !== data.symbol) {
+      this.#symbol = data.symbol;
+      this.#alertLines.update({ items: [] });
+    }
+
+    if (typeof data.candles !== 'undefined' || typeof data.interval !== 'undefined') {
       this.#draw();
+    }
+
+    if (typeof data.interval !== 'undefined' && this.#interval !== data.interval) {
+      this.#translateBy(0);
     }
   }
 
@@ -244,6 +264,16 @@ export default class CandlestickChart {
         this.alertLines.wrapper.selectAll('.alert-lines > g')
             .attr('data-side', d => d.side)
     */
+    if (!this.#isDrawn && this.#candles.length) {
+      this.#isDrawn = true;
+      this.#translateBy(-100);
+    }
+  };
+
+  #translateBy = (value: number): void => {
+    d3.select(this.#container).select('svg').call(
+      this.#zoom.translateBy as ZooomTranslateBy, value,
+    );
   };
 
   #resize = (): void => {
@@ -272,9 +302,7 @@ export default class CandlestickChart {
 
     if (this.#candles.length) {
       this.#draw();
-      d3.select(this.#container).select('svg').call(
-        this.#zoom.translateBy as ZooomTranslateBy, 0,
-      ); // Pan chart
+      this.#translateBy(0);
     }
   };
 
