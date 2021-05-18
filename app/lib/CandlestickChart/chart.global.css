@@ -1,68 +1,68 @@
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   SVG
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-svg {
+svg.chart-svg {
   font: 10px sans-serif;
   background: #010025;
   /* height: 100%; */
   shape-rendering: crispEdges;
 }
-svg text {
+svg.chart-svg text {
   fill: white
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Axis
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.axis text {
+svg.chart-svg .axis text {
   fill: #67bcff ;
 }
-.axis path, .axis line {
+svg.chart-svg .axis path, svg.chart-svg .axis line {
   stroke: #3F51B5;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Grid
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.gridlines line, .gridlines path {
+svg.chart-svg .gridlines line, svg.chart-svg .gridlines path {
   stroke: #001242;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Candles
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.plot {
+svg.chart-svg .plot {
   stroke: #0077ff;
 }
-.plot .wick {
+svg.chart-svg .plot .wick {
   stroke-width: 1px;
 }
-.plot .up.body {
+svg.chart-svg .plot .up.body {
   fill: #00a7ff;
   stroke: #0098ff;
 }
-.plot .up.wick {
+svg.chart-svg .plot .up.wick {
   stroke: #00aeff;
 }
-.plot .down.body {
+svg.chart-svg .plot .down.body {
   fill: #003eff;
   stroke: #0022ff;
 }
-.plot .down.wick {
+svg.chart-svg .plot .down.wick {
   stroke: #0046ff;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Lines
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.scope-supstance .interaction path {
+svg.chart-svg .scope-supstance .interaction path {
   stroke-width: 10px !important;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Price line
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.price-line .supstance path {
+svg.chart-svg .price-line .supstance path {
   stroke: #0000ff;
   stroke-dasharray: 10 6;
   visibility: hidden;
 }
-.price-line .axisannotation path {
+svg.chart-svg .price-line .axisannotation path {
   fill: #0000ff;
   stroke: #0000ff;
   shape-rendering: auto;
@@ -70,21 +70,21 @@ svg text {
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Bid & Ask line
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.bid-ask-lines .supstance path {
+svg.chart-svg .bid-ask-lines .supstance path {
   stroke: #0000ff;
 }
-.bid-ask-lines .axisannotation path,
-.bid-ask-lines .axisannotation text {
+svg.chart-svg .bid-ask-lines .axisannotation path,
+svg.chart-svg .bid-ask-lines .axisannotation text {
   visibility: hidden;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Position line
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.position-line path {
+svg.chart-svg .position-line path {
   fill: #30b332;
   stroke: #30b332;
 }
-.position-label .line-label {
+svg.chart-svg .position-label .line-label {
   background-color: #30b332;
   border: 2px solid #30b332;
   border-radius: 5px;
@@ -92,90 +92,90 @@ svg text {
   min-width: 70px;
   height: 19px;
 }
-.position-label .line-label div {
+svg.chart-svg .position-label .line-label div {
   display: inline-block;
   height: 19px;
   padding: 4px 3px;
 }
-.position-line text,
-.position-label text {
+svg.chart-svg .position-line text,
+svg.chart-svg .position-label text {
   font-weight: bold;
 }
-.position-line [data-side='sell'] path,
-.position-label [data-side='sell'] path,
-.position-label [data-side='sell'] rect {
+svg.chart-svg .position-line [data-side='sell'] path,
+svg.chart-svg .position-label [data-side='sell'] path,
+svg.chart-svg .position-label [data-side='sell'] rect {
   fill: #ab257c;
   stroke: #ab257c;
 }
-.position-line [data-side='sell'] text,
-.position-label [data-side='sell'] text {
+svg.chart-svg .position-line [data-side='sell'] text,
+svg.chart-svg .position-label [data-side='sell'] text {
   fill: #fff;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Break-even line
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.break-even-line .supstance path {
+svg.chart-svg .break-even-line .supstance path {
   stroke: #5c4d39;
   stroke-dasharray: 4px 7px;
 }
-.break-even-line .axisannotation path,
-.break-even-line .axisannotation text {
+svg.chart-svg .break-even-line .axisannotation path,
+svg.chart-svg .break-even-line .axisannotation text {
   visibility: hidden;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Liquidation lines
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.liquidation-line .supstance path {
+svg.chart-svg .liquidation-line .supstance path {
   stroke: #ff0026;
 }
-.liquidation-line .axisannotation path,
-.liquidation-line .axisannotation text {
+svg.chart-svg .liquidation-line .axisannotation path,
+svg.chart-svg .liquidation-line .axisannotation text {
   visibility: hidden;
 }
-.liquidation-line [data-type='draft'] .supstance path {
+svg.chart-svg .liquidation-line [data-type='draft'] .supstance path {
   stroke-dasharray: 10 6;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Order lines
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.order-lines .scope-supstance.mouseover path {
+svg.chart-svg .order-lines .scope-supstance.mouseover path {
   cursor: grab;
 }
-.order-lines path {
+svg.chart-svg .order-lines path {
   fill: #20884c;
   stroke: #20884c;
 }
-.order-lines [data-side='sell'] path {
+svg.chart-svg .order-lines [data-side='sell'] path {
   stroke: #6d28d2;
 }
-.order-labels .line-label  {
+svg.chart-svg .order-labels .line-label  {
   background-color: #20884c;
   border-radius: 5px;
   min-width: 70px;
   height: 19px;
 }
-.order-labels .line-label div {
+svg.chart-svg .order-labels .line-label div {
   display: inline-block;
   height: 19px;
   padding: 4px 3px;
 }
-.order-labels [data-side='sell'] .line-label {
+svg.chart-svg .order-labels [data-side='sell'] .line-label {
   background-color: #6d28d2;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Draft lines
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.draft-lines .scope-supstance.mouseover path {
+svg.chart-svg .draft-lines .scope-supstance.mouseover path {
   cursor: grab;
 }
-.draft-lines .supstance path {
+svg.chart-svg .draft-lines .supstance path {
   stroke-dasharray: 10 6;
 }
-.draft-lines path {
+svg.chart-svg .draft-lines path {
   fill: #20884c;
   stroke: #20884c;
 }
-.draft-labels .line-label {
+svg.chart-svg .draft-labels .line-label {
   background-color: #191919;
   border: 2px solid #20884c;
   border-radius: 5px;
@@ -183,16 +183,16 @@ svg text {
   width: 70px;
   height: 19px;
 }
-.draft-labels .line-label div {
+svg.chart-svg .draft-labels .line-label div {
   display: inline-block;
   height: 19px;
   padding: 4px 3px;
 }
-.draft-lines [data-side='sell'] path {
+svg.chart-svg .draft-lines [data-side='sell'] path {
   fill: #7d37e4;
   stroke: #7d37e4;
 }
-.draft-labels [data-side='sell'] .line-label {
+svg.chart-svg .draft-labels [data-side='sell'] .line-label {
   border-color: #6d28d2;
 }
 
@@ -200,17 +200,17 @@ svg text {
 /*   Alert lines
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-.alert-lines .scope-supstance.mouseover path {
+svg.chart-svg .alert-lines .scope-supstance.mouseover path {
   cursor: grab;
 }
-.alert-lines .supstance path {
+svg.chart-svg .alert-lines .supstance path {
   stroke-dasharray: 10 6;
 }
-.alert-lines path {
+svg.chart-svg .alert-lines path {
   fill: #828282;
   stroke: #828282;
 }
-.alert-labels .line-label {
+svg.chart-svg .alert-labels .line-label {
   background-color: #191919;
   border: 2px solid #828282;
   border-radius: 5px;
@@ -218,48 +218,48 @@ svg text {
   width: 70px;
   height: 19px;
 }
-.alert-labels .line-label div {
+svg.chart-svg .alert-labels .line-label div {
   display: inline-block;
   vertical-align: top;
   height: 19px;
   padding: 4px 3px;
 }
-.alert-lines [data-side='sell'] path {
+svg.chart-svg .alert-lines [data-side='sell'] path {
   fill: #828282;
   stroke: #828282;
 }
-.alert-labels [data-side='sell'] rect {
+svg.chart-svg .alert-labels [data-side='sell'] rect {
   stroke: #828282;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Crosshair
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.crosshair path.wire {
+svg.chart-svg .crosshair path.wire {
   stroke: #3F51B5;
   stroke-dasharray: 2, 4;
 }
-.crosshair .axisannotation path {
+svg.chart-svg .crosshair .axisannotation path {
   fill: #555;
 }
-.crosshair .axisannotation text {
+svg.chart-svg .crosshair .axisannotation text {
   fill: #fff;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Measure tool
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-.measurer rect {
+svg.chart-svg .measurer rect {
   fill: rgb(0, 68, 255);
   opacity: 0.3;
 }
-.measurer foreignObject {
+svg.chart-svg .measurer foreignObject {
   overflow: visible;
 }
-.measurer-label {
+svg.chart-svg .measurer-label {
   display: inline-block;
   /* padding: 8px 0; */
   text-align: center;
 }
-.measurer-label div {
+svg.chart-svg .measurer-label div {
   background: rgb(52, 106, 255);
   border-radius: 10px;
   color: rgb(255, 255, 255);
