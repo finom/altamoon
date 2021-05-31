@@ -35,21 +35,10 @@ export default class Market {
   constructor(store: Store) {
     this.#store = store;
 
-    // call onSymbolChange on every symbol change and on load
-    listenChange(store.persistent, 'symbol', this.#onSymbolChange);
-    void this.#onSymbolChange(store.persistent.symbol);
-
     // call the handler on every symbol change but not on load
-    listenChange(store.persistent, 'symbol', () => {
+    listenChange(store.persistent, 'symbol', (symbol) => {
       this.#store.persistent.alerts = [];
-    });
-
-    void binance.futuresExchangeInfo().then(({ symbols }) => {
-      this.futuresExchangeSymbols = symbols.sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
-
-      this.currentSymbolInfo = this.futuresExchangeSymbols.find(
-        ({ symbol: s }) => s === store.persistent.symbol,
-      ) ?? null;
+      void this.#onSymbolChange(symbol);
     });
 
     listenChange(store.persistent, 'interval', async (interval) => {
@@ -61,6 +50,17 @@ export default class Market {
           this.candles = Object.values(data);
         }, 200,
       );
+    });
+
+    // call onSymbolChange on every symbol change and on load
+    void this.#onSymbolChange(store.persistent.symbol);
+
+    void binance.futuresExchangeInfo().then(({ symbols }) => {
+      this.futuresExchangeSymbols = symbols.sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
+
+      this.currentSymbolInfo = this.futuresExchangeSymbols.find(
+        ({ symbol: s }) => s === store.persistent.symbol,
+      ) ?? null;
     });
   }
 

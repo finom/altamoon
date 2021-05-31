@@ -8,6 +8,10 @@
   cursor: pointer;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 /* temporary fix until reactstrap is updated */
 button.close {
   background-color: transparent;

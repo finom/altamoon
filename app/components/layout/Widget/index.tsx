@@ -1,13 +1,16 @@
 import React, {
-  ReactElement, ReactNode, useCallback, useState,
+  ReactElement, ReactNode, Ref, useCallback, useState,
 } from 'react';
 import {
   Button, Card, CardBody, CardHeader,
 } from 'reactstrap';
 import classNames from 'classnames';
 import { Gear } from 'react-bootstrap-icons';
+import { useValue } from 'use-change';
 
 import css from './style.css';
+import { RootStore } from '../../../store';
+import AccountError from './AccountError';
 
 interface Props {
   title: string;
@@ -15,15 +18,18 @@ interface Props {
   bodyClassName?: string;
   settings?: ReactNode;
   children?: ReactNode;
-  bodyRef?: (node: HTMLDivElement) => void;
+  bodyRef?: Ref<HTMLElement>;
+  checkAccount?: boolean;
   onSettingsClose?: () => void;
   onSettingsSave?: () => void;
 }
 
 const Widget = ({
-  title, noPadding, bodyClassName, settings, children, bodyRef, onSettingsClose, onSettingsSave,
+  title, noPadding, bodyClassName, settings, children,
+  bodyRef, checkAccount, onSettingsClose, onSettingsSave,
 }: Props): ReactElement => {
   const [isSettingsOpen, setIsSettignsOpen] = useState(false);
+  const futuresAccount = useValue(({ account }: RootStore) => account, 'futuresAccount');
 
   const toggleSettings = useCallback(() => {
     if (isSettingsOpen) {
@@ -81,7 +87,7 @@ const Widget = ({
         </div>
         )}
 
-        {children}
+        {!checkAccount || futuresAccount ? children : <AccountError />}
       </CardBody>
     </Card>
   );

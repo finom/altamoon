@@ -1,0 +1,8 @@
+.wrapper {
+  --bs-gutter-x: 0.25rem!important;
+}
+
+.value {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.5)
+}

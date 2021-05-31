@@ -1,0 +1,14 @@
+.minLeverage, .maxLeverage {
+  font-size: 0.75rem;
+  line-height: 1;
+  top: -3px;
+  position: relative;
+}
+
+.minLeverage {
+  float: left;
+}
+
+.maxLeverage {
+  float: right;
+}

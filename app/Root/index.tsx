@@ -2,13 +2,16 @@ import React, { ReactElement } from 'react';
 import { renderRoutes } from 'react-router-config';
 import { HashRouter } from 'react-router-dom';
 import { Provider as UseChangeProvider } from 'use-change';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import '!style-loader!css-loader!noty/lib/noty.css';
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import '!style-loader!css-loader!noty/lib/themes/mint.css';
 
 import routes from './routes';
 import ErrorBoundary from './ErrorBoundary';
+
 import './root.global.css';
 import store from '../store';
-
-import '../lib/binance';
 
 const Root = (): ReactElement => (
   <ErrorBoundary>

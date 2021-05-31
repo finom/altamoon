@@ -14,6 +14,8 @@ declare module 'node-binance-api' {
 
   export type OrderSide = 'BUY' | 'SELL';
 
+  export type MarginType = 'ISOLATED' | 'CROSSED';
+
   export type TimeInForce = 'GTC' | 'IOC' | 'FOK' | 'GTX';
 
   export type WorkingType = 'MARK_PRICE' | 'CONTRACT_PRICE';
@@ -23,6 +25,8 @@ declare module 'node-binance-api' {
   export type RateLimiter = 'REQUEST_WEIGHT' | 'ORDERS';
 
   export type RateLimitInterval = 'MINUTE' | 'SECOND' | 'DAY';
+
+  type Params = Record<string, number | string>;
 
   interface Options {
     APIKEY: string;
@@ -198,13 +202,39 @@ declare module 'node-binance-api' {
     volume: string;
   }
 
+  export interface FuturesLeverageBracket {
+    bracket: number;
+    cum: number;
+    initialLeverage: number;
+    maintMarginRatio: number;
+    notionalCap: number;
+    notionalFloor: number;
+  }
+
+  export interface FuturesPositionRisk {
+    entryPrice: string;
+    isAutoAddMargin: 'true' | 'false';
+    isolatedMargin: string;
+    isolatedWallet: string;
+    leverage: string;
+    liquidationPrice: string;
+    marginType: 'cross' | 'isolated';
+    markPrice: string;
+    maxNotionalValue: string;
+    notional: string;
+    positionAmt: string;
+    positionSide: PositionSide;
+    symbol: string;
+    unRealizedProfit: string;
+    updateTime: number;
+  }
   export default class Binance {
     // GENERAL & SPOT API
     options: (options: Partial<Options>) => void;
 
-    promiseRequest: (
+    promiseRequest: <T = unknown>(
       url: string, data?: Record<string, string>, flags?: Record<string, string>,
-    ) => unknown;
+    ) => Promise<T>;
 
     signedRequest: <T = unknown, E = unknown>(
       url: string,
@@ -302,6 +332,7 @@ declare module 'node-binance-api' {
     withdraw: (...args: unknown[]) => unknown;
 
     // MARGIN API
+
     mgTransferMainToMargin: (...args: unknown[]) => unknown;
 
     mgTransferMarginToMain: (...args: unknown[]) => unknown;
@@ -324,7 +355,7 @@ declare module 'node-binance-api' {
 
     futuresPrices: (...args: unknown[]) => unknown;
 
-    futuresAccount: () => Promise<FuturesAccount>;
+    futuresAccount: (params?: Params) => Promise<FuturesAccount>;
 
     futuresBalance: (...args: unknown[]) => unknown;
 
@@ -336,11 +367,15 @@ declare module 'node-binance-api' {
 
     futuresMarketSell: (symbol: string, quantity: number) => unknown;
 
-    futuresPositionRisk: (...args: unknown[]) => unknown;
+    futuresPositionRisk: (params?: Params) => Promise<FuturesPositionRisk[]>;
 
-    futuresLeverage: (symbol: string, leverage: number) => unknown;
+    futuresLeverage: (symbol: string, leverage: number, params?: Params) => Promise<{
+      leverage: number;
+      maxNotionalValue: string;
+      symbol: string;
+    }>;
 
-    futuresMarginType: (symbol: string, marginType: string) => unknown;
+    futuresMarginType: (symbol: string, marginType: MarginType) => Promise<unknown>;
 
     futuresPositionMargin: (symbol: string, amount: number, type: string) => unknown;
 
@@ -370,7 +405,9 @@ declare module 'node-binance-api' {
 
     futuresHistoricalTrades: (symbol: string) => unknown;
 
-    futuresLeverageBracket: (symbol: string) => unknown;
+    futuresLeverageBracket: (
+      symbol: string, params?: Params,
+    ) => Promise<{ brackets: FuturesLeverageBracket[] }[]>;
 
     futuresIncome: (params: {
       symbol?: string;
@@ -396,7 +433,7 @@ declare module 'node-binance-api' {
 
     futuresUserTrades: (symbol: string) => Promise<FuturesUserTrades[]>;
 
-    futuresGetDataStream: (...args: unknown[]) => unknown;
+    futuresGetDataStream: () => Promise<{ listenKey: string; }>;
 
     futuresPositionMarginHistory: (symbol: string) => unknown;
 

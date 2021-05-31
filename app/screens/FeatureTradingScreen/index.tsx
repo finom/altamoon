@@ -1,11 +1,9 @@
 import React, { ReactElement, useCallback } from 'react';
 import { WidthProvider, Responsive, Layout } from 'react-grid-layout';
 import { Button, Input, Navbar } from 'reactstrap';
-import { Gear } from 'react-bootstrap-icons';
 import classNames from 'classnames';
-import useChange, { useSet, useValue } from 'use-change';
+import useChange, { useValue } from 'use-change';
 
-import { SettingsModal } from '../../components';
 import LastTradesWidget from '../../components/widgets/LastTradesWidget';
 import { RootStore } from '../../store';
 import { darkTheme, defaultTheme } from '../../themes';
@@ -13,6 +11,10 @@ import css from './style.css';
 import OrderBookWidget from '../../components/widgets/OrderBookWidget';
 import WalletWidget from '../../components/widgets/WalletWidget';
 import ChartWidget from '../../components/widgets/ChartWidget';
+import TradingWidget from '../../components/widgets/TradingWidget';
+import SettingsModal from '../../components/SettingsModal';
+import SettingsButton from '../../components/controls/SettingsButton';
+import PositionsAndOrdersWidget from '../../components/widgets/PositionsAndOrdersWidget';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -21,15 +23,12 @@ const FeatureTradingScreen = (): ReactElement => {
   const [existingSymbol, setSymbol] = useChange(({ persistent }: RootStore) => persistent, 'symbol');
   const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
   const futuresExchangeSymbols = useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols');
-  const setIsSettingsModalOpen = useSet((store: RootStore) => store, 'isSettingsModalOpen');
 
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
     setLayout(changedLayout);
   }, [setLayout]);
 
-  const resetLayout = useCallback(() => {
-    setLayout([]);
-  }, [setLayout]);
+  const resetLayout = useCallback(() => { setLayout([]); }, [setLayout]);
 
   return (
     <div>
@@ -43,7 +42,6 @@ const FeatureTradingScreen = (): ReactElement => {
       >
         <div>
           <Input type="select" value={existingSymbol} onChange={({ target }) => setSymbol(target.value)}>
-
             {futuresExchangeSymbols.length
               ? futuresExchangeSymbols.map(({ symbol, baseAsset, quoteAsset }) => (
                 <option key={symbol} value={symbol}>
@@ -62,14 +60,7 @@ const FeatureTradingScreen = (): ReactElement => {
             Reset Layout
           </Button>
           {' '}
-          <Button
-            color={theme === 'dark' ? 'dark' : 'light'}
-            onClick={() => setIsSettingsModalOpen(true)}
-          >
-            <Gear size={16} />
-            {' '}
-            Settings
-          </Button>
+          <SettingsButton />
         </div>
       </Navbar>
 
@@ -93,6 +84,22 @@ const FeatureTradingScreen = (): ReactElement => {
           }}
         >
           <ChartWidget />
+        </div>
+        <div
+          key="trading"
+          data-grid={{
+            w: 3, h: 3, x: 0, y: 0, minW: 2, minH: 3,
+          }}
+        >
+          <TradingWidget />
+        </div>
+        <div
+          key="positionAndOrders"
+          data-grid={{
+            w: 3, h: 3, x: 0, y: 0, minW: 2, minH: 3,
+          }}
+        >
+          <PositionsAndOrdersWidget />
         </div>
         <div
           key="lastTrades"
