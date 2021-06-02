@@ -5,17 +5,25 @@ import binance from '../lib/binance';
 import binanceFuturesMaxLeverage from '../lib/binanceFuturesMaxLeverage';
 import checkBinancePromiseError from '../lib/checkBinancePromiseError';
 
-interface PositionInfo {
+interface TradingPosition {
+  entryPrice: number;
+  positionAmt: number;
+  liquidationPrice: number;
+  lastPrice: number;
+  isolatedMargin: number;
+  symbol: string;
   baseValue: number;
   side: OrderSide;
   pnl: number;
   truePnl: number;
   pnlPercent: number;
   truePnlPercent: number;
+  leverage: number;
+  marginType: FuturesPositionRisk['marginType'];
 }
 
 export default class Trading {
-  public positions: FuturesPositionRisk[] = [];
+  public tradingPositions: TradingPosition[] = [];
 
   public currentSymbolMaxLeverage = 1;
 
@@ -23,22 +31,24 @@ export default class Trading {
 
   public isCurrentSymbolMarginTypeIsolated: boolean | null = null;
 
+  public positionsKey?: string;
+
   #store: Store;
+
+  #lastPriceSubscriptionEndpoint?: string;
 
   constructor(store: Store) {
     this.#store = store;
 
+    listenChange(this, 'tradingPositions', (tradingPositions) => {
+      this.positionsKey = tradingPositions.map(({ symbol }) => symbol).join();
+    });
+
+    listenChange(this, 'positionsKey', this.#listenLastPrices);
+
     listenChange(store.account, 'futuresAccount', async (futuresAccount) => {
       if (futuresAccount) {
-        const positions = await binance.futuresPositionRisk();
-
-        console.log('positions', positions);
-
-        if (!checkBinancePromiseError(positions)) {
-          this.positions = positions
-            .filter((position) => !!+position.positionAmt)
-            .sort((a, b) => (a.symbol > b.symbol ? 1 : -1));
-        }
+        await this.loadPositions();
 
         await this.#updateLeverage(store.persistent.symbol);
       }
@@ -55,9 +65,9 @@ export default class Trading {
 
       this.currentSymbolLeverage = resp.leverage;
 
-      this.positions = this.positions
+      this.tradingPositions = this.tradingPositions
         .map((item) => (item.symbol === symbol
-          ? { ...item, leverage: resp.leverage.toString() } : item));
+          ? { ...item, leverage: resp.leverage } : item));
     }, 200));
 
     listenChange(this, 'isCurrentSymbolMarginTypeIsolated', async (isIsolated, prev) => {
@@ -75,14 +85,66 @@ export default class Trading {
     listenChange(store.persistent, 'symbol', (symbol) => this.#updateLeverage(symbol));
   }
 
+  public loadPositions = async (): Promise<void> => {
+    const positions = await binance.futuresPositionRisk();
+    const prices = await binance.futuresPrices();
+
+    if (checkBinancePromiseError(positions) || checkBinancePromiseError(prices)) return;
+    this.tradingPositions = positions
+      .filter((position) => !!+position.positionAmt)
+      .map((position) => this.#getPositionInfo(position, +prices[position.symbol]))
+      .sort((a, b) => (a.symbol > b.symbol ? 1 : -1));
+
+    await this.#updateLeverage(this.#store.persistent.symbol);
+  };
+
   #updateLeverage = async (symbol: string): Promise<void> => {
     const currentSymbolMaxLeverage = await binanceFuturesMaxLeverage(symbol);
-    const currentPosition = this.positions.find((item) => item.symbol === symbol);
+    const currentPosition = this.tradingPositions.find((item) => item.symbol === symbol);
     this.currentSymbolMaxLeverage = currentSymbolMaxLeverage;
     this.isCurrentSymbolMarginTypeIsolated = currentPosition?.marginType === 'isolated';
     this.currentSymbolLeverage = Math.min(
       currentSymbolMaxLeverage,
-      +(currentPosition?.leverage ?? 1),
+      currentPosition?.leverage ?? 1,
+    );
+  };
+
+  #listenLastPrices = (): void => {
+    // unsubscribe from previously used endpoint
+    if (this.#lastPriceSubscriptionEndpoint) {
+      binance.futuresTerminate(this.#lastPriceSubscriptionEndpoint);
+    }
+
+    // if no position, don't create new subscription
+    if (!this.tradingPositions.length) return;
+
+    // create new subscription and preserve endpoint to unsubscribe
+    this.#lastPriceSubscriptionEndpoint = binance.futuresAggTradeStream(
+      this.tradingPositions.map(({ symbol }) => symbol),
+      (ticker) => {
+        this.tradingPositions = this.tradingPositions.map((position) => {
+          if (position.symbol === ticker.symbol) {
+            const lastPrice = +ticker.price;
+            return {
+              ...position,
+              lastPrice,
+              ...this.#getPositionPnl({
+                positionAmt: position.positionAmt,
+                lastPrice,
+                entryPrice: position.entryPrice,
+                leverage: position.leverage,
+              }),
+              ...this.#getPositionTruePnl({
+                positionAmt: position.positionAmt,
+                lastPrice,
+                entryPrice: position.entryPrice,
+              }),
+            };
+          }
+
+          return position;
+        });
+      },
     );
   };
 
@@ -95,45 +157,69 @@ export default class Trading {
     return (qty * feeRate) / 100;
   };
 
-  public getPositionInfo = (position: FuturesPositionRisk): PositionInfo => {
-    const truePositionPnl = this.#getPositionTruePnl(position);
-    const positionPnl = this.#getPositionPnl(position);
-    return {
-      baseValue: +position.positionAmt * +position.entryPrice,
-      side: +position.positionAmt >= 0 ? 'BUY' : 'SELL',
-      truePnl: truePositionPnl.value,
-      truePnlPercent: truePositionPnl.percent,
-      pnl: positionPnl.value,
-      pnlPercent: positionPnl.percent,
-    };
-  };
+  #getPositionInfo = (
+    positionRisk: FuturesPositionRisk, lastPrice: number,
+  ): TradingPosition => ({
+    lastPrice,
+    ...this.#getPositionPnl({
+      positionAmt: +positionRisk.positionAmt,
+      lastPrice,
+      entryPrice: +positionRisk.entryPrice,
+      leverage: +positionRisk.leverage,
+    }),
+    ...this.#getPositionTruePnl({
+      positionAmt: +positionRisk.positionAmt,
+      lastPrice,
+      entryPrice: +positionRisk.entryPrice,
+    }),
+    entryPrice: +positionRisk.entryPrice,
+    positionAmt: +positionRisk.positionAmt,
+    liquidationPrice: +positionRisk.liquidationPrice,
+    isolatedMargin: +positionRisk.isolatedMargin,
+    baseValue: +positionRisk.positionAmt * +positionRisk.entryPrice,
+    side: +positionRisk.positionAmt >= 0 ? 'BUY' : 'SELL',
+    leverage: +positionRisk.leverage,
+    marginType: positionRisk.marginType,
+    symbol: positionRisk.symbol,
+  });
 
-  #getPositionTruePnl = (
-    position: FuturesPositionRisk,
-  ): { value: number; percent: number; } => {
-    const qty = +position.positionAmt;
-    const price = this.#store.market.lastPrice ?? 0;
-    const entryPrice = +position.entryPrice;
-    const baseValue = +position.positionAmt * +position.entryPrice;
+  #getPositionTruePnl = ({
+    positionAmt,
+    lastPrice,
+    entryPrice,
+  }: {
+    positionAmt: number;
+    lastPrice: number;
+    entryPrice: number;
+  }): { truePnl: number; truePnlPercent: number; } => {
+    const qty = positionAmt;
+    const baseValue = positionAmt * entryPrice;
     const fee = this.getFee(qty); // Todo: get fee sum from order histo
 
-    const pnl = (price - entryPrice) / (entryPrice * baseValue) - fee;
+    const pnl = (lastPrice - entryPrice) / (entryPrice * baseValue) - fee;
     return {
-      value: pnl || 0,
-      percent: pnl / this.#store.account.totalWalletBalance || 0,
+      truePnl: pnl || 0,
+      truePnlPercent: pnl / this.#store.account.totalWalletBalance || 0,
     };
   };
 
-  #getPositionPnl = (position: FuturesPositionRisk): { value: number; percent: number; } => {
-    const {
-      positionAmt, entryPrice, unRealizedProfit, leverage,
-    } = position;
-
-    const size = Math.abs(+positionAmt * +entryPrice);
+  #getPositionPnl = ({
+    positionAmt,
+    lastPrice,
+    entryPrice,
+    leverage,
+  }: {
+    positionAmt: number;
+    lastPrice: number;
+    entryPrice: number;
+    leverage: number;
+  }): { pnl: number; pnlPercent: number; } => {
+    const pnl = positionAmt * (lastPrice - entryPrice);
+    const baseValue = Math.abs(positionAmt * entryPrice);
 
     return {
-      value: +unRealizedProfit,
-      percent: (+unRealizedProfit * 100) / ((size + +unRealizedProfit) / +leverage),
+      pnl,
+      pnlPercent: (pnl * 100) / ((baseValue + pnl) / leverage),
     };
   };
 

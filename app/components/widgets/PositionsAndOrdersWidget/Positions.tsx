@@ -1,15 +1,11 @@
 import { format } from 'd3-format';
+import { truncate } from 'fs/promises';
 import React, { ReactElement } from 'react';
 import { Badge, Button, Table } from 'reactstrap';
-import { useSilent, useValue } from 'use-change';
+import { useValue } from 'use-change';
 import { RootStore } from '../../../store';
-import Widget from '../../layout/Widget';
 
-import css from './style.css';
-
-console.log(css.sosiska);
-
-const formatNumber = format(',.2f');
+const formatNumber = (n: number, ignorePrecision?: boolean) => format(n < 10 && !ignorePrecision ? ',.4f' : ',.2f')(n);
 const formatPercent = format(',.1f');
 
 const textClassName = (value: number) => {
@@ -19,30 +15,7 @@ const textClassName = (value: number) => {
 };
 
 const Positions = (): ReactElement => {
-  const positions = useValue(({ trading }: RootStore) => trading, 'positions');
-  const getPositionInfo = useSilent(({ trading }: RootStore) => trading, 'getPositionInfo');
-
-  console.log('positions', positions);
-
-  /*
-  row.class(d => d.side)
-
-                let pnl = getPnl()
-                let pnlValue = format(pnl.value)
-                let pnlPercent = formatPercent(pnl.percent)
-
-                let td = () => row.append('td')
-                td().text(d => d.symbol.slice(0,-4))
-                td().text(d => d.qty)
-                td().text(d => format(d.price))
-                td().text(d => format(d.liquidation))
-                td().text(d => format(d.margin))
-                td().text(d => trueLeverage(d) + 'x')
-                td().text(d => pnlValue + ` (${ pnlPercent })`)
-                td().append('button')
-                    .on('click', d => api.closePosition(d.symbol))
-                    .html('Market')
-                    */
+  const tradingPositions = useValue(({ trading }: RootStore) => trading, 'tradingPositions');
 
   return (
     <Table className="align-middle">
@@ -53,6 +26,9 @@ const Positions = (): ReactElement => {
           </th>
           <th>
             Size
+          </th>
+          <th>
+            Last Price
           </th>
           <th>
             Entity Price
@@ -75,15 +51,12 @@ const Positions = (): ReactElement => {
         </tr>
       </thead>
       <tbody>
-        {positions.map((position) => {
+        {tradingPositions.map((tradingPosition) => {
           const {
-            symbol, positionAmt, entryPrice, liquidationPrice,
-            isolatedMargin, marginType, leverage,
-          } = position;
-          const size = +positionAmt * +entryPrice;
-          const {
+            symbol, baseValue, liquidationPrice, entryPrice, positionAmt,
+            isolatedMargin, marginType, leverage, lastPrice,
             side, pnl, pnlPercent, truePnl, truePnlPercent,
-          } = getPositionInfo(position);
+          } = tradingPosition;
 
           return (
             <tr key={symbol}>
@@ -97,18 +70,19 @@ const Positions = (): ReactElement => {
                 </Badge>
               </td>
               <td>
-                {formatNumber(+positionAmt)}
+                {positionAmt}
                 {' '}
                 (
-                {formatNumber(size)}
+                {formatNumber(baseValue)}
                 {' '}
                 ₮)
               </td>
-              <td>{formatNumber(+entryPrice)}</td>
-              <td>{marginType === 'isolated' ? formatNumber(+liquidationPrice) : <>&mdash;</>}</td>
-              <td>{marginType === 'isolated' ? formatNumber(+isolatedMargin) : <>&mdash;</>}</td>
+              <td>{formatNumber(lastPrice)}</td>
+              <td>{formatNumber(entryPrice)}</td>
+              <td>{marginType === 'isolated' ? formatNumber(liquidationPrice) : <>&mdash;</>}</td>
+              <td>{marginType === 'isolated' ? formatNumber(isolatedMargin) : <>&mdash;</>}</td>
               <td>
-                <span className={textClassName(pnl)}>{formatNumber(pnl)}</span>
+                <span className={textClassName(pnl)}>{formatNumber(pnl, true)}</span>
                 {' '}
                 <span className={textClassName(pnlPercent)}>
                   (
@@ -117,7 +91,7 @@ const Positions = (): ReactElement => {
                 </span>
               </td>
               <td>
-                <span className={textClassName(truePnl)}>{formatNumber(truePnl)}</span>
+                <span className={textClassName(truePnl)}>{formatNumber(truePnl, true)}</span>
                 {' '}
                 <span className={textClassName(truePnlPercent)}>
                   (
@@ -126,7 +100,13 @@ const Positions = (): ReactElement => {
                 </span>
               </td>
               <td>
-                <Button color="link" className="text-muted px-0">Market</Button>
+                <Button
+                  color="link"
+                  className="text-muted px-0"
+                  onClick={() => alert('To do')}
+                >
+                  Market
+                </Button>
               </td>
             </tr>
           );

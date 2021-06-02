@@ -353,7 +353,7 @@ declare module 'node-binance-api' {
 
     // FUTURES API
 
-    futuresPrices: (...args: unknown[]) => unknown;
+    futuresPrices: () => Promise<Record<string, string>>;
 
     futuresAccount: (params?: Params) => Promise<FuturesAccount>;
 
@@ -460,7 +460,7 @@ declare module 'node-binance-api' {
     ) => string;
 
     futuresAggTradeStream: (
-      symbolOrCallback: string | ((ticker: FuturesAggTradeStreamTicker) => void),
+      symbolOrCallback: string | string[] | ((ticker: FuturesAggTradeStreamTicker) => void),
       callback?: (ticker: FuturesAggTradeStreamTicker) => void,
     ) => string;
 
@@ -483,9 +483,9 @@ declare module 'node-binance-api' {
       streams: string | string[],
       callback: (data: T) => void,
       params?: { params?: boolean, openCallback?: (e: unknown) => void; }
-    ) => void;
+    ) => { endpoint: string; }; // TODO return websocket
 
-    futuresTerminate: (endpoint: string, reconnect?: boolean) => unknown;
+    futuresTerminate: (endpoint: string, reconnect?: boolean) => void;
 
     futuresSubscriptions: (...args: unknown[]) => unknown;
 

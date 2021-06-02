@@ -3,6 +3,7 @@ import { listenChange } from 'use-change';
 import binance from '../lib/binance';
 import convertType from '../lib/convertType';
 import checkBinancePromiseError from '../lib/checkBinancePromiseError';
+import showError from '../lib/showError';
 
 export default class Account {
   public totalWalletBalance = 0;
@@ -15,9 +16,10 @@ export default class Account {
 
   public futuresAccountError: string | null = null;
 
-  #stream?: WebSocket;
+  #store: Store;
 
   constructor(store: Store) {
+    this.#store = store;
     const setBinanceOptions = async () => {
       const { binanceApiKey, binanceApiSecret } = store.persistent;
       if (binanceApiKey && binanceApiSecret) {
@@ -53,26 +55,23 @@ export default class Account {
   };
 
   #openStream = async (): Promise<void> => {
-    // if(this.#stream) return;
     const { listenKey } = await binance.futuresGetDataStream();
 
     const stream = new WebSocket(`wss://fstream.binance.com/ws/${listenKey}`);
 
-    // Get what happened before the stream opened
-    stream.onopen = () => {
-      console.log('onopen');
+    stream.onmessage = ({ data }) => {
+      try {
+        const { e } = JSON.parse(data) as { e: string };
+        if (e === 'ACCOUNT_UPDATE') {
+          void this.#store.trading.loadPositions();
+        }
+      } catch (e) {
+        showError(e as string);
+      }
     };
-    console.log('zalupa');
 
-    stream.onmessage = (e) => {
-      console.log('onmessage', JSON.parse(e.data));
-    };
+    stream.onerror = () => showError('Account stream error');
 
-    stream.onerror = (e) => console.log('onerror', e);
-
-    setInterval(() => {
-      console.log(stream.readyState)
-    }, 1000)
     /* console.log('listenKey', listenKey);
     binance.futuresSubscribe(listenKey, (data) => {
       console.log('data', data)

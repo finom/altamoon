@@ -71,7 +71,7 @@ export default function binanceFeatureDepthSubscribe(
   };
 
   // 1. Open a stream to wss://fstream.binance.com/stream?streams=btcusdt@depth.
-  binance.futuresSubscribe<DepthUpdateTicker>(endpoint, (ticker) => {
+  return binance.futuresSubscribe<DepthUpdateTicker>(endpoint, (ticker) => {
     if (
       // 4. Drop any event where u is < lastUpdateId in the snapshot.
       ticker.u < depth?.lastUpdateId
@@ -101,7 +101,5 @@ export default function binanceFeatureDepthSubscribe(
     lastTicker = ticker;
 
     updateMaps(ticker.a, ticker.b);
-  });
-
-  return endpoint;
+  }).endpoint;
 }
