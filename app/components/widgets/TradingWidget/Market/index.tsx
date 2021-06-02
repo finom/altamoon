@@ -1,3 +1,4 @@
+import { OrderSide } from 'node-binance-api';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { Row, Col } from 'reactstrap';
 import Toggle from '../../../controls/Toggle';
@@ -10,8 +11,8 @@ interface Props {
 }
 
 const Market = ({ isWideLayout, postOnly, reduceOnly }: Props): ReactElement => {
-  const [compactModeSide, setCompactModeSide] = useState<'buy' | 'sell'>('buy');
-  const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'buy' : 'sell'), []);
+  const [compactModeSide, setCompactModeSide] = useState<OrderSide>('BUY');
+  const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'BUY' : 'SELL'), []);
   return (
     <>
       {!isWideLayout && (
@@ -20,20 +21,20 @@ const Market = ({ isWideLayout, postOnly, reduceOnly }: Props): ReactElement => 
           checkedLabel="Buy/Long"
           uncheckedLabel="Sell/Short"
           className="my-3"
-          isChecked={compactModeSide === 'buy'}
+          isChecked={compactModeSide === 'BUY'}
           onChange={switchSide}
         />
       )}
       <Row>
-        {(isWideLayout || compactModeSide === 'buy') && (
+        {(isWideLayout || compactModeSide === 'BUY') && (
         <Col>
-          <MarketSide side="buy" postOnly={postOnly} reduceOnly={reduceOnly} />
+          <MarketSide side="BUY" postOnly={postOnly} reduceOnly={reduceOnly} />
         </Col>
         )}
 
-        {(isWideLayout || compactModeSide === 'sell') && (
+        {(isWideLayout || compactModeSide === 'BUY') && (
         <Col>
-          <MarketSide side="sell" postOnly={postOnly} reduceOnly={reduceOnly} />
+          <MarketSide side="SELL" postOnly={postOnly} reduceOnly={reduceOnly} />
         </Col>
         )}
       </Row>

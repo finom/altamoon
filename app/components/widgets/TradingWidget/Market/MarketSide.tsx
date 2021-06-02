@@ -1,4 +1,5 @@
 import { capitalize } from 'lodash';
+import { OrderSide } from 'node-binance-api';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { Button, Input } from 'reactstrap';
 import { useValue } from 'use-change';
@@ -7,7 +8,7 @@ import { RootStore } from '../../../../store';
 import QuickOrder from '../QuickOrder';
 
 interface Props {
-  side: 'buy' | 'sell';
+  side: OrderSide;
   postOnly: boolean;
   reduceOnly: boolean;
 }
@@ -16,7 +17,7 @@ const MarketSide = ({ side, postOnly, reduceOnly }: Props): ReactElement => {
   const [exactSize, setExactSize] = useState(0);
   const symbol = useValue(({ persistent }: RootStore) => persistent, 'symbol');
   const onFuturesOrder = useCallback((qty: number) => {
-    const createOrder = side === 'buy' ? binance.futuresMarketBuy : binance.futuresMarketSell;
+    const createOrder = side === 'BUY' ? binance.futuresMarketBuy : binance.futuresMarketSell;
     createOrder(symbol, qty);
     /*
 
@@ -45,7 +46,7 @@ const MarketSide = ({ side, postOnly, reduceOnly }: Props): ReactElement => {
           onChange={({ target }) => setExactSize(+target.value || 0)}
         />
         <Button
-          color={side === 'buy' ? 'success' : 'sell'}
+          color={side === 'BUY' ? 'success' : 'sell'}
         >
           {capitalize(side)}
         </Button>
