@@ -1,7 +1,6 @@
 import { debounce } from 'lodash';
-import { FuturesPositionRisk, OrderSide } from 'node-binance-api';
 import { listenChange } from 'use-change';
-import binance from '../lib/binance';
+import * as api from '../api';
 import binanceFuturesMaxLeverage from '../lib/binanceFuturesMaxLeverage';
 import checkBinancePromiseError from '../lib/checkBinancePromiseError';
 
@@ -13,17 +12,19 @@ interface TradingPosition {
   isolatedMargin: number;
   symbol: string;
   baseValue: number;
-  side: OrderSide;
+  side: api.OrderSide;
   pnl: number;
   truePnl: number;
   pnlPercent: number;
   truePnlPercent: number;
   leverage: number;
-  marginType: FuturesPositionRisk['marginType'];
+  marginType: api.FuturesPositionRisk['marginType'];
 }
 
 export default class Trading {
   public tradingPositions: TradingPosition[] = [];
+
+  public positionRisks: api.FuturesPositionRisk[] = [];
 
   public currentSymbolMaxLeverage = 1;
 
@@ -35,7 +36,7 @@ export default class Trading {
 
   #store: Store;
 
-  #lastPriceSubscriptionEndpoint?: string;
+  #lastPriceUnsubscribe?: () => void;
 
   constructor(store: Store) {
     this.#store = store;
@@ -54,29 +55,33 @@ export default class Trading {
       }
     });
 
-    listenChange(this, 'currentSymbolLeverage', debounce(async (currentSymbolLeverage: number, prev: number) => {
+    listenChange(this, 'currentSymbolLeverage', debounce(async (currentSymbolLeverage: number) => {
       const { symbol } = store.persistent;
-      const resp = await binance.futuresLeverage(symbol, currentSymbolLeverage);
-
-      if (checkBinancePromiseError(resp)) {
-        this.currentSymbolLeverage = prev; // if errored, roll it back
-        return;
+      try {
+        const resp = await api.futuresLeverage(symbol, currentSymbolLeverage);
+        this.currentSymbolLeverage = resp.leverage;
+        this.tradingPositions = this.tradingPositions
+          .map((item) => (item.symbol === symbol
+            ? { ...item, leverage: resp.leverage } : item));
+      } catch {
+        const currentPosition = this.positionRisks.find((item) => item.symbol === symbol);
+        if (currentPosition) {
+          this.currentSymbolLeverage = +currentPosition.leverage; // if errored, roll it back
+        }
       }
-
-      this.currentSymbolLeverage = resp.leverage;
-
-      this.tradingPositions = this.tradingPositions
-        .map((item) => (item.symbol === symbol
-          ? { ...item, leverage: resp.leverage } : item));
     }, 200));
 
     listenChange(this, 'isCurrentSymbolMarginTypeIsolated', async (isIsolated, prev) => {
       const { symbol } = store.persistent;
-      if (prev !== null) {
-        // if it isn't initial definition
-        const resp = await binance.futuresMarginType(symbol, isIsolated ? 'ISOLATED' : 'CROSSED');
+      const marginType = isIsolated ? 'ISOLATED' : 'CROSSED';
+      const uglyCodePositionMarginType = isIsolated ? 'isolated' : 'cross';
+      const currentPosition = this.positionRisks.find((item) => item.symbol === symbol);
 
-        if (checkBinancePromiseError(resp)) {
+      if (prev !== null && currentPosition?.marginType !== uglyCodePositionMarginType) {
+        // if it isn't initial definition
+        try {
+          await api.futuresMarginType(symbol, marginType);
+        } catch {
           this.isCurrentSymbolMarginTypeIsolated = prev; // if errored, roll it back
         }
       }
@@ -86,10 +91,11 @@ export default class Trading {
   }
 
   public loadPositions = async (): Promise<void> => {
-    const positions = await binance.futuresPositionRisk();
-    const prices = await binance.futuresPrices();
+    const positions = await api.futuresPositionRisk();
+    const prices = await api.futuresPrices();
 
     if (checkBinancePromiseError(positions) || checkBinancePromiseError(prices)) return;
+    this.positionRisks = positions;
     this.tradingPositions = positions
       .filter((position) => !!+position.positionAmt)
       .map((position) => this.#getPositionInfo(position, +prices[position.symbol]))
@@ -98,28 +104,34 @@ export default class Trading {
     await this.#updateLeverage(this.#store.persistent.symbol);
   };
 
+  /* public marketOrder = (side: OrderSide, qty: number): Promise<void> => {
+    const order = side === 'BUY' ? api.futuresMarketBuy : api.futuresMarketSell;
+
+    return order(SYMBOL, qty, {
+      reduceOnly: data.reduceOnly.toString(),
+    }).catch((error) => console.error(error));
+  }; */
+
   #updateLeverage = async (symbol: string): Promise<void> => {
     const currentSymbolMaxLeverage = await binanceFuturesMaxLeverage(symbol);
-    const currentPosition = this.tradingPositions.find((item) => item.symbol === symbol);
+    const currentPosition = this.positionRisks.find((item) => item.symbol === symbol);
     this.currentSymbolMaxLeverage = currentSymbolMaxLeverage;
     this.isCurrentSymbolMarginTypeIsolated = currentPosition?.marginType === 'isolated';
     this.currentSymbolLeverage = Math.min(
       currentSymbolMaxLeverage,
-      currentPosition?.leverage ?? 1,
+      +(currentPosition?.leverage ?? 1),
     );
   };
 
   #listenLastPrices = (): void => {
     // unsubscribe from previously used endpoint
-    if (this.#lastPriceSubscriptionEndpoint) {
-      binance.futuresTerminate(this.#lastPriceSubscriptionEndpoint);
-    }
+    this.#lastPriceUnsubscribe?.();
 
     // if no position, don't create new subscription
     if (!this.tradingPositions.length) return;
 
     // create new subscription and preserve endpoint to unsubscribe
-    this.#lastPriceSubscriptionEndpoint = binance.futuresAggTradeStream(
+    this.#lastPriceUnsubscribe = api.futuresAggTradeStream(
       this.tradingPositions.map(({ symbol }) => symbol),
       (ticker) => {
         this.tradingPositions = this.tradingPositions.map((position) => {
@@ -158,7 +170,7 @@ export default class Trading {
   };
 
   #getPositionInfo = (
-    positionRisk: FuturesPositionRisk, lastPrice: number,
+    positionRisk: api.FuturesPositionRisk, lastPrice: number,
   ): TradingPosition => ({
     lastPrice,
     ...this.#getPositionPnl({

@@ -1,8 +1,5 @@
-import {
-  FuturesIncome, FuturesUserTrades, IncomeType, OrderSide,
-} from 'node-binance-api';
 import { listenChange } from 'use-change';
-import binance from '../lib/binance';
+import * as api from '../api';
 
 const getTodayEarlyTime = () => new Date(Date.now() - 4 * 60 * 60 * 1000).setHours(4);
 
@@ -13,16 +10,10 @@ interface EnhancedPosition {
   price: number;
   qty: number;
   baseValue: number;
-  side: OrderSide;
+  side: api.OrderSide;
   symbol: string;
 }
 export default class Stats {
-  #store: Store;
-
-  #income: FuturesIncome[] = [];
-
-  #historyStart = getTodayEarlyTime();
-
   public pnlPercent = 0;
 
   public pnlValue = 0;
@@ -37,10 +28,16 @@ export default class Stats {
 
   private enhancedPositions: EnhancedPosition[] = [];
 
+  #store: Store;
+
+  #income: api.FuturesIncome[] = [];
+
+  #historyStart = getTodayEarlyTime();
+
   constructor(store: Store) {
     this.#store = store;
 
-    listenChange(store.trading, 'positions', (positions) => {
+    listenChange(store.trading, 'positionRisks', (positions) => {
       this.enhancedPositions = positions.map((p) => ({
         leverage: +p.leverage,
         price: +p.entryPrice,
@@ -105,7 +102,7 @@ export default class Stats {
     }
 
     try {
-      this.#income = this.#income.concat(await binance.futuresIncome({
+      this.#income = this.#income.concat(await api.futuresIncome({
         symbol,
         startTime: this.#historyStart,
         endTime: now,
@@ -137,7 +134,7 @@ export default class Stats {
    * Returns all trades associated with the open position
    * for @symbol.
    */
-  #getPositionTrades = async (): Promise<FuturesUserTrades[]> => {
+  #getPositionTrades = async (): Promise<api.FuturesUserTrades[]> => {
     const { symbol } = this.#store.persistent;
     const position = this.enhancedPositions[0];
 
@@ -147,7 +144,7 @@ export default class Stats {
 
     const direction = position.side === 'BUY' ? 1 : -1;
 
-    const trades = await binance.futuresUserTrades(symbol);
+    const trades = await api.futuresUserTrades(symbol);
 
     let orderSum = 0;
 

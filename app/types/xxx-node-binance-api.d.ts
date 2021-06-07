@@ -1,4 +1,4 @@
-declare module 'node-binance-api' {
+declare module 'xxx-node-binance-api' {
   // see https://binance-docs.github.io/apidocs/futures/en/#public-endpoints-info
   export type IncomeType = 'TRANSFER' | 'WELCOME_BONUS' | 'REALIZED_PNL' | 'FUNDING_FEE' | 'COMMISSION' | 'INSURANCE_CLEAR';
 

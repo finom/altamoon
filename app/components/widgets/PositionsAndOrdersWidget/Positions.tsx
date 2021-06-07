@@ -1,5 +1,4 @@
 import { format } from 'd3-format';
-import { truncate } from 'fs/promises';
 import React, { ReactElement } from 'react';
 import { Badge, Button, Table } from 'reactstrap';
 import { useValue } from 'use-change';
@@ -73,14 +72,14 @@ const Positions = (): ReactElement => {
                 {positionAmt}
                 {' '}
                 (
-                {formatNumber(baseValue)}
+                {formatNumber(baseValue, true)}
                 {' '}
                 ₮)
               </td>
               <td>{formatNumber(lastPrice)}</td>
               <td>{formatNumber(entryPrice)}</td>
               <td>{marginType === 'isolated' ? formatNumber(liquidationPrice) : <>&mdash;</>}</td>
-              <td>{marginType === 'isolated' ? formatNumber(isolatedMargin) : <>&mdash;</>}</td>
+              <td>{marginType === 'isolated' ? formatNumber(isolatedMargin, true) : <>&mdash;</>}</td>
               <td>
                 <span className={textClassName(pnl)}>{formatNumber(pnl, true)}</span>
                 {' '}

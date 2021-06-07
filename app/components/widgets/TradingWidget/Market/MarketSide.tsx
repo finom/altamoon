@@ -1,14 +1,13 @@
 import { capitalize } from 'lodash';
-import { OrderSide } from 'node-binance-api';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { Button, Input } from 'reactstrap';
 import { useValue } from 'use-change';
-import binance from '../../../../lib/binance';
+import * as api from '../../../../api';
 import { RootStore } from '../../../../store';
 import QuickOrder from '../QuickOrder';
 
 interface Props {
-  side: OrderSide;
+  side: api.OrderSide;
   postOnly: boolean;
   reduceOnly: boolean;
 }
@@ -17,20 +16,11 @@ const MarketSide = ({ side, postOnly, reduceOnly }: Props): ReactElement => {
   const [exactSize, setExactSize] = useState(0);
   const symbol = useValue(({ persistent }: RootStore) => persistent, 'symbol');
   const onFuturesOrder = useCallback((qty: number) => {
-    const createOrder = side === 'BUY' ? binance.futuresMarketBuy : binance.futuresMarketSell;
-    createOrder(symbol, qty);
-    /*
-
-            let order = (side === 'buy')
-                ? api.lib.futuresMarketBuy
-                : api.lib.futuresMarketSell
-
-        order(SYMBOL, qty, {
-                'reduceOnly': data.reduceOnly.toString()
-            })
-            .catch(error => console.error(error))
-            */
+    const createOrder = side === 'BUY' ? api.futuresMarketBuy : api.futuresMarketSell;
+    void createOrder(symbol, qty);
   }, [side, symbol]);
+
+  console.log('onFuturesOrder', onFuturesOrder, postOnly, reduceOnly);
 
   return (
     <>

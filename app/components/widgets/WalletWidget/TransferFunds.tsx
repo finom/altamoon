@@ -5,13 +5,12 @@ import {
   Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert,
 } from 'reactstrap';
 import usePromise from 'react-use-promise';
-import { BalanceItem } from 'node-binance-api';
 import { format } from 'd3';
-
 import { useSilent, useValue } from 'use-change';
+
+import * as api from '../../../api';
 import LabeledInput from '../../controls/LabeledInput';
 import css from './style.css';
-import binance from '../../../lib/binance';
 import { RootStore } from '../../../store';
 import truncateDecimals from '../../../lib/truncateDecimals';
 
@@ -23,8 +22,8 @@ const TransferFunds = (): ReactElement => {
   const futuresAccount = useValue(({ account }: RootStore) => account, 'futuresAccount');
   const reloadFuturesAccount = useSilent(({ account }: RootStore) => account, 'reloadFuturesAccount');
   const [lastTransactionId, setLastTransactionId] = useState<number>();
-  const [spotBalance] = usePromise<Record<string, BalanceItem>>(
-    () => (isOpen ? binance.balance() : Promise.resolve({})),
+  const [spotBalance] = usePromise<Record<string, api.BalanceItem>>(
+    () => Promise.resolve({}), // (isOpen ? api.balance() : Promise.resolve({})),
     [isOpen, lastTransactionId],
   );
   const available: string | undefined = useMemo(() => (isFromSpotToFutures
@@ -44,7 +43,7 @@ const TransferFunds = (): ReactElement => {
         amount: quantity,
         type: isFromSpotToFutures ? 1 : 2,
       };
-      void binance.signedRequest<{ tranId: number; }, { body: string }>(
+      void api.signedRequest<{ tranId: number; }, { body: string }>(
         'https://api.binance.com/sapi/v1/futures/transfer',
         data,
         (error, resp) => {

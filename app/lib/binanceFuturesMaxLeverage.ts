@@ -1,4 +1,4 @@
-import binance from './binance';
+import * as api from '../api';
 
 const leverages: Record<string, number> = {};
 
@@ -6,7 +6,7 @@ export default async function binanceFuturesMaxLeverage(symbol: string): Promise
   if (leverages[symbol]) return leverages[symbol];
   let resp;
   try {
-    resp = await binance.futuresLeverageBracket(symbol);
+    resp = await api.futuresLeverageBracket(symbol);
   } catch {
     return 1;
   }

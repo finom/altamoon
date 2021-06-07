@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react';
+import React, { ReactElement } from 'react';
 import { Col, Row } from 'reactstrap';
 import useChange, { useValue } from 'use-change';
 import { RootStore } from '../../../store';
@@ -21,9 +21,6 @@ const Leverage = ({
   const maxLeverage = useValue(({ trading }: RootStore) => trading, 'currentSymbolMaxLeverage');
   const [isIsolated, setIsISolated] = useChange(({ trading }: RootStore) => trading, 'isCurrentSymbolMarginTypeIsolated');
   const [leverage, setLeverage] = useChange(({ trading }: RootStore) => trading, 'currentSymbolLeverage');
-  useEffect(() => {
-    // setLeverage(Math.min(leverage, maxLeverage));
-  }, [leverage, maxLeverage, setLeverage]);
 
   return (
     <Row>

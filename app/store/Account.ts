@@ -1,6 +1,5 @@
-import { FuturesAccount } from 'node-binance-api';
 import { listenChange } from 'use-change';
-import binance from '../lib/binance';
+import * as api from '../api';
 import convertType from '../lib/convertType';
 import checkBinancePromiseError from '../lib/checkBinancePromiseError';
 import showError from '../lib/showError';
@@ -12,7 +11,7 @@ export default class Account {
 
   public totalOpenOrderInitialMargin = 0;
 
-  public futuresAccount: FuturesAccount | null = null;
+  public futuresAccount: api.FuturesAccount | null = null;
 
   public futuresAccountError: string | null = null;
 
@@ -23,13 +22,14 @@ export default class Account {
     const setBinanceOptions = async () => {
       const { binanceApiKey, binanceApiSecret } = store.persistent;
       if (binanceApiKey && binanceApiSecret) {
-        binance.options({
-          APIKEY: binanceApiKey,
-          APISECRET: binanceApiSecret,
+        api.setOptions({
+          apiKey: binanceApiKey,
+          apiSecret: binanceApiSecret,
         });
       }
       void this.#openStream();
       await this.reloadFuturesAccount();
+      // console.log(await api.balance());
     };
 
     listenChange(store.persistent, 'binanceApiKey', setBinanceOptions);
@@ -39,7 +39,7 @@ export default class Account {
   }
 
   public readonly reloadFuturesAccount = async (): Promise<void> => {
-    const futuresAccount = await binance.futuresAccount();
+    const futuresAccount = await api.futuresAccount();
     this.futuresAccount = checkBinancePromiseError(futuresAccount) ? null : futuresAccount;
 
     if (!this.futuresAccount) {
@@ -55,7 +55,7 @@ export default class Account {
   };
 
   #openStream = async (): Promise<void> => {
-    const { listenKey } = await binance.futuresGetDataStream();
+    const { listenKey } = await api.futuresGetDataStream();
 
     const stream = new WebSocket(`wss://fstream.binance.com/ws/${listenKey}`);
 
@@ -73,7 +73,7 @@ export default class Account {
     stream.onerror = () => showError('Account stream error');
 
     /* console.log('listenKey', listenKey);
-    binance.futuresSubscribe(listenKey, (data) => {
+    api.futuresSubscribe(listenKey, (data) => {
       console.log('data', data)
     })
     /* this.#stream = stream;
