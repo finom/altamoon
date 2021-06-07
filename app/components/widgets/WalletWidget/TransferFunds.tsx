@@ -22,12 +22,12 @@ const TransferFunds = (): ReactElement => {
   const futuresAccount = useValue(({ account }: RootStore) => account, 'futuresAccount');
   const reloadFuturesAccount = useSilent(({ account }: RootStore) => account, 'reloadFuturesAccount');
   const [lastTransactionId, setLastTransactionId] = useState<number>();
-  const [spotBalance] = usePromise<Record<string, api.BalanceItem>>(
-    () => Promise.resolve({}), // (isOpen ? api.balance() : Promise.resolve({})),
+  const [spotBalance] = usePromise<Record<string, { locked: number; available: number; }>>(
+    () => (isOpen ? api.balance() : Promise.resolve({})),
     [isOpen, lastTransactionId],
   );
   const available: string | undefined = useMemo(() => (isFromSpotToFutures
-    ? spotBalance?.[currency]?.available
+    ? spotBalance?.[currency]?.available?.toString()
     : futuresAccount?.assets.find(({ asset }) => asset === currency)?.maxWithdrawAmount),
   [spotBalance, currency, futuresAccount?.assets, isFromSpotToFutures]);
 
@@ -36,36 +36,23 @@ const TransferFunds = (): ReactElement => {
   const hasError: boolean = !!availableNum && !!quantity && availableNum < quantity;
   const canTransfer: boolean = !hasError && !!availableNum && quantity > 0;
   const [transferError, setTransferError] = useState<null | string>(null);
-  const transfer = useCallback(() => {
+  const transfer = useCallback(async () => {
     if (canTransfer) {
-      const data = {
-        asset: currency,
-        amount: quantity,
-        type: isFromSpotToFutures ? 1 : 2,
-      };
-      void api.signedRequest<{ tranId: number; }, { body: string }>(
-        'https://api.binance.com/sapi/v1/futures/transfer',
-        data,
-        (error, resp) => {
-          if (resp) {
-            setLastTransactionId(resp.tranId);
-            setQuantity(0);
-            void reloadFuturesAccount();
-          }
+      try {
+        const resp = await api.transfer({
+          asset: currency,
+          amount: quantity,
+          isFromSpotToFutures,
+        });
 
-          if (error) {
-            // eslint-disable-next-line no-console
-            console.error('TRANSFER ERROR', error);
-            if (error.body) {
-              const { msg = 'Unknonwn transfer error' } = (JSON.parse(error.body) as { msg: string });
-              setTransferError(msg);
-            } else {
-              setTransferError('Unknonwn transfer error');
-            }
-          }
-        },
-        'POST',
-      );
+        if (resp) {
+          setLastTransactionId(resp.tranId);
+          setQuantity(0);
+          void reloadFuturesAccount();
+        }
+      } catch (e) {
+        setTransferError((e as { message: string; }).message);
+      }
     }
   }, [canTransfer, currency, isFromSpotToFutures, quantity, reloadFuturesAccount]);
 

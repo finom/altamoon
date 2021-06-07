@@ -105,10 +105,6 @@ export async function futuresIncome(params: {
   return promiseRequest('v1/income', params, { type: 'SIGNED' });
 }
 
-export async function balance(): Promise<unknown> {
-  return promiseRequest('v1/income', {}, { type: 'SIGNED', baseURL: 'https://api.binance.com/api/' });
-}
-
 export function futuresAggTradeStream(
   givenSymbols: string | string[], callback: (ticker: FuturesAggTradeStreamTicker) => void,
 ): () => void {

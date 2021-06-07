@@ -20,8 +20,6 @@ const MarketSide = ({ side, postOnly, reduceOnly }: Props): ReactElement => {
     void createOrder(symbol, qty);
   }, [side, symbol]);
 
-  console.log('onFuturesOrder', onFuturesOrder, postOnly, reduceOnly);
-
   return (
     <>
       <QuickOrder totalEquity={100000} availableEquity={40000} side={side} />

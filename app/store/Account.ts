@@ -29,7 +29,6 @@ export default class Account {
       }
       void this.#openStream();
       await this.reloadFuturesAccount();
-      // console.log(await api.balance());
     };
 
     listenChange(store.persistent, 'binanceApiKey', setBinanceOptions);

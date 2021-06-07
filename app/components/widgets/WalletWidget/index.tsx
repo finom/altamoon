@@ -4,7 +4,7 @@ import { useValue } from 'use-change';
 import truncateDecimals from '../../../lib/truncateDecimals';
 import { RootStore } from '../../../store';
 import Widget from '../../layout/Widget';
-// import TransferFunds from './TransferFunds';
+import TransferFunds from './TransferFunds';
 
 import css from './style.css';
 
@@ -102,7 +102,7 @@ const WalletWidget = (): ReactElement => {
         </tbody>
       </table>
       <div className="text-center">
-        {/* <TransferFunds /> */}
+        <TransferFunds />
       </div>
     </Widget>
   );
