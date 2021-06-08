@@ -2,7 +2,6 @@ import { debounce } from 'lodash';
 import { listenChange } from 'use-change';
 import * as api from '../api';
 import binanceFuturesMaxLeverage from '../lib/binanceFuturesMaxLeverage';
-import checkBinancePromiseError from '../lib/checkBinancePromiseError';
 
 interface TradingPosition {
   entryPrice: number;
@@ -94,7 +93,6 @@ export default class Trading {
     const positions = await api.futuresPositionRisk();
     const prices = await api.futuresPrices();
 
-    if (checkBinancePromiseError(positions) || checkBinancePromiseError(prices)) return;
     this.positionRisks = positions;
     this.tradingPositions = positions
       .filter((position) => !!+position.positionAmt)

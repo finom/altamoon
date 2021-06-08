@@ -115,7 +115,7 @@ export default class Stats {
     this.#historyStart = now;
 
     const dailyPnlValue = this.#income.reduce((acc, incomeItem) => {
-      const types: IncomeType[] = ['REALIZED_PNL', 'COMMISSION', 'FUNDING_FEE'];
+      const types: api.IncomeType[] = ['REALIZED_PNL', 'COMMISSION', 'FUNDING_FEE'];
       return acc + (types.includes(incomeItem.incomeType) ? +incomeItem.income : 0);
     }, 0);
 

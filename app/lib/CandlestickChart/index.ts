@@ -2,7 +2,7 @@ import $ from 'balajs';
 import * as d3 from 'd3';
 
 import { last } from 'lodash';
-import { FuturesChartCandle } from 'node-binance-api';
+import * as api from '../../api';
 import Axes from './items/Axes';
 import ClipPath from './items/ClipPath';
 import GridLines from './items/GridLines';
@@ -65,7 +65,7 @@ export default class CandlestickChart {
 
   #isDrawn = false;
 
-  #candles: FuturesChartCandle[] = [];
+  #candles: api.FuturesChartCandle[] = [];
 
   /* #data = {
     candles: [] as FuturesChartCandle[],
@@ -168,7 +168,7 @@ export default class CandlestickChart {
    * @param properties - New chart properties
    */
   public update(data: {
-    yPrecision?: number; candles?: FuturesChartCandle[], symbol?: string; interval?: string;
+    yPrecision?: number; candles?: api.FuturesChartCandle[], symbol?: string; interval?: string;
   }): void {
     if (typeof data.yPrecision !== 'undefined' && data.yPrecision !== this.#yPrecision) {
       this.#yPrecision = data.yPrecision;

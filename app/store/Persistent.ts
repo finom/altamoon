@@ -1,6 +1,6 @@
-import { CandlestickChartInterval } from 'node-binance-api';
 import { Layout } from 'react-grid-layout';
 import { listenChange } from 'use-change';
+import * as api from '../api';
 
 function getPersistentStorageValue<T, K extends string>(key: K, defaultValue: T): T {
   const storageValue = localStorage.getItem(key);
@@ -12,7 +12,7 @@ export default class Persistent {
 
   // public leverage = getPersistentStorageValue<number, keyof Persistent>('leverage', 1);
 
-  public interval = getPersistentStorageValue<CandlestickChartInterval, keyof Persistent>('interval', '1d');
+  public interval = getPersistentStorageValue<api.CandlestickChartInterval, keyof Persistent>('interval', '1d');
 
   public theme = getPersistentStorageValue<'dark' | 'light', keyof Persistent>('theme', 'light');
 

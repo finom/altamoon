@@ -13,6 +13,7 @@ import LabeledInput from '../../controls/LabeledInput';
 import css from './style.css';
 import { RootStore } from '../../../store';
 import truncateDecimals from '../../../lib/truncateDecimals';
+import stringifyError from '../../../lib/stringifyError';
 
 const TransferFunds = (): ReactElement => {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +52,7 @@ const TransferFunds = (): ReactElement => {
           void reloadFuturesAccount();
         }
       } catch (e) {
-        setTransferError((e as { message: string; }).message);
+        setTransferError(stringifyError(e));
       }
     }
   }, [canTransfer, currency, isFromSpotToFutures, quantity, reloadFuturesAccount]);

@@ -1,6 +1,6 @@
-import { OrderSide } from 'node-binance-api';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { Row, Col } from 'reactstrap';
+import * as api from '../../../../api';
 import Toggle from '../../../controls/Toggle';
 import MarketSide from './MarketSide';
 
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const Market = ({ isWideLayout, postOnly, reduceOnly }: Props): ReactElement => {
-  const [compactModeSide, setCompactModeSide] = useState<OrderSide>('BUY');
+  const [compactModeSide, setCompactModeSide] = useState<api.OrderSide>('BUY');
   const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'BUY' : 'SELL'), []);
   return (
     <>

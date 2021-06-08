@@ -25,7 +25,7 @@ export default function futuresSubscribe<T = unknown>(
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Unable to parse stream data', e);
-        showError((e as { message: string }).message);
+        showError(e);
       }
 
       if (tick) {

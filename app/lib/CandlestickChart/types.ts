@@ -1,4 +1,4 @@
-import { FuturesChartCandle } from 'node-binance-api';
+import * as api from '../../api';
 
 export type D3Selection<T extends d3.BaseType, C extends d3.BaseType = null>
   = d3.Selection<T, unknown, C, unknown>;
@@ -26,10 +26,10 @@ export interface ResizeData {
 }
 
 export interface DrawData {
-  candles: FuturesChartCandle[];
+  candles: api.FuturesChartCandle[];
 }
 
-export interface SmoozCandle extends Omit<FuturesChartCandle, 'open' | 'close'> {
+export interface SmoozCandle extends Omit<api.FuturesChartCandle, 'open' | 'close'> {
   direction: 'up' | 'down';
   open: number;
   close: number;

@@ -1,8 +1,8 @@
 import { format } from 'd3';
 import { capitalize } from 'lodash';
-import { OrderSide } from 'node-binance-api';
 import React, { ReactElement } from 'react';
 import { Button, Row, Col } from 'reactstrap';
+import * as api from '../../../../api';
 
 import css from './style.css';
 
@@ -11,7 +11,7 @@ const col = 3;
 interface Props {
   totalEquity: number;
   availableEquity: number;
-  side: OrderSide;
+  side: api.OrderSide;
 }
 
 const formatMoney = (value: number) => format(value > 1000 ? ',.0f' : ',.2f')(value);

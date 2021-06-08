@@ -33,7 +33,7 @@ export default async function promiseRequest<T>(
   const { method = 'GET', type, baseURL = 'https://fapi.binance.com/fapi/' } = flags;
   if (type) {
     if (typeof data.recvWindow === 'undefined') data.recvWindow = options.recvWindow;
-    if (!options.apiKey) throw new Error('Invalid API credentials!');
+    if (!options.apiKey) { console.log('url', url); throw new Error('Invalid API credentials!'); }
     headers['X-MBX-APIKEY'] = options.apiKey;
   }
 
@@ -65,7 +65,7 @@ export default async function promiseRequest<T>(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
-    showError((e as { message: string }).message);
+    showError(e);
     throw e;
   }
 }

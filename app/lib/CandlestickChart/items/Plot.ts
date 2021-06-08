@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
-import { FuturesChartCandle } from 'node-binance-api';
 import {
   ChartItem, D3Selection, DrawData, Scales, SmoozCandle,
 } from '../types';
+import * as api from '../../../api';
 
 export default class Plot implements ChartItem {
   #scaledX: Scales['x'];
@@ -133,11 +133,13 @@ export default class Plot implements ChartItem {
  * (Based on heikin ashi candles, but keeps the real high & low)
  * */
   private static smoozCandles = (
-    candles: FuturesChartCandle[],
+    candles: api.FuturesChartCandle[],
     prevSmooz: SmoozCandle[] = [], // If updating
     startIndex = 0, // If updating
   ): SmoozCandle[] => {
-    const newCandles: (SmoozCandle | FuturesChartCandle)[] = [...prevSmooz.slice(0, startIndex)];
+    const newCandles: (SmoozCandle | api.FuturesChartCandle)[] = [
+      ...prevSmooz.slice(0, startIndex),
+    ];
 
     for (let i = startIndex; i < candles.length; i += 1) {
       const {
