@@ -1,3 +1,4 @@
+import { keyBy } from 'lodash';
 import { listenChange } from 'use-change';
 
 import * as api from '../api';
@@ -10,11 +11,13 @@ export default class Market {
 
   public lastTrade: api.FuturesAggTradeStreamTicker | null = null;
 
-  public lastPrice: number | null = null;
+  public currentSymbolLastPrice: number | null = null;
 
-  public futuresExchangeSymbols: api.FuturesExchangeInfo['symbols'] = [];
+  public futuresExchangeSymbols: Record<string, api.FuturesExchangeInfoSymbol> = {};
 
   public currentSymbolInfo: api.FuturesExchangeInfoSymbol | null = null;
+
+  public currentSymbolBaseAsset: string | null = null;
 
   public asks: [number, number][] = [];
 
@@ -51,15 +54,21 @@ export default class Market {
       );
     });
 
+    listenChange(this, 'candles', (candles) => {
+      this.currentSymbolLastPrice = candles.length ? +candles[candles.length - 1].close : null;
+    });
+
+    listenChange(this, 'currentSymbolInfo', (currentSymbolInfo) => {
+      this.currentSymbolBaseAsset = currentSymbolInfo?.baseAsset ?? null;
+    });
+
     // call onSymbolChange on every symbol change and on load
     void this.#onSymbolChange(store.persistent.symbol);
 
     void api.futuresExchangeInfo().then(({ symbols }) => {
-      this.futuresExchangeSymbols = symbols.sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
+      this.futuresExchangeSymbols = keyBy(symbols, 'symbol');
 
-      this.currentSymbolInfo = this.futuresExchangeSymbols.find(
-        ({ symbol: s }) => s === store.persistent.symbol,
-      ) ?? null;
+      this.currentSymbolInfo = this.futuresExchangeSymbols[store.persistent.symbol] ?? null;
     });
   }
 
@@ -73,7 +82,6 @@ export default class Market {
     // reset market data
     this.lastTrades = [];
     this.lastTrade = null;
-    this.lastPrice = null;
 
     this.#depthUnsubscribe?.();
     this.#depthUnsubscribe = binanceFeatureDepthSubscribe(symbol, (asks, bids) => {
@@ -90,9 +98,7 @@ export default class Market {
       }, 200,
     );
 
-    this.currentSymbolInfo = this.futuresExchangeSymbols.find(
-      ({ symbol: s }) => s === symbol,
-    ) ?? null;
+    this.currentSymbolInfo = this.futuresExchangeSymbols[this.#store.persistent.symbol] ?? null;
   };
 
   #onAggTradeStreamTick = (ticker: api.FuturesAggTradeStreamTicker): void => {

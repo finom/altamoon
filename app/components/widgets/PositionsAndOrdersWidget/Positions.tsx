@@ -1,7 +1,7 @@
 import { format } from 'd3-format';
 import React, { ReactElement } from 'react';
 import { Badge, Button, Table } from 'reactstrap';
-import { useValue } from 'use-change';
+import { useSilent, useValue } from 'use-change';
 import { RootStore } from '../../../store';
 
 const formatNumber = (n: number, ignorePrecision?: boolean) => format(n < 10 && !ignorePrecision ? ',.4f' : ',.2f')(n);
@@ -15,6 +15,7 @@ const textClassName = (value: number) => {
 
 const Positions = (): ReactElement => {
   const tradingPositions = useValue(({ trading }: RootStore) => trading, 'tradingPositions');
+  const closePosition = useSilent(({ trading }: RootStore) => trading, 'closePosition');
 
   return (
     <Table className="align-middle">
@@ -30,7 +31,7 @@ const Positions = (): ReactElement => {
             Last Price
           </th>
           <th>
-            Entity Price
+            Entry Price
           </th>
           <th>
             Liq. Price
@@ -79,7 +80,7 @@ const Positions = (): ReactElement => {
               <td>{formatNumber(lastPrice)}</td>
               <td>{formatNumber(entryPrice)}</td>
               <td>{marginType === 'isolated' ? formatNumber(liquidationPrice) : <>&mdash;</>}</td>
-              <td>{marginType === 'isolated' ? formatNumber(isolatedMargin, true) : <>&mdash;</>}</td>
+              <td>{marginType === 'isolated' ? formatNumber(isolatedMargin, true) : <em className="text-warning">Cross</em>}</td>
               <td>
                 <span className={textClassName(pnl)}>{formatNumber(pnl, true)}</span>
                 {' '}
@@ -102,7 +103,7 @@ const Positions = (): ReactElement => {
                 <Button
                   color="link"
                   className="text-muted px-0"
-                  onClick={() => alert('To do')}
+                  onClick={() => closePosition(symbol)}
                 >
                   Market
                 </Button>
@@ -111,6 +112,13 @@ const Positions = (): ReactElement => {
           );
         })}
       </tbody>
+      {!tradingPositions.length && (
+      <tfoot>
+        <tr>
+          <td colSpan={100} align="center" className="text-muted"><em>You don&apos;t have open positions</em></td>
+        </tr>
+      </tfoot>
+      )}
     </Table>
   );
 };

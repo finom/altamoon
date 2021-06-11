@@ -97,18 +97,61 @@ export default class Trading {
     this.tradingPositions = positions
       .filter((position) => !!+position.positionAmt)
       .map((position) => this.#getPositionInfo(position, +prices[position.symbol]))
-      .sort((a, b) => (a.symbol > b.symbol ? 1 : -1));
+      .sort(({ symbol: a }, { symbol: b }) => (a > b ? 1 : -1));
 
     await this.#updateLeverage(this.#store.persistent.symbol);
   };
 
-  /* public marketOrder = (side: OrderSide, qty: number): Promise<void> => {
-    const order = side === 'BUY' ? api.futuresMarketBuy : api.futuresMarketSell;
+  public marketOrder = async ({
+    side, quantity, symbol, reduceOnly,
+  }: {
+    side: api.OrderSide; quantity: number; symbol: string; reduceOnly: boolean;
+  }): Promise<api.FuturesOrder | null> => {
+    try {
+      const { futuresExchangeSymbols } = this.#store.market;
+      const symbolInfo = futuresExchangeSymbols[symbol];
 
-    return order(SYMBOL, qty, {
-      reduceOnly: data.reduceOnly.toString(),
-    }).catch((error) => console.error(error));
-  }; */
+      if (!symbolInfo) {
+        throw new Error(`Symbol info for symbol "${symbol}" is not found`);
+      }
+
+      const createOrder = side === 'BUY' ? api.futuresMarketBuy : api.futuresMarketSell;
+      return await createOrder(
+        symbol, quantity, { reduceOnly },
+      );
+    } catch {
+      return null;
+    }
+  };
+
+  public closePosition = async (symbol: string): Promise<api.FuturesOrder | null> => {
+    try {
+      const position = this.tradingPositions.find((pos) => pos.symbol === symbol);
+
+      if (!position) {
+        throw new Error(`No open position of symbol "${symbol}" found`);
+      }
+
+      const { positionAmt } = position;
+
+      if (positionAmt < 0) {
+        return await api.futuresMarketBuy(symbol, -positionAmt, { reduceOnly: true });
+      }
+
+      return await api.futuresMarketSell(symbol, positionAmt, { reduceOnly: true });
+    } catch {
+      return null;
+    }
+  };
+
+  public getFee = (qty: number, type: 'maker' | 'taker' = 'maker'): number => {
+    const feeTier = this.#store.account.futuresAccount?.feeTier ?? 0;
+    const feeRate = type === 'taker'
+      ? [0.04, 0.04, 0.035, 0.032, 0.03, 0.027, 0.025, 0.022, 0.020, 0.017][feeTier]
+      : [0.02, 0.016, 0.014, 0.012, 0.01, 0.008, 0.006, 0.004, 0.002, 0][feeTier];
+
+    return (qty * feeRate) / 100;
+  };
 
   #updateLeverage = async (symbol: string): Promise<void> => {
     const currentSymbolMaxLeverage = await binanceFuturesMaxLeverage(symbol);
@@ -156,15 +199,6 @@ export default class Trading {
         });
       },
     );
-  };
-
-  public getFee = (qty: number, type: 'maker' | 'taker' = 'maker'): number => {
-    const feeTier = this.#store.account.futuresAccount?.feeTier ?? 0;
-    const feeRate = type === 'taker'
-      ? [0.04, 0.04, 0.035, 0.032, 0.03, 0.027, 0.025, 0.022, 0.020, 0.017][feeTier]
-      : [0.02, 0.016, 0.014, 0.012, 0.01, 0.008, 0.006, 0.004, 0.002, 0][feeTier];
-
-    return (qty * feeRate) / 100;
   };
 
   #getPositionInfo = (

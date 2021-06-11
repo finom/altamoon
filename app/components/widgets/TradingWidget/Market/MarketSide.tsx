@@ -1,44 +1,45 @@
-import { capitalize } from 'lodash';
-import React, { ReactElement, useCallback, useState } from 'react';
-import { Button, Input } from 'reactstrap';
-import { useValue } from 'use-change';
+import React, { ReactElement, useCallback } from 'react';
+import { useSilent, useValue } from 'use-change';
+
 import * as api from '../../../../api';
 import { RootStore } from '../../../../store';
 import QuickOrder from '../QuickOrder';
+import ExactSize from './ExactSize';
 
 interface Props {
   side: api.OrderSide;
-  postOnly: boolean;
   reduceOnly: boolean;
 }
 
-const MarketSide = ({ side, postOnly, reduceOnly }: Props): ReactElement => {
-  const [exactSize, setExactSize] = useState(0);
+const MarketSide = ({ side, reduceOnly }: Props): ReactElement => {
   const symbol = useValue(({ persistent }: RootStore) => persistent, 'symbol');
-  const onFuturesOrder = useCallback((qty: number) => {
-    const createOrder = side === 'BUY' ? api.futuresMarketBuy : api.futuresMarketSell;
-    void createOrder(symbol, qty);
-  }, [side, symbol]);
+  const totalWalletBalance = useValue(({ account }: RootStore) => account, 'totalWalletBalance');
+  const availableBalance = useValue(({ account }: RootStore) => account, 'availableBalance');
+  const symbolInfo = useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols')[symbol];
+  const marketOrder = useSilent(({ trading }: RootStore) => trading, 'marketOrder');
+  const currentSymbolLastPrice = useValue(({ market }: RootStore) => market, 'currentSymbolLastPrice');
+  const onMarketOrder = useCallback((quantity: number) => void marketOrder({
+    side, quantity, symbol, reduceOnly,
+  }), [marketOrder, reduceOnly, side, symbol]);
+  const quantityPrecision = symbolInfo?.quantityPrecision ?? 0;
 
   return (
     <>
-      <QuickOrder totalEquity={100000} availableEquity={40000} side={side} />
-      {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-      <label className="mb-1" htmlFor={`market_${side}_exact`}>Exact Size</label>
-      <div className="input-group mb-3">
-        <Input
-          type="text"
-          placeholder="Size"
-          id={`market_${side}_exact`}
-          value={exactSize}
-          onChange={({ target }) => setExactSize(+target.value || 0)}
-        />
-        <Button
-          color={side === 'BUY' ? 'success' : 'sell'}
-        >
-          {capitalize(side)}
-        </Button>
-      </div>
+      <QuickOrder
+        totalWalletBalance={totalWalletBalance}
+        availableBalance={availableBalance}
+        quantityPrecision={quantityPrecision}
+        currentSymbolLastPrice={currentSymbolLastPrice ?? 0}
+        side={side}
+        onOrder={onMarketOrder}
+      />
+      <ExactSize
+        side={side}
+        availableBalance={availableBalance}
+        currentSymbolLastPrice={currentSymbolLastPrice ?? 0}
+        quantityPrecision={quantityPrecision}
+        onOrder={onMarketOrder}
+      />
     </>
   );
 };

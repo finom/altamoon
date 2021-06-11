@@ -62,9 +62,12 @@ export default class Axes implements ChartItem {
     this.#resizeContainers(resizeData);
   };
 
-  public update = (data: { yPrecision?: number, scaledX?: d3.ScaleTime<number, number> }): void => {
-    if (typeof data.yPrecision !== 'undefined') {
-      const tickFormat = d3.format(`.${data.yPrecision}f`);
+  public update = (data: {
+    pricePrecision?: number,
+    scaledX?: d3.ScaleTime<number, number>,
+  }): void => {
+    if (typeof data.pricePrecision !== 'undefined') {
+      const tickFormat = d3.format(`.${data.pricePrecision}f`);
       this.#yLeft.tickFormat(tickFormat);
       this.#yRight.tickFormat(tickFormat);
     }
@@ -95,7 +98,7 @@ module.exports = class Axes {
 
         this.x = d3.axisBottom(this.scales.x)
 
-        let tickFormat = d3.format('.' + chart.yPrecision + 'f')
+        let tickFormat = d3.format('.' + chart.pricePrecision + 'f')
 
         this.yLeft = d3.axisLeft(this.scales.y)
                 .tickFormat(tickFormat)

@@ -23,7 +23,7 @@ interface Params {
   onUpdateAlerts: (y: number[]) => void;
   alerts: number[];
   interval: string;
-  yPrecision: number;
+  pricePrecision: number;
 }
 
 export default class CandlestickChart {
@@ -61,7 +61,7 @@ export default class CandlestickChart {
 
   #lastPrice?: number;
 
-  #yPrecision: number;
+  #pricePrecision: number;
 
   #isDrawn = false;
 
@@ -76,7 +76,7 @@ export default class CandlestickChart {
     orderLines: [],
     draftLines: [],
     alertLines: [],
-    yPrecision: 1,
+    pricePrecision: 1,
   }; */
 
   #zoom = d3.zoom();
@@ -84,7 +84,7 @@ export default class CandlestickChart {
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
     {
-      yPrecision, symbol, interval, alerts, onUpdateAlerts,
+      pricePrecision, symbol, interval, alerts, onUpdateAlerts,
     }: Params,
   ) {
     const containerElement = $.one(container);
@@ -104,7 +104,7 @@ export default class CandlestickChart {
 
     this.#symbol = symbol;
     this.#interval = interval;
-    this.#yPrecision = yPrecision;
+    this.#pricePrecision = pricePrecision;
     this.#svg = new Svg();
     this.#axes = new Axes({ scales: this.#scales });
     this.#clipPath = new ClipPath();
@@ -168,14 +168,14 @@ export default class CandlestickChart {
    * @param properties - New chart properties
    */
   public update(data: {
-    yPrecision?: number; candles?: api.FuturesChartCandle[], symbol?: string; interval?: string;
+    pricePrecision?: number; candles?: api.FuturesChartCandle[], symbol?: string; interval?: string;
   }): void {
-    if (typeof data.yPrecision !== 'undefined' && data.yPrecision !== this.#yPrecision) {
-      this.#yPrecision = data.yPrecision;
-      this.#axes.update({ yPrecision: data.yPrecision });
-      this.#currentPriceLines.update({ yPrecision: data.yPrecision });
-      this.#crosshairPriceLines.update({ yPrecision: data.yPrecision });
-      this.#alertLines.update({ yPrecision: data.yPrecision });
+    if (typeof data.pricePrecision !== 'undefined' && data.pricePrecision !== this.#pricePrecision) {
+      this.#pricePrecision = data.pricePrecision;
+      this.#axes.update({ pricePrecision: data.pricePrecision });
+      this.#currentPriceLines.update({ pricePrecision: data.pricePrecision });
+      this.#crosshairPriceLines.update({ pricePrecision: data.pricePrecision });
+      this.#alertLines.update({ pricePrecision: data.pricePrecision });
     }
 
     if (typeof data.candles !== 'undefined') {
@@ -396,8 +396,8 @@ export default class CandlestickChart {
     const yPaddingTop = y.invert(-200) - y.invert(0);
     const yPaddingBot = y.invert(this.#height) - y.invert(this.#height + 200);
 
-    yDomain[1] = (yDomain[1] ?? 0) + (+yPaddingTop.toFixed(this.#yPrecision));
-    yDomain[0] = (yDomain[0] ?? 0) - (+yPaddingBot.toFixed(this.#yPrecision));
+    yDomain[1] = (yDomain[1] ?? 0) + (+yPaddingTop.toFixed(this.#pricePrecision));
+    yDomain[0] = (yDomain[0] ?? 0) - (+yPaddingBot.toFixed(this.#pricePrecision));
 
     y.domain(yDomain);
   };

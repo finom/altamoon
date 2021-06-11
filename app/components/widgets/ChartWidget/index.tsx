@@ -22,7 +22,7 @@ const ChartWidget = (): ReactElement => {
   useEffect(() => {
     if (candleChartRef.current) {
       candleChartRef.current.update({
-        candles, symbol, yPrecision: currentSymbolInfo?.pricePrecision ?? 1, interval,
+        candles, symbol, pricePrecision: currentSymbolInfo?.pricePrecision ?? 1, interval,
       });
     }
   }, [candles, currentSymbolInfo?.pricePrecision, interval, symbol]);
@@ -34,7 +34,7 @@ const ChartWidget = (): ReactElement => {
         alerts,
         symbol,
         interval,
-        yPrecision: currentSymbolInfo?.pricePrecision ?? 1,
+        pricePrecision: currentSymbolInfo?.pricePrecision ?? 1,
       });
       candleChartRef.current.update({ candles });
     }

@@ -28,42 +28,18 @@ const Market = ({ isWideLayout, postOnly, reduceOnly }: Props): ReactElement => 
       <Row>
         {(isWideLayout || compactModeSide === 'BUY') && (
         <Col>
-          <MarketSide side="BUY" postOnly={postOnly} reduceOnly={reduceOnly} />
+          <MarketSide side="BUY" reduceOnly={reduceOnly} />
         </Col>
         )}
 
         {(isWideLayout || compactModeSide === 'BUY') && (
         <Col>
-          <MarketSide side="SELL" postOnly={postOnly} reduceOnly={reduceOnly} />
+          <MarketSide side="SELL" reduceOnly={reduceOnly} />
         </Col>
         )}
       </Row>
     </>
   );
-
-  /* const [size, setSize] = useState(0);
-  return (
-    <>
-      <Toggle id="marketBuySellSwitch"
-      checkedLabel="Buy/Long" uncheckedLabel="Sell/Short" className="my-3" />
-      <QuickOrder totalEquity={100000} availableEquity={40000} />
-      <div className="mb-1">Exact size</div>
-      <LabeledInput
-        label="Qty"
-        rightLabel="Y"
-        id="marketSize"
-        type="text"
-        onChange={(v) => setSize(+v || 0)}
-        value={`${size}`}
-      />
-      <div className="input-group mb-3">
-        <input type="text" className="form-control"
-        placeholder="Recipient's username" aria-label="Recipient's username"
-        aria-describedby="button-addon2" />
-        <button className="btn btn-secondary" type="button" id="button-addon2">Button</button>
-      </div>
-    </>
-  ); */
 };
 
 export default Market;

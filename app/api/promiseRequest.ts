@@ -1,20 +1,21 @@
 /* eslint-disable no-param-reassign */
 import qs from 'qs';
 import crypto from 'crypto';
-import showError from '../lib/showError';
+import notify from '../lib/notify';
 import options from './options';
 
 interface Flags {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   type?: 'TRADE' | 'SIGNED' | 'MARKET_DATA' | 'USER_DATA' | 'USER_STREAM';
   baseURL?: string;
+  successText?: string;
 }
 
 interface Data {
   recvWindow?: number;
   timestamp?: number;
   signature?: string;
-  [key: string]: number | string | undefined;
+  [key: string]: number | string | boolean | undefined;
 }
 
 interface ErrorResponse {
@@ -30,10 +31,12 @@ export default async function promiseRequest<T>(
     'Content-type': 'application/x-www-form-urlencoded',
   };
 
-  const { method = 'GET', type, baseURL = 'https://fapi.binance.com/fapi/' } = flags;
+  const {
+    method = 'GET', type, baseURL = 'https://fapi.binance.com/fapi/', successText,
+  } = flags;
   if (type) {
     if (typeof data.recvWindow === 'undefined') data.recvWindow = options.recvWindow;
-    if (!options.apiKey) { console.log('url', url); throw new Error('Invalid API credentials!'); }
+    if (!options.apiKey) throw new Error('Invalid API credentials!');
     headers['X-MBX-APIKEY'] = options.apiKey;
   }
 
@@ -61,11 +64,13 @@ export default async function promiseRequest<T>(
       throw new Error(response.msg);
     }
 
+    if (successText) notify('success', successText);
+
     return response as T;
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
-    showError(e);
+    notify('error', e);
     throw e;
   }
 }

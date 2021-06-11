@@ -47,7 +47,7 @@ export default class PriceLines implements ChartItem {
 
   #lineStyle: 'solid' | 'dashed' | 'dotted';
 
-  #yPrecision = 1;
+  #pricePrecision = 1;
 
   #isVisible = true;
 
@@ -112,7 +112,7 @@ export default class PriceLines implements ChartItem {
   };
 
   public update = (data: {
-    items?: PriceLinesDatum[], isVisible?: boolean, yPrecision?: number
+    items?: PriceLinesDatum[], isVisible?: boolean, pricePrecision?: number
   }): void => {
     if (!this.#wrapper) return;
 
@@ -122,8 +122,8 @@ export default class PriceLines implements ChartItem {
       this.#wrapper.style('visibility', data.isVisible ? '' : 'hidden');
     }
 
-    if (typeof data.yPrecision !== 'undefined') {
-      this.#yPrecision = data.yPrecision;
+    if (typeof data.pricePrecision !== 'undefined') {
+      this.#pricePrecision = data.pricePrecision;
     }
 
     if (typeof data.items !== 'undefined') {
@@ -408,7 +408,7 @@ export default class PriceLines implements ChartItem {
           .attr('y', 0)
           .attr('dy', '.32em')
           .style('text-anchor', neg < 0 ? 'end' : 'start')
-          .text(({ yValue }) => d3.format(`,.${this.#yPrecision}f`)(yValue ?? 0));
+          .text(({ yValue }) => d3.format(`,.${this.#pricePrecision}f`)(yValue ?? 0));
         break;
       case 'top':
       case 'bottom':

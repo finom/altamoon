@@ -1,41 +1,24 @@
-import { format } from 'd3';
 import { capitalize } from 'lodash';
 import React, { ReactElement } from 'react';
-import { Button, Row, Col } from 'reactstrap';
+import { Row } from 'reactstrap';
+
 import * as api from '../../../../api';
-
 import css from './style.css';
-
-const col = 3;
+import ButtonCol from './ButtonCol';
 
 interface Props {
-  totalEquity: number;
-  availableEquity: number;
+  totalWalletBalance: number;
+  availableBalance: number;
+  quantityPrecision: number;
+  currentSymbolLastPrice: number;
   side: api.OrderSide;
+  onOrder: (qty: number) => void;
 }
 
-const formatMoney = (value: number) => format(value > 1000 ? ',.0f' : ',.2f')(value);
-
-const ButtonCol = ({
-  totalEquity, availableEquity, side, percent,
-}: Props & { percent: number }) => {
-  const value = totalEquity * (percent / 100);
-  return (
-    <Col xs={col}>
-      <Button className="w-100 nowrap" disabled={value > availableEquity} color={side === 'BUY' ? 'success' : 'sell'}>
-        {percent}
-        %
-        <br />
-        <span className={css.value}>
-          ₮
-          {formatMoney(value)}
-        </span>
-      </Button>
-    </Col>
-  );
-};
-
-const QuickOrder = ({ totalEquity, availableEquity, side }: Props): ReactElement => (
+const QuickOrder = ({
+  totalWalletBalance, availableBalance, quantityPrecision,
+  currentSymbolLastPrice, side, onOrder,
+}: Props): ReactElement => (
   <>
     <div className="mb-1">
       Quick
@@ -44,33 +27,41 @@ const QuickOrder = ({ totalEquity, availableEquity, side }: Props): ReactElement
     </div>
     <Row className={`${css.wrapper} mb-3`}>
       <ButtonCol
-        totalEquity={totalEquity}
-        availableEquity={availableEquity}
+        totalWalletBalance={totalWalletBalance}
+        availableBalance={availableBalance}
+        quantityPrecision={quantityPrecision}
+        currentSymbolLastPrice={currentSymbolLastPrice}
         side={side}
         percent={10}
+        onOrder={onOrder}
       />
       <ButtonCol
-        totalEquity={totalEquity}
-        availableEquity={availableEquity}
+        totalWalletBalance={totalWalletBalance}
+        availableBalance={availableBalance}
+        quantityPrecision={quantityPrecision}
+        currentSymbolLastPrice={currentSymbolLastPrice}
         side={side}
         percent={25}
+        onOrder={onOrder}
       />
       <ButtonCol
-        totalEquity={totalEquity}
-        availableEquity={availableEquity}
+        totalWalletBalance={totalWalletBalance}
+        availableBalance={availableBalance}
+        quantityPrecision={quantityPrecision}
+        currentSymbolLastPrice={currentSymbolLastPrice}
         side={side}
         percent={50}
+        onOrder={onOrder}
       />
-      <Col xs={col}>
-        <Button className="w-100 nowrap" color={side === 'BUY' ? 'success' : 'sell'}>
-          Max
-          <br />
-          <span className={css.value}>
-            ₮
-            {formatMoney(availableEquity)}
-          </span>
-        </Button>
-      </Col>
+      <ButtonCol
+        totalWalletBalance={totalWalletBalance}
+        availableBalance={availableBalance}
+        quantityPrecision={quantityPrecision}
+        currentSymbolLastPrice={currentSymbolLastPrice}
+        side={side}
+        isMax
+        onOrder={onOrder}
+      />
     </Row>
   </>
 );

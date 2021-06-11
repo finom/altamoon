@@ -1,7 +1,7 @@
 import { debounce } from 'lodash';
 import { listenChange } from 'use-change';
 import * as api from '../api';
-import showError from '../lib/showError';
+import notify from '../lib/notify';
 import stringifyError from '../lib/stringifyError';
 
 export default class Account {
@@ -10,6 +10,8 @@ export default class Account {
   public totalPositionInitialMargin = 0;
 
   public totalOpenOrderInitialMargin = 0;
+
+  public availableBalance = 0;
 
   public futuresAccount: api.FuturesAccount | null = null;
 
@@ -31,9 +33,7 @@ export default class Account {
       await this.reloadFuturesAccount();
     };
 
-    const relaodApp = debounce(() => {
-      window.location.reload();
-    });
+    const relaodApp = debounce(() => window.location.reload());
 
     listenChange(store.persistent, 'binanceApiKey', relaodApp);
     listenChange(store.persistent, 'binanceApiSecret', relaodApp);
@@ -49,6 +49,7 @@ export default class Account {
       this.totalWalletBalance = +futuresAccount.totalWalletBalance;
       this.totalPositionInitialMargin = +futuresAccount.totalPositionInitialMargin;
       this.totalOpenOrderInitialMargin = +futuresAccount.totalOpenOrderInitialMargin;
+      this.availableBalance = +futuresAccount.availableBalance;
     } catch (e) {
       this.futuresAccountError = stringifyError(e);
     }
@@ -65,13 +66,14 @@ export default class Account {
           const { e } = JSON.parse(data) as { e: string };
           if (e === 'ACCOUNT_UPDATE') {
             void this.#store.trading.loadPositions();
+            void this.#store.account.reloadFuturesAccount();
           }
         } catch (e) {
-          showError(e);
+          notify('error', e);
         }
       };
 
-      stream.onerror = () => showError('Account stream error');
+      stream.onerror = () => notify('error', 'Account stream error');
     } catch {
       //
     }

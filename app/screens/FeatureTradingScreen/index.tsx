@@ -22,7 +22,7 @@ const FeatureTradingScreen = (): ReactElement => {
   const [layout, setLayout] = useChange(({ persistent }: RootStore) => persistent, 'layout');
   const [existingSymbol, setSymbol] = useChange(({ persistent }: RootStore) => persistent, 'symbol');
   const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
-  const futuresExchangeSymbols = useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols');
+  const futuresExchangeSymbols = Object.values(useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols')).sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
 
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
     setLayout(changedLayout);

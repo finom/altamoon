@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode } from 'react';
+import React, { ReactElement, ReactNode, Ref } from 'react';
 
 import css from './style.css';
 
@@ -9,6 +9,7 @@ interface Props {
   children?: ReactNode;
   type: 'text' | 'number';
   value: string;
+  innerRef?: Ref<HTMLInputElement>;
   onChange: (value: string) => void;
 }
 
@@ -19,11 +20,13 @@ const LabeledInput = ({
   id,
   type,
   value,
+  innerRef,
   onChange,
 }: Props): ReactElement => (
   <div className={`form-control labeled-input ${css.labeledInput}`}>
     <label htmlFor={id}>{label}</label>
     <input
+      ref={innerRef}
       type={type}
       id={id}
       value={value}

@@ -1,4 +1,4 @@
-import showError from '../lib/showError';
+import notify from '../lib/notify';
 
 export default function futuresSubscribe<T = unknown>(
   streams: string[], callback: (ticker: T, stream: string) => void,
@@ -13,7 +13,7 @@ export default function futuresSubscribe<T = unknown>(
       if (!isClosed) {
         // eslint-disable-next-line no-console
         console.error('Stream error', event, ws.readyState);
-        showError(`Stream error ${streamsStr}`);
+        notify('error', `Stream error ${streamsStr}`);
       }
     });
 
@@ -25,7 +25,7 @@ export default function futuresSubscribe<T = unknown>(
       } catch (e) {
         // eslint-disable-next-line no-console
         console.error('Unable to parse stream data', e);
-        showError(e);
+        notify('error', e);
       }
 
       if (tick) {

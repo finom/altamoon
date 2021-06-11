@@ -60,14 +60,15 @@ export async function futuresExchangeInfo(): Promise<FuturesExchangeInfo> {
 interface FuturesOrderOptions {
   side: OrderSide;
   symbol: string;
-  quantity: number;
+  quantity: number | string;
   price: number | null;
   type: OrderType;
   timeInForce?: TimeInForce;
+  reduceOnly?: boolean;
 }
 
 export async function futuresOrder({
-  side, symbol, quantity, price, type, timeInForce,
+  side, symbol, quantity, price, type, timeInForce, reduceOnly,
 }: FuturesOrderOptions): Promise<FuturesOrder> {
   if (type !== 'MARKET' && (typeof price !== 'number' || price !== null)) throw new Error(`Orders of type ${type} must have price to be a number`);
 
@@ -78,18 +79,23 @@ export async function futuresOrder({
     side,
     quantity,
     timeInForce: !timeInForce && (type === 'LIMIT' || type === 'STOP' || type === 'TAKE_PROFIT') ? 'GTX' : timeInForce,
-  }, { type: 'TRADE', method: 'POST' });
+    reduceOnly,
+  }, { type: 'TRADE', method: 'POST', successText: 'Order successfully created' });
 }
 
-export async function futuresMarketBuy(symbol: string, quantity: number): Promise<FuturesOrder> {
+export async function futuresMarketBuy(
+  symbol: string, quantity: number | string, { reduceOnly }: { reduceOnly?: boolean; } = {},
+): Promise<FuturesOrder> {
   return futuresOrder({
-    side: 'BUY', symbol, quantity, price: null, type: 'MARKET',
+    side: 'BUY', symbol, quantity, price: null, type: 'MARKET', reduceOnly,
   });
 }
 
-export async function futuresMarketSell(symbol: string, quantity: number): Promise<FuturesOrder> {
+export async function futuresMarketSell(
+  symbol: string, quantity: number | string, { reduceOnly }: { reduceOnly?: boolean; } = {},
+): Promise<FuturesOrder> {
   return futuresOrder({
-    side: 'SELL', symbol, quantity, price: null, type: 'MARKET',
+    side: 'SELL', symbol, quantity, price: null, type: 'MARKET', reduceOnly,
   });
 }
 
