@@ -20,7 +20,7 @@ const QuickOrder = ({
   currentSymbolLastPrice, side, onOrder,
 }: Props): ReactElement => (
   <>
-    <div className="mb-1">
+    <div className="mb-1 mt-2">
       Quick
       {' '}
       {capitalize(side)}

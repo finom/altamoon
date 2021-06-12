@@ -300,6 +300,7 @@ export default class CandlestickChart {
     this.#clipPath.resize(resizeData);
     this.#gridLines.resize(resizeData);
     this.#currentPriceLines.resize(resizeData);
+    this.#positionLines.resize(resizeData);
     this.#crosshairPriceLines.resize(resizeData);
     this.#alertLines.resize(resizeData);
 

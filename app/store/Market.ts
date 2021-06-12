@@ -95,7 +95,7 @@ export default class Market {
       this.#store.persistent.interval,
       (data) => {
         this.candles = data;
-      }, 200,
+      }, 1000,
     );
 
     this.currentSymbolInfo = this.futuresExchangeSymbols[this.#store.persistent.symbol] ?? null;

@@ -3,9 +3,9 @@ import {
 } from 'react';
 import * as bootstrap from 'bootstrap';
 
-export default function useBootstrapTooltip<E extends HTMLElement>(): [
-  Ref<E | null>, (text: string | number) => void,
-] {
+export default function useBootstrapTooltip<E extends HTMLElement>(
+  options?: Partial<bootstrap.Tooltip.Options>,
+): [Ref<E | null>, (text: string | number) => void] {
   const elementRef = useRef<E | null>(null);
   const tooltipRef = useRef<bootstrap.Tooltip & { tip: HTMLElement }>();
   const [text, setText] = useState<string | number>('Moment...');
@@ -15,7 +15,7 @@ export default function useBootstrapTooltip<E extends HTMLElement>(): [
     if (element) {
       if (!tooltipRef.current) {
         tooltipRef.current = new bootstrap.Tooltip(
-          element, { title: String(text), html: true },
+          element, { title: String(text), html: true, offset: options?.offset ?? [0, 0] },
         ) as bootstrap.Tooltip & { tip: HTMLElement };
       }
 
@@ -38,7 +38,7 @@ export default function useBootstrapTooltip<E extends HTMLElement>(): [
     }
 
     return undefined;
-  }, [text]);
+  }, [options?.offset, text]);
 
   return [elementRef, setText];
 }

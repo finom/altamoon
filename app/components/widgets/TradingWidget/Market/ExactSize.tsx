@@ -18,6 +18,10 @@ interface Props {
   onOrder: (qty: number) => void;
 }
 
+const tooltipOptions = {
+  offset: '0, 6',
+};
+
 const ExactSize = ({
   side,
   availableBalance,
@@ -31,7 +35,7 @@ const ExactSize = ({
     currentSymbolLeverage
       * ((+exactSize || 0) / currentSymbolLastPrice) * (10 ** quantityPrecision),
   ) / (10 ** quantityPrecision);
-  const [inputRef, setInputTitle] = useBootstrapTooltip<HTMLInputElement>();
+  const [inputRef, setInputTitle] = useBootstrapTooltip<HTMLInputElement>(tooltipOptions);
   const currentSymbolBaseAsset = useValue(({ market }: RootStore) => market, 'currentSymbolBaseAsset');
 
   useEffect(() => {

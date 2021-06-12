@@ -10,8 +10,6 @@ function getPersistentStorageValue<T, K extends string>(key: K, defaultValue: T)
 export default class Persistent {
   public symbol = getPersistentStorageValue<string, keyof Persistent>('symbol', 'BTCUSDT');
 
-  // public leverage = getPersistentStorageValue<number, keyof Persistent>('leverage', 1);
-
   public interval = getPersistentStorageValue<api.CandlestickChartInterval, keyof Persistent>('interval', '1d');
 
   public theme = getPersistentStorageValue<'dark' | 'light', keyof Persistent>('theme', 'light');

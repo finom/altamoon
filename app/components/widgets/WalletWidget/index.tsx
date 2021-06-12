@@ -21,7 +21,6 @@ const WalletWidget = (): ReactElement => {
   const pnlPercent = useValue(statsSelector, 'pnlPercent');
   const dailyPnlValue = useValue(statsSelector, 'dailyPnlValue');
   const dailyPnlPercent = useValue(statsSelector, 'dailyPnlPercent');
-  const dailyBreakEven = useValue(statsSelector, 'dailyBreakEven');
 
   return (
     <Widget title="Wallet">
@@ -65,14 +64,6 @@ const WalletWidget = (): ReactElement => {
               (
               {format(',.1%')(dailyPnlPercent)}
               )
-            </td>
-          </tr>
-          <tr>
-            <td className={css.labelCell}>
-              Daily break-even:
-            </td>
-            <td className={`${css.valueCell} form-control`}>
-              {formatNumber(dailyBreakEven)}
             </td>
           </tr>
           <tr>
