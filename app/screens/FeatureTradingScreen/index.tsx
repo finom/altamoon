@@ -6,7 +6,7 @@ import useChange, { useValue } from 'use-change';
 
 import LastTradesWidget from '../../components/widgets/LastTradesWidget';
 import { RootStore } from '../../store';
-import { darkTheme, defaultTheme } from '../../themes';
+import { darkTheme, lightTheme } from '../../themes';
 import css from './style.css';
 import OrderBookWidget from '../../components/widgets/OrderBookWidget';
 import WalletWidget from '../../components/widgets/WalletWidget';
@@ -33,7 +33,7 @@ const FeatureTradingScreen = (): ReactElement => {
   return (
     <div>
       <SettingsModal />
-      {theme === 'dark' ? <style>{darkTheme}</style> : <style>{defaultTheme}</style>}
+      {theme === 'dark' ? <style>{darkTheme}</style> : <style>{lightTheme}</style>}
       <Navbar className={classNames({
         'bg-dark': theme === 'dark',
         'bg-light': theme !== 'dark',

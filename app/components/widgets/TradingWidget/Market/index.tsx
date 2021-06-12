@@ -11,6 +11,7 @@ interface Props {
 }
 
 const Market = ({ isWideLayout, postOnly, reduceOnly }: Props): ReactElement => {
+  ((n: boolean) => n)(postOnly); // just to temporarily disable TS "never read" error
   const [compactModeSide, setCompactModeSide] = useState<api.OrderSide>('BUY');
   const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'BUY' : 'SELL'), []);
   return (
