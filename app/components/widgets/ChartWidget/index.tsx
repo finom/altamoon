@@ -17,15 +17,16 @@ const ChartWidget = (): ReactElement => {
   const candles = useValue(({ market }: RootStore) => market, 'candles');
   const currentSymbolInfo = useValue(({ market }: RootStore) => market, 'currentSymbolInfo');
   const symbol = useValue(({ persistent }: RootStore) => persistent, 'symbol');
+  const position = useValue(({ trading }: RootStore) => trading, 'tradingPositions').find((pos) => pos.symbol === symbol) ?? null;
   const [alerts, onUpdateAlerts] = useChange(({ persistent }: RootStore) => persistent, 'alerts');
 
   useEffect(() => {
     if (candleChartRef.current) {
       candleChartRef.current.update({
-        candles, symbol, pricePrecision: currentSymbolInfo?.pricePrecision ?? 1, interval,
+        candles, symbol, pricePrecision: currentSymbolInfo?.pricePrecision ?? 1, interval, position,
       });
     }
-  }, [candles, currentSymbolInfo?.pricePrecision, interval, symbol]);
+  }, [candles, currentSymbolInfo?.pricePrecision, interval, position, symbol]);
 
   useEffect(() => {
     if (ref.current && !candleChartRef.current) {

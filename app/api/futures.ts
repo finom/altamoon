@@ -80,7 +80,7 @@ export async function futuresOrder({
     quantity,
     timeInForce: !timeInForce && (type === 'LIMIT' || type === 'STOP' || type === 'TAKE_PROFIT') ? 'GTX' : timeInForce,
     reduceOnly,
-  }, { type: 'TRADE', method: 'POST', successText: 'Order successfully created' });
+  }, { type: 'TRADE', method: 'POST' });
 }
 
 export async function futuresMarketBuy(

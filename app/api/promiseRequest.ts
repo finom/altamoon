@@ -8,7 +8,6 @@ interface Flags {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   type?: 'TRADE' | 'SIGNED' | 'MARKET_DATA' | 'USER_DATA' | 'USER_STREAM';
   baseURL?: string;
-  successText?: string;
 }
 
 interface Data {
@@ -31,9 +30,7 @@ export default async function promiseRequest<T>(
     'Content-type': 'application/x-www-form-urlencoded',
   };
 
-  const {
-    method = 'GET', type, baseURL = 'https://fapi.binance.com/fapi/', successText,
-  } = flags;
+  const { method = 'GET', type, baseURL = 'https://fapi.binance.com/fapi/' } = flags;
   if (type) {
     if (typeof data.recvWindow === 'undefined') data.recvWindow = options.recvWindow;
     if (!options.apiKey) throw new Error('Invalid API credentials!');
@@ -63,8 +60,6 @@ export default async function promiseRequest<T>(
     if (!!response && 'code' in response && 'msg' in response && response.msg !== 'success') {
       throw new Error(response.msg);
     }
-
-    if (successText) notify('success', successText);
 
     return response as T;
   } catch (e) {

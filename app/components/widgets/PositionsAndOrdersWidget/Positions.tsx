@@ -77,12 +77,25 @@ const Positions = (): ReactElement => {
                 {' '}
                 ₮)
               </td>
-              <td>{formatNumber(lastPrice)}</td>
-              <td>{formatNumber(entryPrice)}</td>
-              <td>{marginType === 'isolated' ? formatNumber(liquidationPrice) : <>&mdash;</>}</td>
-              <td>{marginType === 'isolated' ? formatNumber(isolatedMargin, true) : <em className="text-warning">Cross</em>}</td>
               <td>
-                <span className={textClassName(pnl)}>{formatNumber(pnl, true)}</span>
+                {formatNumber(lastPrice)}
+                {' '}
+                ₮
+              </td>
+              <td>
+                {formatNumber(entryPrice)}
+                {' '}
+                ₮
+              </td>
+              <td>{marginType === 'isolated' ? `${formatNumber(liquidationPrice)} ₮` : <>&mdash;</>}</td>
+              <td>{marginType === 'isolated' ? `${formatNumber(isolatedMargin, true)} ₮` : <em className="text-warning">Cross</em>}</td>
+              <td>
+                <span className={textClassName(pnl)}>
+                  {formatNumber(pnl, true)}
+                  {' '}
+                  {' '}
+                  ₮
+                </span>
                 {' '}
                 <span className={textClassName(pnlPercent)}>
                   (
@@ -91,7 +104,12 @@ const Positions = (): ReactElement => {
                 </span>
               </td>
               <td>
-                <span className={textClassName(truePnl)}>{formatNumber(truePnl, true)}</span>
+                <span className={textClassName(truePnl)}>
+                  {formatNumber(truePnl, true)}
+                  {' '}
+                  {' '}
+                  ₮
+                </span>
                 {' '}
                 <span className={textClassName(truePnlPercent)}>
                   (

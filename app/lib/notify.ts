@@ -7,6 +7,8 @@ function notify(type: 'error' | 'success' | 'alert', text: string | Error): void
   new Noty({
     text: type === 'error' ? stringifyError(text) : text as string,
     type,
+    timeout: type === 'error' ? 5000 : 2000,
+    layout: 'bottomRight',
   }).show();
 }
 

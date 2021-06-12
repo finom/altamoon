@@ -134,6 +134,8 @@ export default class PriceLines implements ChartItem {
     this.#draw();
   };
 
+  public empty = (): void => this.update({ items: [] });
+
   public updateItem = (i: number | PriceLinesDatum, data: PriceLinesDatum): void => {
     const index = typeof i === 'number' ? i : this.#items.indexOf(i);
     if (index < 0) throw new Error('Unable to find item');
@@ -141,6 +143,8 @@ export default class PriceLines implements ChartItem {
     Object.assign(this.#items[index], data);
     this.update({ items: this.#items });
   };
+
+  public updateFirstItem = (data: PriceLinesDatum): void => this.updateItem(0, data);
 
   public addItem = (data: PriceLinesDatum): void => {
     this.#items.push(data);
@@ -174,7 +178,7 @@ export default class PriceLines implements ChartItem {
       update
         .select('.price-line-horizontal-group')
         .attr('transform', (d) => `translate(0, ${String(axis.scale()(d.yValue ?? 0))})`)
-        .attr('fill', ({ color }) => color ?? this.#color);
+        .attr('color', ({ color }) => color ?? this.#color);
 
       this.#setPriceTextAttributes({
         textSelection,
@@ -195,7 +199,7 @@ export default class PriceLines implements ChartItem {
       update
         .select('.price-line-vertical-group')
         .attr('transform', (d) => `translate(${String(axis.scale()(d.xValue ?? 0))}, 0)`)
-        .attr('fill', ({ color }) => color ?? this.#color);
+        .attr('color', ({ color }) => color ?? this.#color);
 
       this.#setPriceTextAttributes({
         textSelection,
@@ -226,7 +230,7 @@ export default class PriceLines implements ChartItem {
             .attr('y1', 0)
             .attr('x2', this.#resizeData.width)
             .attr('y2', 0)
-            .attr('stroke', ({ color }) => color ?? this.#color)
+            .attr('stroke', 'currentColor')
             .attr('class', 'price-line-line');
 
           if (this.#lineStyle !== 'solid') {
@@ -264,11 +268,10 @@ export default class PriceLines implements ChartItem {
               .attr('width', 150)
               .attr('height', 24)
               .attr('rx', 4)
-              .attr('stroke', ({ color }) => color ?? this.#color)
+              .attr('stroke', 'currentColor')
               .attr('stroke-width', 1);
 
             titleGroup.append('text')
-              .text(({ title }) => title ?? '')
               .attr('x', 10)
               .attr('y', 3)
               .style('pointer-events', 'none');
@@ -281,7 +284,8 @@ export default class PriceLines implements ChartItem {
               axis: this.#axis.yLeft,
               orient: 'left',
             }))
-            .attr('class', 'price-line-left-background');
+            .attr('class', 'price-line-left-background')
+            .attr('fill', 'currentColor');
           leftLabelGroup.append('text')
             .attr('class', 'price-line-left-label');
 
@@ -295,7 +299,8 @@ export default class PriceLines implements ChartItem {
               axis: this.#axis.yRight,
               orient: 'right',
             }))
-            .attr('class', 'price-line-right-background');
+            .attr('class', 'price-line-right-background')
+            .attr('fill', 'currentColor');
           rightLabelGroup.append('text')
             .attr('class', 'price-line-right-label')
             .attr('fill', '#fff');
@@ -310,7 +315,7 @@ export default class PriceLines implements ChartItem {
               .attr('y1', 0)
               .attr('x2', 1)
               .attr('y2', this.#resizeData.height)
-              .attr('stroke', ({ color }) => color ?? this.#color)
+              .attr('stroke', 'currentColor')
               .attr('class', 'price-line-line');
 
             if (this.#lineStyle !== 'solid') {
@@ -326,7 +331,8 @@ export default class PriceLines implements ChartItem {
                 axis: this.#axis.x,
                 orient: 'bottom',
               }))
-              .attr('class', 'price-line-bottom-background');
+              .attr('class', 'price-line-bottom-background')
+              .attr('fill', 'currentColor');
             bottomLabelGroup.append('text')
               .attr('class', 'price-line-bottom-label');
           }
@@ -338,6 +344,9 @@ export default class PriceLines implements ChartItem {
           updateHorizontalLineHandler(updateWrapper, 'left', this.#axis.yLeft);
           updateHorizontalLineHandler(updateWrapper, 'right', this.#axis.yRight);
           updateVerticalLineHandler(updateWrapper, this.#axis.x);
+          if (this.#isTitleVisible) {
+            updateWrapper.select('.price-line-title-group text').text(({ title }) => title ?? '');
+          }
 
           return wrapper;
         },
@@ -345,6 +354,9 @@ export default class PriceLines implements ChartItem {
           updateHorizontalLineHandler(update, 'left', this.#axis.yLeft);
           updateHorizontalLineHandler(update, 'right', this.#axis.yRight);
           updateVerticalLineHandler(update, this.#axis.x);
+          if (this.#isTitleVisible) {
+            update.select('.price-line-title-group text').text(({ title }) => title ?? '');
+          }
           return update;
         },
         (exit) => exit.remove(),

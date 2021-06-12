@@ -53,10 +53,13 @@ const ButtonCol = ({
           {isMax ? 'Max' : `~${percent ?? 0}%`}
           <br />
           <span className={css.value}>
-            ~
-            {formatMoney(preciseSize)}
+            <span className="o-50">≤</span>
             {' '}
-            ₮
+            <span className="o-75">
+              {formatMoney(preciseSize)}
+            </span>
+            {' '}
+            <span className="o-75">₮</span>
           </span>
         </Button>
       </div>

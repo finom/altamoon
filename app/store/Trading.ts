@@ -2,23 +2,8 @@ import { debounce } from 'lodash';
 import { listenChange } from 'use-change';
 import * as api from '../api';
 import binanceFuturesMaxLeverage from '../lib/binanceFuturesMaxLeverage';
-
-interface TradingPosition {
-  entryPrice: number;
-  positionAmt: number;
-  liquidationPrice: number;
-  lastPrice: number;
-  isolatedMargin: number;
-  symbol: string;
-  baseValue: number;
-  side: api.OrderSide;
-  pnl: number;
-  truePnl: number;
-  pnlPercent: number;
-  truePnlPercent: number;
-  leverage: number;
-  marginType: api.FuturesPositionRisk['marginType'];
-}
+import notify from '../lib/notify';
+import { TradingPosition } from './types';
 
 export default class Trading {
   public tradingPositions: TradingPosition[] = [];
@@ -116,9 +101,13 @@ export default class Trading {
       }
 
       const createOrder = side === 'BUY' ? api.futuresMarketBuy : api.futuresMarketSell;
-      return await createOrder(
+      const result = await createOrder(
         symbol, quantity, { reduceOnly },
       );
+
+      notify('success', `Position ${symbol} is created`);
+
+      return result;
     } catch {
       return null;
     }
@@ -133,12 +122,17 @@ export default class Trading {
       }
 
       const { positionAmt } = position;
+      let result;
 
       if (positionAmt < 0) {
-        return await api.futuresMarketBuy(symbol, -positionAmt, { reduceOnly: true });
+        result = await api.futuresMarketBuy(symbol, -positionAmt, { reduceOnly: true });
+      } else {
+        result = await api.futuresMarketSell(symbol, positionAmt, { reduceOnly: true });
       }
 
-      return await api.futuresMarketSell(symbol, positionAmt, { reduceOnly: true });
+      notify('success', `Position ${symbol} is closed`);
+
+      return result;
     } catch {
       return null;
     }
@@ -225,6 +219,7 @@ export default class Trading {
     leverage: +positionRisk.leverage,
     marginType: positionRisk.marginType,
     symbol: positionRisk.symbol,
+    baseAsset: this.#store.market.futuresExchangeSymbols[positionRisk.symbol]?.baseAsset,
   });
 
   #getPositionTruePnl = ({
