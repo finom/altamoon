@@ -28,7 +28,7 @@ const PercentSelector = ({
           key={i}
           className={`
             ${css.item}
-            ${activeIndex > i || activeIndex === i ? css.active : ''}
+            ${typeof activeIndex === 'number' && (activeIndex > i || activeIndex === i) ? css.active : ''}
             ${(getPercentFromIndex(i) / 100) * totalWalletBalance > availableBalance ? css.unavailable : ''}
           `}
           tabIndex={i}

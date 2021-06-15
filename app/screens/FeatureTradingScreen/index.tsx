@@ -80,7 +80,12 @@ const FeatureTradingScreen = (): ReactElement => {
         <div
           key="chart"
           data-grid={{
-            w: 3, h: 3, x: 0, y: 0, minW: 2, minH: 3,
+            h: 13,
+            minH: 3,
+            minW: 2,
+            w: 12,
+            x: 0,
+            y: 0,
           }}
         >
           <ChartWidget />
@@ -88,7 +93,12 @@ const FeatureTradingScreen = (): ReactElement => {
         <div
           key="trading"
           data-grid={{
-            w: 3, h: 3, x: 0, y: 0, minW: 2, minH: 3,
+            h: 13,
+            minH: 3,
+            minW: 2,
+            w: 9,
+            x: 0,
+            y: 17,
           }}
         >
           <TradingWidget />
@@ -96,7 +106,12 @@ const FeatureTradingScreen = (): ReactElement => {
         <div
           key="positionAndOrders"
           data-grid={{
-            w: 3, h: 3, x: 0, y: 0, minW: 2, minH: 3,
+            h: 8,
+            minH: 3,
+            minW: 2,
+            w: 12,
+            x: 0,
+            y: 30,
           }}
         >
           <PositionsAndOrdersWidget />
@@ -104,7 +119,12 @@ const FeatureTradingScreen = (): ReactElement => {
         <div
           key="lastTrades"
           data-grid={{
-            w: 3, h: 3, x: 0, y: 0, minW: 2, minH: 3,
+            h: 6,
+            minH: 3,
+            minW: 2,
+            w: 5,
+            x: 0,
+            y: 38,
           }}
         >
           <LastTradesWidget />
@@ -112,7 +132,12 @@ const FeatureTradingScreen = (): ReactElement => {
         <div
           key="orderBook"
           data-grid={{
-            w: 3, h: 3, x: 0, y: 0, minW: 2, minH: 3,
+            h: 6,
+            minH: 3,
+            minW: 2,
+            w: 7,
+            x: 5,
+            y: 38,
           }}
         >
           <OrderBookWidget />
@@ -120,7 +145,12 @@ const FeatureTradingScreen = (): ReactElement => {
         <div
           key="wallet"
           data-grid={{
-            w: 3, h: 3, x: 0, y: 0, minW: 2, minH: 3,
+            h: 13,
+            minH: 3,
+            minW: 2,
+            w: 3,
+            x: 9,
+            y: 17,
           }}
         >
           <WalletWidget />
