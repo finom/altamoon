@@ -74,8 +74,6 @@ export default class Account {
       };
 
       stream.onerror = () => notify('error', 'Account stream error');
-    } catch {
-      //
-    }
+    } catch {}
   };
 }

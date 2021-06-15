@@ -1,5 +1,6 @@
 import { format } from 'd3-format';
-import React, { ReactElement } from 'react';
+import { remove } from 'lodash';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { Badge, Button, Table } from 'reactstrap';
 import { useSilent, useValue } from 'use-change';
 import { RootStore } from '../../../store';
@@ -16,6 +17,16 @@ const textClassName = (value: number) => {
 const Positions = (): ReactElement => {
   const tradingPositions = useValue(({ trading }: RootStore) => trading, 'tradingPositions');
   const closePosition = useSilent(({ trading }: RootStore) => trading, 'closePosition');
+  const [symbolsToClose, setSymbolsToClose] = useState<string[]>([]);
+  const onCloseMarket = useCallback(async (symbol: string) => {
+    setSymbolsToClose([...symbolsToClose, symbol]);
+
+    try {
+      await closePosition(symbol);
+    } catch {}
+
+    setSymbolsToClose(remove(symbolsToClose, symbol));
+  }, [closePosition, symbolsToClose]);
 
   return (
     <Table className="align-middle">
@@ -121,7 +132,8 @@ const Positions = (): ReactElement => {
                 <Button
                   color="link"
                   className="text-muted px-0"
-                  onClick={() => closePosition(symbol)}
+                  disabled={symbolsToClose.includes(symbol)}
+                  onClick={() => onCloseMarket(symbol)}
                 >
                   Market
                 </Button>

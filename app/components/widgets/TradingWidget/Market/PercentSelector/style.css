@@ -10,12 +10,12 @@
   flex: 1;
   display: block;
   cursor: pointer;
-  opacity: 0.5;
+  opacity: 0.6;
 }
 
 
 .item.unavailable {
-  opacity: 0.25;
+  opacity: 0.3;
 }
 
 .item.active {

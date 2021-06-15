@@ -43,7 +43,7 @@ const PercentSelector = ({
           ref={(element) => {
             if (element && !bootstrap.Tooltip.getInstance(element)) {
               // eslint-disable-next-line no-new
-              new bootstrap.Tooltip(element);
+              new bootstrap.Tooltip(element, { trigger: 'hover' });
             }
           }}
         />
