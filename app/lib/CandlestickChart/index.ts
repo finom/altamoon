@@ -399,7 +399,7 @@ export default class CandlestickChart {
 
   #calcYDomain = (): void => {
     const { y } = this.#scales;
-    const xDomain = this.#scales.x.domain();
+    const xDomain = this.#scales.scaledX.domain();
     const candles = this.#candles.filter((x) => x.time >= xDomain[0].getTime()
           && x.time <= xDomain[1].getTime());
 
