@@ -102,3 +102,6 @@ button.close {
   border-bottom: 1px solid var(--bs-info)!important;
   color: #fff!important;
 }
+
+/* ==== Random overrides ==== */
+.tooltip { pointer-events: none; }

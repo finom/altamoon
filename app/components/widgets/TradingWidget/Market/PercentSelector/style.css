@@ -1,0 +1,31 @@
+.wrapper {
+  display: flex;
+  width: calc(100% + 4px);
+  margin-left: -2px;
+  margin-top: -7px;
+}
+
+.item {
+  height: 19px;
+  flex: 1;
+  display: block;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+
+.item.unavailable {
+  opacity: 0.25;
+}
+
+.item.active {
+  opacity: 1;
+}
+
+.item::before {
+  content: '';
+  height: 5px;
+  display: block;
+  background: var(--bs-gray);
+  margin: 7px 2px 0 2px;
+}

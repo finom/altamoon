@@ -105,6 +105,8 @@ export default class Trading {
         symbol, quantity, { reduceOnly },
       );
 
+      await this.loadPositions();
+
       notify('success', `Position ${symbol} is created`);
 
       return result;
@@ -129,6 +131,8 @@ export default class Trading {
       } else {
         result = await api.futuresMarketSell(symbol, positionAmt, { reduceOnly: true });
       }
+
+      await this.loadPositions();
 
       notify('success', `Position ${symbol} is closed`);
 
@@ -235,10 +239,10 @@ export default class Trading {
     const baseValue = positionAmt * entryPrice;
     const fee = this.getFee(qty); // Todo: get fee sum from order histo
 
-    const pnl = (lastPrice - entryPrice) / (entryPrice * baseValue) - fee;
+    const pnl = ((lastPrice - entryPrice) / entryPrice) * baseValue - (fee * lastPrice);
     return {
       truePnl: pnl || 0,
-      truePnlPercent: pnl / this.#store.account.totalWalletBalance || 0,
+      truePnlPercent: (pnl / this.#store.account.totalWalletBalance) * 100 || 0,
     };
   };
 

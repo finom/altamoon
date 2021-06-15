@@ -50,7 +50,7 @@ export default class Market {
         interval,
         (data) => {
           this.candles = data;
-        }, 200,
+        }, 1000,
       );
     });
 

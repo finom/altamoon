@@ -28,15 +28,14 @@ const Market = ({ isWideLayout, postOnly, reduceOnly }: Props): ReactElement => 
       )}
       <Row>
         {(isWideLayout || compactModeSide === 'BUY') && (
-        <Col>
-          <MarketSide side="BUY" reduceOnly={reduceOnly} />
-        </Col>
+          <Col>
+            <MarketSide side="BUY" reduceOnly={reduceOnly} />
+          </Col>
         )}
-
-        {(isWideLayout || compactModeSide === 'BUY') && (
-        <Col>
-          <MarketSide side="SELL" reduceOnly={reduceOnly} />
-        </Col>
+        {(isWideLayout || compactModeSide === 'SELL') && (
+          <Col>
+            <MarketSide side="SELL" reduceOnly={reduceOnly} />
+          </Col>
         )}
       </Row>
     </>

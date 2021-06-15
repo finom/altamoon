@@ -35,6 +35,7 @@ const MarketSide = ({ side, reduceOnly }: Props): ReactElement => {
       />
       <ExactSize
         side={side}
+        totalWalletBalance={totalWalletBalance}
         availableBalance={availableBalance}
         currentSymbolLastPrice={currentSymbolLastPrice ?? 0}
         quantityPrecision={quantityPrecision}
