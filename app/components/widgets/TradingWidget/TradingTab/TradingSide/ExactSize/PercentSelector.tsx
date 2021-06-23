@@ -1,8 +1,8 @@
 import { times } from 'lodash';
-import * as bootstrap from 'bootstrap';
 import React, { ReactElement, useState } from 'react';
 
 import css from './style.css';
+import tooltipRef from '../../../../../../lib/tooltipRef';
 
 interface Props {
   availableBalance: number;
@@ -40,12 +40,7 @@ const PercentSelector = ({
           data-bs-offset="0,-7"
           title={`${getPercentFromIndex(i)}%`}
           aria-label={`${getPercentFromIndex(i)}%`}
-          ref={(element) => {
-            if (element && !bootstrap.Tooltip.getInstance(element)) {
-              // eslint-disable-next-line no-new
-              new bootstrap.Tooltip(element, { trigger: 'hover' });
-            }
-          }}
+          ref={tooltipRef({ trigger: 'hover' })}
         />
       ))}
     </div>

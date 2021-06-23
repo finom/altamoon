@@ -4,7 +4,8 @@ import css from './style.css';
 
 interface Props {
   label: string;
-  rightLabel?: string;
+  rightLabel?: string | ReactElement;
+  rightLabelClassName?: string;
   id: string;
   children?: ReactNode;
   type: 'text' | 'number';
@@ -16,6 +17,7 @@ interface Props {
 const LabeledInput = ({
   label,
   rightLabel,
+  rightLabelClassName,
   children,
   id,
   type,
@@ -32,7 +34,7 @@ const LabeledInput = ({
       value={value}
       onChange={({ target }) => onChange(target.value)}
     />
-    {rightLabel ? <label htmlFor={id}>{rightLabel}</label> : null}
+    {rightLabel ? <label htmlFor={id} className={rightLabelClassName}>{rightLabel}</label> : null}
     {children}
   </div>
 );

@@ -1,22 +1,17 @@
 /* ==== Utilities ==== */
 
-.flex-one {
-  flex: 1;
-}
-
-.cursor-pointer {
-  cursor: pointer;
-}
-
-.nowrap {
-  white-space: nowrap;
-}
+.flex-one { flex: 1; }
+.cursor-pointer { cursor: pointer; }
+.nowrap { white-space: nowrap; }
 
 .o-0 { opacity: 0; }
 .o-25 { opacity: .25; }
 .o-50 { opacity: .5; }
 .o-75 { opacity: .75; }
 .o-100 { opacity: 1; }
+
+.text-buy { color: var(--biduul-buy-color)!important; }
+.text-sell { color: var(--biduul-sell-color)!important; }
 
 /* temporary fix until reactstrap is updated */
 button.close {

@@ -16,6 +16,8 @@ export default class Persistent {
 
   public layout = getPersistentStorageValue<Layout[], keyof Persistent>('layout', []);
 
+  public tradingType = getPersistentStorageValue<api.OrderType, keyof Persistent>('tradingType', 'MARKET');
+
   public binanceApiKey = getPersistentStorageValue<string | null, keyof Persistent>('binanceApiKey', null);
 
   public binanceApiSecret = getPersistentStorageValue<string | null, keyof Persistent>('binanceApiSecret', null);

@@ -17,6 +17,8 @@ export default class Market {
 
   public currentSymbolInfo: api.FuturesExchangeInfoSymbol | null = null;
 
+  public currentSymbolPricePrecision = 0;
+
   public currentSymbolBaseAsset: string | null = null;
 
   public asks: [number, number][] = [];
@@ -60,6 +62,7 @@ export default class Market {
 
     listenChange(this, 'currentSymbolInfo', (currentSymbolInfo) => {
       this.currentSymbolBaseAsset = currentSymbolInfo?.baseAsset ?? null;
+      this.currentSymbolPricePrecision = currentSymbolInfo?.pricePrecision ?? 0;
     });
 
     // call onSymbolChange on every symbol change and on load

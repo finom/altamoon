@@ -202,7 +202,7 @@ export interface FuturesIncome {
 
 export interface FuturesOrder {
   clientOrderId: string;
-  cumQty: string;
+  cumQty?: string;
   cumQuote: string;
   executedQty: string;
   orderId: number;
@@ -219,8 +219,8 @@ export interface FuturesOrder {
   timeInForce: TimeInForce;
   type: OrderType;
   origType: OrderType;
-  activatePrice: string;
-  priceRate: string;
+  activatePrice?: string;
+  priceRate?: string;
   updateTime: number;
   workingType: WorkingType;
   priceProtect: boolean;

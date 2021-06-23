@@ -2,7 +2,7 @@ import { capitalize } from 'lodash';
 import React, { ReactElement } from 'react';
 import { Row } from 'reactstrap';
 
-import * as api from '../../../../api';
+import * as api from '../../../../../../api';
 import css from './style.css';
 import ButtonCol from './ButtonCol';
 
@@ -10,27 +10,27 @@ interface Props {
   totalWalletBalance: number;
   availableBalance: number;
   quantityPrecision: number;
-  currentSymbolLastPrice: number;
+  price: number | null;
   side: api.OrderSide;
   onOrder: (qty: number) => void;
 }
 
 const QuickOrder = ({
   totalWalletBalance, availableBalance, quantityPrecision,
-  currentSymbolLastPrice, side, onOrder,
+  price, side, onOrder,
 }: Props): ReactElement => (
   <>
-    <div className="mb-1 mt-2">
+    <div className="mb-1">
       Quick
       {' '}
       {capitalize(side)}
     </div>
-    <Row className={`${css.wrapper} mb-3`}>
+    <Row className={css.wrapper}>
       <ButtonCol
         totalWalletBalance={totalWalletBalance}
         availableBalance={availableBalance}
         quantityPrecision={quantityPrecision}
-        currentSymbolLastPrice={currentSymbolLastPrice}
+        price={price}
         side={side}
         percent={10}
         onOrder={onOrder}
@@ -39,7 +39,7 @@ const QuickOrder = ({
         totalWalletBalance={totalWalletBalance}
         availableBalance={availableBalance}
         quantityPrecision={quantityPrecision}
-        currentSymbolLastPrice={currentSymbolLastPrice}
+        price={price}
         side={side}
         percent={25}
         onOrder={onOrder}
@@ -48,7 +48,7 @@ const QuickOrder = ({
         totalWalletBalance={totalWalletBalance}
         availableBalance={availableBalance}
         quantityPrecision={quantityPrecision}
-        currentSymbolLastPrice={currentSymbolLastPrice}
+        price={price}
         side={side}
         percent={50}
         onOrder={onOrder}
@@ -57,7 +57,7 @@ const QuickOrder = ({
         totalWalletBalance={totalWalletBalance}
         availableBalance={availableBalance}
         quantityPrecision={quantityPrecision}
-        currentSymbolLastPrice={currentSymbolLastPrice}
+        price={price}
         side={side}
         isMax
         onOrder={onOrder}

@@ -57,7 +57,7 @@ export default async function promiseRequest<T>(
 
     const response = JSON.parse(responseText) as T | ErrorResponse;
 
-    if (!!response && 'code' in response && 'msg' in response && response.msg !== 'success') {
+    if (!!response && 'code' in response && 'msg' in response && response.msg !== 'success' && response.code !== 200) {
       throw new Error(response.msg);
     }
 

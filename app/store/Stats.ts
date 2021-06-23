@@ -1,5 +1,6 @@
 import { listenChange } from 'use-change';
 import * as api from '../api';
+import delay from '../lib/delay';
 
 const getTodayEarlyTime = () => {
   const date = new Date();
@@ -54,6 +55,7 @@ export default class Stats {
           startTime: this.#historyStart,
           endTime: now,
           limit: 1000,
+          recvWindow: 1000000,
         }).then((income) => {
           this.income = this.income.concat(income);
           this.#historyStart = now;
@@ -61,6 +63,34 @@ export default class Stats {
       }
     }, 5000);
   }
+
+  #incomeTicker = async (): Promise<void> => {
+    const todayEarlyTime = getTodayEarlyTime();
+    const now = Date.now();
+    if (this.#historyStart < todayEarlyTime) {
+      this.#historyStart = todayEarlyTime;
+      this.income = [];
+    } else {
+      try {
+        const income = await api.futuresIncome({
+          startTime: this.#historyStart,
+          endTime: now,
+          limit: 1000,
+          recvWindow: 1000000,
+        });
+
+        this.income = this.income.concat(income);
+        this.#historyStart = now;
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      }
+    }
+
+    await delay(5000);
+
+    return this.#incomeTicker();
+  };
 
   #getBNBPriceByTyme = (time: number): number | null => {
     const bnbCandles = this.#bnbCandles;

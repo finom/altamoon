@@ -1,0 +1,10 @@
+.draftChartLineToggle {
+  position: relative;
+  line-height: 1;
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+.draftChartLineToggle:hover {
+  opacity: 1;
+}

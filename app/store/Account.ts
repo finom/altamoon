@@ -2,6 +2,7 @@ import { debounce } from 'lodash';
 import { listenChange } from 'use-change';
 import * as api from '../api';
 import notify from '../lib/notify';
+import delay from '../lib/delay';
 import stringifyError from '../lib/stringifyError';
 
 export default class Account {
@@ -50,8 +51,13 @@ export default class Account {
       this.totalPositionInitialMargin = +futuresAccount.totalPositionInitialMargin;
       this.totalOpenOrderInitialMargin = +futuresAccount.totalOpenOrderInitialMargin;
       this.availableBalance = +futuresAccount.availableBalance;
+      return undefined;
     } catch (e) {
-      this.futuresAccountError = stringifyError(e);
+      // eslint-disable-next-line no-console
+      console.error(e);
+      this.futuresAccountError = `${stringifyError(e)} Retrying...`;
+      await delay(3000);
+      return this.reloadFuturesAccount();
     }
   };
 
@@ -64,9 +70,20 @@ export default class Account {
       stream.onmessage = ({ data }) => {
         try {
           const { e } = JSON.parse(data) as { e: string };
+
+          // eslint-disable-next-line no-console
+          console.info('Received data stream message', e);
+
           if (e === 'ACCOUNT_UPDATE') {
             void this.#store.trading.loadPositions();
-            void this.#store.account.reloadFuturesAccount();
+            void this.reloadFuturesAccount();
+          } else if (e === 'ORDER_TRADE_UPDATE') {
+            void this.#store.trading.loadOrders();
+            void this.reloadFuturesAccount();
+          } else if (e === 'ACCOUNT_CONFIG_UPDATE') {
+            void this.#store.trading.loadPositions();
+            void this.#store.trading.loadOrders();
+            void this.reloadFuturesAccount();
           }
         } catch (e) {
           notify('error', e);
@@ -74,6 +91,13 @@ export default class Account {
       };
 
       stream.onerror = () => notify('error', 'Account stream error');
-    } catch {}
+
+      return undefined;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      await delay(3000);
+      return this.#openStream();
+    }
   };
 }

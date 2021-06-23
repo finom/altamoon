@@ -1,22 +1,13 @@
 import * as d3 from 'd3';
 import { TodoAny } from '../../../types';
 import convertType from '../../convertType';
-import { ChartItem, D3Selection, ResizeData } from '../types';
+import {
+  ChartAxis, ChartItem, D3Selection, PriceLinesDatum, ResizeData,
+} from '../types';
 
 type Orient = 'top' | 'bottom' | 'left' | 'right';
 
-export interface PriceLinesDatum {
-  xValue?: Date;
-  yValue?: number;
-  title?: string;
-  color?: string;
-}
-
-interface ChartAxis {
-  x: d3.Axis<d3.NumberValue>;
-  yLeft: d3.Axis<d3.NumberValue>;
-  yRight: d3.Axis<d3.NumberValue>;
-}
+type Handler = (datum: PriceLinesDatum, d: PriceLinesDatum[]) => void;
 
 interface Params {
   items: PriceLinesDatum[];
@@ -27,7 +18,9 @@ interface Params {
   isTitleVisible?: boolean;
   isDraggable?: boolean;
   lineStyle?: 'solid' | 'dashed' | 'dotted';
-  onUpdate?: (y: number[]) => void;
+  pointerEventsNone?: boolean;
+  onDragEnd?: Handler;
+  onClickTitle?: Handler;
 }
 
 export default class PriceLines implements ChartItem {
@@ -37,7 +30,7 @@ export default class PriceLines implements ChartItem {
 
   #items: PriceLinesDatum[];
 
-  #draggableItem: PriceLinesDatum | null = null;
+  #draggableItemIndex: number | null = null;
 
   readonly #showX: boolean;
 
@@ -49,19 +42,22 @@ export default class PriceLines implements ChartItem {
 
   #pricePrecision = 1;
 
-  #isVisible = true;
-
   readonly #isTitleVisible: boolean;
 
   readonly #isDraggable: boolean;
 
+  readonly #pointerEventsNone: boolean;
+
   #resizeData: ResizeData;
 
-  #onUpdate?: (y: number[]) => void;
+  #handleDragEnd?: Handler;
+
+  #handleClickTitle?: Handler;
 
   constructor(
     {
-      items, axis, showX, color, isVisible, lineStyle, isTitleVisible, isDraggable, onUpdate,
+      items, axis, showX, color, lineStyle, isTitleVisible,
+      isDraggable, pointerEventsNone, onDragEnd, onClickTitle,
     }: Params,
     resizeData: ResizeData,
   ) {
@@ -70,11 +66,12 @@ export default class PriceLines implements ChartItem {
     this.#resizeData = resizeData;
     this.#showX = !!showX;
     this.#color = color ?? '#ff00ff';
-    this.#isVisible = isVisible ?? true;
     this.#lineStyle = lineStyle ?? 'solid';
     this.#isTitleVisible = isTitleVisible ?? false;
     this.#isDraggable = isDraggable ?? false;
-    this.#onUpdate = onUpdate;
+    this.#pointerEventsNone = !!pointerEventsNone;
+    this.#handleDragEnd = onDragEnd;
+    this.#handleClickTitle = onClickTitle;
   }
 
   public appendTo = (
@@ -88,7 +85,7 @@ export default class PriceLines implements ChartItem {
 
     Object.assign(this.#wrapper.node()?.style ?? {}, wrapperCSSStyle ?? {});
 
-    this.update({ items: this.#items, isVisible: this.#isVisible });
+    this.update({ items: this.#items });
 
     this.resize(resizeData);
   };
@@ -111,16 +108,8 @@ export default class PriceLines implements ChartItem {
     this.#draw();
   };
 
-  public update = (data: {
-    items?: PriceLinesDatum[], isVisible?: boolean, pricePrecision?: number
-  }): void => {
+  public update(data: { items?: PriceLinesDatum[]; pricePrecision?: number; }): void {
     if (!this.#wrapper) return;
-
-    if (typeof data.isVisible !== 'undefined') {
-      this.#isVisible = data.isVisible;
-
-      this.#wrapper.style('visibility', data.isVisible ? '' : 'hidden');
-    }
 
     if (typeof data.pricePrecision !== 'undefined') {
       this.#pricePrecision = data.pricePrecision;
@@ -128,33 +117,29 @@ export default class PriceLines implements ChartItem {
 
     if (typeof data.items !== 'undefined') {
       this.#items = data.items;
-      this.#onUpdate?.(this.#items.map(({ yValue }) => yValue ?? -1));
     }
 
     this.#draw();
-  };
+  }
 
   public empty = (): void => this.update({ items: [] });
 
-  public updateItem = (i: number | PriceLinesDatum, data: PriceLinesDatum): void => {
-    const index = typeof i === 'number' ? i : this.#items.indexOf(i);
-    if (index < 0) throw new Error('Unable to find item');
-    this.#items[index] = this.#items[index] ?? {};
-    Object.assign(this.#items[index], data);
+  public updateItem = (key: number | string, data: PriceLinesDatum): void => {
+    const item = typeof key === 'string' ? this.#items.find(({ id }) => id === key) : this.#items[key];
+    if (!item) throw new Error(`Unable to find item "${key}"`);
+    Object.assign(item, data);
     this.update({ items: this.#items });
   };
-
-  public updateFirstItem = (data: PriceLinesDatum): void => this.updateItem(0, data);
 
   public addItem = (data: PriceLinesDatum): void => {
     this.#items.push(data);
     this.update({ items: this.#items });
   };
 
-  public removeItem = (i: number | PriceLinesDatum): void => {
-    const index = typeof i === 'number' ? i : this.#items.indexOf(i);
-    if (index < 0) throw new Error('Unable to find item');
-    this.#items.splice(index, 1);
+  public removeItem = (key: number | string): void => {
+    const item = typeof key === 'string' ? this.#items.find(({ id }) => id === key) : this.#items[key];
+    if (!item) throw new Error(`Unable to find item "${key}"`);
+    this.#items.splice(this.#items.indexOf(item), 1);
     this.update({ items: this.#items });
   };
 
@@ -178,7 +163,8 @@ export default class PriceLines implements ChartItem {
       update
         .select('.price-line-horizontal-group')
         .attr('transform', (d) => `translate(0, ${String(axis.scale()(d.yValue ?? 0))})`)
-        .attr('color', ({ color }) => color ?? this.#color);
+        .attr('color', ({ color }) => color ?? this.#color)
+        .style('visibility', ({ isVisible }) => (typeof isVisible === 'undefined' || isVisible ? '' : 'hidden'));
 
       this.#setPriceTextAttributes({
         textSelection,
@@ -199,7 +185,8 @@ export default class PriceLines implements ChartItem {
       update
         .select('.price-line-vertical-group')
         .attr('transform', (d) => `translate(${String(axis.scale()(d.xValue ?? 0))}, 0)`)
-        .attr('color', ({ color }) => color ?? this.#color);
+        .attr('color', ({ color }) => color ?? this.#color)
+        .style('visibility', ({ isVisible }) => (typeof isVisible === 'undefined' || isVisible ? '' : 'hidden'));
 
       this.#setPriceTextAttributes({
         textSelection,
@@ -217,6 +204,10 @@ export default class PriceLines implements ChartItem {
         (enter) => {
           // --- horizontal line ---
           const wrapper = enter.append('g').attr('class', 'price-line-wrapper');
+
+          if (this.#pointerEventsNone) {
+            wrapper.style('pointer-events', 'none');
+          }
 
           if (this.#isDraggable) {
             wrapper.style('cursor', 'ns-resize');
@@ -252,7 +243,7 @@ export default class PriceLines implements ChartItem {
               d3.drag<Element, PriceLinesDatum>()
                 .on('start', this.#onDragStart)
                 .on('drag', this.#onDrag)
-                .on('end', this.#onDragEnd) as TodoAny,
+                .on('end', (_evt, datum) => this.#onDragEnd(datum)) as TodoAny,
             );
           }
 
@@ -260,6 +251,12 @@ export default class PriceLines implements ChartItem {
             const titleGroup = horizontalWrapper.append('g')
               .attr('class', 'price-line-title-group')
               .attr('transform', `translate(${this.#resizeData.width - 200}, 0)`);
+
+            if (this.#handleClickTitle) {
+              titleGroup
+                .on('click', (_evt, d) => this.#handleClickTitle?.(d, this.#items))
+                .style('cursor', 'pointer');
+            }
 
             titleGroup.append('rect')
               .attr('fill', '#010025')
@@ -435,18 +432,19 @@ export default class PriceLines implements ChartItem {
   };
 
   #onDragStart = (_evt: unknown, datum: PriceLinesDatum): void => {
-    this.#draggableItem = datum;
+    this.#draggableItemIndex = this.#items.indexOf(datum);
   };
 
   #onDrag = (evt: { sourceEvent: MouseEvent }): void => {
-    if (!this.#draggableItem) return;
+    if (this.#draggableItemIndex === null) return;
 
-    this.updateItem(this.#draggableItem, {
+    this.updateItem(this.#draggableItemIndex, {
       yValue: this.invertY(evt.sourceEvent.offsetY),
     });
   };
 
-  #onDragEnd = (): void => {
-    this.#draggableItem = null;
+  #onDragEnd = (datum: PriceLinesDatum): void => {
+    this.#draggableItemIndex = null;
+    this.#handleDragEnd?.(datum, this.#items);
   };
 }

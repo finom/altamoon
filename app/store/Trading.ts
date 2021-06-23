@@ -1,14 +1,17 @@
-import { debounce } from 'lodash';
+import { debounce, keyBy } from 'lodash';
 import { listenChange } from 'use-change';
 import * as api from '../api';
 import binanceFuturesMaxLeverage from '../lib/binanceFuturesMaxLeverage';
+import delay from '../lib/delay';
 import notify from '../lib/notify';
-import { TradingPosition } from './types';
+import { TradingOrder, TradingPosition } from './types';
 
 export default class Trading {
   public tradingPositions: TradingPosition[] = [];
 
-  public positionRisks: api.FuturesPositionRisk[] = [];
+  public allSymbolsPositionRisk: Record<string, api.FuturesPositionRisk> = {};
+
+  public openOrders: TradingOrder[] = [];
 
   public currentSymbolMaxLeverage = 1;
 
@@ -17,6 +20,14 @@ export default class Trading {
   public isCurrentSymbolMarginTypeIsolated: boolean | null = null;
 
   public positionsKey?: string;
+
+  public limitBuyPrice: number | null = null;
+
+  public shouldShowLimitBuyPriceLine = false;
+
+  public limitSellPrice: number | null = null;
+
+  public shouldShowLimitSellPriceLine = false;
 
   #store: Store;
 
@@ -33,7 +44,10 @@ export default class Trading {
 
     listenChange(store.account, 'futuresAccount', async (futuresAccount) => {
       if (futuresAccount) {
-        await this.loadPositions();
+        await Promise.all([
+          this.loadPositions(),
+          this.loadOrders(),
+        ]);
 
         await this.#updateLeverage(store.persistent.symbol);
       }
@@ -48,7 +62,7 @@ export default class Trading {
           .map((item) => (item.symbol === symbol
             ? { ...item, leverage: resp.leverage } : item));
       } catch {
-        const currentPosition = this.positionRisks.find((item) => item.symbol === symbol);
+        const currentPosition = this.allSymbolsPositionRisk[symbol];
         if (currentPosition) {
           this.currentSymbolLeverage = +currentPosition.leverage; // if errored, roll it back
         }
@@ -59,7 +73,7 @@ export default class Trading {
       const { symbol } = store.persistent;
       const marginType = isIsolated ? 'ISOLATED' : 'CROSSED';
       const uglyCodePositionMarginType = isIsolated ? 'isolated' : 'cross';
-      const currentPosition = this.positionRisks.find((item) => item.symbol === symbol);
+      const currentPosition = this.allSymbolsPositionRisk[symbol];
 
       if (prev !== null && currentPosition?.marginType !== uglyCodePositionMarginType) {
         // if it isn't initial definition
@@ -75,16 +89,44 @@ export default class Trading {
   }
 
   public loadPositions = async (): Promise<void> => {
-    const positions = await api.futuresPositionRisk();
-    const prices = await api.futuresPrices();
+    try {
+      const positions = await api.futuresPositionRisk();
+      const prices = await api.futuresPrices();
 
-    this.positionRisks = positions;
-    this.tradingPositions = positions
-      .filter((position) => !!+position.positionAmt)
-      .map((position) => this.#getPositionInfo(position, +prices[position.symbol]))
-      .sort(({ symbol: a }, { symbol: b }) => (a > b ? 1 : -1));
+      this.allSymbolsPositionRisk = keyBy(positions, 'symbol');
 
-    await this.#updateLeverage(this.#store.persistent.symbol);
+      this.tradingPositions = positions
+        .filter((position) => !!+position.positionAmt)
+        .map((position) => this.#getPositionInfo(position, +prices[position.symbol]))
+        .sort(({ symbol: a }, { symbol: b }) => (a > b ? 1 : -1));
+
+      await this.#updateLeverage(this.#store.persistent.symbol);
+      return undefined;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      // retry
+      await delay(3000);
+      return this.loadPositions();
+    }
+  };
+
+  public loadOrders = async (): Promise<void> => {
+    try {
+      const futuresOrders = await api.futuresOpenOrders();
+
+      this.openOrders = futuresOrders
+        .map(this.#getOrderInfo)
+        .sort(({ orderId: a }, { orderId: b }) => (a > b ? 1 : -1));
+
+      return undefined;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      // retry
+      await delay(3000);
+      return this.loadOrders();
+    }
   };
 
   public marketOrder = async ({
@@ -93,24 +135,47 @@ export default class Trading {
     side: api.OrderSide; quantity: number; symbol: string; reduceOnly: boolean;
   }): Promise<api.FuturesOrder | null> => {
     try {
-      const { futuresExchangeSymbols } = this.#store.market;
-      const symbolInfo = futuresExchangeSymbols[symbol];
-
-      if (!symbolInfo) {
-        throw new Error(`Symbol info for symbol "${symbol}" is not found`);
-      }
-
       const createOrder = side === 'BUY' ? api.futuresMarketBuy : api.futuresMarketSell;
       const result = await createOrder(
         symbol, quantity, { reduceOnly },
       );
 
-      await this.loadPositions();
+      await this.loadOrders();
 
-      notify('success', `Position ${symbol} is created`);
+      notify('success', `Position for ${symbol} is created`);
 
       return result;
-    } catch {
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return null;
+    }
+  };
+
+  public limitOrder = async ({
+    side, quantity, price, symbol, reduceOnly, postOnly,
+  }: {
+    side: api.OrderSide;
+    quantity: number;
+    price: number;
+    symbol: string;
+    reduceOnly: boolean;
+    postOnly: boolean;
+  }): Promise<api.FuturesOrder | null> => {
+    try {
+      const createOrder = side === 'BUY' ? api.futuresLimitBuy : api.futuresLimitSell;
+      const result = await createOrder(
+        symbol, quantity, price, { reduceOnly, timeInForce: postOnly ? 'GTX' : 'GTC' },
+      );
+
+      await this.loadOrders();
+
+      notify('success', `Order for ${symbol} is created`);
+
+      return result;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
       return null;
     }
   };
@@ -142,6 +207,33 @@ export default class Trading {
     }
   };
 
+  public cancelOrder = async (
+    symbol: string, orderId: number,
+  ): Promise<api.FuturesOrder | null> => {
+    try {
+      const result = await api.futuresCancel(symbol, orderId);
+
+      await this.loadOrders();
+
+      notify('success', `Order for ${symbol} is closed`);
+
+      return result;
+    } catch {
+      return null;
+    }
+  };
+
+  public cancelAllOrders = async (symbol: string): Promise<void> => {
+    try {
+      await api.futuresCancelAll(symbol);
+
+      await this.loadOrders();
+
+      notify('success', `All orders for ${symbol} are closed`);
+    } catch {
+    }
+  };
+
   public getFee = (qty: number, type: 'maker' | 'taker' = 'maker'): number => {
     const feeTier = this.#store.account.futuresAccount?.feeTier ?? 0;
     const feeRate = type === 'taker'
@@ -151,9 +243,30 @@ export default class Trading {
     return (qty * feeRate) / 100;
   };
 
+  // used by Chart Widget compoment
+  public updateDrafts = ({
+    buyDraftPrice, sellDraftPrice,
+  }: { buyDraftPrice: number | null; sellDraftPrice: number | null; }): void => {
+    if (this.#store.persistent.tradingType === 'LIMIT') {
+      if (typeof buyDraftPrice === 'number') {
+        this.limitBuyPrice = buyDraftPrice;
+        this.shouldShowLimitBuyPriceLine = true;
+      } else {
+        this.shouldShowLimitBuyPriceLine = false;
+      }
+
+      if (typeof sellDraftPrice === 'number') {
+        this.limitSellPrice = sellDraftPrice;
+        this.shouldShowLimitSellPriceLine = true;
+      } else {
+        this.shouldShowLimitSellPriceLine = false;
+      }
+    }
+  };
+
   #updateLeverage = async (symbol: string): Promise<void> => {
     const currentSymbolMaxLeverage = await binanceFuturesMaxLeverage(symbol);
-    const currentPosition = this.positionRisks.find((item) => item.symbol === symbol);
+    const currentPosition = this.allSymbolsPositionRisk[symbol];
     this.currentSymbolMaxLeverage = currentSymbolMaxLeverage;
     this.isCurrentSymbolMarginTypeIsolated = currentPosition?.marginType === 'isolated';
     this.currentSymbolLeverage = Math.min(
@@ -217,6 +330,7 @@ export default class Trading {
     entryPrice: +positionRisk.entryPrice,
     positionAmt: +positionRisk.positionAmt,
     liquidationPrice: +positionRisk.liquidationPrice,
+    isolatedWallet: +positionRisk.isolatedWallet,
     isolatedMargin: +positionRisk.isolatedMargin,
     baseValue: +positionRisk.positionAmt * +positionRisk.entryPrice,
     side: +positionRisk.positionAmt >= 0 ? 'BUY' : 'SELL',
@@ -266,11 +380,26 @@ export default class Trading {
     };
   };
 
-  /*
-  order(SYMBOL, qty, price, {
-                'timeInForce': (data.postOnly) ? 'GTX' : 'GTC',
-                'reduceOnly': data.reduceOnly.toString()
-            })
-
-            */
+  #getOrderInfo = (order: api.FuturesOrder): TradingOrder => ({
+    clientOrderId: order.clientOrderId,
+    cumQuote: order.cumQuote,
+    executedQty: +order.executedQty,
+    orderId: order.orderId,
+    avgPrice: +order.avgPrice,
+    origQty: +order.origQty,
+    price: +order.price,
+    reduceOnly: order.reduceOnly,
+    side: order.side,
+    positionSide: order.positionSide,
+    status: order.status,
+    stopPrice: +order.stopPrice,
+    closePosition: order.closePosition,
+    symbol: order.symbol,
+    timeInForce: order.timeInForce,
+    type: order.type,
+    origType: order.origType,
+    updateTime: order.updateTime,
+    workingType: order.workingType,
+    priceProtect: order.priceProtect,
+  });
 }

@@ -1,6 +1,7 @@
 import React, { ReactElement, useEffect, useRef } from 'react';
-import useChange, { useValue } from 'use-change';
+import useChange, { useValue, useSilent } from 'use-change';
 import * as api from '../../../api';
+import useDepsUpdateEffect from '../../../hooks/useDepsUpdateEffect';
 import CandlestickChart from '../../../lib/CandlestickChart';
 import { RootStore } from '../../../store';
 
@@ -18,24 +19,74 @@ const ChartWidget = (): ReactElement => {
   const currentSymbolInfo = useValue(({ market }: RootStore) => market, 'currentSymbolInfo');
   const symbol = useValue(({ persistent }: RootStore) => persistent, 'symbol');
   const position = useValue(({ trading }: RootStore) => trading, 'tradingPositions').find((pos) => pos.symbol === symbol) ?? null;
-  const [alerts, onUpdateAlerts] = useChange(({ persistent }: RootStore) => persistent, 'alerts');
+  const [alerts, setAlerts] = useChange(({ persistent }: RootStore) => persistent, 'alerts');
+  const limitBuyPrice = useValue(({ trading }: RootStore) => trading, 'limitBuyPrice');
+  const limitSellPrice = useValue(({ trading }: RootStore) => trading, 'limitSellPrice');
+  const shouldShowLimitBuyPriceLine = useValue(({ trading }: RootStore) => trading, 'shouldShowLimitBuyPriceLine');
+  const shouldShowLimitSellPriceLine = useValue(({ trading }: RootStore) => trading, 'shouldShowLimitSellPriceLine');
+  const tradingType = useValue(({ persistent }: RootStore) => persistent, 'tradingType');
+  const updateDrafts = useSilent(({ trading }: RootStore) => trading, 'updateDrafts');
 
-  useEffect(() => {
+  useDepsUpdateEffect(() => {
     if (candleChartRef.current) {
-      candleChartRef.current.update({
-        candles, symbol, pricePrecision: currentSymbolInfo?.pricePrecision ?? 1, interval, position,
-      });
+      candleChartRef.current.update({ pricePrecision: currentSymbolInfo?.pricePrecision ?? 1 });
     }
-  }, [candles, currentSymbolInfo?.pricePrecision, interval, position, symbol]);
+  }, [currentSymbolInfo?.pricePrecision]);
+
+  useDepsUpdateEffect(() => {
+    if (candleChartRef.current) candleChartRef.current.update({ candles });
+  }, [candles]);
+
+  useDepsUpdateEffect(() => {
+    if (candleChartRef.current) candleChartRef.current.update({ symbol });
+  }, [symbol]);
+
+  useDepsUpdateEffect(() => {
+    if (candleChartRef.current) candleChartRef.current.update({ interval });
+  }, [interval]);
+
+  useDepsUpdateEffect(() => {
+    if (candleChartRef.current) candleChartRef.current.update({ position });
+  }, [position]);
+
+  useDepsUpdateEffect(() => {
+    if (candleChartRef.current) {
+      switch (tradingType) {
+        case 'LIMIT': {
+          candleChartRef.current.update({
+            canCreateDraftLines: true,
+            buyDraftPrice: limitBuyPrice,
+            sellDraftPrice: limitSellPrice,
+            shouldShowBuyPrice: shouldShowLimitBuyPriceLine,
+            shouldShowSellPrice: shouldShowLimitSellPriceLine,
+          });
+          break;
+        }
+
+        default: {
+          candleChartRef.current.update({
+            canCreateDraftLines: false,
+            shouldShowBuyPrice: false,
+            shouldShowSellPrice: false,
+          });
+        }
+      }
+    }
+  }, [
+    limitBuyPrice, limitSellPrice, shouldShowLimitBuyPriceLine,
+    shouldShowLimitSellPriceLine, tradingType,
+  ]);
 
   useEffect(() => {
     if (ref.current && !candleChartRef.current) {
       candleChartRef.current = new CandlestickChart(ref.current, {
-        onUpdateAlerts,
+        onUpdateAlerts: (d: number[]) => setAlerts(d),
+        onUpdateDrafts: updateDrafts,
         alerts,
         symbol,
         interval,
-        pricePrecision: currentSymbolInfo?.pricePrecision ?? 1,
+        draftPriceItems: [],
+        pricePrecision: currentSymbolInfo?.pricePrecision ?? 0,
       });
       candleChartRef.current.update({ candles });
     }

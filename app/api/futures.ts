@@ -23,6 +23,10 @@ export async function futuresPositionRisk(): Promise<FuturesPositionRisk[]> {
   return promiseRequest('v2/positionRisk', {}, { type: 'SIGNED' });
 }
 
+export async function futuresOpenOrders(symbol?: string): Promise<FuturesOrder[]> {
+  return promiseRequest('v1/openOrders', symbol ? { symbol } : {}, { type: 'SIGNED' });
+}
+
 export async function futuresPrices(): Promise<Record<string, string>> {
   const data = await promiseRequest<{ symbol: string; price: string }[]>('v1/ticker/price');
   return data.reduce((out, i) => {
@@ -61,7 +65,7 @@ interface FuturesOrderOptions {
   side: OrderSide;
   symbol: string;
   quantity: number | string;
-  price: number | null;
+  price: number | string | null;
   type: OrderType;
   timeInForce?: TimeInForce;
   reduceOnly?: boolean;
@@ -70,7 +74,7 @@ interface FuturesOrderOptions {
 export async function futuresOrder({
   side, symbol, quantity, price, type, timeInForce, reduceOnly,
 }: FuturesOrderOptions): Promise<FuturesOrder> {
-  if (type !== 'MARKET' && (typeof price !== 'number' || price !== null)) throw new Error(`Orders of type ${type} must have price to be a number`);
+  if (type !== 'MARKET' && typeof price !== 'number' && typeof price !== 'string') throw new Error(`Orders of type ${type} must have price to be a number`);
 
   return promiseRequest('v1/order', {
     price: price === null ? undefined : price,
@@ -99,6 +103,28 @@ export async function futuresMarketSell(
   });
 }
 
+export async function futuresLimitBuy(
+  symbol: string,
+  quantity: number | string,
+  price: number | string,
+  { reduceOnly, timeInForce }: { reduceOnly?: boolean; timeInForce?: TimeInForce } = {},
+): Promise<FuturesOrder> {
+  return futuresOrder({
+    side: 'BUY', symbol, quantity, price, type: 'LIMIT', reduceOnly, timeInForce,
+  });
+}
+
+export async function futuresLimitSell(
+  symbol: string,
+  quantity: number | string,
+  price: number | string,
+  { reduceOnly, timeInForce }: { reduceOnly?: boolean; timeInForce?: TimeInForce } = {},
+): Promise<FuturesOrder> {
+  return futuresOrder({
+    side: 'SELL', symbol, quantity, price, type: 'LIMIT', reduceOnly, timeInForce,
+  });
+}
+
 export async function futuresIncome(params: {
   symbol?: string;
   incomeType?: IncomeType;
@@ -109,6 +135,15 @@ export async function futuresIncome(params: {
   timestamp?: number;
 }): Promise<FuturesIncome[]> {
   return promiseRequest('v1/income', params, { type: 'SIGNED' });
+}
+
+// Either orderId or origClientOrderId must be sent
+export async function futuresCancel(symbol: string, orderId: number): Promise<FuturesOrder> {
+  return promiseRequest('v1/order', { symbol, orderId }, { type: 'SIGNED', method: 'DELETE' });
+}
+
+export async function futuresCancelAll(symbol: string): Promise<{ msg: string; code: 200; }> {
+  return promiseRequest('v1/allOpenOrders', { symbol }, { type: 'SIGNED', method: 'DELETE' });
 }
 
 export function futuresAggTradeStream(

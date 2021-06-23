@@ -21,9 +21,7 @@ const Positions = (): ReactElement => {
   const onCloseMarket = useCallback(async (symbol: string) => {
     setSymbolsToClose([...symbolsToClose, symbol]);
 
-    try {
-      await closePosition(symbol);
-    } catch {}
+    try { await closePosition(symbol); } catch {}
 
     setSymbolsToClose(remove(symbolsToClose, symbol));
   }, [closePosition, symbolsToClose]);
@@ -33,7 +31,7 @@ const Positions = (): ReactElement => {
       <thead>
         <tr>
           <th>
-            Symbol
+            Position Asset
           </th>
           <th>
             Size
@@ -62,85 +60,81 @@ const Positions = (): ReactElement => {
         </tr>
       </thead>
       <tbody>
-        {tradingPositions.map((tradingPosition) => {
-          const {
-            symbol, baseValue, liquidationPrice, entryPrice, positionAmt,
-            isolatedMargin, marginType, leverage, lastPrice,
-            side, pnl, pnlPercent, truePnl, truePnlPercent,
-          } = tradingPosition;
-
-          return (
-            <tr key={symbol}>
-              <td>
-                {symbol.slice(0, -4)}
-                {' '}
+        {tradingPositions.map(({
+          symbol, baseValue, liquidationPrice, entryPrice, positionAmt,
+          isolatedWallet, marginType, leverage, lastPrice,
+          side, pnl, pnlPercent, truePnl, truePnlPercent,
+        }) => (
+          <tr key={symbol}>
+            <td>
+              {symbol.slice(0, -4)}
+              {' '}
                 &nbsp;
-                <Badge className={side === 'BUY' ? 'bg-success' : 'bg-danger'}>
-                  {leverage}
-                  x
-                </Badge>
-              </td>
-              <td>
-                {positionAmt}
+              <Badge className={side === 'BUY' ? 'bg-success' : 'bg-danger'}>
+                {leverage}
+                x
+              </Badge>
+            </td>
+            <td>
+              {positionAmt}
+              {' '}
+              (
+              {formatNumber(baseValue, true)}
+              {' '}
+              ₮)
+            </td>
+            <td>
+              {formatNumber(lastPrice)}
+              {' '}
+              ₮
+            </td>
+            <td>
+              {formatNumber(entryPrice)}
+              {' '}
+              ₮
+            </td>
+            <td>{marginType === 'isolated' ? `${formatNumber(liquidationPrice)} ₮` : <>&mdash;</>}</td>
+            <td>{marginType === 'isolated' ? `${formatNumber(isolatedWallet, true)} ₮` : <em className="text-warning">Cross</em>}</td>
+            <td>
+              <span className={textClassName(pnl)}>
+                {formatNumber(pnl, true)}
                 {' '}
+                {' '}
+                ₮
+              </span>
+              {' '}
+              <span className={textClassName(pnlPercent)}>
                 (
-                {formatNumber(baseValue, true)}
+                {formatPercent(pnlPercent)}
+                %)
+              </span>
+            </td>
+            <td>
+              <span className={textClassName(truePnl)}>
+                {formatNumber(truePnl, true)}
                 {' '}
-                ₮)
-              </td>
-              <td>
-                {formatNumber(lastPrice)}
-                {' '}
-                ₮
-              </td>
-              <td>
-                {formatNumber(entryPrice)}
                 {' '}
                 ₮
-              </td>
-              <td>{marginType === 'isolated' ? `${formatNumber(liquidationPrice)} ₮` : <>&mdash;</>}</td>
-              <td>{marginType === 'isolated' ? `${formatNumber(isolatedMargin, true)} ₮` : <em className="text-warning">Cross</em>}</td>
-              <td>
-                <span className={textClassName(pnl)}>
-                  {formatNumber(pnl, true)}
-                  {' '}
-                  {' '}
-                  ₮
-                </span>
-                {' '}
-                <span className={textClassName(pnlPercent)}>
-                  (
-                  {formatPercent(pnlPercent)}
-                  %)
-                </span>
-              </td>
-              <td>
-                <span className={textClassName(truePnl)}>
-                  {formatNumber(truePnl, true)}
-                  {' '}
-                  {' '}
-                  ₮
-                </span>
-                {' '}
-                <span className={textClassName(truePnlPercent)}>
-                  (
-                  {formatPercent(truePnlPercent)}
-                  %)
-                </span>
-              </td>
-              <td>
-                <Button
-                  color="link"
-                  className="text-muted px-0"
-                  disabled={symbolsToClose.includes(symbol)}
-                  onClick={() => onCloseMarket(symbol)}
-                >
-                  Market
-                </Button>
-              </td>
-            </tr>
-          );
-        })}
+              </span>
+              {' '}
+              <span className={textClassName(truePnlPercent)}>
+                (
+                {formatPercent(truePnlPercent)}
+                %)
+              </span>
+            </td>
+            <td>
+              <Button
+                color="link"
+                className="text-muted px-0"
+                disabled={symbolsToClose.includes(symbol)}
+                onClick={() => onCloseMarket(symbol)}
+              >
+                Market
+              </Button>
+            </td>
+          </tr>
+        ))}
       </tbody>
       {!tradingPositions.length && (
       <tfoot>

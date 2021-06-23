@@ -40,3 +40,18 @@ export interface LineData {
   value: string;
   color: string;
 }
+
+export interface PriceLinesDatum {
+  xValue?: Date;
+  yValue?: number;
+  title?: string;
+  color?: string;
+  id?: string;
+  isVisible?: boolean;
+}
+
+export interface ChartAxis {
+  x: d3.Axis<d3.NumberValue>;
+  yLeft: d3.Axis<d3.NumberValue>;
+  yRight: d3.Axis<d3.NumberValue>;
+}

@@ -12,17 +12,21 @@ import Svg from './items/Svg';
 import './chart.global.css';
 
 import {
-  ResizeData, DrawData, Scales, StyleMargin, D3Selection,
+  ResizeData, DrawData, Scales, StyleMargin, D3Selection, PriceLinesDatum,
 } from './types';
 import PriceLines from './items/PriceLines';
 import { TradingPosition } from '../../store/types';
+import { OrderSide } from '../../api';
+import DraftPriceLines from './items/DraftPriceLines';
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
 interface Params {
   symbol: string;
-  onUpdateAlerts: (y: number[]) => void;
+  onUpdateAlerts: (d: number[]) => void;
+  onUpdateDrafts: (d: { buyDraftPrice: number | null; sellDraftPrice: number | null; }) => void;
   alerts: number[];
+  draftPriceItems: PriceLinesDatum[];
   interval: string;
   pricePrecision: number;
 }
@@ -62,6 +66,8 @@ export default class CandlestickChart {
 
   #positionLines: PriceLines;
 
+  #draftLines: DraftPriceLines;
+
   #lastPrice?: number;
 
   #pricePrecision: number;
@@ -72,10 +78,14 @@ export default class CandlestickChart {
 
   #zoom = d3.zoom();
 
+  #onUpdateDrafts: Params['onUpdateDrafts'];
+
+  #canCreateDraftLines = true;
+
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
     {
-      pricePrecision, symbol, interval, alerts, onUpdateAlerts,
+      pricePrecision, symbol, interval, alerts, onUpdateAlerts, onUpdateDrafts,
     }: Params,
   ) {
     const containerElement = $.one(container);
@@ -103,17 +113,18 @@ export default class CandlestickChart {
 
     this.#currentPriceLines = new PriceLines({
       axis: this.#axes.getAxis(),
-      items: [{}],
+      items: [{ id: 'currentPrice' }],
       color: '#0000ff',
+      pointerEventsNone: true,
     }, resizeData);
 
     this.#crosshairPriceLines = new PriceLines({
       axis: this.#axes.getAxis(),
-      items: [],
+      items: [{ id: 'crosshair', isVisible: false }],
       showX: true,
-      isVisible: false,
       color: '#3F51B5',
       lineStyle: 'dotted',
+      pointerEventsNone: true,
     }, resizeData);
 
     this.#alertLines = new PriceLines({
@@ -123,21 +134,24 @@ export default class CandlestickChart {
       isTitleVisible: true,
       isDraggable: true,
       lineStyle: 'dashed',
-      onUpdate: onUpdateAlerts,
+      onDragEnd: (_datum, d) => onUpdateAlerts?.(d.map(({ yValue }) => yValue ?? -1)),
+      onClickTitle: (datum, d) => this.#alertLines.removeItem(d.indexOf(datum)),
     }, resizeData);
 
     this.#positionLines = new PriceLines({
       axis: this.#axes.getAxis(),
-      items: [],
+      items: [{ id: 'position', isVisible: false }],
       isTitleVisible: true,
     }, resizeData);
 
-    // console.log(this.#axes.getAxis().yRight.tickSizeInner());
-    /* this.#crosshair = new Crosshair({
+    this.#draftLines = new DraftPriceLines({
       axis: this.#axes.getAxis(),
-      resizeData,
-      scales: this.#scales,
-    }); */
+      onDragEnd: onUpdateDrafts,
+      onClickTitle: onUpdateDrafts,
+    }, resizeData);
+
+    this.#onUpdateDrafts = onUpdateDrafts;
+
     this.#plot = new Plot({ scales: this.#scales });
 
     this.#initialRender();
@@ -170,6 +184,11 @@ export default class CandlestickChart {
     symbol?: string;
     interval?: string;
     position?: TradingPosition | null;
+    buyDraftPrice?: number | null;
+    sellDraftPrice?: number | null;
+    shouldShowBuyPrice?: boolean;
+    shouldShowSellPrice?: boolean;
+    canCreateDraftLines?: boolean;
   }): void {
     if (typeof data.pricePrecision !== 'undefined' && data.pricePrecision !== this.#pricePrecision) {
       const { pricePrecision } = data;
@@ -178,6 +197,7 @@ export default class CandlestickChart {
       this.#currentPriceLines.update({ pricePrecision });
       this.#crosshairPriceLines.update({ pricePrecision });
       this.#alertLines.update({ pricePrecision });
+      this.#draftLines.update({ pricePrecision });
       this.#positionLines.update({ pricePrecision });
     }
 
@@ -203,11 +223,18 @@ export default class CandlestickChart {
       this.#translateBy(0);
     }
 
+    if (typeof data.buyDraftPrice !== 'undefined') this.#draftLines.updateItem('BUY', { yValue: data.buyDraftPrice ?? 0 });
+    if (typeof data.sellDraftPrice !== 'undefined') this.#draftLines.updateItem('SELL', { yValue: data.sellDraftPrice ?? 0 });
+    if (typeof data.shouldShowBuyPrice !== 'undefined') this.#draftLines.updateItem('BUY', { isVisible: data.shouldShowBuyPrice });
+    if (typeof data.shouldShowSellPrice !== 'undefined') this.#draftLines.updateItem('SELL', { isVisible: data.shouldShowSellPrice });
+    if (typeof data.canCreateDraftLines !== 'undefined') this.#canCreateDraftLines = data.canCreateDraftLines;
+
     if (typeof data.position !== 'undefined') {
       if (data.position === null) {
-        this.#positionLines.empty();
+        this.#positionLines.updateItem('position', { isVisible: false });
       } else {
-        this.#positionLines.updateFirstItem({
+        this.#positionLines.updateItem('position', {
+          isVisible: true,
           yValue: data.position.entryPrice,
           color: data.position.side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)',
           title: `${data.position.positionAmt} ${data.position.baseAsset}`,
@@ -259,26 +286,10 @@ export default class CandlestickChart {
 
     this.#plot.draw(drawData);
 
-    this.#currentPriceLines.updateFirstItem({
-      yValue: +(
-        this.#candles[this.#candles.length - 1]?.close ?? 0
-      ),
+    this.#currentPriceLines.updateItem('currentPrice', {
+      yValue: +(this.#candles[this.#candles.length - 1]?.close ?? 0),
     });
 
-    // this.#crosshair.draw();
-
-    /*
-
-        // Color lines based on market side
-        this.positionLine.wrapper.selectAll('.position-line > g')
-            .attr('data-side', d => d.side)
-        this.orderLines.wrapper.selectAll('.order-lines > g')
-            .attr('data-side', d => d.side)
-        this.draftLines.wrapper.selectAll('.draft-lines > g')
-            .attr('data-side', d => d.side)
-        this.alertLines.wrapper.selectAll('.alert-lines > g')
-            .attr('data-side', d => d.side)
-    */
     if (!this.#isDrawn && this.#candles.length) {
       this.#isDrawn = true;
       this.#translateBy(-100);
@@ -303,6 +314,7 @@ export default class CandlestickChart {
     this.#positionLines.resize(resizeData);
     this.#crosshairPriceLines.resize(resizeData);
     this.#alertLines.resize(resizeData);
+    this.#draftLines.resize(resizeData);
 
     /*
     this.priceLine.resize()
@@ -335,8 +347,9 @@ export default class CandlestickChart {
     this.#plot.appendTo(svgContainer);
     this.#crosshairPriceLines.appendTo(svgContainer, resizeData);
     this.#clipPath.appendTo(svgContainer, resizeData);
-    this.#currentPriceLines.appendTo(svgContainer, resizeData, { wrapperCSSStyle: { pointerEvents: 'none' } });
+    this.#currentPriceLines.appendTo(svgContainer, resizeData);
     this.#alertLines.appendTo(svgContainer, resizeData);
+    this.#draftLines.appendTo(svgContainer, resizeData);
     this.#positionLines.appendTo(svgContainer, resizeData);
 
     /*
@@ -376,7 +389,8 @@ export default class CandlestickChart {
     d3.select(this.#container).select('svg #plotMouseEventsArea')
       .on('mousemove', this.#onMouseMove)
       .on('mouseleave', this.#onMouseLeave)
-      .on('dblclick', this.#onDoubleClick);
+      .on('dblclick', this.#onDoubleClick)
+      .on('contextmenu', this.#onRightClick);
   };
 
   #calcDimensions = (): ResizeData => {
@@ -432,16 +446,18 @@ export default class CandlestickChart {
       );
       if (up) {
         void new Audio('../assets/audio/alert-up.mp3').play();
-        this.#alertLines.removeItem(up);
+        this.#alertLines.removeItem(items.indexOf(up));
       } else if (down) {
         void new Audio('../assets/audio/alert-down.mp3').play();
-        this.#alertLines.removeItem(down);
+        this.#alertLines.removeItem(items.indexOf(down));
       }
     }
   };
 
-  #onDoubleClick = (event: MouseEvent): void => {
+  #onRightClick = (event: MouseEvent): void => {
     event.stopPropagation();
+    event.preventDefault();
+
     const coords = d3.pointer(event);
 
     this.#alertLines.addItem({
@@ -450,22 +466,33 @@ export default class CandlestickChart {
     });
   };
 
+  #onDoubleClick = (event: MouseEvent): void => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    if (!this.#canCreateDraftLines) return;
+
+    const coords = d3.pointer(event);
+    const yValue = this.#draftLines.invertY(coords[1]);
+    const lastPrice: number = this.#currentPriceLines.getItems()[0]?.yValue ?? 0;
+    const side: OrderSide = yValue < lastPrice ? 'BUY' : 'SELL';
+
+    this.#draftLines.updateItem(side, { yValue, isVisible: true });
+
+    this.#onUpdateDrafts(this.#draftLines.getDraftPrices());
+  };
+
   #onMouseMove = (event: MouseEvent): void => {
     const coords = d3.pointer(event);
 
-    this.#crosshairPriceLines.update({
+    this.#crosshairPriceLines.updateItem('crosshair', {
       isVisible: true,
-    });
-
-    this.#crosshairPriceLines.updateFirstItem({
       xValue: this.#crosshairPriceLines.invertX(coords[0]),
       yValue: this.#crosshairPriceLines.invertY(coords[1]),
     });
   };
 
   #onMouseLeave = (): void => {
-    this.#crosshairPriceLines.update({
-      isVisible: false,
-    });
+    this.#crosshairPriceLines.updateItem('crosshair', { isVisible: false });
   };
 }

@@ -13,7 +13,14 @@ module.exports = {
     'react/require-default-props': 0,
     '@typescript-eslint/unbound-method': 0,
     'no-restricted-syntax': ['error', 'WithStatement'],
-    'no-empty': ["error", { "allowEmptyCatch": true }],
+    'no-empty': ['error', { allowEmptyCatch: true }],
+    'jsx-a11y/label-has-associated-control': [2, {
+      controlComponents: ['LabeledInput'],
+      depth: 5,
+    }],
+    'react-hooks/exhaustive-deps': ['error', {
+      additionalHooks: "(useDepsUpdateEffect)"
+    }]
   },
   parserOptions: {
     ecmaVersion: 2020,
