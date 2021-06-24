@@ -53,11 +53,11 @@ const Orders = (): ReactElement => {
           <th>
             Reduce
           </th>
-          <th>
+          <th style={{ width: '100px' }}>
             <Button
               color="link"
               className="text-muted px-0 py-0"
-              disabled={!openOrders.length}
+              disabled={!openOrders.length || openOrders.length === idsToClose.length}
               onClick={onCancelAll}
             >
               Cancel all
@@ -109,7 +109,7 @@ const Orders = (): ReactElement => {
                 disabled={idsToClose.includes(orderId)}
                 onClick={() => onCancel(symbol, orderId)}
               >
-                <Trash size={18} />
+                {idsToClose.includes(orderId) ? '...' : <Trash size={18} />}
               </Button>
             </td>
           </tr>

@@ -15,16 +15,22 @@ import {
   ResizeData, DrawData, Scales, StyleMargin, D3Selection, PriceLinesDatum,
 } from './types';
 import PriceLines from './items/PriceLines';
-import { TradingPosition } from '../../store/types';
+import { TradingOrder, TradingPosition } from '../../store/types';
 import { OrderSide } from '../../api';
 import DraftPriceLines from './items/DraftPriceLines';
+import OrderPriceLines from './items/OrderPriceLines';
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
 interface Params {
   symbol: string;
   onUpdateAlerts: (d: number[]) => void;
-  onUpdateDrafts: (d: { buyDraftPrice: number | null; sellDraftPrice: number | null; }) => void;
+  onUpdateDrafts: (d: {
+    buyDraftPrice: number | null;
+    sellDraftPrice: number | null;
+    stopBuyDraftPrice: number | null;
+    stopSellDraftPrice: number | null;
+  }) => void;
   alerts: number[];
   draftPriceItems: PriceLinesDatum[];
   interval: string;
@@ -65,6 +71,8 @@ export default class CandlestickChart {
   #alertLines: PriceLines;
 
   #positionLines: PriceLines;
+
+  #orderLines: OrderPriceLines;
 
   #draftLines: DraftPriceLines;
 
@@ -150,6 +158,8 @@ export default class CandlestickChart {
       onClickTitle: onUpdateDrafts,
     }, resizeData);
 
+    this.#orderLines = new OrderPriceLines({ axis: this.#axes.getAxis() }, resizeData);
+
     this.#onUpdateDrafts = onUpdateDrafts;
 
     this.#plot = new Plot({ scales: this.#scales });
@@ -168,6 +178,10 @@ export default class CandlestickChart {
         this.#axes.update({ scaledX });
         this.#gridLines.update({ scaledX });
         this.#plot.update({ scaledX });
+        this.#positionLines.update();
+        this.#alertLines.update();
+        this.#orderLines.update();
+        this.#currentPriceLines.update();
 
         this.#draw();
       }) as (selection: D3Selection<d3.BaseType>) => void,
@@ -184,10 +198,18 @@ export default class CandlestickChart {
     symbol?: string;
     interval?: string;
     position?: TradingPosition | null;
+    orders?: TradingOrder[];
+
     buyDraftPrice?: number | null;
     sellDraftPrice?: number | null;
     shouldShowBuyPrice?: boolean;
     shouldShowSellPrice?: boolean;
+
+    stopBuyDraftPrice?: number | null;
+    stopSellDraftPrice?: number | null;
+    shouldShowStopBuyPrice?: boolean;
+    shouldShowStopSellPrice?: boolean;
+
     canCreateDraftLines?: boolean;
   }): void {
     if (typeof data.pricePrecision !== 'undefined' && data.pricePrecision !== this.#pricePrecision) {
@@ -199,6 +221,7 @@ export default class CandlestickChart {
       this.#alertLines.update({ pricePrecision });
       this.#draftLines.update({ pricePrecision });
       this.#positionLines.update({ pricePrecision });
+      this.#orderLines.update({ pricePrecision });
     }
 
     if (typeof data.candles !== 'undefined') {
@@ -227,6 +250,12 @@ export default class CandlestickChart {
     if (typeof data.sellDraftPrice !== 'undefined') this.#draftLines.updateItem('SELL', { yValue: data.sellDraftPrice ?? 0 });
     if (typeof data.shouldShowBuyPrice !== 'undefined') this.#draftLines.updateItem('BUY', { isVisible: data.shouldShowBuyPrice });
     if (typeof data.shouldShowSellPrice !== 'undefined') this.#draftLines.updateItem('SELL', { isVisible: data.shouldShowSellPrice });
+
+    if (typeof data.stopBuyDraftPrice !== 'undefined') this.#draftLines.updateItem('STOP_BUY', { yValue: data.stopBuyDraftPrice ?? 0 });
+    if (typeof data.stopSellDraftPrice !== 'undefined') this.#draftLines.updateItem('STOP_SELL', { yValue: data.stopSellDraftPrice ?? 0 });
+    if (typeof data.shouldShowStopBuyPrice !== 'undefined') this.#draftLines.updateItem('STOP_BUY', { isVisible: data.shouldShowStopBuyPrice });
+    if (typeof data.shouldShowStopSellPrice !== 'undefined') this.#draftLines.updateItem('STOP_SELL', { isVisible: data.shouldShowStopSellPrice });
+
     if (typeof data.canCreateDraftLines !== 'undefined') this.#canCreateDraftLines = data.canCreateDraftLines;
 
     if (typeof data.position !== 'undefined') {
@@ -240,6 +269,10 @@ export default class CandlestickChart {
           title: `${data.position.positionAmt} ${data.position.baseAsset}`,
         });
       }
+    }
+
+    if (typeof data.orders !== 'undefined') {
+      this.#orderLines.updateOrderLines(data.orders);
     }
   }
 
@@ -266,23 +299,6 @@ export default class CandlestickChart {
     this.#axes.draw(resizeData);
 
     this.#gridLines.draw();
-
-    /*
-
-    this.priceLine.draw(this.data.priceLine)
-    this.breakEvenLine.draw(this.data.breakEvenLine)
-    this.positionLine.draw(this.data.positionLine)
-    this.bidAskLines.draw(this.data.bidAskLines)
-    this.liquidationLine.draw(this.data.liquidationLine)
-    this.orderLines.draw(this.data.orderLines).draggable()
-    this.draftLines.draw(this.data.draftLines).draggable()
-    this.alertLines.draw(this.data.alertLines).draggable()
-
-    this.positionLabel.draw(this.data.positionLine)
-    this.orderLabels.draw(this.data.orderLines)
-    this.draftLabels.draw(this.data.draftLines)
-    this.alertLabels.draw(this.data.alertLines)
-    */
 
     this.#plot.draw(drawData);
 
@@ -312,21 +328,10 @@ export default class CandlestickChart {
     this.#gridLines.resize(resizeData);
     this.#currentPriceLines.resize(resizeData);
     this.#positionLines.resize(resizeData);
+    this.#orderLines.resize(resizeData);
     this.#crosshairPriceLines.resize(resizeData);
     this.#alertLines.resize(resizeData);
     this.#draftLines.resize(resizeData);
-
-    /*
-    this.priceLine.resize()
-    this.bidAskLines.resize()
-    this.draftLines.resize()
-    this.alertLines.resize()
-    this.orderLines.resize()
-    this.breakEvenLine.resize()
-    this.positionLine.resize()
-    this.liquidationLine.resize()
-    */
-    // this.#crosshair.resize(resizeData);
 
     if (this.#candles.length) {
       this.#draw();
@@ -339,7 +344,6 @@ export default class CandlestickChart {
       width: this.#width, height: this.#height, margin: this.#margin, scales: this.#scales,
     };
     //  Order of appending = visual z-order (last is top)
-
     const svgContainer = this.#svg.appendTo(this.#container, resizeData);
 
     this.#gridLines.appendTo(svgContainer, resizeData);
@@ -351,38 +355,7 @@ export default class CandlestickChart {
     this.#alertLines.appendTo(svgContainer, resizeData);
     this.#draftLines.appendTo(svgContainer, resizeData);
     this.#positionLines.appendTo(svgContainer, resizeData);
-
-    /*
-     this.svg.appendTo(this.containerId)
-
-     this.clipPath.appendTo(this.svg, 'clipChart')
-
-     this.gridLines.appendTo(this.svg)
-
-     this.axes.appendTo(this.svg)
-
-     this.breakEvenLine.appendTo(this.svg, 'break-even-line')
-     this.positionLine.appendTo(this.svg, 'position-line')
-     this.liquidationLine.appendTo(this.svg, 'liquidation-line')
-     this.bidAskLines.appendTo(this.svg, 'bid-ask-lines')
-     this.priceLine.appendTo(this.svg, 'price-line')
-
-     this.plot.appendTo(this.svg)
-
-     this.measurer.appendTo(this.svg, 'measurer')
-    */
-
-    // this.#crosshair.appendTo(svgContainer);
-    /*
-     this.orderLines.appendTo(this.svg, 'order-lines')
-     this.draftLines.appendTo(this.svg, 'draft-lines')
-     this.alertLines.appendTo(this.svg, 'alert-lines')
-
-     this.positionLabel.appendTo(this.svg, 'position-label')
-     this.orderLabels.appendTo(this.svg, 'order-labels')
-     this.draftLabels.appendTo(this.svg, 'draft-labels')
-     this.alertLabels.appendTo(this.svg, 'alert-labels')
-     */
+    this.#orderLines.appendTo(svgContainer, resizeData);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);
 

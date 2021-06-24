@@ -12,6 +12,8 @@ interface Props {
   reduceOnly: boolean;
   buyPrice: number | null;
   sellPrice: number | null;
+  stopBuyPrice: number | null;
+  stopSellPrice: number | null;
   id: string;
   buyNode?: ReactNode;
   sellNode?: ReactNode;
@@ -20,7 +22,7 @@ interface Props {
 
 const TradingTab = ({
   isWideLayout, postOnly, reduceOnly,
-  buyPrice, sellPrice, id, buyNode, sellNode, tradingType,
+  buyPrice, sellPrice, stopBuyPrice, stopSellPrice, id, buyNode, sellNode, tradingType,
 }: Props): ReactElement => {
   ((n: boolean) => n)(postOnly); // just to temporarily disable TS "never read" error
   const [compactModeSide, setCompactModeSide] = useState<api.OrderSide>('BUY');
@@ -40,12 +42,28 @@ const TradingTab = ({
       )}
       <Row>
         <Col hidden={!isWideLayout && compactModeSide !== 'BUY'}>
-          <TradingSide id={id} side="BUY" reduceOnly={reduceOnly} postOnly={postOnly} price={buyPrice} tradingType={tradingType}>
+          <TradingSide
+            id={id}
+            side="BUY"
+            reduceOnly={reduceOnly}
+            postOnly={postOnly}
+            price={buyPrice}
+            stopPrice={stopBuyPrice}
+            tradingType={tradingType}
+          >
             {buyNode}
           </TradingSide>
         </Col>
         <Col hidden={!isWideLayout && compactModeSide !== 'SELL'}>
-          <TradingSide id={id} side="SELL" reduceOnly={reduceOnly} postOnly={postOnly} price={sellPrice} tradingType={tradingType}>
+          <TradingSide
+            id={id}
+            side="SELL"
+            reduceOnly={reduceOnly}
+            postOnly={postOnly}
+            price={sellPrice}
+            stopPrice={stopSellPrice}
+            tradingType={tradingType}
+          >
             {sellNode}
           </TradingSide>
         </Col>

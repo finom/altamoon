@@ -66,18 +66,21 @@ interface FuturesOrderOptions {
   symbol: string;
   quantity: number | string;
   price: number | string | null;
+  stopPrice: number | string | null;
   type: OrderType;
   timeInForce?: TimeInForce;
   reduceOnly?: boolean;
 }
 
 export async function futuresOrder({
-  side, symbol, quantity, price, type, timeInForce, reduceOnly,
+  side, symbol, quantity, price, stopPrice, type, timeInForce, reduceOnly,
 }: FuturesOrderOptions): Promise<FuturesOrder> {
-  if (type !== 'MARKET' && typeof price !== 'number' && typeof price !== 'string') throw new Error(`Orders of type ${type} must have price to be a number`);
+  if ((type === 'LIMIT' || type === 'STOP') && typeof price !== 'number' && typeof price !== 'string') throw new Error(`Orders of type ${type} must have price to be a number`);
+  if ((type === 'STOP' || type === 'STOP_MARKET') && typeof stopPrice !== 'number' && typeof stopPrice !== 'string') throw new Error(`Orders of type ${type} must have stopPrice to be a number`);
 
   return promiseRequest('v1/order', {
-    price: price === null ? undefined : price,
+    price: price ?? undefined,
+    stopPrice: stopPrice ?? undefined,
     symbol,
     type,
     side,
@@ -87,41 +90,51 @@ export async function futuresOrder({
   }, { type: 'TRADE', method: 'POST' });
 }
 
-export async function futuresMarketBuy(
-  symbol: string, quantity: number | string, { reduceOnly }: { reduceOnly?: boolean; } = {},
+export async function futuresMarketOrder(
+  side: OrderSide,
+  symbol: string,
+  quantity: number | string,
+  { reduceOnly }: { reduceOnly?: boolean; } = {},
 ): Promise<FuturesOrder> {
   return futuresOrder({
-    side: 'BUY', symbol, quantity, price: null, type: 'MARKET', reduceOnly,
+    side, symbol, quantity, price: null, stopPrice: null, type: 'MARKET', reduceOnly,
   });
 }
 
-export async function futuresMarketSell(
-  symbol: string, quantity: number | string, { reduceOnly }: { reduceOnly?: boolean; } = {},
-): Promise<FuturesOrder> {
-  return futuresOrder({
-    side: 'SELL', symbol, quantity, price: null, type: 'MARKET', reduceOnly,
-  });
-}
-
-export async function futuresLimitBuy(
+export async function futuresLimitOrder(
+  side: OrderSide,
   symbol: string,
   quantity: number | string,
   price: number | string,
   { reduceOnly, timeInForce }: { reduceOnly?: boolean; timeInForce?: TimeInForce } = {},
 ): Promise<FuturesOrder> {
   return futuresOrder({
-    side: 'BUY', symbol, quantity, price, type: 'LIMIT', reduceOnly, timeInForce,
+    side, symbol, quantity, price, stopPrice: null, type: 'LIMIT', reduceOnly, timeInForce,
   });
 }
 
-export async function futuresLimitSell(
+export async function futuresStopMarketOrder(
+  side: OrderSide,
+  symbol: string,
+  quantity: number | string,
+  stopPrice: number | string,
+  { reduceOnly }: { reduceOnly?: boolean; } = {},
+): Promise<FuturesOrder> {
+  return futuresOrder({
+    side, symbol, quantity, price: null, type: 'STOP_MARKET', reduceOnly, stopPrice,
+  });
+}
+
+export async function futuresStopLimitOrder(
+  side: OrderSide,
   symbol: string,
   quantity: number | string,
   price: number | string,
+  stopPrice: number | string,
   { reduceOnly, timeInForce }: { reduceOnly?: boolean; timeInForce?: TimeInForce } = {},
 ): Promise<FuturesOrder> {
   return futuresOrder({
-    side: 'SELL', symbol, quantity, price, type: 'LIMIT', reduceOnly, timeInForce,
+    side, symbol, quantity, price, type: 'STOP', reduceOnly, timeInForce, stopPrice,
   });
 }
 

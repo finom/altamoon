@@ -1,7 +1,13 @@
 :root {
   --biduul-sell-color: #673ab7;
   --biduul-buy-color: var(--bs-green);
+  --biduul-stop-buy-color: var(--bs-red);
+  --biduul-stop-sell-color: var(--bs-red);
 }
+
+/* fixes (can be removed if they're not needed anymore) */
+td { box-shadow: none!important; } /* fixes weird table background bug caused by bootswatch */
+
 /* common */
 .react-grid-placeholder {
   background-color: rgba(105, 60, 186, 0.5);

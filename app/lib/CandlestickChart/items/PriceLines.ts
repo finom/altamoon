@@ -108,7 +108,7 @@ export default class PriceLines implements ChartItem {
     this.#draw();
   };
 
-  public update(data: { items?: PriceLinesDatum[]; pricePrecision?: number; }): void {
+  public update(data: { items?: PriceLinesDatum[]; pricePrecision?: number; } = {}): void {
     if (!this.#wrapper) return;
 
     if (typeof data.pricePrecision !== 'undefined') {

@@ -54,7 +54,7 @@ const Positions = (): ReactElement => {
           <th>
             True PNL
           </th>
-          <th>
+          <th style={{ width: '100px' }}>
             Close
           </th>
         </tr>
@@ -130,7 +130,7 @@ const Positions = (): ReactElement => {
                 disabled={symbolsToClose.includes(symbol)}
                 onClick={() => onCloseMarket(symbol)}
               >
-                Market
+                {symbolsToClose.includes(symbol) ? 'Closing...' : 'Market'}
               </Button>
             </td>
           </tr>

@@ -11,13 +11,14 @@ interface Props {
   reduceOnly: boolean;
   postOnly: boolean;
   price: number | null;
+  stopPrice: number | null;
   id: string;
   tradingType: api.OrderType;
   children?: ReactNode;
 }
 
 const TradingSide = ({
-  side, reduceOnly, postOnly, price, id, tradingType, children,
+  side, reduceOnly, postOnly, price, stopPrice, id, tradingType, children,
 }: Props): ReactElement => {
   const symbol = useValue(({ persistent }: RootStore) => persistent, 'symbol');
   const totalWalletBalance = useValue(({ account }: RootStore) => account, 'totalWalletBalance');
@@ -25,6 +26,8 @@ const TradingSide = ({
   const symbolInfo = useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols')[symbol];
   const marketOrder = useSilent(({ trading }: RootStore) => trading, 'marketOrder');
   const limitOrder = useSilent(({ trading }: RootStore) => trading, 'limitOrder');
+  const stopMarketOrder = useSilent(({ trading }: RootStore) => trading, 'stopMarketOrder');
+  const stopLimitOrder = useSilent(({ trading }: RootStore) => trading, 'stopLimitOrder');
   const onOrder = useCallback((quantity: number) => {
     switch (tradingType) {
       case 'MARKET':
@@ -41,9 +44,29 @@ const TradingSide = ({
         }
 
         break;
+      case 'STOP_MARKET':
+        if (stopPrice !== null) {
+          void stopMarketOrder({
+            side, quantity, symbol, stopPrice, reduceOnly,
+          });
+        }
+
+        break;
+      case 'STOP':
+        if (price !== null && stopPrice !== null) {
+          void stopLimitOrder({
+            side, quantity, symbol, stopPrice, reduceOnly, postOnly, price,
+          });
+        }
+
+        break;
       default:
+        throw new Error(`Orders of type ${tradingType} aren't supported`);
     }
-  }, [limitOrder, marketOrder, postOnly, price, reduceOnly, side, symbol, tradingType]);
+  }, [
+    limitOrder, marketOrder, postOnly, price, reduceOnly, side, stopLimitOrder, stopMarketOrder,
+    stopPrice, symbol, tradingType,
+  ]);
   const quantityPrecision = symbolInfo?.quantityPrecision ?? 0;
 
   return (

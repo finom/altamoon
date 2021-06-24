@@ -1,4 +1,6 @@
-import React, { ReactElement, useEffect, useRef } from 'react';
+import React, {
+  ReactElement, useEffect, useMemo, useRef,
+} from 'react';
 import useChange, { useValue, useSilent } from 'use-change';
 import * as api from '../../../api';
 import useDepsUpdateEffect from '../../../hooks/useDepsUpdateEffect';
@@ -11,21 +13,37 @@ import css from './style.css';
 
 const intervals: api.CandlestickChartInterval[] = ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '12h', '1d'];
 
+const TRADING = ({ trading }: RootStore) => trading;
+const PERSISTENT = ({ persistent }: RootStore) => persistent;
+const MARKET = ({ market }: RootStore) => market;
+
 const ChartWidget = (): ReactElement => {
-  const [interval, setCandleInterval] = useChange(({ persistent }: RootStore) => persistent, 'interval');
   const ref = useRef<HTMLDivElement | null>(null);
   const candleChartRef = useRef<CandlestickChart | null>(null);
-  const candles = useValue(({ market }: RootStore) => market, 'candles');
-  const currentSymbolInfo = useValue(({ market }: RootStore) => market, 'currentSymbolInfo');
-  const symbol = useValue(({ persistent }: RootStore) => persistent, 'symbol');
-  const position = useValue(({ trading }: RootStore) => trading, 'tradingPositions').find((pos) => pos.symbol === symbol) ?? null;
-  const [alerts, setAlerts] = useChange(({ persistent }: RootStore) => persistent, 'alerts');
-  const limitBuyPrice = useValue(({ trading }: RootStore) => trading, 'limitBuyPrice');
-  const limitSellPrice = useValue(({ trading }: RootStore) => trading, 'limitSellPrice');
-  const shouldShowLimitBuyPriceLine = useValue(({ trading }: RootStore) => trading, 'shouldShowLimitBuyPriceLine');
-  const shouldShowLimitSellPriceLine = useValue(({ trading }: RootStore) => trading, 'shouldShowLimitSellPriceLine');
-  const tradingType = useValue(({ persistent }: RootStore) => persistent, 'tradingType');
-  const updateDrafts = useSilent(({ trading }: RootStore) => trading, 'updateDrafts');
+
+  const candles = useValue(MARKET, 'candles');
+  const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
+  const symbol = useValue(PERSISTENT, 'symbol');
+
+  const [interval, setCandleInterval] = useChange(PERSISTENT, 'interval');
+  const [alerts, setAlerts] = useChange(PERSISTENT, 'alerts');
+  const tradingType = useValue(PERSISTENT, 'tradingType');
+
+  const position = useValue(TRADING, 'tradingPositions').find((pos) => pos.symbol === symbol) ?? null;
+  const openOrders = useValue(TRADING, 'openOrders');
+  const updateDrafts = useSilent(TRADING, 'updateDrafts');
+  const limitBuyPrice = useValue(TRADING, 'limitBuyPrice');
+  const limitSellPrice = useValue(TRADING, 'limitSellPrice');
+  const stopBuyPrice = useValue(TRADING, 'stopBuyPrice');
+  const stopSellPrice = useValue(TRADING, 'stopSellPrice');
+  const shouldShowLimitBuyPriceLine = useValue(TRADING, 'shouldShowLimitBuyPriceLine');
+  const shouldShowLimitSellPriceLine = useValue(TRADING, 'shouldShowLimitSellPriceLine');
+  const shouldShowStopBuyPriceLine = useValue(TRADING, 'shouldShowStopBuyPriceLine');
+  const shouldShowStopSellPriceLine = useValue(TRADING, 'shouldShowStopSellPriceLine');
+  const orders = useMemo(
+    () => openOrders.filter((order) => order.symbol === symbol),
+    [openOrders, symbol],
+  );
 
   useDepsUpdateEffect(() => {
     if (candleChartRef.current) {
@@ -50,15 +68,59 @@ const ChartWidget = (): ReactElement => {
   }, [position]);
 
   useDepsUpdateEffect(() => {
+    if (candleChartRef.current) candleChartRef.current.update({ orders });
+  }, [orders]);
+
+  useDepsUpdateEffect(() => {
     if (candleChartRef.current) {
       switch (tradingType) {
         case 'LIMIT': {
           candleChartRef.current.update({
             canCreateDraftLines: true,
+
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
+            stopBuyDraftPrice: 0,
+            stopSellDraftPrice: 0,
+
             shouldShowBuyPrice: shouldShowLimitBuyPriceLine,
             shouldShowSellPrice: shouldShowLimitSellPriceLine,
+            shouldShowStopBuyPrice: false,
+            shouldShowStopSellPrice: false,
+          });
+          break;
+        }
+
+        case 'STOP': {
+          candleChartRef.current.update({
+            canCreateDraftLines: true,
+
+            buyDraftPrice: limitBuyPrice,
+            sellDraftPrice: limitSellPrice,
+            stopBuyDraftPrice: stopBuyPrice,
+            stopSellDraftPrice: stopSellPrice,
+
+            shouldShowBuyPrice: shouldShowLimitBuyPriceLine,
+            shouldShowSellPrice: shouldShowLimitSellPriceLine,
+            shouldShowStopBuyPrice: shouldShowStopBuyPriceLine,
+            shouldShowStopSellPrice: shouldShowStopSellPriceLine,
+          });
+          break;
+        }
+
+        case 'STOP_MARKET': {
+          candleChartRef.current.update({
+            canCreateDraftLines: true,
+
+            buyDraftPrice: 0,
+            sellDraftPrice: 0,
+            stopBuyDraftPrice: stopBuyPrice,
+            stopSellDraftPrice: stopSellPrice,
+
+            shouldShowBuyPrice: false,
+            shouldShowSellPrice: false,
+            shouldShowStopBuyPrice: shouldShowStopBuyPriceLine,
+            shouldShowStopSellPrice: shouldShowStopSellPriceLine,
           });
           break;
         }
@@ -66,15 +128,24 @@ const ChartWidget = (): ReactElement => {
         default: {
           candleChartRef.current.update({
             canCreateDraftLines: false,
+
+            buyDraftPrice: 0,
+            sellDraftPrice: 0,
+            stopBuyDraftPrice: 0,
+            stopSellDraftPrice: 0,
+
             shouldShowBuyPrice: false,
             shouldShowSellPrice: false,
+            shouldShowStopBuyPrice: false,
+            shouldShowStopSellPrice: false,
           });
         }
       }
     }
   }, [
     limitBuyPrice, limitSellPrice, shouldShowLimitBuyPriceLine,
-    shouldShowLimitSellPriceLine, tradingType,
+    shouldShowLimitSellPriceLine, shouldShowStopBuyPriceLine,
+    shouldShowStopSellPriceLine, stopBuyPrice, stopSellPrice, tradingType,
   ]);
 
   useEffect(() => {

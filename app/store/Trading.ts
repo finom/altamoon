@@ -29,6 +29,14 @@ export default class Trading {
 
   public shouldShowLimitSellPriceLine = false;
 
+  public stopBuyPrice: number | null = null;
+
+  public shouldShowStopBuyPriceLine = false;
+
+  public stopSellPrice: number | null = null;
+
+  public shouldShowStopSellPriceLine = false;
+
   #store: Store;
 
   #lastPriceUnsubscribe?: () => void;
@@ -135,9 +143,8 @@ export default class Trading {
     side: api.OrderSide; quantity: number; symbol: string; reduceOnly: boolean;
   }): Promise<api.FuturesOrder | null> => {
     try {
-      const createOrder = side === 'BUY' ? api.futuresMarketBuy : api.futuresMarketSell;
-      const result = await createOrder(
-        symbol, quantity, { reduceOnly },
+      const result = await api.futuresMarketOrder(
+        side, symbol, quantity, { reduceOnly },
       );
 
       await this.loadOrders();
@@ -163,14 +170,63 @@ export default class Trading {
     postOnly: boolean;
   }): Promise<api.FuturesOrder | null> => {
     try {
-      const createOrder = side === 'BUY' ? api.futuresLimitBuy : api.futuresLimitSell;
-      const result = await createOrder(
-        symbol, quantity, price, { reduceOnly, timeInForce: postOnly ? 'GTX' : 'GTC' },
+      const result = await api.futuresLimitOrder(
+        side, symbol, quantity, price, { reduceOnly, timeInForce: postOnly ? 'GTX' : 'GTC' },
       );
 
       await this.loadOrders();
 
-      notify('success', `Order for ${symbol} is created`);
+      notify('success', `Limit order for ${symbol} is created`);
+
+      return result;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return null;
+    }
+  };
+
+  public stopMarketOrder = async ({
+    side, quantity, symbol, stopPrice, reduceOnly,
+  }: {
+    side: api.OrderSide; quantity: number; symbol: string; stopPrice: number; reduceOnly: boolean;
+  }): Promise<api.FuturesOrder | null> => {
+    try {
+      const result = await api.futuresStopMarketOrder(
+        side, symbol, quantity, stopPrice, { reduceOnly },
+      );
+
+      await this.loadOrders();
+
+      notify('success', `Stop market order for ${symbol} is created`);
+
+      return result;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
+      return null;
+    }
+  };
+
+  public stopLimitOrder = async ({
+    side, quantity, price, stopPrice, symbol, reduceOnly, postOnly,
+  }: {
+    side: api.OrderSide;
+    quantity: number;
+    price: number;
+    stopPrice: number;
+    symbol: string;
+    reduceOnly: boolean;
+    postOnly: boolean;
+  }): Promise<api.FuturesOrder | null> => {
+    try {
+      const result = await api.futuresStopLimitOrder(
+        side, symbol, quantity, price, stopPrice, { reduceOnly, timeInForce: postOnly ? 'GTX' : 'GTC' },
+      );
+
+      await this.loadOrders();
+
+      notify('success', `Stop limit order for ${symbol} is created`);
 
       return result;
     } catch (e) {
@@ -192,9 +248,9 @@ export default class Trading {
       let result;
 
       if (positionAmt < 0) {
-        result = await api.futuresMarketBuy(symbol, -positionAmt, { reduceOnly: true });
+        result = await api.futuresMarketOrder('BUY', symbol, -positionAmt, { reduceOnly: true });
       } else {
-        result = await api.futuresMarketSell(symbol, positionAmt, { reduceOnly: true });
+        result = await api.futuresMarketOrder('SELL', symbol, positionAmt, { reduceOnly: true });
       }
 
       await this.loadPositions();
@@ -215,7 +271,7 @@ export default class Trading {
 
       await this.loadOrders();
 
-      notify('success', `Order for ${symbol} is closed`);
+      notify('success', `Order for ${symbol} is canceled`);
 
       return result;
     } catch {
@@ -229,7 +285,7 @@ export default class Trading {
 
       await this.loadOrders();
 
-      notify('success', `All orders for ${symbol} are closed`);
+      notify('success', `All orders for ${symbol} are canceled`);
     } catch {
     }
   };
@@ -245,9 +301,14 @@ export default class Trading {
 
   // used by Chart Widget compoment
   public updateDrafts = ({
-    buyDraftPrice, sellDraftPrice,
-  }: { buyDraftPrice: number | null; sellDraftPrice: number | null; }): void => {
-    if (this.#store.persistent.tradingType === 'LIMIT') {
+    buyDraftPrice, sellDraftPrice, stopBuyDraftPrice, stopSellDraftPrice,
+  }: {
+    buyDraftPrice: number | null;
+    sellDraftPrice: number | null;
+    stopBuyDraftPrice: number | null;
+    stopSellDraftPrice: number | null;
+  }): void => {
+    if (this.#store.persistent.tradingType === 'LIMIT' || this.#store.persistent.tradingType === 'STOP') {
       if (typeof buyDraftPrice === 'number') {
         this.limitBuyPrice = buyDraftPrice;
         this.shouldShowLimitBuyPriceLine = true;
@@ -260,6 +321,22 @@ export default class Trading {
         this.shouldShowLimitSellPriceLine = true;
       } else {
         this.shouldShowLimitSellPriceLine = false;
+      }
+    }
+
+    if (this.#store.persistent.tradingType === 'STOP' || this.#store.persistent.tradingType === 'STOP_MARKET') {
+      if (typeof stopBuyDraftPrice === 'number') {
+        this.stopBuyPrice = stopBuyDraftPrice;
+        this.shouldShowStopBuyPriceLine = true;
+      } else {
+        this.shouldShowStopBuyPriceLine = false;
+      }
+
+      if (typeof stopSellDraftPrice === 'number') {
+        this.stopSellPrice = stopSellDraftPrice;
+        this.shouldShowStopSellPriceLine = true;
+      } else {
+        this.shouldShowStopSellPriceLine = false;
       }
     }
   };

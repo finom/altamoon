@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 import { GraphUp, GraphDown } from 'react-bootstrap-icons';
 import classNames from 'classnames';
 
-import { OrderSide } from '../../../api';
 import LabeledInput from '../LabeledInput';
 import css from './style.css';
 import tooltipRef from '../../../lib/tooltipRef';
@@ -10,7 +9,7 @@ import tooltipRef from '../../../lib/tooltipRef';
 interface Props {
   id: string;
   value: string;
-  side: OrderSide;
+  side: 'BUY' | 'SELL' | 'STOP_BUY' | 'STOP_SELL';
   shouldShowPriceLine: boolean;
   onChangeShouldShowPriceLine: (v: boolean) => void;
   onChange: (v: string) => void;
@@ -29,12 +28,14 @@ const TradingPriceInput = ({
           className={classNames({
             'text-buy': shouldShowPriceLine && side === 'BUY',
             'text-sell': shouldShowPriceLine && side === 'SELL',
+            'text-stop-buy': shouldShowPriceLine && side === 'STOP_BUY',
+            'text-stop-sell': shouldShowPriceLine && side === 'STOP_SELL',
           })}
           ref={tooltipRef()}
           title="Toggle draft line visibility"
           onClick={() => onChangeShouldShowPriceLine(!shouldShowPriceLine)}
         >
-          {side === 'BUY' ? <GraphUp /> : <GraphDown />}
+          {side === 'BUY' || side === 'STOP_BUY' ? <GraphUp /> : <GraphDown />}
         </span>
       )}
       rightLabelClassName={css.draftChartLineToggle}

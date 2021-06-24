@@ -9,10 +9,10 @@ interface Props {
   isWideLayout: boolean;
   postOnly: boolean;
   reduceOnly: boolean;
-  tradingType: 'LIMIT';
+  tradingType: 'STOP';
 }
 
-const Limit = ({
+const StopLimit = ({
   isWideLayout, postOnly, reduceOnly, tradingType,
 }: Props): ReactElement => {
   const pricePrecision = useValue(({ market }: RootStore) => market, 'currentSymbolPricePrecision');
@@ -33,13 +33,29 @@ const Limit = ({
     price: sellPrice,
   } = useDraftPrice('limitSellPrice', 'shouldShowLimitSellPriceLine', { pricePrecision });
 
+  const {
+    shouldShowPriceLine: shouldShowStopBuyPriceLine,
+    setShouldShowPriceLine: setShouldShowStopBuyPriceLine,
+    priceStr: stopBuyPriceStr,
+    setPriceStr: setStopBuyPriceStr,
+    price: stopBuyPrice,
+  } = useDraftPrice('stopBuyPrice', 'shouldShowStopBuyPriceLine', { pricePrecision });
+
+  const {
+    shouldShowPriceLine: shouldShowStopSellPriceLine,
+    setShouldShowPriceLine: setShouldShowStopSellPriceLine,
+    priceStr: stopSellPriceStr,
+    setPriceStr: setStopSellPriceStr,
+    price: stopSellPrice,
+  } = useDraftPrice('stopSellPrice', 'shouldShowStopSellPriceLine', { pricePrecision });
+
   return (
     <TradingTab
-      id="limitTab"
+      id="stopLimitTab"
       buyPrice={buyPrice}
       sellPrice={sellPrice}
-      stopBuyPrice={null}
-      stopSellPrice={null}
+      stopBuyPrice={stopBuyPrice}
+      stopSellPrice={stopSellPrice}
       isWideLayout={isWideLayout}
       postOnly={postOnly}
       reduceOnly={reduceOnly}
@@ -55,6 +71,15 @@ const Limit = ({
             shouldShowPriceLine={shouldShowLimitBuyPriceLine}
             onChangeShouldShowPriceLine={setShouldShowLimitBuyPriceLine}
           />
+          <label htmlFor="stopBuyPrice" className="mb-1">Stop Buy Price</label>
+          <TradingPriceInput
+            side="STOP_BUY"
+            id="stopBuyPrice"
+            value={stopBuyPriceStr}
+            onChange={setStopBuyPriceStr}
+            shouldShowPriceLine={shouldShowStopBuyPriceLine}
+            onChangeShouldShowPriceLine={setShouldShowStopBuyPriceLine}
+          />
         </>
       )}
       sellNode={(
@@ -68,10 +93,19 @@ const Limit = ({
             shouldShowPriceLine={shouldShowLimitSellPriceLine}
             onChangeShouldShowPriceLine={setShouldShowLimitSellPriceLine}
           />
+          <label htmlFor="stopSellPrice" className="mb-1">Stop Sell Price</label>
+          <TradingPriceInput
+            side="STOP_SELL"
+            id="stopSellPrice"
+            value={stopSellPriceStr}
+            onChange={setStopSellPriceStr}
+            shouldShowPriceLine={shouldShowStopSellPriceLine}
+            onChangeShouldShowPriceLine={setShouldShowStopSellPriceLine}
+          />
         </>
       )}
     />
   );
 };
 
-export default Limit;
+export default StopLimit;
