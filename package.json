@@ -21,7 +21,7 @@
     "upgrade": "npx npm-check-updates -u -x react-hook-form --timeout 480000 && npm i --legacy-peer-deps",
     "reinstall": "rm -rf node_modules package-lock.json && npm i",
     "build-types": "rm -rf ./biduul-types/_tmp && npx tsc --declaration --outDir ./biduul-types/_tmp --emitDeclarationOnly && cp -a ./biduul-types/_tmp/app/. ./biduul-types/ && rm -r ./biduul-types/_tmp && node scripts/copyProjectVersion",
-    "publish-types": "npm publish --prefix biduul-types",
+    "publish-types": "npm publish biduul-types",
     "patch": "npm version patch && npm run build-types && git commit -am 'chore: Build types' && npm run publish-types && git push && git push --tags"
   },
   "lint-staged": {
