@@ -22,7 +22,7 @@
     "reinstall": "rm -rf node_modules package-lock.json && npm i",
     "build-types": "rm -rf ./biduul-types/_tmp && npx tsc --declaration --outDir ./biduul-types/_tmp --emitDeclarationOnly && cp -a ./biduul-types/_tmp/app/. ./biduul-types/ && rm -r ./biduul-types/_tmp && node scripts/copyProjectVersion",
     "publish-types": "npm --prefix biduul-types publish",
-    "patch": "npm version patch && npm run build-types && publish-types && git push && git push --tags"
+    "patch": "npm version patch && npm run build-types && npm run publish-types && git push && git push --tags"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
