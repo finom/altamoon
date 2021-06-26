@@ -29,6 +29,8 @@ export class RootStore {
   }
 }
 
+export type Foo = 'bar';
+
 const store = new RootStore();
 
 if (process.env.NODE_ENV === 'development') {
