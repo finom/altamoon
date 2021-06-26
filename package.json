@@ -1,5 +1,7 @@
 {
   "name": "electron-react-boilerplate",
+  "version": "0.0.0",
+  "private": true,
   "productName": "ElectronReact",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Fast Refresh for rapid application development",
   "scripts": {
@@ -10,14 +12,17 @@
     "lint-pure": "cross-env NODE_ENV=development eslint ./src ./app --ext .js,.jsx,.ts,.tsx",
     "lint": "npm run lint-pure -- --cache --fix",
     "package": "rm -rf src/dist && npm run build && electron-builder build --publish never",
-    "postinstall": "node scripts/postinstall.js && node -r @babel/register .erb/scripts/CheckNativeDep.js && electron-builder install-app-deps && opencollective-postinstall",
-    "start": "node -r @babel/register ./.erb/scripts/CheckPortInUse.js && cross-env npm run start:renderer",
+    "postinstall": "node -r @babel/register .erb/scripts/CheckNativeDep.js && electron-builder install-app-deps && opencollective-postinstall",
+    "start": "node -r @babel/register .erb/scripts/CheckPortInUse.js && cross-env npm run start:renderer",
     "start:main": "cross-env NODE_ENV=development electron -r ./.erb/scripts/BabelRegister ./src/main.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.renderer.dev.babel.js",
     "start:browser": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.browser.dev.babel.js",
     "test": "npm run lint-pure && npx tsc --noemit",
     "upgrade": "npx npm-check-updates -u -x react-hook-form --timeout 480000 && npm i --legacy-peer-deps",
-    "reinstall": "rm -rf node_modules package-lock.json && npm i"
+    "reinstall": "rm -rf node_modules package-lock.json && npm i",
+    "build-types": "rm -rf ./biduul-types/_tmp && npx tsc --declaration --outDir ./biduul-types/_tmp --emitDeclarationOnly && cp -a ./biduul-types/_tmp/app/. ./biduul-types/ && rm -r ./biduul-types/_tmp && node scripts/copyProjectVersion",
+    "publish-types": "npm --prefix biduul-types publish",
+    "patch": "npm version patch && npm run build-types && publish-types && git push && git push --tags"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -244,6 +249,7 @@
     "sass-loader": "^12.1.0",
     "style-loader": "^3.0.0",
     "terser-webpack-plugin": "^5.1.3",
+    "ts-node": "^10.0.0",
     "typescript": "^4.3.4",
     "url-loader": "^4.1.1",
     "webpack": "^5.40.0",

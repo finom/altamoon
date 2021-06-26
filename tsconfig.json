@@ -5,7 +5,7 @@
     "lib": ["dom", "esnext"],
     "declaration": true,
     "declarationMap": true,
-    "noEmit": true,
+    // "noEmit": true,
     "jsx": "react",
     "strict": true,
     /* "pretty": true, */
@@ -21,7 +21,8 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": []
   },
   "exclude": [
     "test",
