@@ -2,7 +2,7 @@
 	"version": "0.0.7",
 	"name": "biduul-types",
 	"description": "",
-	"main": "index.js",
+	"main": "types/index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
