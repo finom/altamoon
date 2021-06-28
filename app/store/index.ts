@@ -5,6 +5,7 @@ import Market from './Market';
 import Account from './Account';
 import Stats from './Stats';
 import Trading from './Trading';
+import App from './App';
 
 export class RootStore {
   public readonly persistent: Persistent;
@@ -14,6 +15,8 @@ export class RootStore {
   public readonly account: Account;
 
   public readonly stats: Stats;
+
+  public readonly app: App;
 
   public readonly trading: Trading;
 
@@ -25,6 +28,7 @@ export class RootStore {
     this.account = new Account(this);
     this.trading = new Trading(this);
     this.stats = new Stats(this);
+    this.app = new App(this);
     this.isSettingsModalOpen = !this.persistent.binanceApiKey;
   }
 }

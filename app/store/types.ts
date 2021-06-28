@@ -1,5 +1,9 @@
 import * as api from '../api';
 
+export type Api = typeof api; // used at plugins
+
+export type Plugin = (store: Store, api: Api) => void;
+
 export interface TradingPosition {
   entryPrice: number;
   positionAmt: number;
@@ -39,4 +43,8 @@ export interface TradingOrder {
   updateTime: number;
   workingType: api.WorkingType;
   priceProtect: boolean;
+}
+
+declare global {
+  interface Window { biduulPlugin: (plugin: Plugin) => void; }
 }
