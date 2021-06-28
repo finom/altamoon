@@ -42,4 +42,8 @@ if (process.env.NODE_ENV === 'development') {
   convertType<{ store: RootStore }>(window).store = store;
 }
 
+declare global {
+  type Store = RootStore;
+}
+
 export default store;
