@@ -2,7 +2,7 @@ import * as api from '../api';
 
 export type Api = typeof api; // used at plugins
 
-export type Plugin = (store: Store, api: Api) => void;
+export type Plugin = (store: Store, api: Api) => undefined | string[];
 
 export interface TradingPosition {
   entryPrice: number;

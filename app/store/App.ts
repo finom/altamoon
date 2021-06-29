@@ -12,6 +12,7 @@ interface WidgetData {
   noPadding?: boolean;
   bodyClassName?: string;
   shouldCheckAccount?: boolean;
+  currentScript: HTMLScriptElement;
   listenSettingsSave: (handler: () => void) => (() => void);
   listenSettingsClose: (handler: () => void) => (() => void);
   onSettingsSave: () => void;
@@ -46,6 +47,7 @@ export default class Persistent {
     noPadding,
     bodyClassName,
     shouldCheckAccount,
+    currentScript,
   }: {
     hasSettings: boolean;
     id: string;
@@ -53,6 +55,7 @@ export default class Persistent {
     noPadding?: boolean;
     bodyClassName?: string;
     shouldCheckAccount?: boolean;
+    currentScript: HTMLScriptElement;
   }): Omit<WidgetData, 'onSettingsSave' | 'onSettingsClose'> => {
     const element = document.createElement('div');
     const settingsElement = hasSettings ? document.createElement('div') : null;
@@ -73,6 +76,7 @@ export default class Persistent {
       noPadding,
       bodyClassName,
       shouldCheckAccount,
+      currentScript,
       listenSettingsSave,
       listenSettingsClose,
     };
