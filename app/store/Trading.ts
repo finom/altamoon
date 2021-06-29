@@ -138,7 +138,7 @@ export default class Trading {
   };
 
   public marketOrder = async ({
-    side, quantity, symbol, reduceOnly,
+    side, quantity, symbol, reduceOnly = false,
   }: {
     side: api.OrderSide; quantity: number; symbol: string; reduceOnly: boolean;
   }): Promise<api.FuturesOrder | null> => {
