@@ -140,7 +140,7 @@ export default class Trading {
   public marketOrder = async ({
     side, quantity, symbol, reduceOnly = false,
   }: {
-    side: api.OrderSide; quantity: number; symbol: string; reduceOnly: boolean;
+    side: api.OrderSide; quantity: number; symbol: string; reduceOnly?: boolean;
   }): Promise<api.FuturesOrder | null> => {
     try {
       const result = await api.futuresMarketOrder(
@@ -160,14 +160,14 @@ export default class Trading {
   };
 
   public limitOrder = async ({
-    side, quantity, price, symbol, reduceOnly, postOnly,
+    side, quantity, price, symbol, reduceOnly = false, postOnly = false,
   }: {
     side: api.OrderSide;
     quantity: number;
     price: number;
     symbol: string;
-    reduceOnly: boolean;
-    postOnly: boolean;
+    reduceOnly?: boolean;
+    postOnly?: boolean;
   }): Promise<api.FuturesOrder | null> => {
     try {
       const result = await api.futuresLimitOrder(
@@ -187,9 +187,13 @@ export default class Trading {
   };
 
   public stopMarketOrder = async ({
-    side, quantity, symbol, stopPrice, reduceOnly,
+    side, quantity, symbol, stopPrice, reduceOnly = false,
   }: {
-    side: api.OrderSide; quantity: number; symbol: string; stopPrice: number; reduceOnly: boolean;
+    side: api.OrderSide;
+    quantity: number;
+    symbol: string;
+    stopPrice: number;
+    reduceOnly?: boolean;
   }): Promise<api.FuturesOrder | null> => {
     try {
       const result = await api.futuresStopMarketOrder(
@@ -209,15 +213,15 @@ export default class Trading {
   };
 
   public stopLimitOrder = async ({
-    side, quantity, price, stopPrice, symbol, reduceOnly, postOnly,
+    side, quantity, price, stopPrice, symbol, reduceOnly = false, postOnly = false,
   }: {
     side: api.OrderSide;
     quantity: number;
     price: number;
     stopPrice: number;
     symbol: string;
-    reduceOnly: boolean;
-    postOnly: boolean;
+    reduceOnly?: boolean;
+    postOnly?: boolean;
   }): Promise<api.FuturesOrder | null> => {
     try {
       const result = await api.futuresStopLimitOrder(
