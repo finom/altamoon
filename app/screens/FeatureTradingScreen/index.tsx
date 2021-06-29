@@ -168,7 +168,6 @@ const FeatureTradingScreen = (): ReactElement => {
           noPadding,
           bodyClassName,
           shouldCheckAccount,
-          onSettingsClose,
           onSettingsSave,
         }) => (
           <div
@@ -188,7 +187,6 @@ const FeatureTradingScreen = (): ReactElement => {
               noPadding={noPadding}
               bodyClassName={bodyClassName}
               shouldCheckAccount={shouldCheckAccount}
-              onSettingsClose={onSettingsClose}
               onSettingsSave={onSettingsSave}
             >
               <DOMElement>{element}</DOMElement>

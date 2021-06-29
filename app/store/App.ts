@@ -1,3 +1,4 @@
+import { listenChange } from 'use-change';
 import * as api from '../api';
 import { Plugin } from './types';
 
@@ -11,8 +12,8 @@ interface WidgetData {
   noPadding?: boolean;
   bodyClassName?: string;
   shouldCheckAccount?: boolean;
-  onSettingsClose?: () => void;
-  onSettingsSave?: () => void;
+  listenSettingsSave: (handler: () => void) => (() => void);
+  onSettingsSave: () => void;
 }
 
 export default class Persistent {
@@ -43,8 +44,6 @@ export default class Persistent {
     noPadding,
     bodyClassName,
     shouldCheckAccount,
-    onSettingsClose,
-    onSettingsSave,
   }: {
     hasSettings: boolean;
     id: string;
@@ -52,12 +51,15 @@ export default class Persistent {
     noPadding?: boolean;
     bodyClassName?: string;
     shouldCheckAccount?: boolean;
-    onSettingsClose?: () => void;
-    onSettingsSave?: () => void;
-  }): WidgetData => {
+  }): Omit<WidgetData, 'onSettingsSave'> => {
     const element = document.createElement('div');
     const settingsElement = hasSettings ? document.createElement('div') : null;
-    const widgetData: WidgetData = {
+    const eventTarget = { saveCount: 0 };
+    const listenSettingsSave = (handler: () => void) => listenChange(eventTarget, 'saveCount', () => handler());
+    const onSettingsSave = () => {
+      eventTarget.saveCount += 1;
+    };
+    const widgetData: Omit<WidgetData, 'onSettingsSave'> = {
       element,
       settingsElement,
       hasSettings,
@@ -66,11 +68,10 @@ export default class Persistent {
       noPadding,
       bodyClassName,
       shouldCheckAccount,
-      onSettingsClose,
-      onSettingsSave,
+      listenSettingsSave,
     };
 
-    this.customWidgets = [...this.customWidgets, widgetData];
+    this.customWidgets = [...this.customWidgets, { ...widgetData, onSettingsSave }];
 
     return widgetData;
   };
