@@ -13,7 +13,9 @@ interface WidgetData {
   bodyClassName?: string;
   shouldCheckAccount?: boolean;
   listenSettingsSave: (handler: () => void) => (() => void);
+  listenSettingsClose: (handler: () => void) => (() => void);
   onSettingsSave: () => void;
+  onSettingsClose: () => void;
 }
 
 export default class Persistent {
@@ -51,15 +53,18 @@ export default class Persistent {
     noPadding?: boolean;
     bodyClassName?: string;
     shouldCheckAccount?: boolean;
-  }): Omit<WidgetData, 'onSettingsSave'> => {
+  }): Omit<WidgetData, 'onSettingsSave' | 'onSettingsClose'> => {
     const element = document.createElement('div');
     const settingsElement = hasSettings ? document.createElement('div') : null;
-    const eventTarget = { saveCount: 0 };
+    const eventTarget = { saveCount: 0, cancelCount: 0 };
+
     const listenSettingsSave = (handler: () => void) => listenChange(eventTarget, 'saveCount', () => handler());
-    const onSettingsSave = () => {
-      eventTarget.saveCount += 1;
-    };
-    const widgetData: Omit<WidgetData, 'onSettingsSave'> = {
+    const listenSettingsClose = (handler: () => void) => listenChange(eventTarget, 'cancelCount', () => handler());
+
+    const onSettingsSave = () => { eventTarget.saveCount += 1; };
+    const onSettingsClose = () => { eventTarget.cancelCount += 1; };
+
+    const widgetData: Omit<WidgetData, 'onSettingsSave' | 'onSettingsClose'> = {
       element,
       settingsElement,
       hasSettings,
@@ -69,9 +74,13 @@ export default class Persistent {
       bodyClassName,
       shouldCheckAccount,
       listenSettingsSave,
+      listenSettingsClose,
     };
 
-    this.customWidgets = [...this.customWidgets, { ...widgetData, onSettingsSave }];
+    this.customWidgets = [
+      ...this.customWidgets,
+      { ...widgetData, onSettingsSave, onSettingsClose },
+    ];
 
     return widgetData;
   };

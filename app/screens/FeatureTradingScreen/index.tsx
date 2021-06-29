@@ -169,6 +169,7 @@ const FeatureTradingScreen = (): ReactElement => {
           bodyClassName,
           shouldCheckAccount,
           onSettingsSave,
+          onSettingsClose,
         }) => (
           <div
             key={`${id}_customWidget`}
@@ -188,6 +189,7 @@ const FeatureTradingScreen = (): ReactElement => {
               bodyClassName={bodyClassName}
               shouldCheckAccount={shouldCheckAccount}
               onSettingsSave={onSettingsSave}
+              onSettingsClose={onSettingsClose}
             >
               <DOMElement>{element}</DOMElement>
             </Widget>
