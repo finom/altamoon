@@ -5,6 +5,14 @@ interface WidgetData {
   hasSettings: boolean;
   element: HTMLElement;
   settingsElement: HTMLElement | null;
+  id: string;
+  title: string;
+
+  noPadding?: boolean;
+  bodyClassName?: string;
+  checkAccount?: boolean;
+  onSettingsClose?: () => void;
+  onSettingsSave?: () => void;
 }
 
 export default class Persistent {
@@ -12,7 +20,7 @@ export default class Persistent {
 
   public customWidgets: WidgetData[] = [];
 
-  #pluginPaths: string[] = [];
+  #pluginPaths: string[] = ['http://localhost:8080/bundle.js'];
 
   constructor(store: Store) {
     this.#store = store;
@@ -28,10 +36,42 @@ export default class Persistent {
     }
   }
 
-  public createWidget = ({ hasSettings = false }: { hasSettings: boolean }): WidgetData => {
+  public createWidget = ({
+    hasSettings = false,
+    id,
+    title,
+    noPadding,
+    bodyClassName,
+    checkAccount,
+    onSettingsClose,
+    onSettingsSave,
+  }: {
+    hasSettings: boolean;
+    id: string;
+    title: string;
+    noPadding?: boolean;
+    bodyClassName?: string;
+    checkAccount?: boolean;
+    onSettingsClose?: () => void;
+    onSettingsSave?: () => void;
+  }): WidgetData => {
     const element = document.createElement('div');
     const settingsElement = hasSettings ? document.createElement('div') : null;
+    const widgetData: WidgetData = {
+      element,
+      settingsElement,
+      hasSettings,
+      id,
+      title,
+      noPadding,
+      bodyClassName,
+      checkAccount,
+      onSettingsClose,
+      onSettingsSave,
+    };
 
-    return { element, settingsElement, hasSettings };
+    this.customWidgets = [...this.customWidgets, widgetData];
+
+    return widgetData;
   };
 }

@@ -15,6 +15,8 @@ import TradingWidget from '../../components/widgets/TradingWidget';
 import SettingsModal from '../../components/SettingsModal';
 import SettingsButton from '../../components/controls/SettingsButton';
 import PositionsAndOrdersWidget from '../../components/widgets/PositionsAndOrdersWidget';
+import Widget from '../../components/layout/Widget';
+import DOMElement from '../../components/layout/DOMElement';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -22,6 +24,7 @@ const FeatureTradingScreen = (): ReactElement => {
   const [layout, setLayout] = useChange(({ persistent }: RootStore) => persistent, 'layout');
   const [existingSymbol, setSymbol] = useChange(({ persistent }: RootStore) => persistent, 'symbol');
   const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
+  const customWidgets = useValue(({ app }: RootStore) => app, 'customWidgets');
   const futuresExchangeSymbols = Object.values(useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols')).sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
 
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
@@ -34,11 +37,12 @@ const FeatureTradingScreen = (): ReactElement => {
     <div>
       <SettingsModal />
       {theme === 'dark' ? <style>{darkTheme}</style> : <style>{lightTheme}</style>}
-      <Navbar className={classNames({
-        'bg-dark': theme === 'dark',
-        'bg-light': theme !== 'dark',
-        [css.header]: true,
-      })}
+      <Navbar
+        className={classNames({
+          'bg-dark': theme === 'dark',
+          'bg-light': theme !== 'dark',
+          [css.header]: true,
+        })}
       >
         <div>
           <Input type="select" value={existingSymbol} onChange={({ target }) => setSymbol(target.value)}>
@@ -155,6 +159,53 @@ const FeatureTradingScreen = (): ReactElement => {
         >
           <WalletWidget />
         </div>
+        {/*
+          title: string;
+          noPadding?: boolean;
+          bodyClassName?: string;
+          settings?: ReactNode;
+          children?: ReactNode;
+          bodyRef?: Ref<HTMLElement>;
+          checkAccount?: boolean;
+          onSettingsClose?: () => void;
+          onSettingsSave?: () => void;
+        */}
+        {customWidgets.map(({
+          title,
+          id,
+          settingsElement,
+          element,
+          noPadding,
+          bodyClassName,
+          checkAccount,
+          onSettingsClose,
+          onSettingsSave,
+        }) => (
+          <div
+            key={`${id}_customWidget`}
+            data-grid={{
+              h: 13,
+              minH: 3,
+              minW: 2,
+              w: 3,
+              x: 9,
+              y: 17,
+            }}
+          >
+            <Widget
+              title={title}
+              settings={<DOMElement>{settingsElement}</DOMElement>}
+              noPadding={noPadding}
+              bodyClassName={bodyClassName}
+              checkAccount={checkAccount}
+              onSettingsClose={onSettingsClose}
+              onSettingsSave={onSettingsSave}
+            >
+              <DOMElement>{element}</DOMElement>
+            </Widget>
+          </div>
+        ))}
+
       </ResponsiveReactGridLayout>
     </div>
   );
