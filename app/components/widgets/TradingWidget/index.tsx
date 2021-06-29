@@ -20,7 +20,7 @@ const Trading = (): ReactElement => {
   const [reduceOnly, setReduceOnly] = useState(false);
 
   return (
-    <Widget title="Trading" bodyRef={wideLayoutRef} checkAccount>
+    <Widget title="Trading" bodyRef={wideLayoutRef} shouldCheckAccount>
       <TradingOptions
         postOnly={postOnly}
         reduceOnly={reduceOnly}

@@ -4,7 +4,7 @@ import Positions from './Positions';
 import Orders from './Orders';
 
 const PositionsAndOrdersWidget = (): ReactElement => (
-  <Widget title="Positions & Orders" checkAccount>
+  <Widget title="Positions & Orders" shouldCheckAccount>
     <Positions />
     <Orders />
   </Widget>

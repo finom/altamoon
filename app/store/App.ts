@@ -10,7 +10,7 @@ interface WidgetData {
 
   noPadding?: boolean;
   bodyClassName?: string;
-  checkAccount?: boolean;
+  shouldCheckAccount?: boolean;
   onSettingsClose?: () => void;
   onSettingsSave?: () => void;
 }
@@ -42,7 +42,7 @@ export default class Persistent {
     title,
     noPadding,
     bodyClassName,
-    checkAccount,
+    shouldCheckAccount,
     onSettingsClose,
     onSettingsSave,
   }: {
@@ -51,7 +51,7 @@ export default class Persistent {
     title: string;
     noPadding?: boolean;
     bodyClassName?: string;
-    checkAccount?: boolean;
+    shouldCheckAccount?: boolean;
     onSettingsClose?: () => void;
     onSettingsSave?: () => void;
   }): WidgetData => {
@@ -65,7 +65,7 @@ export default class Persistent {
       title,
       noPadding,
       bodyClassName,
-      checkAccount,
+      shouldCheckAccount,
       onSettingsClose,
       onSettingsSave,
     };

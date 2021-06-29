@@ -159,25 +159,15 @@ const FeatureTradingScreen = (): ReactElement => {
         >
           <WalletWidget />
         </div>
-        {/*
-          title: string;
-          noPadding?: boolean;
-          bodyClassName?: string;
-          settings?: ReactNode;
-          children?: ReactNode;
-          bodyRef?: Ref<HTMLElement>;
-          checkAccount?: boolean;
-          onSettingsClose?: () => void;
-          onSettingsSave?: () => void;
-        */}
         {customWidgets.map(({
           title,
           id,
+          hasSettings,
           settingsElement,
           element,
           noPadding,
           bodyClassName,
-          checkAccount,
+          shouldCheckAccount,
           onSettingsClose,
           onSettingsSave,
         }) => (
@@ -194,10 +184,10 @@ const FeatureTradingScreen = (): ReactElement => {
           >
             <Widget
               title={title}
-              settings={<DOMElement>{settingsElement}</DOMElement>}
+              settings={hasSettings ? <DOMElement>{settingsElement}</DOMElement> : null}
               noPadding={noPadding}
               bodyClassName={bodyClassName}
-              checkAccount={checkAccount}
+              shouldCheckAccount={shouldCheckAccount}
               onSettingsClose={onSettingsClose}
               onSettingsSave={onSettingsSave}
             >

@@ -19,14 +19,14 @@ interface Props {
   settings?: ReactNode;
   children?: ReactNode;
   bodyRef?: Ref<HTMLElement>;
-  checkAccount?: boolean;
+  shouldCheckAccount?: boolean;
   onSettingsClose?: () => void;
   onSettingsSave?: () => void;
 }
 
 const Widget = ({
   title, noPadding, bodyClassName, settings, children,
-  bodyRef, checkAccount, onSettingsClose, onSettingsSave,
+  bodyRef, shouldCheckAccount, onSettingsClose, onSettingsSave,
 }: Props): ReactElement => {
   const [isSettingsOpen, setIsSettignsOpen] = useState(false);
   const futuresAccount = useValue(({ account }: RootStore) => account, 'futuresAccount');
@@ -87,7 +87,7 @@ const Widget = ({
         </div>
         )}
 
-        {!checkAccount || futuresAccount ? children : <AccountError />}
+        {!shouldCheckAccount || futuresAccount ? children : <AccountError />}
       </CardBody>
     </Card>
   );
