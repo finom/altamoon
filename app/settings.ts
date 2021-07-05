@@ -1,11 +1,11 @@
 export default {
   defaultPlugins: [
     {
-      id: 'biduul-hello-world-react',
+      id: 'biduul-hello-world',
       isThirdParty: false,
     },
     {
-      id: 'balajs',
+      id: 'lodash',
       isThirdParty: true,
     },
   ],

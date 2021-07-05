@@ -17,9 +17,10 @@ const WidgetsSelect = (): ReactElement => {
   const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
   const builtInWidgets = useValue(({ app }: RootStore) => app, 'builtInWidgets');
   const pluginWidgets = useValue(({ app }: RootStore) => app, 'pluginWidgets');
+  const defaultPlugins = useValue(({ app }: RootStore) => app, 'defaultPlugins');
   const customPlugins = useValue(({ app }: RootStore) => app, 'customPlugins');
   const [widgetsEnabled, setWidgetsEnabled] = useChange(({ persistent }: RootStore) => persistent, 'widgetsEnabled');
-  const customPluginsMap = keyBy(customPlugins, 'id');
+  const customPluginsMap = keyBy([...defaultPlugins, ...customPlugins], 'id');
   const ref = useRef<HTMLDivElement>();
   const onChange = (id: string, isChecked: boolean) => {
     if (isChecked) {

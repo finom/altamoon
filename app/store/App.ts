@@ -44,6 +44,8 @@ export default class App {
 
   public customPlugins: PluginInfo[] = [];
 
+  #pluginCache: Record<string, PluginInfo> = {};
+
   public readonly builtInWidgets: { id: WidgetId, title: string; }[] = [
     { id: 'chart', title: 'Chart' },
     { id: 'trading', title: 'Trading' },
@@ -153,53 +155,60 @@ export default class App {
     shouldCheckAccount?: boolean;
     currentScript: HTMLOrSVGScriptElement;
   }): Omit<WidgetData, 'onSettingsSave' | 'onSettingsCancel'> => {
-    if (!currentScript) throw new Error('Widget Error: currentScript is required');
-    if (!id) throw new Error('Widget Error: id is required');
-    if (!title) throw new Error('Widget Error: title is required');
-    // the element is going to be rendered as widget content
-    const element = document.createElement('div');
-    // settings element is going to be rendered at settings content
-    // which appeares when user clicks widget settings icon
-    const settingsElement = hasSettings ? document.createElement('div') : null;
-    const { pluginId } = currentScript.dataset;
+    try {
+      const { pluginId } = currentScript.dataset;
+      const existingPluginWidget = this.pluginWidgets.find((w) => w.id === id);
+      const existingBuiltInWidget = this.builtInWidgets.find((w) => w.id === id);
 
-    // the code is a trick that allows to return functions similar to addEventListener
-    // example: listenSettingsSave(() => console.log('settings saved'))
-    const eventTarget = { saveCount: 0, cancelCount: 0 };
-    const listenSettingsSave = (handler: () => void) => listenChange(eventTarget, 'saveCount', () => handler());
-    const listenSettingsCancel = (handler: () => void) => listenChange(eventTarget, 'cancelCount', () => handler());
-    const onSettingsSave = () => { eventTarget.saveCount += 1; };
-    const onSettingsCancel = () => { eventTarget.cancelCount += 1; };
+      if (!pluginId) throw new Error('Plugin script does not provide pluginId');
+      if (!currentScript) throw new Error('Widget Error: currentScript is required');
+      if (!id) throw new Error('Widget Error: id is required');
+      if (!title) throw new Error('Widget Error: title is required');
+      if (existingPluginWidget) throw new Error(`Widget with ID "${id}" initialized twice (at plugins "${pluginId}" and "${existingPluginWidget?.pluginId}")`);
+      if (existingBuiltInWidget) throw new Error(`Widget with ID "${id}" already exists as default widget. Please remove plugin "${pluginId}".`);
 
-    // TypeScript ensure
-    if (!pluginId) {
-      throw new Error('Plugin script does not provide pluginId');
+      // the element is going to be rendered as widget content
+      const element = document.createElement('div');
+      // settings element is going to be rendered at settings content
+      // which appeares when user clicks widget settings icon
+      const settingsElement = hasSettings ? document.createElement('div') : null;
+
+      // the code is a trick that allows to return functions similar to addEventListener
+      // example: listenSettingsSave(() => console.log('settings saved'))
+      const eventTarget = { saveCount: 0, cancelCount: 0 };
+      const listenSettingsSave = (handler: () => void) => listenChange(eventTarget, 'saveCount', () => handler());
+      const listenSettingsCancel = (handler: () => void) => listenChange(eventTarget, 'cancelCount', () => handler());
+      const onSettingsSave = () => { eventTarget.saveCount += 1; };
+      const onSettingsCancel = () => { eventTarget.cancelCount += 1; };
+
+      const widgetData: Omit<WidgetData, 'onSettingsSave' | 'onSettingsCancel'> = {
+        pluginId,
+        element,
+        settingsElement,
+        hasSettings,
+        id,
+        title,
+        layout,
+        noPadding,
+        bodyClassName,
+        shouldCheckAccount,
+        currentScript,
+        listenSettingsSave,
+        listenSettingsCancel,
+      };
+
+      this.pluginWidgets = [
+        ...this.pluginWidgets,
+        { ...widgetData, onSettingsSave, onSettingsCancel },
+      ];
+
+      this.#store.persistent.widgetsEnabled = [...this.#store.persistent.widgetsEnabled, id];
+
+      return widgetData;
+    } catch (e) {
+      notify('error', e);
+      throw e;
     }
-
-    const widgetData: Omit<WidgetData, 'onSettingsSave' | 'onSettingsCancel'> = {
-      pluginId,
-      element,
-      settingsElement,
-      hasSettings,
-      id,
-      title,
-      layout,
-      noPadding,
-      bodyClassName,
-      shouldCheckAccount,
-      currentScript,
-      listenSettingsSave,
-      listenSettingsCancel,
-    };
-
-    this.pluginWidgets = [
-      ...this.pluginWidgets,
-      { ...widgetData, onSettingsSave, onSettingsCancel },
-    ];
-
-    this.#store.persistent.widgetsEnabled = [...this.#store.persistent.widgetsEnabled, id];
-
-    return widgetData;
   };
 
   #getPluginInfo = async ({ id, isThirdParty, isDefault }: {
@@ -222,12 +231,8 @@ export default class App {
       };
     }
 
-    // we don't want to load plugin info every time, that's why we store it at sessionStorage
-    const sessionStorageKey = `plugin_info_${id}`;
-    const sessionStorageValue = sessionStorage.getItem(sessionStorageKey);
-
-    if (sessionStorageValue) {
-      return JSON.parse(sessionStorageValue) as PluginInfo;
+    if (this.#pluginCache[id]) {
+      return this.#pluginCache[id];
     }
 
     try {
@@ -245,8 +250,7 @@ export default class App {
         isDevelopment: false,
       };
 
-      // store received data at sessionStorage
-      sessionStorage.setItem(sessionStorageKey, JSON.stringify(pluginInfo));
+      this.#pluginCache[id] = pluginInfo;
 
       return pluginInfo;
     } catch {
@@ -284,22 +288,31 @@ export default class App {
   public enablePlugin = async (
     id: string, { isDefault, isThirdParty }: { isDefault: boolean; isThirdParty: boolean },
   ): Promise<void> => {
-    const { persistent } = this.#store;
-    // fetch plugin info
-    const { main } = await this.#getPluginInfo({ id, isThirdParty, isDefault });
+    try {
+      const { persistent } = this.#store;
+      const existing = [...this.defaultPlugins, ...this.customPlugins].find(((p) => p.id === id));
 
-    // if "main" key is there (ensure for TypeScript, thought it's not required for the app)
-    // then load the plugin itself
-    if (main) {
-      try {
-        await this.#loadPluginScript(id, main);
-        // add the plugin to the list of enabled plugins
-        persistent.pluginsEnabled = [...persistent.pluginsEnabled, id];
-      } catch (e) {
-        notify('error', `Unable to load plugin script "${id}"`);
+      if (existing) throw new Error(`Plugin with ID "${id}" already exists`);
 
-        throw e;
+      // fetch plugin info
+      const { main } = await this.#getPluginInfo({ id, isThirdParty, isDefault });
+
+      // if "main" key is there (ensure for TypeScript, thought it's not required for the app)
+      // then load the plugin itself
+      if (main) {
+        try {
+          await this.#loadPluginScript(id, main);
+          // add the plugin to the list of enabled plugins
+          persistent.pluginsEnabled = [...persistent.pluginsEnabled, id];
+        } catch (e) {
+          notify('error', `Unable to load plugin script "${id}"`);
+
+          throw e;
+        }
       }
+    } catch (e) {
+      notify('error', e);
+      throw e;
     }
   };
 
