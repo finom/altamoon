@@ -1,22 +1,84 @@
-import React, { ReactElement, useCallback } from 'react';
+import React, {
+  MutableRefObject, ReactElement, useCallback, useState,
+} from 'react';
 import { WidthProvider, Responsive, Layout } from 'react-grid-layout';
 import { Button, Input, Navbar } from 'reactstrap';
 import classNames from 'classnames';
 import useChange, { useValue } from 'use-change';
 
+import { LayoutWtf, Puzzle } from 'react-bootstrap-icons';
 import LastTradesWidget from '../../components/widgets/LastTradesWidget';
 import { RootStore } from '../../store';
 import { darkTheme, lightTheme } from '../../themes';
-import css from './style.css';
 import OrderBookWidget from '../../components/widgets/OrderBookWidget';
 import WalletWidget from '../../components/widgets/WalletWidget';
 import ChartWidget from '../../components/widgets/ChartWidget';
 import TradingWidget from '../../components/widgets/TradingWidget';
-import SettingsModal from '../../components/SettingsModal';
+import SettingsModal from '../../components/modals/SettingsModal';
 import SettingsButton from '../../components/controls/SettingsButton';
 import PositionsAndOrdersWidget from '../../components/widgets/PositionsAndOrdersWidget';
 import Widget from '../../components/layout/Widget';
 import DOMElement from '../../components/layout/DOMElement';
+import PluginsModal from '../../components/modals/PluginsModal';
+import WidgetsSelect from '../../components/widgets/WidgetsSelect';
+import convertType from '../../lib/convertType';
+import css from './style.css';
+
+const breakpoints = {
+  lg: 100, md: 0, sm: 0, xs: 0, xxs: 0,
+};
+
+const cols = {
+  lg: 12, md: 12, sm: 12, xs: 12, xxs: 12,
+};
+
+const defaultPluginLayout = {
+  minH: 2, minW: 2, h: 4, w: 4, x: 0, y: 0,
+};
+
+const rowHeight = 30;
+
+const widgetComponents: Record<RootStore['app']['builtInWidgets'][0]['id'], {
+  RenderWidget: (({ title }: { title: string }) => ReactElement) | ReturnType<typeof React.memo>,
+  grid: Record<string, number>
+}> = {
+  chart: {
+    RenderWidget: ChartWidget,
+    grid: {
+      h: 13, minH: 3, minW: 2, w: 12, x: 0, y: 0,
+    },
+  },
+  trading: {
+    RenderWidget: TradingWidget,
+    grid: {
+      h: 13, minH: 3, minW: 2, w: 9, x: 0, y: 17,
+    },
+  },
+  positionAndOrders: {
+    RenderWidget: PositionsAndOrdersWidget,
+    grid: {
+      h: 8, minH: 3, minW: 2, w: 12, x: 0, y: 30,
+    },
+  },
+  lastTrades: {
+    RenderWidget: LastTradesWidget,
+    grid: {
+      h: 6, minH: 3, minW: 2, w: 5, x: 0, y: 38,
+    },
+  },
+  orderBook: {
+    RenderWidget: OrderBookWidget,
+    grid: {
+      h: 6, minH: 3, minW: 2, w: 7, x: 5, y: 38,
+    },
+  },
+  wallet: {
+    RenderWidget: WalletWidget,
+    grid: {
+      h: 13, minH: 3, minW: 2, w: 3, x: 9, y: 17,
+    },
+  },
+};
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
@@ -24,18 +86,24 @@ const FeatureTradingScreen = (): ReactElement => {
   const [layout, setLayout] = useChange(({ persistent }: RootStore) => persistent, 'layout');
   const [existingSymbol, setSymbol] = useChange(({ persistent }: RootStore) => persistent, 'symbol');
   const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
-  const customWidgets = useValue(({ app }: RootStore) => app, 'customWidgets');
+  const widgetsEnabled = useValue(({ persistent }: RootStore) => persistent, 'widgetsEnabled');
+  const pluginWidgets = useValue(({ app }: RootStore) => app, 'pluginWidgets').filter(({ id }) => widgetsEnabled.includes(id));
+  const builtInWidgets = useValue(({ app }: RootStore) => app, 'builtInWidgets').filter(({ id }) => widgetsEnabled.includes(id));
+  const didPluginsInitialized = useValue(({ app }: RootStore) => app, 'didPluginsInitialized');
   const futuresExchangeSymbols = Object.values(useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols')).sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
-
+  const [isPluginsModalOpen, setIsPluginsModalOpen] = useState(false);
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
     setLayout(changedLayout);
   }, [setLayout]);
-
   const resetLayout = useCallback(() => { setLayout([]); }, [setLayout]);
 
   return (
     <div>
       <SettingsModal />
+      <PluginsModal
+        isOpen={isPluginsModalOpen}
+        onRequestClose={() => setIsPluginsModalOpen(false)}
+      />
       {theme === 'dark' ? <style>{darkTheme}</style> : <style>{lightTheme}</style>}
       <Navbar
         className={classNames({
@@ -61,142 +129,108 @@ const FeatureTradingScreen = (): ReactElement => {
             color={theme === 'dark' ? 'dark' : 'light'}
             onClick={resetLayout}
           >
+            <LayoutWtf size={16} />
+            {' '}
             Reset Layout
           </Button>
           {' '}
           <SettingsButton />
+          {' '}
+          <Button
+            color={theme === 'dark' ? 'dark' : 'light'}
+            onClick={() => setIsPluginsModalOpen(true)}
+          >
+            <Puzzle size={16} />
+            {' '}
+            Plugins
+          </Button>
+          <WidgetsSelect />
         </div>
       </Navbar>
-
-      <ResponsiveReactGridLayout
-        draggableHandle=".card-header"
-        className="layout"
-        breakpoints={{
-          lg: 100, md: 0, sm: 0, xs: 0, xxs: 0,
-        }}
-        cols={{
-          lg: 12, md: 12, sm: 12, xs: 12, xxs: 12,
-        }}
-        rowHeight={30}
-        layouts={{ lg: layout }}
-        onLayoutChange={onLayoutChange}
-      >
-        <div
-          key="chart"
-          data-grid={{
-            h: 13,
-            minH: 3,
-            minW: 2,
-            w: 12,
-            x: 0,
-            y: 0,
+      {didPluginsInitialized ? (
+        <ResponsiveReactGridLayout
+          draggableHandle=".card-header"
+          ref={(instance) => {
+            if (instance) {
+              const {
+                elementRef,
+              } = convertType<{ elementRef: MutableRefObject<HTMLElement> }>(instance);
+              if (elementRef.current) {
+                elementRef.current.style.filter = 'none';
+              }
+            }
           }}
+          className={`layout ${css.grid}`}
+          breakpoints={breakpoints}
+          cols={cols}
+          rowHeight={rowHeight}
+          layouts={{ lg: layout }}
+          onLayoutChange={onLayoutChange}
         >
-          <ChartWidget />
-        </div>
-        <div
-          key="trading"
-          data-grid={{
-            h: 13,
-            minH: 3,
-            minW: 2,
-            w: 9,
-            x: 0,
-            y: 17,
-          }}
-        >
-          <TradingWidget />
-        </div>
-        <div
-          key="positionAndOrders"
-          data-grid={{
-            h: 8,
-            minH: 3,
-            minW: 2,
-            w: 12,
-            x: 0,
-            y: 30,
-          }}
-        >
-          <PositionsAndOrdersWidget />
-        </div>
-        <div
-          key="lastTrades"
-          data-grid={{
-            h: 6,
-            minH: 3,
-            minW: 2,
-            w: 5,
-            x: 0,
-            y: 38,
-          }}
-        >
-          <LastTradesWidget />
-        </div>
-        <div
-          key="orderBook"
-          data-grid={{
-            h: 6,
-            minH: 3,
-            minW: 2,
-            w: 7,
-            x: 5,
-            y: 38,
-          }}
-        >
-          <OrderBookWidget />
-        </div>
-        <div
-          key="wallet"
-          data-grid={{
-            h: 13,
-            minH: 3,
-            minW: 2,
-            w: 3,
-            x: 9,
-            y: 17,
-          }}
-        >
-          <WalletWidget />
-        </div>
-        {customWidgets.map(({
-          title,
-          id,
-          hasSettings,
-          settingsElement,
-          element,
-          noPadding,
-          bodyClassName,
-          shouldCheckAccount,
-          onSettingsSave,
-          onSettingsClose,
-        }) => (
-          <div
-            key={`${id}_customWidget`}
-            data-grid={{
-              h: 13,
-              minH: 3,
-              minW: 2,
-              w: 3,
-              x: 9,
-              y: 17,
-            }}
-          >
-            <Widget
-              title={title}
-              settings={hasSettings ? <DOMElement>{settingsElement}</DOMElement> : null}
-              noPadding={noPadding}
-              bodyClassName={bodyClassName}
-              shouldCheckAccount={shouldCheckAccount}
-              onSettingsSave={onSettingsSave}
-              onSettingsClose={onSettingsClose}
+          {builtInWidgets.map(({ id, title }) => {
+            const { grid, RenderWidget } = widgetComponents[id];
+            return (
+              <div key={id} data-grid={grid}>
+                <RenderWidget title={title} />
+              </div>
+            );
+          })}
+          {pluginWidgets.map(({
+            title,
+            id,
+            hasSettings,
+            settingsElement,
+            element,
+            noPadding,
+            layout: itemLayout,
+            bodyClassName,
+            shouldCheckAccount,
+            onSettingsSave,
+            onSettingsCancel,
+          }) => (
+            <div
+              key={id}
+              data-grid={layout.find(({ i }) => i === id)
+                ?? (itemLayout ? { ...defaultPluginLayout, ...itemLayout } : defaultPluginLayout)}
             >
-              <DOMElement>{element}</DOMElement>
-            </Widget>
-          </div>
-        ))}
+              <Widget
+                title={title}
+                settings={hasSettings ? <DOMElement>{settingsElement}</DOMElement> : null}
+                noPadding={noPadding}
+                bodyClassName={bodyClassName}
+                shouldCheckAccount={shouldCheckAccount}
+                onSettingsSave={onSettingsSave}
+                onSettingsCancel={onSettingsCancel}
+              >
+                <DOMElement>{element}</DOMElement>
+              </Widget>
+            </div>
+          ))}
+        </ResponsiveReactGridLayout>
+      ) : (
+        <ResponsiveReactGridLayout
+          className={`layout ${css.loaderGrid}`}
+          breakpoints={breakpoints}
+          cols={cols}
+          rowHeight={rowHeight}
+          layouts={{ lg: layout }}
+        >
+          {builtInWidgets.map(({ id, title }) => {
+            const { grid, RenderWidget } = widgetComponents[id];
+            return (
+              <div key={id} data-grid={grid}>
+                <RenderWidget title={title} />
+              </div>
+            );
+          })}
+        </ResponsiveReactGridLayout>
+      )}
 
-      </ResponsiveReactGridLayout>
+      {!didPluginsInitialized && (
+      <div className="text-center w-100 position-fixed top-50">
+        <div className="text-primary spinner-border" />
+      </div>
+      )}
     </div>
   );
 };

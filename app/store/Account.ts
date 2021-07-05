@@ -1,5 +1,6 @@
-import { debounce } from 'lodash';
+import { debounce, throttle } from 'lodash';
 import { listenChange } from 'use-change';
+
 import * as api from '../api';
 import notify from '../lib/notify';
 import delay from '../lib/delay';
@@ -42,12 +43,13 @@ export default class Account {
     void setBinanceOptions();
   }
 
-  public readonly reloadFuturesAccount = async (): Promise<void> => {
+  public readonly reloadFuturesAccount = throttle(async (): Promise<void> => {
     try {
       const futuresAccount = await api.futuresAccount();
       this.futuresAccount = futuresAccount;
       this.futuresAccountError = null;
       this.totalWalletBalance = +futuresAccount.totalWalletBalance;
+
       this.totalPositionInitialMargin = +futuresAccount.totalPositionInitialMargin;
       this.totalOpenOrderInitialMargin = +futuresAccount.totalOpenOrderInitialMargin;
       this.availableBalance = +futuresAccount.availableBalance;
@@ -59,9 +61,19 @@ export default class Account {
       await delay(3000);
       return this.reloadFuturesAccount();
     }
-  };
+  }, 500);
 
   #openStream = async (): Promise<void> => {
+    const reconnect = async (errorOrEvent: Error | Event, notifyMessage: string) => {
+      notify('error', notifyMessage);
+      // eslint-disable-next-line no-console
+      console.error(errorOrEvent);
+      await delay(3000);
+      // eslint-disable-next-line no-console
+      console.info('Reconnecting...');
+      return this.#openStream();
+    };
+
     try {
       const { listenKey } = await api.futuresGetDataStream();
 
@@ -84,20 +96,21 @@ export default class Account {
             void this.#store.trading.loadPositions();
             void this.#store.trading.loadOrders();
             void this.reloadFuturesAccount();
+          } else if (e === 'listenKeyExpired') {
+            // eslint-disable-next-line no-console
+            console.info('Reconnecting...');
+            void this.#openStream();
           }
         } catch (e) {
           notify('error', e);
         }
       };
 
-      stream.onerror = () => notify('error', 'Account stream error');
-
-      return undefined;
+      stream.onerror = (e) => {
+        void reconnect(e, 'Account stream error. Reconnecting...');
+      };
     } catch (e) {
-      // eslint-disable-next-line no-console
-      console.error(e);
-      await delay(3000);
-      return this.#openStream();
+      void reconnect(e as Error, 'Could not open account stream. Reconnecting...');
     }
   };
 }

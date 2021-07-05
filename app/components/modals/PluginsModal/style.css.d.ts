@@ -2,9 +2,7 @@
 // Please do not change this file!
 declare namespace StyleCssNamespace {
   export interface IStyleCss {
-    grid: string;
-    header: string;
-    loaderGrid: string;
+    plugin: string;
   }
 }
 

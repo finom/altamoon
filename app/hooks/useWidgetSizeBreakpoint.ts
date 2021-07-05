@@ -10,6 +10,8 @@ const breakpoins: Record<SizeBreakpoint, number> = {
   xl: 1000,
 };
 
+// Example:
+// const [isWideLayout, wideLayoutRef] = useWidgetSizeBreakpoint('lg');
 export default function useWidgetSizeBreakpoint(
   breakpoint: SizeBreakpoint,
 ): [boolean, (node: HTMLElement) => void] {

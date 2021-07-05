@@ -22,7 +22,8 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "skipLibCheck": true,
-    "types": []
+    "types": [],
+    "experimentalDecorators": true
   },
   "exclude": [
     "test",

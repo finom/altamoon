@@ -2,7 +2,9 @@
 
 .flex-one { flex: 1; }
 .cursor-pointer { cursor: pointer; }
+.cursor-help { cursor: help; }
 .nowrap { white-space: nowrap; }
+.text-ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 
 .o-0 { opacity: 0; }
 .o-25 { opacity: .25; }

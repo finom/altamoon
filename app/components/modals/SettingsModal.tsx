@@ -4,9 +4,9 @@ import {
   Button, Form, Input, Label,
 } from 'reactstrap';
 import useChange from 'use-change';
-import isType from '../lib/isType';
-import { RootStore } from '../store';
-import Modal, { ModalHeader, ModalFooter, ModalBody } from './layout/Modal';
+import isType from '../../lib/isType';
+import { RootStore } from '../../store';
+import Modal, { ModalHeader, ModalFooter, ModalBody } from '../layout/Modal';
 
 const fakeSecretValue = Array(50).fill('1').join('');
 

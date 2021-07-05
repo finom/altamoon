@@ -6,12 +6,12 @@ import Widget from '../layout/Widget';
 
 const MAX_COUNT = 30;
 
-const LastTradesWidget = (): ReactElement => {
+const LastTradesWidget = ({ title }: { title: string }): ReactElement => {
   const asks = useValue(({ market }: RootStore) => market, 'asks').slice(0, MAX_COUNT);
   const bids = useValue(({ market }: RootStore) => market, 'bids').slice(0, MAX_COUNT);
 
   return (
-    <Widget noPadding title="Order Book">
+    <Widget noPadding title={title}>
       <Table>
         <tbody>
           {asks.map(([askPrice, askAmount], i) => {

@@ -26,6 +26,10 @@ export default class Persistent {
 
   public alerts = getPersistentStorageValue<number[], keyof Persistent>('alerts', []);
 
+  public pluginsEnabled = getPersistentStorageValue<string[], keyof Persistent>('pluginsEnabled', []);
+
+  public widgetsEnabled = getPersistentStorageValue<string[], keyof Persistent>('widgetsEnabled', []);
+
   constructor() {
     Object.getOwnPropertyNames(this).forEach((key) => {
       listenChange(this, key as keyof Persistent, (value: unknown) => {

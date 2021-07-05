@@ -1,4 +1,4 @@
-import { debounce, keyBy } from 'lodash';
+import { debounce, keyBy, throttle } from 'lodash';
 import { listenChange } from 'use-change';
 import * as api from '../api';
 import binanceFuturesMaxLeverage from '../lib/binanceFuturesMaxLeverage';
@@ -96,7 +96,7 @@ export default class Trading {
     listenChange(store.persistent, 'symbol', (symbol) => this.#updateLeverage(symbol));
   }
 
-  public loadPositions = async (): Promise<void> => {
+  public loadPositions = throttle(async (): Promise<void> => {
     try {
       const positions = await api.futuresPositionRisk();
       const prices = await api.futuresPrices();
@@ -117,9 +117,9 @@ export default class Trading {
       await delay(3000);
       return this.loadPositions();
     }
-  };
+  }, 500);
 
-  public loadOrders = async (): Promise<void> => {
+  public loadOrders = throttle(async (): Promise<void> => {
     try {
       const futuresOrders = await api.futuresOpenOrders();
 
@@ -135,7 +135,7 @@ export default class Trading {
       await delay(3000);
       return this.loadOrders();
     }
-  };
+  }, 500);
 
   public marketOrder = async ({
     side, quantity, symbol, reduceOnly = false,

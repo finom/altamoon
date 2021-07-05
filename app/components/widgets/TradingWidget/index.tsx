@@ -13,14 +13,14 @@ import Market from './Market';
 import StopLimit from './StopLimit';
 import StopMarket from './StopMarket';
 
-const Trading = (): ReactElement => {
+const Trading = ({ title }: { title: string }): ReactElement => {
   const [type, setType] = useChange(({ persistent }: RootStore) => persistent, 'tradingType');
   const [isWideLayout, wideLayoutRef] = useWidgetSizeBreakpoint('lg');
   const [postOnly, setPostOnly] = useState(false);
   const [reduceOnly, setReduceOnly] = useState(false);
 
   return (
-    <Widget title="Trading" bodyRef={wideLayoutRef} shouldCheckAccount>
+    <Widget title={title} bodyRef={wideLayoutRef} shouldCheckAccount>
       <TradingOptions
         postOnly={postOnly}
         reduceOnly={reduceOnly}

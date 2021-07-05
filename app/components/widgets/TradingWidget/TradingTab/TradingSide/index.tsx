@@ -1,4 +1,6 @@
-import React, { ReactElement, ReactNode, useCallback } from 'react';
+import React, {
+  memo, ReactElement, ReactNode, useCallback,
+} from 'react';
 import { useSilent, useValue } from 'use-change';
 
 import * as api from '../../../../../api';
@@ -101,4 +103,4 @@ const TradingSide = ({
   );
 };
 
-export default TradingSide;
+export default memo(TradingSide);
