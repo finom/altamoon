@@ -47,6 +47,7 @@ export default class Account {
     try {
       const futuresAccount = await api.futuresAccount();
       this.futuresAccount = futuresAccount;
+
       this.futuresAccountError = null;
       this.totalWalletBalance = +futuresAccount.totalWalletBalance;
 

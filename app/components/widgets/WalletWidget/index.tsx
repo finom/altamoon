@@ -10,17 +10,18 @@ import css from './style.css';
 
 const formatNumber = (value: number) => format(',.2f')(truncateDecimals(value, 2));
 
-const accountSelector = ({ account }: RootStore) => account;
-const statsSelector = ({ stats }: RootStore) => stats;
+const ACCOUNT = ({ account }: RootStore) => account;
+const STATS = ({ stats }: RootStore) => stats;
 
 const WalletWidget = ({ title }: { title: string }): ReactElement => {
-  const totalWalletBalance = useValue(accountSelector, 'totalWalletBalance');
-  const totalPositionInitialMargin = useValue(accountSelector, 'totalPositionInitialMargin');
-  const totalOpenOrderInitialMargin = useValue(accountSelector, 'totalOpenOrderInitialMargin');
-  const pnlValue = useValue(statsSelector, 'pnlValue');
-  const pnlPercent = useValue(statsSelector, 'pnlPercent');
-  const dailyPnlValue = useValue(statsSelector, 'dailyPnlValue');
-  const dailyPnlPercent = useValue(statsSelector, 'dailyPnlPercent');
+  const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
+  const availableBalance = useValue(ACCOUNT, 'availableBalance');
+  const totalPositionInitialMargin = useValue(ACCOUNT, 'totalPositionInitialMargin');
+  const totalOpenOrderInitialMargin = useValue(ACCOUNT, 'totalOpenOrderInitialMargin');
+  const pnlValue = useValue(STATS, 'pnlValue');
+  const pnlPercent = useValue(STATS, 'pnlPercent');
+  const dailyPnlValue = useValue(STATS, 'dailyPnlValue');
+  const dailyPnlPercent = useValue(STATS, 'dailyPnlPercent');
 
   return (
     <Widget title={title}>
@@ -40,6 +41,14 @@ const WalletWidget = ({ title }: { title: string }): ReactElement => {
             </td>
             <td className={`${css.valueCell} form-control`}>
               {formatNumber(pnlValue + totalWalletBalance)}
+            </td>
+          </tr>
+          <tr>
+            <td className={css.labelCell}>
+              Available Balance:
+            </td>
+            <td className={`${css.valueCell} form-control`}>
+              {formatNumber(availableBalance)}
             </td>
           </tr>
           <tr>
