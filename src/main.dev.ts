@@ -15,7 +15,7 @@ import path from 'path';
 import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import Config from 'electron-config';
+import Config from 'electron-store';
 import MenuBuilder from './menu';
 
 const config = new Config();
