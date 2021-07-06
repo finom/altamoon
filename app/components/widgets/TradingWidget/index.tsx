@@ -16,8 +16,8 @@ import StopMarket from './StopMarket';
 const Trading = ({ title }: { title: string }): ReactElement => {
   const [type, setType] = useChange(({ persistent }: RootStore) => persistent, 'tradingType');
   const [isWideLayout, wideLayoutRef] = useWidgetSizeBreakpoint('lg');
-  const [postOnly, setPostOnly] = useState(false);
-  const [reduceOnly, setReduceOnly] = useState(false);
+  const [postOnly, setPostOnly] = useChange(({ persistent }: RootStore) => persistent, 'tradingPostOnly');
+  const [reduceOnly, setReduceOnly] = useChange(({ persistent }: RootStore) => persistent, 'tradingReduceOnly');
 
   return (
     <Widget title={title} bodyRef={wideLayoutRef} shouldCheckAccount>

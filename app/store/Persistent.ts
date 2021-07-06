@@ -2,33 +2,37 @@ import { Layout } from 'react-grid-layout';
 import { listenChange } from 'use-change';
 import * as api from '../api';
 
-function getPersistentStorageValue<T, K extends string>(key: K, defaultValue: T): T {
+function getPersistentStorageValue<T>(key: keyof Persistent, defaultValue: T): T {
   const storageValue = localStorage.getItem(key);
   return storageValue ? JSON.parse(storageValue) as T : defaultValue;
 }
 
 export default class Persistent {
-  public symbol = getPersistentStorageValue<string, keyof Persistent>('symbol', 'BTCUSDT');
+  public symbol = getPersistentStorageValue<string>('symbol', 'BTCUSDT');
 
-  public interval = getPersistentStorageValue<api.CandlestickChartInterval, keyof Persistent>('interval', '1d');
+  public interval = getPersistentStorageValue<api.CandlestickChartInterval>('interval', '1d');
 
-  public theme = getPersistentStorageValue<'dark' | 'light', keyof Persistent>('theme', 'light');
+  public theme = getPersistentStorageValue<'dark' | 'light'>('theme', 'light');
 
-  public layout = getPersistentStorageValue<Layout[], keyof Persistent>('layout', []);
+  public layout = getPersistentStorageValue<Layout[]>('layout', []);
 
-  public tradingType = getPersistentStorageValue<api.OrderType, keyof Persistent>('tradingType', 'MARKET');
+  public tradingType = getPersistentStorageValue<api.OrderType>('tradingType', 'MARKET');
 
-  public binanceApiKey = getPersistentStorageValue<string | null, keyof Persistent>('binanceApiKey', null);
+  public tradingPostOnly = getPersistentStorageValue<boolean>('tradingPostOnly', false);
 
-  public binanceApiSecret = getPersistentStorageValue<string | null, keyof Persistent>('binanceApiSecret', null);
+  public tradingReduceOnly = getPersistentStorageValue<boolean>('tradingReduceOnly', false);
 
-  public ignoreValuesBelowNumber = getPersistentStorageValue<number, keyof Persistent>('ignoreValuesBelowNumber', 10);
+  public binanceApiKey = getPersistentStorageValue<string | null>('binanceApiKey', null);
 
-  public alerts = getPersistentStorageValue<number[], keyof Persistent>('alerts', []);
+  public binanceApiSecret = getPersistentStorageValue<string | null>('binanceApiSecret', null);
 
-  public pluginsEnabled = getPersistentStorageValue<string[], keyof Persistent>('pluginsEnabled', []);
+  public ignoreValuesBelowNumber = getPersistentStorageValue<number>('ignoreValuesBelowNumber', 10);
 
-  public widgetsEnabled = getPersistentStorageValue<string[], keyof Persistent>('widgetsEnabled', []);
+  public alerts = getPersistentStorageValue<number[]>('alerts', []);
+
+  public pluginsEnabled = getPersistentStorageValue<string[]>('pluginsEnabled', []);
+
+  public widgetsEnabled = getPersistentStorageValue<string[]>('widgetsEnabled', []);
 
   constructor() {
     Object.getOwnPropertyNames(this).forEach((key) => {
