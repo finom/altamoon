@@ -28,10 +28,6 @@ const breakpoints = {
   lg: 100, md: 0, sm: 0, xs: 0, xxs: 0,
 };
 
-const cols = {
-  lg: 12, md: 12, sm: 12, xs: 12, xxs: 12,
-};
-
 const defaultPluginLayout = {
   minH: 2, minW: 2, h: 4, w: 4, x: 0, y: 0,
 };
@@ -88,6 +84,7 @@ const FeatureTradingScreen = (): ReactElement => {
   const [existingSymbol, setSymbol] = useChange(({ persistent }: RootStore) => persistent, 'symbol');
   const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
   const widgetsEnabled = useValue(({ persistent }: RootStore) => persistent, 'widgetsEnabled');
+  const numberOfColumns = useValue(({ persistent }: RootStore) => persistent, 'numberOfColumns');
   const pluginWidgets = useValue(({ app }: RootStore) => app, 'pluginWidgets').filter(({ id }) => widgetsEnabled.includes(id));
   const builtInWidgets = useValue(({ app }: RootStore) => app, 'builtInWidgets').filter(({ id }) => widgetsEnabled.includes(id));
   const didPluginsInitialized = useValue(({ app }: RootStore) => app, 'didPluginsInitialized');
@@ -97,6 +94,13 @@ const FeatureTradingScreen = (): ReactElement => {
     setLayout(changedLayout);
   }, [setLayout]);
   const resetLayout = useCallback(() => { setLayout([]); }, [setLayout]);
+  const cols = {
+    lg: numberOfColumns,
+    md: numberOfColumns,
+    sm: numberOfColumns,
+    xs: numberOfColumns,
+    xxs: numberOfColumns,
+  };
 
   return (
     <div>
@@ -150,6 +154,7 @@ const FeatureTradingScreen = (): ReactElement => {
       </Navbar>
       {didPluginsInitialized ? (
         <ResponsiveReactGridLayout
+          key={numberOfColumns}
           draggableHandle=".card-header"
           ref={(instance) => {
             if (instance) {

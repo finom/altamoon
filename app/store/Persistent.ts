@@ -34,6 +34,8 @@ export default class Persistent {
 
   public widgetsEnabled = getPersistentStorageValue<string[]>('widgetsEnabled', []);
 
+  public numberOfColumns = getPersistentStorageValue<number>('numberOfColumns', 12);
+
   constructor() {
     Object.getOwnPropertyNames(this).forEach((key) => {
       listenChange(this, key as keyof Persistent, (value: unknown) => {

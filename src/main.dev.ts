@@ -84,16 +84,16 @@ const createWindow = async () => {
       nodeIntegration: true,
       contextIsolation: false,
     },
-  }
+  };
 
-  Object.assign(options, config.get('winBounds'))
+  Object.assign(options, config.get('winBounds'));
 
   mainWindow = new BrowserWindow(options);
 
   // save window size and position
   mainWindow.on('close', () => {
-    config.set('winBounds', mainWindow.getBounds())
-  })
+    config.set('winBounds', mainWindow.getBounds());
+  });
 
   void mainWindow.loadURL(`file://${__dirname}/index.html`);
 
