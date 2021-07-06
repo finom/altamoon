@@ -1,0 +1,9 @@
+[data-widget-id="trading"] [data-trading-type="MARKET"] .btn-success, [data-widget-id="trading"] [data-trading-type="STOP_MARKET"] .btn-success {
+  background-color: var(--bs-info);
+  border-color: var(--bs-info);
+}
+
+[data-widget-id="trading"] [data-trading-type="MARKET"] .btn-sell, [data-widget-id="trading"] [data-trading-type="STOP_MARKET"] .btn-sell {
+  background: var(--bs-danger);
+  border-color: var(--bs-danger);
+}

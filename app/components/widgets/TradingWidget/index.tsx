@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement } from 'react';
 import {
   Nav, NavItem, NavLink, TabContent,
 } from 'reactstrap';
@@ -13,14 +13,14 @@ import Market from './Market';
 import StopLimit from './StopLimit';
 import StopMarket from './StopMarket';
 
-const Trading = ({ title }: { title: string }): ReactElement => {
+const Trading = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const [type, setType] = useChange(({ persistent }: RootStore) => persistent, 'tradingType');
   const [isWideLayout, wideLayoutRef] = useWidgetSizeBreakpoint('lg');
   const [postOnly, setPostOnly] = useChange(({ persistent }: RootStore) => persistent, 'tradingPostOnly');
   const [reduceOnly, setReduceOnly] = useChange(({ persistent }: RootStore) => persistent, 'tradingReduceOnly');
 
   return (
-    <Widget title={title} bodyRef={wideLayoutRef} shouldCheckAccount>
+    <Widget id={id} title={title} bodyRef={wideLayoutRef} shouldCheckAccount>
       <TradingOptions
         postOnly={postOnly}
         reduceOnly={reduceOnly}
@@ -41,7 +41,7 @@ const Trading = ({ title }: { title: string }): ReactElement => {
           <NavLink active={type === 'STOP'} onClick={() => setType('STOP')} className="cursor-pointer">Stop Limit</NavLink>
         </NavItem>
       </Nav>
-      <TabContent className="p-1">
+      <TabContent className="p-1" data-trading-type={type}>
         <div className={`tab-pane fade${type === 'MARKET' ? ' show active' : ''}`}>
           <Market
             isWideLayout={isWideLayout}

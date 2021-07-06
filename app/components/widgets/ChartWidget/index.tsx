@@ -17,7 +17,7 @@ const TRADING = ({ trading }: RootStore) => trading;
 const PERSISTENT = ({ persistent }: RootStore) => persistent;
 const MARKET = ({ market }: RootStore) => market;
 
-const ChartWidget = ({ title }: { title: string }): ReactElement => {
+const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const ref = useRef<HTMLDivElement | null>(null);
   const candleChartRef = useRef<CandlestickChart | null>(null);
 
@@ -164,7 +164,7 @@ const ChartWidget = ({ title }: { title: string }): ReactElement => {
   });
 
   return (
-    <Widget title={title}>
+    <Widget id={id} title={title}>
       <div className={`nav nav-pills ${css.intervals}`}>
         {intervals.map((intervalsItem, index) => (
           <div

@@ -9,7 +9,7 @@ import { RootStore } from '../../../store';
 import Widget from '../../layout/Widget';
 import css from './style.css';
 
-const LastTradesWidget = ({ title }: { title: string }): ReactElement => {
+const LastTradesWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const lastTrades = useValue(({ market }: RootStore) => market, 'lastTrades');
   const [existingIgnoreValuesBelowNumber, preserveIgnoreValuesBelowNumber] = useChange(
     ({ persistent }: RootStore) => persistent, 'ignoreValuesBelowNumber',
@@ -34,6 +34,7 @@ const LastTradesWidget = ({ title }: { title: string }): ReactElement => {
 
   return (
     <Widget
+      id={id}
       noPadding
       bodyClassName={css.widgetBody}
       title={title}

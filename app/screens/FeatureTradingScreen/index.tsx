@@ -39,7 +39,8 @@ const defaultPluginLayout = {
 const rowHeight = 30;
 
 const widgetComponents: Record<RootStore['app']['builtInWidgets'][0]['id'], {
-  RenderWidget: (({ title }: { title: string }) => ReactElement) | ReturnType<typeof React.memo>,
+  RenderWidget: (({ title, id }: { title: string; id: string; }) => ReactElement)
+  | ReturnType<typeof React.memo>,
   grid: Record<string, number>
 }> = {
   chart: {
@@ -171,7 +172,7 @@ const FeatureTradingScreen = (): ReactElement => {
             const { grid, RenderWidget } = widgetComponents[id];
             return (
               <div key={id} data-grid={grid}>
-                <RenderWidget title={title} />
+                <RenderWidget id={id} title={title} />
               </div>
             );
           })}
@@ -194,6 +195,7 @@ const FeatureTradingScreen = (): ReactElement => {
                 ?? (itemLayout ? { ...defaultPluginLayout, ...itemLayout } : defaultPluginLayout)}
             >
               <Widget
+                id={id}
                 title={title}
                 settings={hasSettings ? <DOMElement>{settingsElement}</DOMElement> : null}
                 noPadding={noPadding}
@@ -219,7 +221,7 @@ const FeatureTradingScreen = (): ReactElement => {
             const { grid, RenderWidget } = widgetComponents[id];
             return (
               <div key={id} data-grid={grid}>
-                <RenderWidget title={title} />
+                <RenderWidget id={id} title={title} />
               </div>
             );
           })}

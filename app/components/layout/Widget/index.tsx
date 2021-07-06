@@ -14,6 +14,7 @@ import AccountError from './AccountError';
 import useWidgetSizeBreakpoint from '../../../hooks/useWidgetSizeBreakpoint';
 
 interface Props {
+  id: string;
   title: string;
   noPadding?: boolean;
   bodyClassName?: string;
@@ -26,7 +27,7 @@ interface Props {
 }
 
 const Widget = ({
-  title, noPadding, bodyClassName, settings, children,
+  id, title, noPadding, bodyClassName, settings, children,
   bodyRef, shouldCheckAccount, onSettingsCancel, onSettingsSave,
 }: Props): ReactElement => {
   const [isSettingsOpen, setIsSettignsOpen] = useState(false);
@@ -46,7 +47,7 @@ const Widget = ({
   }, [onSettingsSave]);
 
   return (
-    <Card className={css.card} innerRef={wideLayoutRef}>
+    <Card className={css.card} innerRef={wideLayoutRef} data-widget-id={id}>
       <CardHeader className={css.cardHeader}>
         {title}
         {!!settings && (

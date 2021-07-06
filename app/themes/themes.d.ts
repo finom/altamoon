@@ -8,6 +8,11 @@ declare module '!raw-loader!./lightTheme.css' {
   export = css;
 }
 
+declare module '!raw-loader!./customStyle.css' {
+  const css: string;
+  export = css;
+}
+
 declare module '!raw-loader!bootstrap/dist/css/bootstrap.css' {
   const css: string;
   export = css;

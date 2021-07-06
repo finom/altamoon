@@ -13,7 +13,7 @@ const formatNumber = (value: number) => format(',.2f')(truncateDecimals(value, 2
 const ACCOUNT = ({ account }: RootStore) => account;
 const STATS = ({ stats }: RootStore) => stats;
 
-const WalletWidget = ({ title }: { title: string }): ReactElement => {
+const WalletWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
   const availableBalance = useValue(ACCOUNT, 'availableBalance');
   const totalPositionInitialMargin = useValue(ACCOUNT, 'totalPositionInitialMargin');
@@ -24,7 +24,7 @@ const WalletWidget = ({ title }: { title: string }): ReactElement => {
   const dailyPnlPercent = useValue(STATS, 'dailyPnlPercent');
 
   return (
-    <Widget title={title}>
+    <Widget id={id} title={title}>
       <table className={css.table}>
         <tbody>
           <tr>
