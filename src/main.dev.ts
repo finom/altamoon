@@ -15,7 +15,10 @@ import path from 'path';
 import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import Config from 'electron-config';
 import MenuBuilder from './menu';
+
+const config = new Config();
 
 export default class AppUpdater {
   constructor() {
@@ -72,7 +75,7 @@ const createWindow = async () => {
 
   const getAssetPath = (...paths: string[]): string => path.join(RESOURCES_PATH, ...paths);
 
-  mainWindow = new BrowserWindow({
+  const options = {
     show: false,
     width: 1024,
     height: 728,
@@ -81,7 +84,16 @@ const createWindow = async () => {
       nodeIntegration: true,
       contextIsolation: false,
     },
-  });
+  }
+
+  Object.assign(options, config.get('winBounds'))
+
+  mainWindow = new BrowserWindow(options);
+
+  // save window size and position
+  mainWindow.on('close', () => {
+    config.set('winBounds', mainWindow.getBounds())
+  })
 
   void mainWindow.loadURL(`file://${__dirname}/index.html`);
 
