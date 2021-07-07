@@ -108,7 +108,7 @@ export default class CandlestickChart {
     this.#scales = {
       x,
       scaledX: x,
-      y: d3.scaleSymlog().range([this.#height, 0]),
+      y: d3.scaleLinear().range([this.#height, 0]),
     };
 
     this.#symbol = symbol;
