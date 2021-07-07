@@ -60,6 +60,7 @@ const WidgetsSelect = (): ReactElement => {
           'px-2 fade': true,
           'bg-dark': theme === 'dark',
           'bg-light': theme !== 'dark',
+          'pe-none': !isWidgetListVisible, // pointer-events: none
           show: isWidgetListVisible,
         })}
       >

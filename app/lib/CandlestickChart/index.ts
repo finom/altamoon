@@ -352,10 +352,10 @@ export default class CandlestickChart {
     this.#crosshairPriceLines.appendTo(svgContainer, resizeData);
     this.#clipPath.appendTo(svgContainer, resizeData);
     this.#currentPriceLines.appendTo(svgContainer, resizeData);
-    this.#alertLines.appendTo(svgContainer, resizeData);
-    this.#draftLines.appendTo(svgContainer, resizeData);
     this.#positionLines.appendTo(svgContainer, resizeData);
     this.#orderLines.appendTo(svgContainer, resizeData);
+    this.#alertLines.appendTo(svgContainer, resizeData);
+    this.#draftLines.appendTo(svgContainer, resizeData);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);
 

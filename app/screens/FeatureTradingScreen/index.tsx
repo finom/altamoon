@@ -152,7 +152,7 @@ const FeatureTradingScreen = (): ReactElement => {
           <WidgetsSelect />
         </div>
       </Navbar>
-      {didPluginsInitialized ? (
+      {didPluginsInitialized && (
         <ResponsiveReactGridLayout
           key={numberOfColumns}
           draggableHandle=".card-header"
@@ -213,23 +213,6 @@ const FeatureTradingScreen = (): ReactElement => {
               </Widget>
             </div>
           ))}
-        </ResponsiveReactGridLayout>
-      ) : (
-        <ResponsiveReactGridLayout
-          className={`layout ${css.loaderGrid}`}
-          breakpoints={breakpoints}
-          cols={cols}
-          rowHeight={rowHeight}
-          layouts={{ lg: layout }}
-        >
-          {builtInWidgets.map(({ id, title }) => {
-            const { grid, RenderWidget } = widgetComponents[id];
-            return (
-              <div key={id} data-grid={grid}>
-                <RenderWidget id={id} title={title} />
-              </div>
-            );
-          })}
         </ResponsiveReactGridLayout>
       )}
 
