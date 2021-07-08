@@ -152,12 +152,44 @@ export interface FuturesDepth {
   lastUpdateId: number;
 }
 
+export type FuturesExchangeInfoFilter =
+{
+  filterType: 'PRICE_FILTER';
+  maxPrice: string;
+  minPrice: string;
+  tickSize: string;
+} | {
+  filterType: 'LOT_SIZE';
+  maxQty: string;
+  minQty: string;
+  stepSize: string;
+} | {
+  filterType: 'MARKET_LOT_SIZE';
+  maxQty: string;
+  minQty: string;
+  stepSize: string;
+} | {
+  filterType: 'MAX_NUM_ORDERS';
+  limit: number;
+} | {
+  filterType: 'MAX_NUM_ALGO_ORDERS';
+  limit: number;
+} | {
+  filterType: 'MIN_NOTIONAL';
+  notional: string;
+} | {
+  filterType: 'PERCENT_PRICE';
+  multiplierDecimal: string;
+  multiplierDown: string;
+  multiplierUp: string;
+};
+
 export interface FuturesExchangeInfoSymbol {
   baseAsset: string;
   baseAssetPrecision: number;
   contractType: ContractType;
   deliveryDate: number;
-  filters: ({ filterType: string } & Record<string, number | string>)[];
+  filters: FuturesExchangeInfoFilter[];
   maintMarginPercent: string;
   marginAsset: string;
   onboardDate: number;

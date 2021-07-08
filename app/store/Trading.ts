@@ -3,6 +3,7 @@ import { listenChange } from 'use-change';
 import * as api from '../api';
 import binanceFuturesMaxLeverage from '../lib/binanceFuturesMaxLeverage';
 import delay from '../lib/delay';
+import floorByPrecision from '../lib/floorByPrecision';
 import notify from '../lib/notify';
 import { TradingOrder, TradingPosition } from './types';
 
@@ -170,7 +171,11 @@ export default class Trading {
   }): Promise<api.FuturesOrder | null> => {
     try {
       const result = await api.futuresLimitOrder(
-        side, symbol, quantity, price, { reduceOnly, timeInForce: postOnly ? 'GTX' : 'GTC' },
+        side,
+        symbol,
+        quantity,
+        this.#floorPriceByTickSize(symbol, price),
+        { reduceOnly, timeInForce: postOnly ? 'GTX' : 'GTC' },
       );
 
       await this.loadOrders();
@@ -224,7 +229,12 @@ export default class Trading {
   }): Promise<api.FuturesOrder | null> => {
     try {
       const result = await api.futuresStopLimitOrder(
-        side, symbol, quantity, price, stopPrice, { reduceOnly, timeInForce: postOnly ? 'GTX' : 'GTC' },
+        side,
+        symbol,
+        quantity,
+        this.#floorPriceByTickSize(symbol, price),
+        stopPrice,
+        { reduceOnly, timeInForce: postOnly ? 'GTX' : 'GTC' },
       );
 
       await this.loadOrders();
@@ -342,6 +352,21 @@ export default class Trading {
         this.shouldShowStopSellPriceLine = false;
       }
     }
+  };
+
+  #floorPriceByTickSize = (symbol: string, price: number): number => {
+    const info = this.#store.market.futuresExchangeSymbols[symbol];
+
+    if (!info) return price;
+
+    const priceFilter = info.filters.find(({ filterType }) => filterType === 'PRICE_FILTER');
+
+    // priceFilter.filterType !== 'PRICE_FILTER' is used to ensute TS type
+    if (!priceFilter || priceFilter.filterType !== 'PRICE_FILTER') return floorByPrecision(price, info.pricePrecision);
+
+    const precision = String(+priceFilter.tickSize).split('.')[1].length;
+
+    return floorByPrecision(price, precision);
   };
 
   #updateLeverage = async (symbol: string): Promise<void> => {
