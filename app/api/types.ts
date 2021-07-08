@@ -111,6 +111,8 @@ export interface FuturesAccount {
 }
 
 export interface FuturesChartCandle {
+  symbol: string;
+  interval: CandlestickChartInterval;
   close: string;
   closeTime: number;
   high: string;

@@ -23,7 +23,6 @@ import OrderPriceLines from './items/OrderPriceLines';
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
 interface Params {
-  symbol: string;
   onUpdateAlerts: (d: number[]) => void;
   onUpdateDrafts: (d: {
     buyDraftPrice: number | null;
@@ -33,15 +32,10 @@ interface Params {
   }) => void;
   alerts: number[];
   draftPriceItems: PriceLinesDatum[];
-  interval: string;
   pricePrecision: number;
 }
 
 export default class CandlestickChart {
-  #symbol: string;
-
-  #interval: string;
-
   #svg: Svg;
 
   #clipPath: ClipPath;
@@ -93,7 +87,7 @@ export default class CandlestickChart {
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
     {
-      pricePrecision, symbol, interval, alerts, onUpdateAlerts, onUpdateDrafts,
+      pricePrecision, alerts, onUpdateAlerts, onUpdateDrafts,
     }: Params,
   ) {
     const containerElement = $.one(container);
@@ -111,8 +105,6 @@ export default class CandlestickChart {
       y: d3.scaleLinear().range([this.#height, 0]),
     };
 
-    this.#symbol = symbol;
-    this.#interval = interval;
     this.#pricePrecision = pricePrecision;
     this.#svg = new Svg();
     this.#axes = new Axes({ scales: this.#scales });
@@ -166,10 +158,8 @@ export default class CandlestickChart {
 
     this.#initialRender();
 
-    type ZoomEvent = { transform: { rescaleX: (s: Scales['x']) => Scales['x'] } };
-
     d3.select(this.#container).select('svg').call(
-      this.#zoom.on('zoom', (event: ZoomEvent) => {
+      this.#zoom.on('zoom', (event: d3.D3ZoomEvent<Element, unknown>) => {
         const { transform } = event;
         const scaledX = transform.rescaleX(this.#scales.x);
 
@@ -195,8 +185,6 @@ export default class CandlestickChart {
   public update(data: {
     pricePrecision?: number;
     candles?: api.FuturesChartCandle[],
-    symbol?: string;
-    interval?: string;
     position?: TradingPosition | null;
     orders?: TradingOrder[];
 
@@ -225,25 +213,24 @@ export default class CandlestickChart {
     }
 
     if (typeof data.candles !== 'undefined') {
+      const isNewSymbol = this.#candles[0]?.symbol !== data.candles[0]?.symbol;
+      const isNewInterval = this.#candles[0]?.interval !== data.candles[0]?.interval;
       this.#candles = data.candles;
       const lastPrice = +(last(data.candles ?? [])?.close ?? 0);
       if (lastPrice) {
         this.#checkAlerts(lastPrice);
         this.#lastPrice = lastPrice;
       }
-    }
 
-    if (typeof data.symbol !== 'undefined' && this.#symbol !== data.symbol) {
-      this.#symbol = data.symbol;
-      this.#alertLines.empty();
-    }
-
-    if (typeof data.candles !== 'undefined' || typeof data.interval !== 'undefined') {
       this.#draw();
-    }
 
-    if (typeof data.interval !== 'undefined' && this.#interval !== data.interval) {
-      this.#translateBy(0);
+      if (isNewSymbol) {
+        this.#alertLines.empty();
+      }
+
+      if (isNewInterval) {
+        this.#resize();
+      }
     }
 
     if (typeof data.buyDraftPrice !== 'undefined') this.#draftLines.updateItem('BUY', { yValue: data.buyDraftPrice ?? 0 });

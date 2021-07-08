@@ -15,6 +15,8 @@ export default function futuresChartSubscribe(
       time, open, high, low, close, volume, closeTime, quoteVolume,
       trades, takerBuyBaseVolume, takerBuyQuoteVolume,
     ]) => ({
+      symbol,
+      interval,
       time,
       closeTime,
       open,
@@ -43,6 +45,8 @@ export default function futuresChartSubscribe(
       } = ticker.k;
 
       const candle = {
+        symbol,
+        interval,
         time,
         closeTime,
         open,

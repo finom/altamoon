@@ -97,7 +97,7 @@ const Orders = (): ReactElement => {
               {executedQty}
               {' '}
               (
-              {formatPercent((executedQty / origQty) * 100)}
+              {formatPercent(origQty ? (executedQty / origQty) * 100 : 0)}
               %)
             </td>
             <td>{stopPrice ? `${stopPrice} ₮` : <>&mdash;</>}</td>

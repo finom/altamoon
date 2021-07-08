@@ -15,7 +15,7 @@ export interface ChartItem {
 export interface Scales {
   x: d3.ScaleTime<number, number, never>;
   scaledX: d3.ScaleTime<number, number, never>;
-  y: d3.ScaleSymLog<number, number, never>;
+  y: d3.ScaleLinear<number, number, never>;
 }
 
 export interface ResizeData {
