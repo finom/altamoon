@@ -7,3 +7,7 @@
   background: var(--bs-danger);
   border-color: var(--bs-danger);
 }
+
+.table > :not(caption) :is(th, td, button) {
+  padding: 0.1rem 0.5rem;
+}
