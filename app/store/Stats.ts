@@ -9,6 +9,11 @@ const getTodayEarlyTime = () => {
   date.setSeconds(0);
   date.setMilliseconds(0);
 
+  // if its 00:00 - 04:00
+  if (date.getTime() > Date.now()) {
+    date.setDate(date.getDate() - 1);
+  }
+
   return date.getTime();
 };
 
@@ -44,24 +49,7 @@ export default class Stats {
 
     void this.#calcStats();
 
-    setInterval(() => {
-      const todayEarlyTime = getTodayEarlyTime();
-      const now = Date.now();
-      if (this.#historyStart < todayEarlyTime) {
-        this.#historyStart = todayEarlyTime;
-        this.income = [];
-      } else {
-        void api.futuresIncome({
-          startTime: this.#historyStart,
-          endTime: now,
-          limit: 1000,
-          recvWindow: 1000000,
-        }).then((income) => {
-          this.income = this.income.concat(income);
-          this.#historyStart = now;
-        });
-      }
-    }, 5000);
+    void this.#incomeTicker();
   }
 
   #incomeTicker = async (): Promise<void> => {
