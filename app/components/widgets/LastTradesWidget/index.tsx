@@ -5,14 +5,14 @@ import { Input, Label, Table } from 'reactstrap';
 import { format } from 'd3';
 import useChange, { useValue } from 'use-change';
 
-import { RootStore } from '../../../store';
+import { MARKET, PERSISTENT } from '../../../store';
 import Widget from '../../layout/Widget';
 import css from './style.css';
 
 const LastTradesWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
-  const lastTrades = useValue(({ market }: RootStore) => market, 'lastTrades');
+  const lastTrades = useValue(MARKET, 'lastTrades');
   const [existingIgnoreValuesBelowNumber, preserveIgnoreValuesBelowNumber] = useChange(
-    ({ persistent }: RootStore) => persistent, 'ignoreValuesBelowNumber',
+    PERSISTENT, 'ignoreValuesBelowNumber',
   );
   const [ignoreValuesBelowNumber, setIgnoreValuesBelowNumber] = useState(
     existingIgnoreValuesBelowNumber,

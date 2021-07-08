@@ -5,17 +5,13 @@ import useChange, { useValue, useSilent } from 'use-change';
 import * as api from '../../../api';
 import useDepsUpdateEffect from '../../../hooks/useDepsUpdateEffect';
 import CandlestickChart from '../../../lib/CandlestickChart';
-import { RootStore } from '../../../store';
+import { MARKET, PERSISTENT, TRADING } from '../../../store';
 
 import Widget from '../../layout/Widget';
 
 import css from './style.css';
 
 const intervals: api.CandlestickChartInterval[] = ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '12h', '1d'];
-
-const TRADING = ({ trading }: RootStore) => trading;
-const PERSISTENT = ({ persistent }: RootStore) => persistent;
-const MARKET = ({ market }: RootStore) => market;
 
 const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const ref = useRef<HTMLDivElement | null>(null);

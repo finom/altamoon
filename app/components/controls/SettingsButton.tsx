@@ -2,11 +2,11 @@ import React, { ReactElement } from 'react';
 import { Gear } from 'react-bootstrap-icons';
 import { Button } from 'reactstrap';
 import { useSet, useValue } from 'use-change';
-import { RootStore } from '../../store';
+import { PERSISTENT, ROOT } from '../../store';
 
 const SettingsButton = (): ReactElement => {
-  const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
-  const setIsSettingsModalOpen = useSet((store: RootStore) => store, 'isSettingsModalOpen');
+  const theme = useValue(PERSISTENT, 'theme');
+  const setIsSettingsModalOpen = useSet(ROOT, 'isSettingsModalOpen');
 
   return (
     <Button

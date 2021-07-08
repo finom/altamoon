@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { useValue } from 'use-change';
-import { RootStore } from '../../../store';
+import { MARKET } from '../../../store';
 import TradingTab from './TradingTab';
 import TradingPriceInput from '../../controls/TradingPriceInput';
 import useDraftPrice from './TradingTab/useDraftPrice';
@@ -15,7 +15,7 @@ interface Props {
 const StopLimit = ({
   isWideLayout, postOnly, reduceOnly, tradingType,
 }: Props): ReactElement => {
-  const pricePrecision = useValue(({ market }: RootStore) => market, 'currentSymbolPricePrecision');
+  const pricePrecision = useValue(MARKET, 'currentSymbolPricePrecision');
 
   const {
     shouldShowPriceLine: shouldShowLimitBuyPriceLine,

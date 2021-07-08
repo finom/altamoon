@@ -46,6 +46,12 @@ declare global {
   type Store = RootStore;
 }
 
+export const ROOT = (rootStore: RootStore): RootStore => rootStore;
+export const PERSISTENT = ({ persistent }: RootStore): Persistent => persistent;
+export const MARKET = ({ market }: RootStore): Market => market;
+export const ACCOUNT = ({ account }: RootStore): Account => account;
+export const TRADING = ({ trading }: RootStore): Trading => trading;
+export const STATS = ({ stats }: RootStore): Stats => stats;
 export const CUSTOMIZATION = ({ customization }: RootStore): Customization => customization;
 
 export default store;

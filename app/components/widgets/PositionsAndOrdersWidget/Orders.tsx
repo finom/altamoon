@@ -4,16 +4,16 @@ import React, { ReactElement, useCallback, useState } from 'react';
 import { Trash } from 'react-bootstrap-icons';
 import { Badge, Button, Table } from 'reactstrap';
 import { useSilent, useValue } from 'use-change';
-import { RootStore } from '../../../store';
+import { TRADING } from '../../../store';
 
 const formatNumber = (n: number, ignorePrecision?: boolean) => format(n < 10 && !ignorePrecision ? ',.4f' : ',.2f')(n);
 const formatPercent = format(',.1f');
 
 const Orders = (): ReactElement => {
-  const openOrders = useValue(({ trading }: RootStore) => trading, 'openOrders');
-  const allSymbolsPositionRisk = useValue(({ trading }: RootStore) => trading, 'allSymbolsPositionRisk');
-  const cancelOrder = useSilent(({ trading }: RootStore) => trading, 'cancelOrder');
-  const cancelAllOrders = useSilent(({ trading }: RootStore) => trading, 'cancelAllOrders');
+  const openOrders = useValue(TRADING, 'openOrders');
+  const allSymbolsPositionRisk = useValue(TRADING, 'allSymbolsPositionRisk');
+  const cancelOrder = useSilent(TRADING, 'cancelOrder');
+  const cancelAllOrders = useSilent(TRADING, 'cancelAllOrders');
   const [idsToClose, setIdsToClose] = useState<number[]>([]);
 
   const onCancel = useCallback(async (symbol: string, orderId: number) => {

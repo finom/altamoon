@@ -11,7 +11,7 @@ import { useSilent, useValue } from 'use-change';
 import * as api from '../../../api';
 import LabeledInput from '../../controls/LabeledInput';
 import css from './style.css';
-import { RootStore } from '../../../store';
+import { ACCOUNT } from '../../../store';
 import truncateDecimals from '../../../lib/truncateDecimals';
 import stringifyError from '../../../lib/stringifyError';
 
@@ -20,8 +20,8 @@ const TransferFunds = (): ReactElement => {
   const [isFromSpotToFutures, setIsFromSpotToFutures] = useState(true);
   const [currency, setCurrency] = useState<'USDT' | 'BNB'>('USDT');
   const [quantity, setQuantity] = useState(0);
-  const futuresAccount = useValue(({ account }: RootStore) => account, 'futuresAccount');
-  const reloadFuturesAccount = useSilent(({ account }: RootStore) => account, 'reloadFuturesAccount');
+  const futuresAccount = useValue(ACCOUNT, 'futuresAccount');
+  const reloadFuturesAccount = useSilent(ACCOUNT, 'reloadFuturesAccount');
   const [lastTransactionId, setLastTransactionId] = useState<number>();
   const [spotBalance] = usePromise<Record<string, { locked: number; available: number; }>>(
     () => (isOpen ? api.balance() : Promise.resolve({})),

@@ -7,7 +7,7 @@ import { useValue } from 'use-change';
 
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
-import { RootStore } from '../../../../../../store';
+import { MARKET, TRADING } from '../../../../../../store';
 import LabeledInput from '../../../../../controls/LabeledInput';
 import PercentSelector from './PercentSelector';
 
@@ -38,13 +38,13 @@ const ExactSize = ({
   const exactSize = exactSizeStr.endsWith('%')
     ? (+exactSizeStr.replace('%', '') / 100) * totalWalletBalance || 0
     : +exactSizeStr || 0;
-  const currentSymbolLeverage = useValue(({ trading }: RootStore) => trading, 'currentSymbolLeverage');
+  const currentSymbolLeverage = useValue(TRADING, 'currentSymbolLeverage');
   const quantity = typeof price === 'number' ? Math.floor(
     currentSymbolLeverage
       * (exactSize / price) * (10 ** quantityPrecision),
   ) / (10 ** quantityPrecision) : 0;
   const [inputRef, setInputTitle] = useBootstrapTooltip<HTMLInputElement>(tooltipOptions);
-  const currentSymbolBaseAsset = useValue(({ market }: RootStore) => market, 'currentSymbolBaseAsset');
+  const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
 
   useEffect(() => {
     setInputTitle(`${quantity} ${currentSymbolBaseAsset ?? ''}`);

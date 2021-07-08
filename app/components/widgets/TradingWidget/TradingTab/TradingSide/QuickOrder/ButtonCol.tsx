@@ -5,7 +5,7 @@ import { useValue } from 'use-change';
 
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
-import { RootStore } from '../../../../../../store';
+import { MARKET, TRADING } from '../../../../../../store';
 import css from './style.css';
 
 interface Props {
@@ -26,12 +26,12 @@ const ButtonCol = ({
   price, side, percent, isMax, onOrder,
 }: Props): ReactElement => {
   const preciseSize = isMax ? availableBalance : totalWalletBalance * ((percent ?? 0) / 100);
-  const currentSymbolLeverage = useValue(({ trading }: RootStore) => trading, 'currentSymbolLeverage');
+  const currentSymbolLeverage = useValue(TRADING, 'currentSymbolLeverage');
   const quantity: number = typeof price === 'number' ? Math.floor(
     currentSymbolLeverage * (preciseSize / price) * (10 ** quantityPrecision),
   ) / (10 ** quantityPrecision) || 0 : 0;
   const [buttonRef, setButtonTitle] = useBootstrapTooltip<HTMLSpanElement>();
-  const currentSymbolBaseAsset = useValue(({ market }: RootStore) => market, 'currentSymbolBaseAsset');
+  const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
 
   useEffect(() => {
     setButtonTitle(`${quantity} ${currentSymbolBaseAsset ?? ''}`);

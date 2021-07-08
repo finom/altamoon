@@ -9,7 +9,7 @@ import { Gear } from 'react-bootstrap-icons';
 import { useValue } from 'use-change';
 
 import css from './style.css';
-import { RootStore } from '../../../store';
+import { ACCOUNT } from '../../../store';
 import AccountError from './AccountError';
 import useWidgetSizeBreakpoint from '../../../hooks/useWidgetSizeBreakpoint';
 
@@ -31,7 +31,7 @@ const Widget = ({
   bodyRef, shouldCheckAccount, onSettingsCancel, onSettingsSave,
 }: Props): ReactElement => {
   const [isSettingsOpen, setIsSettignsOpen] = useState(false);
-  const futuresAccount = useValue(({ account }: RootStore) => account, 'futuresAccount');
+  const futuresAccount = useValue(ACCOUNT, 'futuresAccount');
   const [isWideLayout, wideLayoutRef] = useWidgetSizeBreakpoint('lg');
 
   const toggleSettings = useCallback(() => {

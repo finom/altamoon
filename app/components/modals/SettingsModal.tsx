@@ -5,17 +5,17 @@ import {
 } from 'reactstrap';
 import useChange from 'use-change';
 import isType from '../../lib/isType';
-import { RootStore } from '../../store';
+import { PERSISTENT, RootStore } from '../../store';
 import Modal, { ModalHeader, ModalFooter, ModalBody } from '../layout/Modal';
 
 const fakeSecretValue = Array(50).fill('1').join('');
 
 const SettingsModal = (): ReactElement => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useChange<RootStore, 'isSettingsModalOpen'>('isSettingsModalOpen');
-  const [existingNumberOfColumns, setNumberOfColumns] = useChange(({ persistent }: RootStore) => persistent, 'numberOfColumns');
-  const [existingApiKey, setApiKey] = useChange(({ persistent }: RootStore) => persistent, 'binanceApiKey');
-  const [existingApiSecret, setApiSecret] = useChange(({ persistent }: RootStore) => persistent, 'binanceApiSecret');
-  const [existingTheme, setTheme] = useChange(({ persistent }: RootStore) => persistent, 'theme');
+  const [existingNumberOfColumns, setNumberOfColumns] = useChange(PERSISTENT, 'numberOfColumns');
+  const [existingApiKey, setApiKey] = useChange(PERSISTENT, 'binanceApiKey');
+  const [existingApiSecret, setApiSecret] = useChange(PERSISTENT, 'binanceApiSecret');
+  const [existingTheme, setTheme] = useChange(PERSISTENT, 'theme');
   const closeModal = useCallback(() => {
     setIsSettingsModalOpen(false);
   }, [setIsSettingsModalOpen]);

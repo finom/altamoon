@@ -7,19 +7,19 @@ import { UiChecksGrid } from 'react-bootstrap-icons';
 
 import { Button } from 'reactstrap';
 import useChange, { useValue } from 'use-change';
-import { CUSTOMIZATION, RootStore } from '../../../store';
+import { CUSTOMIZATION, PERSISTENT } from '../../../store';
 import FormSwitch from '../../controls/FormSwitch';
 
 import css from './style.css';
 
 const WidgetsSelect = (): ReactElement => {
   const [isWidgetListVisible, setIsWidgetListVisible] = useState(false);
-  const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
+  const theme = useValue(PERSISTENT, 'theme');
   const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets');
   const pluginWidgets = useValue(CUSTOMIZATION, 'pluginWidgets');
   const defaultPlugins = useValue(CUSTOMIZATION, 'defaultPlugins');
   const customPlugins = useValue(CUSTOMIZATION, 'customPlugins');
-  const [widgetsDisabled, setWidgetsDisabled] = useChange(({ persistent }: RootStore) => persistent, 'widgetsDisabled');
+  const [widgetsDisabled, setWidgetsDisabled] = useChange(PERSISTENT, 'widgetsDisabled');
   const customPluginsMap = keyBy([...defaultPlugins, ...customPlugins], 'id');
   const ref = useRef<HTMLDivElement>();
   const onChange = (id: string, isChecked: boolean) => {

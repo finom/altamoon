@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 import { Button } from 'reactstrap';
 import { useSilent, useValue } from 'use-change';
-import { CUSTOMIZATION, RootStore } from '../../../store';
+import { CUSTOMIZATION, PERSISTENT } from '../../../store';
 import Modal, { ModalHeader, ModalFooter, ModalBody } from '../../layout/Modal';
 import Plugin from './Plugin';
 
@@ -15,7 +15,7 @@ const PluginsModal = ({ isOpen, onRequestClose }: Props): ReactElement => {
   const customPlugins = useValue(CUSTOMIZATION, 'customPlugins');
   const enablePlugin = useSilent(CUSTOMIZATION, 'enablePlugin');
   const disablePlugin = useSilent(CUSTOMIZATION, 'disablePlugin');
-  const pluginsEnabled = useValue(({ persistent }: RootStore) => persistent, 'pluginsEnabled');
+  const pluginsEnabled = useValue(PERSISTENT, 'pluginsEnabled');
   const [customPluginId, setCustomPluginId] = useState('');
   const createCustomPlugin = useCallback(async () => {
     if (customPluginId) {

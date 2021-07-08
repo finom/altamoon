@@ -2,16 +2,13 @@ import React, { memo, ReactElement } from 'react';
 import { format } from 'd3';
 import { useValue } from 'use-change';
 import truncateDecimals from '../../../lib/truncateDecimals';
-import { RootStore } from '../../../store';
+import { ACCOUNT, STATS } from '../../../store';
 import Widget from '../../layout/Widget';
 import TransferFunds from './TransferFunds';
 
 import css from './style.css';
 
 const formatNumber = (value: number) => format(',.2f')(truncateDecimals(value, 2));
-
-const ACCOUNT = ({ account }: RootStore) => account;
-const STATS = ({ stats }: RootStore) => stats;
 
 const WalletWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');

@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { Col, Row } from 'reactstrap';
 import useChange, { useValue } from 'use-change';
-import { RootStore } from '../../../store';
+import { TRADING } from '../../../store';
 
 import css from './style.css';
 
@@ -18,9 +18,9 @@ const Leverage = ({
   setPostOnly,
   setReduceOnly,
 }: Props): ReactElement => {
-  const maxLeverage = useValue(({ trading }: RootStore) => trading, 'currentSymbolMaxLeverage');
-  const [isIsolated, setIsISolated] = useChange(({ trading }: RootStore) => trading, 'isCurrentSymbolMarginTypeIsolated');
-  const [leverage, setLeverage] = useChange(({ trading }: RootStore) => trading, 'currentSymbolLeverage');
+  const maxLeverage = useValue(TRADING, 'currentSymbolMaxLeverage');
+  const [isIsolated, setIsISolated] = useChange(TRADING, 'isCurrentSymbolMarginTypeIsolated');
+  const [leverage, setLeverage] = useChange(TRADING, 'currentSymbolLeverage');
 
   return (
     <Row>

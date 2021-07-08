@@ -8,7 +8,9 @@ import useChange, { useValue } from 'use-change';
 
 import { LayoutWtf, Puzzle } from 'react-bootstrap-icons';
 import LastTradesWidget from '../../components/widgets/LastTradesWidget';
-import { CUSTOMIZATION, RootStore } from '../../store';
+import {
+  CUSTOMIZATION, MARKET, PERSISTENT, RootStore,
+} from '../../store';
 import { darkTheme, lightTheme } from '../../themes';
 import OrderBookWidget from '../../components/widgets/OrderBookWidget';
 import WalletWidget from '../../components/widgets/WalletWidget';
@@ -80,15 +82,15 @@ const widgetComponents: Record<RootStore['customization']['builtInWidgets'][0]['
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const FeatureTradingScreen = (): ReactElement => {
-  const [layout, setLayout] = useChange(({ persistent }: RootStore) => persistent, 'layout');
-  const [existingSymbol, setSymbol] = useChange(({ persistent }: RootStore) => persistent, 'symbol');
-  const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
-  const widgetsDisabled = useValue(({ persistent }: RootStore) => persistent, 'widgetsDisabled');
-  const numberOfColumns = useValue(({ persistent }: RootStore) => persistent, 'numberOfColumns');
+  const [layout, setLayout] = useChange(PERSISTENT, 'layout');
+  const [existingSymbol, setSymbol] = useChange(PERSISTENT, 'symbol');
+  const theme = useValue(PERSISTENT, 'theme');
+  const widgetsDisabled = useValue(PERSISTENT, 'widgetsDisabled');
+  const numberOfColumns = useValue(PERSISTENT, 'numberOfColumns');
   const pluginWidgets = useValue(CUSTOMIZATION, 'pluginWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
   const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
   const didPluginsInitialized = useValue(CUSTOMIZATION, 'didPluginsInitialized');
-  const futuresExchangeSymbols = Object.values(useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols')).sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
+  const futuresExchangeSymbols = Object.values(useValue(MARKET, 'futuresExchangeSymbols')).sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
   const [isPluginsModalOpen, setIsPluginsModalOpen] = useState(false);
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
     setLayout(changedLayout);

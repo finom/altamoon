@@ -7,17 +7,17 @@ import useChange from 'use-change';
 import useWidgetSizeBreakpoint from '../../../hooks/useWidgetSizeBreakpoint';
 import Widget from '../../layout/Widget';
 import TradingOptions from './TradingOptions';
-import { RootStore } from '../../../store';
+import { PERSISTENT } from '../../../store';
 import Limit from './Limit';
 import Market from './Market';
 import StopLimit from './StopLimit';
 import StopMarket from './StopMarket';
 
 const Trading = ({ title, id }: { title: string; id: string; }): ReactElement => {
-  const [type, setType] = useChange(({ persistent }: RootStore) => persistent, 'tradingType');
+  const [type, setType] = useChange(PERSISTENT, 'tradingType');
   const [isWideLayout, wideLayoutRef] = useWidgetSizeBreakpoint('lg');
-  const [postOnly, setPostOnly] = useChange(({ persistent }: RootStore) => persistent, 'tradingPostOnly');
-  const [reduceOnly, setReduceOnly] = useChange(({ persistent }: RootStore) => persistent, 'tradingReduceOnly');
+  const [postOnly, setPostOnly] = useChange(PERSISTENT, 'tradingPostOnly');
+  const [reduceOnly, setReduceOnly] = useChange(PERSISTENT, 'tradingReduceOnly');
 
   return (
     <Widget id={id} title={title} bodyRef={wideLayoutRef} shouldCheckAccount>

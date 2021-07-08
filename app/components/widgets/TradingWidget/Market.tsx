@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { useValue } from 'use-change';
-import { RootStore } from '../../../store';
+import { MARKET } from '../../../store';
 import TradingTab from './TradingTab';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 const Market = ({
   isWideLayout, postOnly, reduceOnly, tradingType,
 }: Props): ReactElement => {
-  const price = useValue(({ market }: RootStore) => market, 'currentSymbolLastPrice');
+  const price = useValue(MARKET, 'currentSymbolLastPrice');
 
   return (
     <TradingTab

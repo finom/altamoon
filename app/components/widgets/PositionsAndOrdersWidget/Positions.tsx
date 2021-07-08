@@ -3,7 +3,7 @@ import { remove } from 'lodash';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { Badge, Button, Table } from 'reactstrap';
 import { useSilent, useValue } from 'use-change';
-import { RootStore } from '../../../store';
+import { TRADING } from '../../../store';
 
 const formatNumber = (n: number, ignorePrecision?: boolean) => format(n < 10 && !ignorePrecision ? ',.4f' : ',.2f')(n);
 const formatPercent = format(',.1f');
@@ -15,8 +15,8 @@ const textClassName = (value: number) => {
 };
 
 const Positions = (): ReactElement => {
-  const tradingPositions = useValue(({ trading }: RootStore) => trading, 'tradingPositions');
-  const closePosition = useSilent(({ trading }: RootStore) => trading, 'closePosition');
+  const tradingPositions = useValue(TRADING, 'tradingPositions');
+  const closePosition = useSilent(TRADING, 'closePosition');
   const [symbolsToClose, setSymbolsToClose] = useState<string[]>([]);
   const onCloseMarket = useCallback(async (symbol: string) => {
     setSymbolsToClose([...symbolsToClose, symbol]);

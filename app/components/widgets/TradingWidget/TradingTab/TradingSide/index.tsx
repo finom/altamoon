@@ -4,7 +4,9 @@ import React, {
 import { useSilent, useValue } from 'use-change';
 
 import * as api from '../../../../../api';
-import { RootStore } from '../../../../../store';
+import {
+  ACCOUNT, MARKET, PERSISTENT, TRADING,
+} from '../../../../../store';
 import QuickOrder from './QuickOrder';
 import ExactSize from './ExactSize';
 
@@ -22,14 +24,14 @@ interface Props {
 const TradingSide = ({
   side, reduceOnly, postOnly, price, stopPrice, id, tradingType, children,
 }: Props): ReactElement => {
-  const symbol = useValue(({ persistent }: RootStore) => persistent, 'symbol');
-  const totalWalletBalance = useValue(({ account }: RootStore) => account, 'totalWalletBalance');
-  const availableBalance = useValue(({ account }: RootStore) => account, 'availableBalance');
-  const symbolInfo = useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols')[symbol];
-  const marketOrder = useSilent(({ trading }: RootStore) => trading, 'marketOrder');
-  const limitOrder = useSilent(({ trading }: RootStore) => trading, 'limitOrder');
-  const stopMarketOrder = useSilent(({ trading }: RootStore) => trading, 'stopMarketOrder');
-  const stopLimitOrder = useSilent(({ trading }: RootStore) => trading, 'stopLimitOrder');
+  const symbol = useValue(PERSISTENT, 'symbol');
+  const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
+  const availableBalance = useValue(ACCOUNT, 'availableBalance');
+  const symbolInfo = useValue(MARKET, 'futuresExchangeSymbols')[symbol];
+  const marketOrder = useSilent(TRADING, 'marketOrder');
+  const limitOrder = useSilent(TRADING, 'limitOrder');
+  const stopMarketOrder = useSilent(TRADING, 'stopMarketOrder');
+  const stopLimitOrder = useSilent(TRADING, 'stopLimitOrder');
   const onOrder = useCallback((quantity: number) => {
     switch (tradingType) {
       case 'MARKET':

@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import useChange from 'use-change';
-import { RootStore } from '../../../../store';
+import { TRADING } from '../../../../store';
 import useDepsUpdateEffect from '../../../../hooks/useDepsUpdateEffect';
 import floorByPrecision from '../../../../lib/floorByPrecision';
 
@@ -18,10 +18,10 @@ export default function useDraftPrice(
     setPriceStr: Dispatch<SetStateAction<string>>;
     price: number | null;
   } {
-  const [price, setPrice] = useChange(({ trading }: RootStore) => trading, priceKey);
+  const [price, setPrice] = useChange(TRADING, priceKey);
   const [
     shouldShowPriceLine, setShouldShowPriceLine,
-  ] = useChange(({ trading }: RootStore) => trading, shouldShowKey);
+  ] = useChange(TRADING, shouldShowKey);
   const [priceStr, setPriceStr] = useState(price?.toString() ?? '');
 
   useDepsUpdateEffect(() => {
