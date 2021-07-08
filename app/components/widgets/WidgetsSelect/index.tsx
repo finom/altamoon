@@ -19,14 +19,14 @@ const WidgetsSelect = (): ReactElement => {
   const pluginWidgets = useValue(({ app }: RootStore) => app, 'pluginWidgets');
   const defaultPlugins = useValue(({ app }: RootStore) => app, 'defaultPlugins');
   const customPlugins = useValue(({ app }: RootStore) => app, 'customPlugins');
-  const [widgetsEnabled, setWidgetsEnabled] = useChange(({ persistent }: RootStore) => persistent, 'widgetsEnabled');
+  const [widgetsDisabled, setWidgetsDisabled] = useChange(({ persistent }: RootStore) => persistent, 'widgetsDisabled');
   const customPluginsMap = keyBy([...defaultPlugins, ...customPlugins], 'id');
   const ref = useRef<HTMLDivElement>();
   const onChange = (id: string, isChecked: boolean) => {
     if (isChecked) {
-      setWidgetsEnabled([...widgetsEnabled, id]);
+      setWidgetsDisabled(widgetsDisabled.filter((w) => w !== id));
     } else {
-      setWidgetsEnabled(widgetsEnabled.filter((w) => w !== id));
+      setWidgetsDisabled([...widgetsDisabled, id]);
     }
   };
 
@@ -68,7 +68,7 @@ const WidgetsSelect = (): ReactElement => {
           <label key={id} className="text-ellipsis my-1 d-block">
             <FormSwitch
               className="d-inline-block align-middle"
-              isChecked={widgetsEnabled.includes(id)}
+              isChecked={!widgetsDisabled.includes(id)}
               onChange={(isChecked) => onChange(id, isChecked)}
             />
             {' '}
@@ -79,7 +79,7 @@ const WidgetsSelect = (): ReactElement => {
           <label key={id} className="text-ellipsis my-1 d-block">
             <FormSwitch
               className="d-inline-block align-middle"
-              isChecked={widgetsEnabled.includes(id)}
+              isChecked={!widgetsDisabled.includes(id)}
               onChange={(isChecked) => onChange(id, isChecked)}
             />
             {' '}

@@ -32,7 +32,7 @@ export default class Persistent {
 
   public pluginsEnabled = getPersistentStorageValue<string[]>('pluginsEnabled', []);
 
-  public widgetsEnabled = getPersistentStorageValue<string[]>('widgetsEnabled', []);
+  public widgetsDisabled = getPersistentStorageValue<string[]>('widgetsDisabled', []);
 
   public numberOfColumns = getPersistentStorageValue<number>('numberOfColumns', 12);
 

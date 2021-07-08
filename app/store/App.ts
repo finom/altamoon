@@ -66,14 +66,6 @@ export default class App {
   constructor(store: Store) {
     this.#store = store;
 
-    // if it's the first load or user disabled all widgets before
-    // then make all built-in widgets enabled
-    // this is probably not the best place to do that
-    if (!store.persistent.widgetsEnabled.length) {
-      // eslint-disable-next-line no-param-reassign
-      store.persistent.widgetsEnabled = this.builtInWidgets.map(({ id }) => id);
-    }
-
     // make api be available globally
     window.biduulPlugin = (plugin: Plugin): void => {
       plugin(this.#store, api);
@@ -202,8 +194,6 @@ export default class App {
         { ...widgetData, onSettingsSave, onSettingsCancel },
       ];
 
-      this.#store.persistent.widgetsEnabled = [...this.#store.persistent.widgetsEnabled, id];
-
       return widgetData;
     } catch (e) {
       notify('error', e);
@@ -329,7 +319,7 @@ export default class App {
     // disable widgets created by the plugin
     for (const { pluginId, id: widgetId } of this.pluginWidgets) {
       if (pluginId === id) {
-        persistent.widgetsEnabled = persistent.widgetsEnabled.filter((w) => w !== widgetId);
+        persistent.widgetsDisabled = persistent.widgetsDisabled.filter((w) => w !== widgetId);
       }
     }
 

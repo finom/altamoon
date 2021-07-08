@@ -83,10 +83,10 @@ const FeatureTradingScreen = (): ReactElement => {
   const [layout, setLayout] = useChange(({ persistent }: RootStore) => persistent, 'layout');
   const [existingSymbol, setSymbol] = useChange(({ persistent }: RootStore) => persistent, 'symbol');
   const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
-  const widgetsEnabled = useValue(({ persistent }: RootStore) => persistent, 'widgetsEnabled');
+  const widgetsDisabled = useValue(({ persistent }: RootStore) => persistent, 'widgetsDisabled');
   const numberOfColumns = useValue(({ persistent }: RootStore) => persistent, 'numberOfColumns');
-  const pluginWidgets = useValue(({ app }: RootStore) => app, 'pluginWidgets').filter(({ id }) => widgetsEnabled.includes(id));
-  const builtInWidgets = useValue(({ app }: RootStore) => app, 'builtInWidgets').filter(({ id }) => widgetsEnabled.includes(id));
+  const pluginWidgets = useValue(({ app }: RootStore) => app, 'pluginWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
+  const builtInWidgets = useValue(({ app }: RootStore) => app, 'builtInWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
   const didPluginsInitialized = useValue(({ app }: RootStore) => app, 'didPluginsInitialized');
   const futuresExchangeSymbols = Object.values(useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols')).sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
   const [isPluginsModalOpen, setIsPluginsModalOpen] = useState(false);
