@@ -83,15 +83,10 @@ const Orders = (): ReactElement => {
             <td>
               {origQty}
               {' '}
-              (
-              {formatNumber(origQty * price, true)}
-              {' '}
-              ₮)
+              {!price && stopPrice ? '' : `(${formatNumber(origQty * price, true)} ₮)`}
             </td>
             <td>
-              {formatNumber(price)}
-              {' '}
-              ₮
+              {!price && stopPrice ? <>&mdash;</> : `${formatNumber(price)} ₮`}
             </td>
             <td>
               {executedQty}

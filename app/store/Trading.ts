@@ -126,7 +126,6 @@ export default class Trading {
       this.openOrders = futuresOrders
         .map(this.#getOrderInfo)
         .sort(({ orderId: a }, { orderId: b }) => (a > b ? 1 : -1));
-
       return undefined;
     } catch (e) {
       // eslint-disable-next-line no-console
