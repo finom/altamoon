@@ -112,12 +112,12 @@ export default class App {
 
     // load all plugin scripts
     await Promise.all(
-      [...this.defaultPlugins, ...this.customPlugins].map(async ({ main, id }) => {
+      [...this.defaultPlugins, ...this.customPlugins].map(async ({ version, main, id }) => {
         const isEnabled = store.persistent.pluginsEnabled.includes(id);
 
         if (isEnabled && main) {
           try {
-            await this.#loadPluginScript(id, main);
+            await this.#loadPluginScript({ id, main, version });
           } catch {
             notify('error', `Unable to load plugin script "${id}"`);
           }
@@ -261,17 +261,25 @@ export default class App {
     }
   };
 
-  #loadPluginScript = async (
-    pluginId: string, path: string,
-  ): Promise<void> => new Promise((resolve, reject) => {
+  #loadPluginScript = async ({
+    version,
+    id,
+    main,
+  }: {
+    version: string | null;
+    id: string;
+    main: string;
+  }): Promise<void> => new Promise((resolve, reject) => {
     const script = document.createElement('script');
-    const src = path.startsWith('http://') || path.startsWith('https://') ? path : `https://unpkg.com/${pluginId}/${path}`;
+    const src = main.startsWith('http://') || main.startsWith('https://')
+      ? main
+      : `https://unpkg.com/${id}${version ? `@${version}` : ''}/${main}`;
     script.setAttribute('src', src);
     script.addEventListener('load', () => resolve());
     script.addEventListener('error', () => reject());
 
     // allows to detect a plugin that created one or another widget
-    script.dataset.pluginId = pluginId;
+    script.dataset.pluginId = id;
     document.body.appendChild(script);
   });
 
@@ -285,13 +293,13 @@ export default class App {
       if (existing) throw new Error(`Plugin with ID "${id}" already exists`);
 
       // fetch plugin info
-      const { main } = await this.#getPluginInfo({ id, isThirdParty, isDefault });
+      const { main, version } = await this.#getPluginInfo({ id, isThirdParty, isDefault });
 
       // if "main" key is there (ensure for TypeScript, thought it's not required for the app)
       // then load the plugin itself
       if (main) {
         try {
-          await this.#loadPluginScript(id, main);
+          await this.#loadPluginScript({ id, main, version });
           // add the plugin to the list of enabled plugins
           persistent.pluginsEnabled = [...persistent.pluginsEnabled, id];
         } catch (e) {

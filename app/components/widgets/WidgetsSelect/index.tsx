@@ -7,7 +7,7 @@ import { UiChecksGrid } from 'react-bootstrap-icons';
 
 import { Button } from 'reactstrap';
 import useChange, { useValue } from 'use-change';
-import { RootStore } from '../../../store';
+import { CUSTOMIZATION, RootStore } from '../../../store';
 import FormSwitch from '../../controls/FormSwitch';
 
 import css from './style.css';
@@ -15,10 +15,10 @@ import css from './style.css';
 const WidgetsSelect = (): ReactElement => {
   const [isWidgetListVisible, setIsWidgetListVisible] = useState(false);
   const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
-  const builtInWidgets = useValue(({ app }: RootStore) => app, 'builtInWidgets');
-  const pluginWidgets = useValue(({ app }: RootStore) => app, 'pluginWidgets');
-  const defaultPlugins = useValue(({ app }: RootStore) => app, 'defaultPlugins');
-  const customPlugins = useValue(({ app }: RootStore) => app, 'customPlugins');
+  const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets');
+  const pluginWidgets = useValue(CUSTOMIZATION, 'pluginWidgets');
+  const defaultPlugins = useValue(CUSTOMIZATION, 'defaultPlugins');
+  const customPlugins = useValue(CUSTOMIZATION, 'customPlugins');
   const [widgetsDisabled, setWidgetsDisabled] = useChange(({ persistent }: RootStore) => persistent, 'widgetsDisabled');
   const customPluginsMap = keyBy([...defaultPlugins, ...customPlugins], 'id');
   const ref = useRef<HTMLDivElement>();

@@ -56,14 +56,6 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   }, [candles]);
 
   useDepsUpdateEffect(() => {
-    if (candleChartRef.current) candleChartRef.current.update({ symbol });
-  }, [symbol]);
-
-  useDepsUpdateEffect(() => {
-    if (candleChartRef.current) candleChartRef.current.update({ interval });
-  }, [interval]);
-
-  useDepsUpdateEffect(() => {
     if (candleChartRef.current) candleChartRef.current.update({ position });
   }, [position]);
 
@@ -154,8 +146,6 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
         onUpdateAlerts: (d: number[]) => setAlerts(d),
         onUpdateDrafts: updateDrafts,
         alerts,
-        symbol,
-        interval,
         draftPriceItems: [],
         pricePrecision: currentSymbolInfo?.pricePrecision ?? 0,
       });

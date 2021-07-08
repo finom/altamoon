@@ -5,7 +5,7 @@ import Market from './Market';
 import Account from './Account';
 import Stats from './Stats';
 import Trading from './Trading';
-import App from './App';
+import Customization from './Customization';
 
 export class RootStore {
   public readonly persistent: Persistent;
@@ -16,7 +16,7 @@ export class RootStore {
 
   public readonly stats: Stats;
 
-  public readonly app: App;
+  public readonly customization: Customization;
 
   public readonly trading: Trading;
 
@@ -28,7 +28,7 @@ export class RootStore {
     this.account = new Account(this);
     this.trading = new Trading(this);
     this.stats = new Stats(this);
-    this.app = new App(this);
+    this.customization = new Customization(this);
     this.isSettingsModalOpen = !this.persistent.binanceApiKey;
   }
 }
@@ -45,5 +45,7 @@ if (process.env.NODE_ENV === 'development') {
 declare global {
   type Store = RootStore;
 }
+
+export const CUSTOMIZATION = ({ customization }: RootStore): Customization => customization;
 
 export default store;

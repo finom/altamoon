@@ -92,7 +92,9 @@ const createWindow = async () => {
 
   // save window size and position
   mainWindow.on('close', () => {
-    config.set('winBounds', mainWindow.getBounds());
+    if (mainWindow) { // TS ensure
+      config.set('winBounds', mainWindow.getBounds());
+    }
   });
 
   void mainWindow.loadURL(`file://${__dirname}/index.html`);

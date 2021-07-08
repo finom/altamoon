@@ -8,7 +8,7 @@ import useChange, { useValue } from 'use-change';
 
 import { LayoutWtf, Puzzle } from 'react-bootstrap-icons';
 import LastTradesWidget from '../../components/widgets/LastTradesWidget';
-import { RootStore } from '../../store';
+import { CUSTOMIZATION, RootStore } from '../../store';
 import { darkTheme, lightTheme } from '../../themes';
 import OrderBookWidget from '../../components/widgets/OrderBookWidget';
 import WalletWidget from '../../components/widgets/WalletWidget';
@@ -34,7 +34,7 @@ const defaultPluginLayout = {
 
 const rowHeight = 30;
 
-const widgetComponents: Record<RootStore['app']['builtInWidgets'][0]['id'], {
+const widgetComponents: Record<RootStore['customization']['builtInWidgets'][0]['id'], {
   RenderWidget: (({ title, id }: { title: string; id: string; }) => ReactElement)
   | ReturnType<typeof React.memo>,
   grid: Record<string, number>
@@ -85,9 +85,9 @@ const FeatureTradingScreen = (): ReactElement => {
   const theme = useValue(({ persistent }: RootStore) => persistent, 'theme');
   const widgetsDisabled = useValue(({ persistent }: RootStore) => persistent, 'widgetsDisabled');
   const numberOfColumns = useValue(({ persistent }: RootStore) => persistent, 'numberOfColumns');
-  const pluginWidgets = useValue(({ app }: RootStore) => app, 'pluginWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
-  const builtInWidgets = useValue(({ app }: RootStore) => app, 'builtInWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
-  const didPluginsInitialized = useValue(({ app }: RootStore) => app, 'didPluginsInitialized');
+  const pluginWidgets = useValue(CUSTOMIZATION, 'pluginWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
+  const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
+  const didPluginsInitialized = useValue(CUSTOMIZATION, 'didPluginsInitialized');
   const futuresExchangeSymbols = Object.values(useValue(({ market }: RootStore) => market, 'futuresExchangeSymbols')).sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
   const [isPluginsModalOpen, setIsPluginsModalOpen] = useState(false);
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
