@@ -25,7 +25,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   const [alerts, setAlerts] = useChange(PERSISTENT, 'alerts');
   const tradingType = useValue(PERSISTENT, 'tradingType');
 
-  const position = useValue(TRADING, 'tradingPositions').find((pos) => pos.symbol === symbol) ?? null;
+  const position = useValue(TRADING, 'openPositions').find((pos) => pos.symbol === symbol) ?? null;
   const openOrders = useValue(TRADING, 'openOrders');
   const updateDrafts = useSilent(TRADING, 'updateDrafts');
   const limitBuyPrice = useValue(TRADING, 'limitBuyPrice');

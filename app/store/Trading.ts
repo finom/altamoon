@@ -8,7 +8,7 @@ import notify from '../lib/notify';
 import { TradingOrder, TradingPosition } from './types';
 
 export default class Trading {
-  public tradingPositions: TradingPosition[] = [];
+  public openPositions: TradingPosition[] = [];
 
   public allSymbolsPositionRisk: Record<string, api.FuturesPositionRisk> = {};
 
@@ -45,8 +45,8 @@ export default class Trading {
   constructor(store: Store) {
     this.#store = store;
 
-    listenChange(this, 'tradingPositions', (tradingPositions) => {
-      this.positionsKey = tradingPositions.map(({ symbol }) => symbol).join();
+    listenChange(this, 'openPositions', (openPositions) => {
+      this.positionsKey = openPositions.map(({ symbol }) => symbol).join();
     });
 
     listenChange(this, 'positionsKey', this.#listenLastPrices);
@@ -67,7 +67,7 @@ export default class Trading {
       try {
         const resp = await api.futuresLeverage(symbol, currentSymbolLeverage);
         this.currentSymbolLeverage = resp.leverage;
-        this.tradingPositions = this.tradingPositions
+        this.openPositions = this.openPositions
           .map((item) => (item.symbol === symbol
             ? { ...item, leverage: resp.leverage } : item));
       } catch {
@@ -104,7 +104,7 @@ export default class Trading {
 
       this.allSymbolsPositionRisk = keyBy(positions, 'symbol');
 
-      this.tradingPositions = positions
+      this.openPositions = positions
         .filter((position) => !!+position.positionAmt)
         .map((position) => this.#getPositionInfo(position, +prices[position.symbol]))
         .sort(({ symbol: a }, { symbol: b }) => (a > b ? 1 : -1));
@@ -251,7 +251,7 @@ export default class Trading {
 
   public closePosition = async (symbol: string): Promise<api.FuturesOrder | null> => {
     try {
-      const position = this.tradingPositions.find((pos) => pos.symbol === symbol);
+      const position = this.openPositions.find((pos) => pos.symbol === symbol);
 
       if (!position) {
         throw new Error(`No open position of symbol "${symbol}" found`);
@@ -385,13 +385,13 @@ export default class Trading {
     this.#lastPriceUnsubscribe?.();
 
     // if no position, don't create new subscription
-    if (!this.tradingPositions.length) return;
+    if (!this.openPositions.length) return;
 
     // create new subscription and preserve endpoint to unsubscribe
     this.#lastPriceUnsubscribe = api.futuresAggTradeStream(
-      this.tradingPositions.map(({ symbol }) => symbol),
+      this.openPositions.map(({ symbol }) => symbol),
       (ticker) => {
-        this.tradingPositions = this.tradingPositions.map((position) => {
+        this.openPositions = this.openPositions.map((position) => {
           if (position.symbol === ticker.symbol) {
             const lastPrice = +ticker.price;
             return {

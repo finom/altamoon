@@ -15,7 +15,7 @@ const textClassName = (value: number) => {
 };
 
 const Positions = (): ReactElement => {
-  const tradingPositions = useValue(TRADING, 'tradingPositions');
+  const openPositions = useValue(TRADING, 'openPositions');
   const closePosition = useSilent(TRADING, 'closePosition');
   const [symbolsToClose, setSymbolsToClose] = useState<string[]>([]);
   const onCloseMarket = useCallback(async (symbol: string) => {
@@ -60,7 +60,7 @@ const Positions = (): ReactElement => {
         </tr>
       </thead>
       <tbody>
-        {tradingPositions.map(({
+        {openPositions.map(({
           symbol, baseValue, liquidationPrice, entryPrice, positionAmt,
           isolatedWallet, marginType, leverage, lastPrice,
           side, pnl, pnlPercent, truePnl, truePnlPercent,
@@ -136,7 +136,7 @@ const Positions = (): ReactElement => {
           </tr>
         ))}
       </tbody>
-      {!tradingPositions.length && (
+      {!openPositions.length && (
       <tfoot>
         <tr>
           <td colSpan={100} align="center" className="text-muted"><em>You don&apos;t have open positions or they aren&apos;t loaded yet</em></td>

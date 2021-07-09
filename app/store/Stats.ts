@@ -41,7 +41,7 @@ export default class Stats {
 
     listenChange(this, 'income', () => this.#calcStats());
 
-    listenChange(store.trading, 'tradingPositions', () => this.#calcStats());
+    listenChange(store.trading, 'openPositions', () => this.#calcStats());
 
     api.futuresChartSubscribe('BNBUSDT', '5m', (bnbCandles) => {
       this.#bnbCandles = bnbCandles;
@@ -103,9 +103,9 @@ export default class Stats {
   };
 
   #calcPnl = (): void => {
-    const { tradingPositions } = this.#store.trading;
+    const { openPositions } = this.#store.trading;
 
-    if (!tradingPositions.length) {
+    if (!openPositions.length) {
       this.pnlPercent = 0;
       this.pnlValue = 0;
       return;
@@ -115,7 +115,7 @@ export default class Stats {
 
     for (const {
       lastPrice, entryPrice, baseValue, positionAmt,
-    } of tradingPositions) {
+    } of openPositions) {
       const netPnl = ((lastPrice - entryPrice) / entryPrice) * baseValue;
       const fee = this.#store.trading.getFee(positionAmt) * lastPrice;
       pnl += netPnl - fee;
