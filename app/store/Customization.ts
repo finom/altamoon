@@ -288,7 +288,7 @@ export default class App {
   ): Promise<void> => {
     try {
       const { persistent } = this.#store;
-      const existing = [...this.defaultPlugins, ...this.customPlugins].find(((p) => p.id === id));
+      const existing = this.customPlugins.find(((p) => p.id === id));
 
       if (existing) throw new Error(`Plugin with ID "${id}" already exists`);
 
@@ -331,10 +331,7 @@ export default class App {
       }
     }
 
-    // if the widget is custom, remove it from list of widgets
-    if (!plugin.isDefault) {
-      this.pluginWidgets = this.pluginWidgets.filter(({ pluginId }) => pluginId !== id);
-    }
+    this.pluginWidgets = this.pluginWidgets.filter(({ pluginId }) => pluginId !== id);
 
     // warn user that they need to reload the app to get rid of any side effects of the plugin
     if (!plugin.isDefault || plugin.isThirdParty) {
