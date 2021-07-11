@@ -7,6 +7,7 @@ export type Plugin = (store: Store, api: Api) => void;
 export interface TradingPosition {
   entryPrice: number;
   positionAmt: number;
+  initialAmt: number;
   liquidationPrice: number;
   lastPrice: number;
   isolatedMargin: number;

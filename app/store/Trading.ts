@@ -420,6 +420,8 @@ export default class Trading {
   #getPositionInfo = (
     positionRisk: api.FuturesPositionRisk, lastPrice: number,
   ): TradingPosition => ({
+    initialAmt: this.openPositions
+      .find((p) => p.symbol === positionRisk.symbol)?.initialAmt ?? +positionRisk.positionAmt,
     lastPrice,
     ...this.#getPositionPnl({
       positionAmt: +positionRisk.positionAmt,
