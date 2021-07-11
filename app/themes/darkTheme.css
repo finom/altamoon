@@ -7,6 +7,7 @@
 
 /* fixes (can be removed if they're not needed anymore) */
 td { box-shadow: none!important; } /* fixes weird table background bug caused by bootswatch */
+.table > :not(:last-child) > :last-child > * { border-bottom-color: inherit; } /* fixes weird table border bug caused by bootswatch */
 
 /* common */
 .react-grid-placeholder {
