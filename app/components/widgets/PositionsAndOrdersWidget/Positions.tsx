@@ -61,15 +61,15 @@ const Positions = (): ReactElement => {
       </thead>
       <tbody>
         {openPositions.map(({
-          symbol, baseValue, liquidationPrice, entryPrice, positionAmt,
+          baseAsset, symbol, baseValue, liquidationPrice, entryPrice, positionAmt,
           isolatedWallet, marginType, leverage, lastPrice,
           side, pnl, pnlPercent, truePnl, truePnlPercent,
         }) => (
           <tr key={symbol}>
             <td>
-              {symbol.slice(0, -4)}
+              {baseAsset}
               {' '}
-                &nbsp;
+              &nbsp;
               <Badge className={side === 'BUY' ? 'bg-success' : 'bg-danger'}>
                 {leverage}
                 x
@@ -99,7 +99,6 @@ const Positions = (): ReactElement => {
               <span className={textClassName(pnl)}>
                 {formatNumber(pnl, true)}
                 {' '}
-                {' '}
                 ₮
               </span>
               {' '}
@@ -112,7 +111,6 @@ const Positions = (): ReactElement => {
             <td>
               <span className={textClassName(truePnl)}>
                 {formatNumber(truePnl, true)}
-                {' '}
                 {' '}
                 ₮
               </span>
@@ -137,11 +135,13 @@ const Positions = (): ReactElement => {
         ))}
       </tbody>
       {!openPositions.length && (
-      <tfoot>
-        <tr>
-          <td colSpan={100} align="center" className="text-muted"><em>You don&apos;t have open positions or they aren&apos;t loaded yet</em></td>
-        </tr>
-      </tfoot>
+        <tfoot>
+          <tr>
+            <td colSpan={100} align="center" className="text-muted">
+              <em>You don&apos;t have open positions or they aren&apos;t loaded yet</em>
+            </td>
+          </tr>
+        </tfoot>
       )}
     </Table>
   );

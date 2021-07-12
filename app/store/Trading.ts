@@ -420,8 +420,12 @@ export default class Trading {
   #getPositionInfo = (
     positionRisk: api.FuturesPositionRisk, lastPrice: number,
   ): TradingPosition => ({
-    initialAmt: this.openPositions
-      .find((p) => p.symbol === positionRisk.symbol)?.initialAmt ?? +positionRisk.positionAmt,
+    // if positionAmt is increased, then use it as initial value,
+    // if decrreased or remains the same then do nothing
+    initialAmt: Math.max(
+      this.openPositions.find((p) => p.symbol === positionRisk.symbol)?.initialAmt ?? 0,
+      +positionRisk.positionAmt,
+    ),
     lastPrice,
     ...this.#getPositionPnl({
       positionAmt: +positionRisk.positionAmt,
