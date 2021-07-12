@@ -67,9 +67,9 @@ export default class App {
     this.#store = store;
 
     // make api be available globally
-    window.biduulPlugin = (plugin: Plugin): void => {
+    window.biduulPlugin = ((plugin: Plugin<Store>): void => {
       plugin(this.#store, api);
-    };
+    }) as typeof window.biduulPlugin;
 
     // call initial promise
     void this.#init();

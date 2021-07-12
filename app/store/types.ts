@@ -2,7 +2,7 @@ import * as api from '../api';
 
 export type Api = typeof api; // used at plugins
 
-export type Plugin<T extends Store = Store> = (store: T, api: Api) => void;
+export type Plugin<T> = (store: T, api: Api) => void;
 
 export interface TradingPosition {
   entryPrice: number;
@@ -47,5 +47,5 @@ export interface TradingOrder {
 }
 
 declare global {
-  interface Window { biduulPlugin: <T extends Store = Store>(plugin: Plugin<T>) => void; }
+  interface Window { biduulPlugin: <T = Store>(plugin: Plugin<T>) => void; }
 }
