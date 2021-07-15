@@ -249,7 +249,7 @@ export default class Trading {
     }
   };
 
-  public closePosition = async (symbol: string): Promise<api.FuturesOrder | null> => {
+  public closePosition = async (symbol: string, amt?: number): Promise<api.FuturesOrder | null> => {
     try {
       const position = this.openPositions.find((pos) => pos.symbol === symbol);
 
@@ -260,15 +260,21 @@ export default class Trading {
       const { positionAmt } = position;
       let result;
 
-      if (positionAmt < 0) {
-        result = await api.futuresMarketOrder('BUY', symbol, -positionAmt, { reduceOnly: true });
+      const amount = typeof amt !== 'undefined' ? amt : positionAmt;
+
+      if (amount < 0) {
+        result = await api.futuresMarketOrder('BUY', symbol, -amount, { reduceOnly: true });
       } else {
-        result = await api.futuresMarketOrder('SELL', symbol, positionAmt, { reduceOnly: true });
+        result = await api.futuresMarketOrder('SELL', symbol, amount, { reduceOnly: true });
       }
 
       await this.loadPositions();
 
-      notify('success', `Position ${symbol} is closed`);
+      if (amount < positionAmt) {
+        notify('success', `Position ${symbol} is reduced by ${amount}`);
+      } else {
+        notify('success', `Position ${symbol} is closed`);
+      }
 
       return result;
     } catch {
