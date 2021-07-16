@@ -30,6 +30,7 @@ interface Params {
     stopBuyDraftPrice: number | null;
     stopSellDraftPrice: number | null;
   }) => void;
+  onDragLimitOrder: (orderId: number, price: number) => void;
   alerts: number[];
   draftPriceItems: PriceLinesDatum[];
   pricePrecision: number;
@@ -87,7 +88,7 @@ export default class CandlestickChart {
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
     {
-      pricePrecision, alerts, onUpdateAlerts, onUpdateDrafts,
+      pricePrecision, alerts, onUpdateAlerts, onUpdateDrafts, onDragLimitOrder,
     }: Params,
   ) {
     const containerElement = $.one(container);
@@ -129,10 +130,9 @@ export default class CandlestickChart {
 
     this.#alertLines = new PriceLines({
       axis: this.#axes.getAxis(),
-      items: alerts.map((yValue) => ({ yValue, title: 'Alert' })),
+      items: alerts.map((yValue) => ({ yValue, title: 'Alert', isDraggable: true })),
       color: '#828282',
       isTitleVisible: true,
-      isDraggable: true,
       lineStyle: 'dashed',
       onDragEnd: (_datum, d) => onUpdateAlerts?.(d.map(({ yValue }) => yValue ?? -1)),
       onClickTitle: (datum, d) => this.#alertLines.removeItem(d.indexOf(datum)),
@@ -150,7 +150,10 @@ export default class CandlestickChart {
       onClickTitle: onUpdateDrafts,
     }, resizeData);
 
-    this.#orderLines = new OrderPriceLines({ axis: this.#axes.getAxis() }, resizeData);
+    this.#orderLines = new OrderPriceLines({
+      axis: this.#axes.getAxis(),
+      onDragLimitOrder,
+    }, resizeData);
 
     this.#onUpdateDrafts = onUpdateDrafts;
 
@@ -200,7 +203,7 @@ export default class CandlestickChart {
 
     canCreateDraftLines?: boolean;
   }): void {
-    if (typeof data.pricePrecision !== 'undefined' && data.pricePrecision !== this.#pricePrecision) {
+    if (typeof data.pricePrecision !== 'undefined') {
       const { pricePrecision } = data;
       this.#pricePrecision = pricePrecision;
       this.#axes.update({ pricePrecision });
@@ -423,6 +426,7 @@ export default class CandlestickChart {
     this.#alertLines.addItem({
       yValue: this.#crosshairPriceLines.invertY(coords[1]),
       title: 'Alert',
+      isDraggable: true,
     });
   };
 

@@ -46,8 +46,9 @@ export interface PriceLinesDatum {
   yValue?: number;
   title?: string;
   color?: string;
-  id?: string;
+  id?: string | number;
   isVisible?: boolean;
+  isDraggable?: boolean;
 }
 
 export interface ChartAxis {

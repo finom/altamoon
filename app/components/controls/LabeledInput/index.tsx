@@ -11,7 +11,7 @@ interface Props {
   type: 'text' | 'number';
   value: string;
   innerRef?: Ref<HTMLInputElement>;
-  onPressEnter: () => void;
+  onPressEnter?: () => void;
   onChange: (value: string) => void;
 }
 

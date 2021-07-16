@@ -16,7 +16,6 @@ interface Params {
   color?: string;
   isVisible?: boolean;
   isTitleVisible?: boolean;
-  isDraggable?: boolean;
   lineStyle?: 'solid' | 'dashed' | 'dotted';
   pointerEventsNone?: boolean;
   onDragEnd?: Handler;
@@ -44,8 +43,6 @@ export default class PriceLines implements ChartItem {
 
   readonly #isTitleVisible: boolean;
 
-  readonly #isDraggable: boolean;
-
   readonly #pointerEventsNone: boolean;
 
   #resizeData: ResizeData;
@@ -57,7 +54,7 @@ export default class PriceLines implements ChartItem {
   constructor(
     {
       items, axis, showX, color, lineStyle, isTitleVisible,
-      isDraggable, pointerEventsNone, onDragEnd, onClickTitle,
+      pointerEventsNone, onDragEnd, onClickTitle,
     }: Params,
     resizeData: ResizeData,
   ) {
@@ -68,7 +65,6 @@ export default class PriceLines implements ChartItem {
     this.#color = color ?? '#ff00ff';
     this.#lineStyle = lineStyle ?? 'solid';
     this.#isTitleVisible = isTitleVisible ?? false;
-    this.#isDraggable = isDraggable ?? false;
     this.#pointerEventsNone = !!pointerEventsNone;
     this.#handleDragEnd = onDragEnd;
     this.#handleClickTitle = onClickTitle;
@@ -209,9 +205,7 @@ export default class PriceLines implements ChartItem {
             wrapper.style('pointer-events', 'none');
           }
 
-          if (this.#isDraggable) {
-            wrapper.style('cursor', 'ns-resize');
-          }
+          wrapper.style('cursor', (d) => (d.isDraggable ? 'ns-resize' : 'auto'));
 
           const horizontalWrapper = wrapper.append('g').attr('class', 'price-line-horizontal-group');
 
@@ -229,23 +223,31 @@ export default class PriceLines implements ChartItem {
           }
 
           // --- line note ---
-          if (this.#isDraggable) {
-            // increases area of line when it's dragged
-            horizontalWrapper.append('rect')
+
+          // eslint-disable-next-line @typescript-eslint/no-this-alias
+          const that = this;
+          horizontalWrapper.select(function selector(d) {
+            if (!d.isDraggable) return this;
+
+            const horizontalWrapperItem = d3.select(this);
+
+            horizontalWrapperItem.append('rect')
               .attr('class', 'price-line-handle')
               .attr('x', 0)
               .attr('y', -5)
-              .attr('width', this.#resizeData.width)
+              .attr('width', that.#resizeData.width)
               .attr('height', 10)
               .attr('fill', 'transparent');
 
-            horizontalWrapper.call(
+            horizontalWrapperItem.call(
               d3.drag<Element, PriceLinesDatum>()
-                .on('start', this.#onDragStart)
-                .on('drag', this.#onDrag)
-                .on('end', (_evt, datum) => this.#onDragEnd(datum)) as TodoAny,
+                .on('start', that.#onDragStart)
+                .on('drag', that.#onDrag)
+                .on('end', (_evt, datum) => that.#onDragEnd(datum)) as TodoAny,
             );
-          }
+
+            return this;
+          });
 
           if (this.#isTitleVisible) {
             const titleGroup = horizontalWrapper.append('g')

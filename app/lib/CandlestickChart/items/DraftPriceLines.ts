@@ -21,26 +21,29 @@ export default class DraftPriceLines extends PriceLines {
       items: [{
         id: 'BUY',
         isVisible: false,
+        isDraggable: true,
         color: 'var(--biduul-buy-color)',
         title: 'Buy draft',
       }, {
         id: 'SELL',
         isVisible: false,
+        isDraggable: true,
         color: 'var(--biduul-sell-color)',
         title: 'Sell draft',
       }, {
         id: 'STOP_BUY',
         isVisible: false,
+        isDraggable: true,
         color: 'var(--biduul-stop-buy-color)',
         title: 'Stop buy draft',
       }, {
         id: 'STOP_SELL',
         isVisible: false,
+        isDraggable: true,
         color: 'var(--biduul-stop-sell-color)',
         title: 'Stop sell draft',
       }],
       isTitleVisible: true,
-      isDraggable: true,
       lineStyle: 'dashed',
       onDragEnd: () => onDragEnd(this.getDraftPrices()),
       onClickTitle: (datum) => {
