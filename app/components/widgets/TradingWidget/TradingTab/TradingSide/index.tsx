@@ -81,16 +81,6 @@ const TradingSide = ({
         </div>
       )}
       <div className="mb-3">
-        <QuickOrder
-          totalWalletBalance={totalWalletBalance}
-          availableBalance={availableBalance}
-          quantityPrecision={quantityPrecision}
-          price={price}
-          side={side}
-          onOrder={onOrder}
-        />
-      </div>
-      <div className="mb-3">
         <ExactSize
           id={id}
           side={side}
@@ -98,6 +88,16 @@ const TradingSide = ({
           availableBalance={availableBalance}
           price={price}
           quantityPrecision={quantityPrecision}
+          onOrder={onOrder}
+        />
+      </div>
+      <div className="mb-3">
+        <QuickOrder
+          totalWalletBalance={totalWalletBalance}
+          availableBalance={availableBalance}
+          quantityPrecision={quantityPrecision}
+          price={price}
+          side={side}
           onOrder={onOrder}
         />
       </div>
