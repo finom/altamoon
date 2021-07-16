@@ -60,6 +60,7 @@ const ExactSize = ({
           id={`${id}_${side}_exact`}
           value={exactSizeStr}
           innerRef={inputRef as Ref<HTMLInputElement>}
+          onPressEnter={() => onOrder(quantity)}
           onChange={setExactSizeStr}
         />
         <Button

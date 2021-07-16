@@ -11,6 +11,7 @@ interface Props {
   type: 'text' | 'number';
   value: string;
   innerRef?: Ref<HTMLInputElement>;
+  onPressEnter: () => void;
   onChange: (value: string) => void;
 }
 
@@ -24,6 +25,7 @@ const LabeledInput = ({
   value,
   innerRef,
   onChange,
+  onPressEnter,
 }: Props): ReactElement => (
   <div className={`form-control labeled-input ${css.labeledInput}`}>
     <label htmlFor={id}>{label}</label>
@@ -32,6 +34,12 @@ const LabeledInput = ({
       type={type}
       id={id}
       value={value}
+      onKeyDown={(evt) => {
+        if (evt.key === 'Enter' && onPressEnter) {
+          evt.preventDefault();
+          onPressEnter();
+        }
+      }}
       onChange={({ target }) => onChange(target.value)}
     />
     {rightLabel ? <label htmlFor={id} className={rightLabelClassName}>{rightLabel}</label> : null}
