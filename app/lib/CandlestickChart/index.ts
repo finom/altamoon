@@ -109,10 +109,13 @@ export default class CandlestickChart {
     const resizeData = this.#calcDimensions();
 
     const x = d3.scaleTime().range([0, this.#width]);
+
     this.#scales = {
       x,
       scaledX: x,
-      y: d3.scaleLinear().range([this.#height, 0]),
+      y: localStorage.getItem('forceChartLinearScale') === 'true'
+        ? d3.scaleLinear().range([this.#height, 0])
+        : d3.scaleSymlog().range([this.#height, 0]),
     };
 
     this.#pricePrecision = pricePrecision;
@@ -169,6 +172,7 @@ export default class CandlestickChart {
         this.#positionLines.update();
         this.#alertLines.update();
         this.#orderLines.update();
+        this.#draftLines.update();
         this.#currentPriceLines.update();
 
         this.#draw();
