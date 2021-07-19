@@ -228,6 +228,12 @@ export default class CandlestickChart {
 
       if (isNewSymbol) {
         this.resetAlerts();
+
+        this.#positionLines.update();
+        this.#alertLines.update();
+        this.#orderLines.update();
+        this.#draftLines.update();
+        this.#currentPriceLines.update();
       }
 
       if (isNewInterval) {
