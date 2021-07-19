@@ -20,6 +20,8 @@ interface Params {
   lineStyle?: 'solid' | 'dashed' | 'dotted';
   pointerEventsNone?: boolean;
   onDragEnd?: Handler;
+  onAdd?: Handler;
+  onRemove?: Handler;
   onClickClose?: Handler;
   onClickCheck?: Handler;
 }
@@ -53,6 +55,10 @@ export default class PriceLines implements ChartItem {
 
   #handleDragEnd?: Handler;
 
+  #handleAdd?: Handler;
+
+  #handleRemove?: Handler;
+
   #handleClickClose?: Handler;
 
   #handleClickCheck?: Handler;
@@ -60,7 +66,7 @@ export default class PriceLines implements ChartItem {
   constructor(
     {
       items, axis, showX, color, lineStyle, isTitleVisible, isBackgroundFill,
-      pointerEventsNone, onDragEnd, onClickClose, onClickCheck,
+      pointerEventsNone, onDragEnd, onAdd, onRemove, onClickClose, onClickCheck,
     }: Params,
     resizeData: ResizeData,
   ) {
@@ -74,6 +80,8 @@ export default class PriceLines implements ChartItem {
     this.#isBackgroundFill = isBackgroundFill ?? false;
     this.#pointerEventsNone = !!pointerEventsNone;
     this.#handleDragEnd = onDragEnd;
+    this.#handleAdd = onAdd;
+    this.#handleRemove = onRemove;
     this.#handleClickClose = onClickClose;
     this.#handleClickCheck = onClickCheck;
   }
@@ -138,6 +146,7 @@ export default class PriceLines implements ChartItem {
   public addItem = (data: PriceLinesDatum): void => {
     this.#items.push(data);
     this.update({ items: this.#items });
+    this.#handleAdd?.(data, this.#items);
   };
 
   public removeItem = (key: number | string): void => {
@@ -145,6 +154,7 @@ export default class PriceLines implements ChartItem {
     if (!item) throw new Error(`Unable to find item "${key}"`);
     this.#items.splice(this.#items.indexOf(item), 1);
     this.update({ items: this.#items });
+    this.#handleRemove?.(item, this.#items);
   };
 
   public invertX = (px: number): Date => convertType<{ invert:(px: number) => Date }>(

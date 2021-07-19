@@ -17,7 +17,9 @@ export default class AlertPriceLines extends PriceLines {
       color: '#828282',
       isTitleVisible: true,
       lineStyle: 'dashed',
-      onDragEnd: (_datum, d) => onUpdateAlerts?.(d.map(({ yValue }) => yValue ?? -1)),
+      onDragEnd: () => onUpdateAlerts?.(this.getItems().map(({ yValue }) => yValue ?? -1)),
+      onAdd: () => onUpdateAlerts?.(this.getItems().map(({ yValue }) => yValue ?? -1)),
+      onRemove: () => onUpdateAlerts?.(this.getItems().map(({ yValue }) => yValue ?? -1)),
       onClickClose: (datum, d) => {
         this.removeItem(d.findIndex(({ yValue }) => datum.yValue === yValue));
       },
