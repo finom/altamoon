@@ -1,6 +1,7 @@
 import { debounce, keyBy, throttle } from 'lodash';
 import { listenChange } from 'use-change';
 import * as api from '../api';
+import { OrderSide } from '../api';
 import binanceFuturesMaxLeverage from '../lib/binanceFuturesMaxLeverage';
 import delay from '../lib/delay';
 import floorByPrecision from '../lib/floorByPrecision';
@@ -37,6 +38,14 @@ export default class Trading {
   public stopSellPrice: number | null = null;
 
   public shouldShowStopSellPriceLine = false;
+
+  public exactSizeLimitBuyStr = '';
+
+  public exactSizeLimitSellStr = '';
+
+  public exactSizeStopLimitBuyStr = '';
+
+  public exactSizeStopLimitSellStr = '';
 
   #store: Store;
 
@@ -182,6 +191,12 @@ export default class Trading {
 
       notify('success', `Limit order for ${symbol} is created`);
 
+      if (side === 'BUY') {
+        this.shouldShowLimitBuyPriceLine = false;
+      } else {
+        this.shouldShowLimitSellPriceLine = false;
+      }
+
       return result;
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -240,6 +255,14 @@ export default class Trading {
       await this.loadOrders();
 
       notify('success', `Stop limit order for ${symbol} is created`);
+
+      if (side === 'BUY') {
+        this.shouldShowLimitBuyPriceLine = false;
+        this.shouldShowStopBuyPriceLine = false;
+      } else {
+        this.shouldShowLimitSellPriceLine = false;
+        this.shouldShowStopSellPriceLine = false;
+      }
 
       return result;
     } catch (e) {
@@ -305,8 +328,7 @@ export default class Trading {
       await this.loadOrders();
 
       notify('success', `All orders for ${symbol} are canceled`);
-    } catch {
-    }
+    } catch {} // caught by called methods
   };
 
   public getFee = (qty: number, type: 'maker' | 'taker' = 'maker'): number => {
@@ -327,7 +349,9 @@ export default class Trading {
     stopBuyDraftPrice: number | null;
     stopSellDraftPrice: number | null;
   }): void => {
-    if (this.#store.persistent.tradingType === 'LIMIT' || this.#store.persistent.tradingType === 'STOP') {
+    const { tradingType } = this.#store.persistent;
+
+    if (tradingType === 'LIMIT' || tradingType === 'STOP') {
       if (typeof buyDraftPrice === 'number') {
         this.limitBuyPrice = buyDraftPrice;
         this.shouldShowLimitBuyPriceLine = true;
@@ -343,7 +367,7 @@ export default class Trading {
       }
     }
 
-    if (this.#store.persistent.tradingType === 'STOP' || this.#store.persistent.tradingType === 'STOP_MARKET') {
+    if (tradingType === 'STOP' || tradingType === 'STOP_MARKET') {
       if (typeof stopBuyDraftPrice === 'number') {
         this.stopBuyPrice = stopBuyDraftPrice;
         this.shouldShowStopBuyPriceLine = true;
@@ -358,6 +382,100 @@ export default class Trading {
         this.shouldShowStopSellPriceLine = false;
       }
     }
+  };
+
+  // used by Chart Widget compoment
+  public createOrderFromDraft = async ({
+    buyDraftPrice, sellDraftPrice, stopBuyDraftPrice, stopSellDraftPrice,
+  }: {
+    buyDraftPrice: number | null;
+    sellDraftPrice: number | null;
+    stopBuyDraftPrice: number | null;
+    stopSellDraftPrice: number | null;
+  }, side: OrderSide): Promise<void> => {
+    const {
+      tradingType, symbol, tradingReduceOnly: reduceOnly, tradingPostOnly: postOnly,
+    } = this.#store.persistent;
+    const price = side === 'BUY' ? buyDraftPrice : sellDraftPrice;
+    const stopPrice = side === 'BUY' ? stopBuyDraftPrice : stopSellDraftPrice;
+
+    if (tradingType !== 'LIMIT' && tradingType !== 'STOP') throw new Error(`Unable to create order from draft for ${tradingType} order type`);
+    if (typeof price !== 'number') throw new Error('Price is not a number');
+
+    if (tradingType === 'STOP') {
+      if (!stopPrice) {
+        notify('error', 'Stop price is not given');
+
+        return;
+      }
+
+      const size = this.calculateSizeFromString(side === 'BUY' ? this.exactSizeStopLimitBuyStr : this.exactSizeStopLimitSellStr);
+
+      const quantity = this.calculateQuantity({
+        symbol,
+        price,
+        size,
+      });
+
+      if (!quantity) {
+        notify('error', 'Order size is zero or not given');
+
+        return;
+      }
+
+      await this.stopLimitOrder({
+        side,
+        quantity,
+        price,
+        stopPrice,
+        symbol,
+        reduceOnly,
+        postOnly,
+      });
+    } else {
+      const size = this.calculateSizeFromString(side === 'BUY' ? this.exactSizeLimitBuyStr : this.exactSizeLimitSellStr);
+
+      const quantity = this.calculateQuantity({
+        symbol,
+        price,
+        size,
+      });
+
+      if (!quantity) {
+        notify('error', 'Order size is zero or not given');
+
+        return;
+      }
+
+      await this.limitOrder({
+        side,
+        quantity,
+        price,
+        symbol,
+        reduceOnly,
+        postOnly,
+      });
+    }
+  };
+
+  public calculateQuantity = ({
+    symbol, price, size,
+  }: { symbol: string; price: number; size: number; }): number => {
+    const positionRisk = this.allSymbolsPositionRisk[symbol];
+    const symbolInfo = this.#store.market.futuresExchangeSymbols[symbol];
+    if (!positionRisk || !symbolInfo) return 0;
+    return Math.floor(
+      +positionRisk.leverage
+        * (size / price) * (10 ** symbolInfo.quantityPrecision),
+    ) / (10 ** symbolInfo.quantityPrecision);
+  };
+
+  public calculateSizeFromString = (sizeStr: string): number => {
+    const { totalWalletBalance } = this.#store.account;
+
+    return sizeStr.endsWith('%')
+      ? (+sizeStr.replace('%', '') / 100) * totalWalletBalance || 0
+      : +sizeStr || 0;
   };
 
   #floorPriceByTickSize = (symbol: string, price: number): number => {

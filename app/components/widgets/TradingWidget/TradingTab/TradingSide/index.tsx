@@ -4,9 +4,7 @@ import React, {
 import { useSilent, useValue } from 'use-change';
 
 import * as api from '../../../../../api';
-import {
-  ACCOUNT, MARKET, PERSISTENT, TRADING,
-} from '../../../../../store';
+import { ACCOUNT, PERSISTENT, TRADING } from '../../../../../store';
 import QuickOrder from './QuickOrder';
 import ExactSize from './ExactSize';
 
@@ -18,16 +16,18 @@ interface Props {
   stopPrice: number | null;
   id: string;
   tradingType: api.OrderType;
+  exactSizeStr: string;
+  setExactSizeStr: (value: string) => void;
   children?: ReactNode;
 }
 
 const TradingSide = ({
   side, reduceOnly, postOnly, price, stopPrice, id, tradingType, children,
+  exactSizeStr, setExactSizeStr,
 }: Props): ReactElement => {
   const symbol = useValue(PERSISTENT, 'symbol');
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
   const availableBalance = useValue(ACCOUNT, 'availableBalance');
-  const symbolInfo = useValue(MARKET, 'futuresExchangeSymbols')[symbol];
   const marketOrder = useSilent(TRADING, 'marketOrder');
   const limitOrder = useSilent(TRADING, 'limitOrder');
   const stopMarketOrder = useSilent(TRADING, 'stopMarketOrder');
@@ -71,7 +71,6 @@ const TradingSide = ({
     limitOrder, marketOrder, postOnly, price, reduceOnly, side, stopLimitOrder, stopMarketOrder,
     stopPrice, symbol, tradingType,
   ]);
-  const quantityPrecision = symbolInfo?.quantityPrecision ?? 0;
 
   return (
     <>
@@ -84,7 +83,6 @@ const TradingSide = ({
         <QuickOrder
           totalWalletBalance={totalWalletBalance}
           availableBalance={availableBalance}
-          quantityPrecision={quantityPrecision}
           price={price}
           side={side}
           onOrder={onOrder}
@@ -97,8 +95,9 @@ const TradingSide = ({
           totalWalletBalance={totalWalletBalance}
           availableBalance={availableBalance}
           price={price}
-          quantityPrecision={quantityPrecision}
           onOrder={onOrder}
+          exactSizeStr={exactSizeStr}
+          setExactSizeStr={setExactSizeStr}
         />
       </div>
     </>

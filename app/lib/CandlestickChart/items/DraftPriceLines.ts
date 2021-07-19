@@ -1,20 +1,22 @@
+import { OrderSide } from '../../../api';
 import { ChartAxis, ResizeData } from '../types';
 import PriceLines from './PriceLines';
 
-type Handler = ((r: {
-  buyDraftPrice: number | null;
-  sellDraftPrice: number | null;
-  stopBuyDraftPrice: number | null;
-  stopSellDraftPrice: number | null;
-}) => void);
-
 export default class DraftPriceLines extends PriceLines {
-  constructor({
-    axis, onDragEnd, onClickTitle,
-  }: {
+  constructor({ axis, onUpdateDrafts, onClickDraftCheck }: {
     axis: ChartAxis;
-    onDragEnd: Handler;
-    onClickTitle: Handler;
+    onUpdateDrafts: ((r: {
+      buyDraftPrice: number | null;
+      sellDraftPrice: number | null;
+      stopBuyDraftPrice: number | null;
+      stopSellDraftPrice: number | null;
+    }) => void);
+    onClickDraftCheck: ((r: {
+      buyDraftPrice: number | null;
+      sellDraftPrice: number | null;
+      stopBuyDraftPrice: number | null;
+      stopSellDraftPrice: number | null;
+    }, side: OrderSide) => void);
   }, resizeData: ResizeData) {
     super({
       axis,
@@ -22,12 +24,14 @@ export default class DraftPriceLines extends PriceLines {
         id: 'BUY',
         isVisible: false,
         isDraggable: true,
+        isCheckable: true,
         color: 'var(--biduul-buy-color)',
         title: 'Buy draft',
       }, {
         id: 'SELL',
         isVisible: false,
         isDraggable: true,
+        isCheckable: true,
         color: 'var(--biduul-sell-color)',
         title: 'Sell draft',
       }, {
@@ -45,10 +49,13 @@ export default class DraftPriceLines extends PriceLines {
       }],
       isTitleVisible: true,
       lineStyle: 'dashed',
-      onDragEnd: () => onDragEnd(this.getDraftPrices()),
-      onClickTitle: (datum) => {
+      onDragEnd: () => onUpdateDrafts(this.getDraftPrices()),
+      onClickCheck: (datum) => {
+        onClickDraftCheck(this.getDraftPrices(), datum.id === 'SELL' || datum.id === 'STOP_SELL' ? 'SELL' : 'BUY');
+      },
+      onClickClose: (datum) => {
         this.updateItem(datum.id as string, { isVisible: false });
-        onClickTitle(this.getDraftPrices());
+        onUpdateDrafts(this.getDraftPrices());
       },
     }, resizeData);
   }

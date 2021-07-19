@@ -16,10 +16,12 @@ interface Params {
   color?: string;
   isVisible?: boolean;
   isTitleVisible?: boolean;
+  isBackgroundFill?: boolean;
   lineStyle?: 'solid' | 'dashed' | 'dotted';
   pointerEventsNone?: boolean;
   onDragEnd?: Handler;
-  onClickTitle?: Handler;
+  onClickClose?: Handler;
+  onClickCheck?: Handler;
 }
 
 export default class PriceLines implements ChartItem {
@@ -43,18 +45,22 @@ export default class PriceLines implements ChartItem {
 
   readonly #isTitleVisible: boolean;
 
+  readonly #isBackgroundFill: boolean;
+
   readonly #pointerEventsNone: boolean;
 
   #resizeData: ResizeData;
 
   #handleDragEnd?: Handler;
 
-  #handleClickTitle?: Handler;
+  #handleClickClose?: Handler;
+
+  #handleClickCheck?: Handler;
 
   constructor(
     {
-      items, axis, showX, color, lineStyle, isTitleVisible,
-      pointerEventsNone, onDragEnd, onClickTitle,
+      items, axis, showX, color, lineStyle, isTitleVisible, isBackgroundFill,
+      pointerEventsNone, onDragEnd, onClickClose, onClickCheck,
     }: Params,
     resizeData: ResizeData,
   ) {
@@ -65,9 +71,11 @@ export default class PriceLines implements ChartItem {
     this.#color = color ?? '#ff00ff';
     this.#lineStyle = lineStyle ?? 'solid';
     this.#isTitleVisible = isTitleVisible ?? false;
+    this.#isBackgroundFill = isBackgroundFill ?? false;
     this.#pointerEventsNone = !!pointerEventsNone;
     this.#handleDragEnd = onDragEnd;
-    this.#handleClickTitle = onClickTitle;
+    this.#handleClickClose = onClickClose;
+    this.#handleClickCheck = onClickCheck;
   }
 
   public appendTo = (
@@ -99,7 +107,7 @@ export default class PriceLines implements ChartItem {
     this.#wrapper?.selectAll('.price-line-horizontal-group .price-line-line').attr('x2', resizeData.width);
     this.#wrapper?.selectAll('.price-line-vertical-group .price-line-line').attr('y2', resizeData.height);
 
-    this.#wrapper?.selectAll('.price-line-title-group').attr('transform', `translate(${this.#resizeData.width - 200}, 0)`);
+    this.#wrapper?.selectAll('.price-line-title-object').attr('transform', `translate(${this.#resizeData.width - 120}, 0)`);
 
     this.#draw();
   };
@@ -222,8 +230,7 @@ export default class PriceLines implements ChartItem {
             horizontalLine.attr('stroke-dasharray', this.#lineStyle === 'dashed' ? '10 7' : '2 4');
           }
 
-          // --- line note ---
-
+          // --- dragging ---
           // eslint-disable-next-line @typescript-eslint/no-this-alias
           const that = this;
           horizontalWrapper.select(function selector(d) {
@@ -249,31 +256,76 @@ export default class PriceLines implements ChartItem {
             return this;
           });
 
+          // --- line note ---
           if (this.#isTitleVisible) {
-            const titleGroup = horizontalWrapper.append('g')
-              .attr('class', 'price-line-title-group')
-              .attr('transform', `translate(${this.#resizeData.width - 200}, 0)`);
+            // for some reason event datum (2nd argument of d3.Selection#on method)
+            // provides wrong datum value, that's why the dirty hack is used
+            const getDatumFromTarget = (target: HTMLElement | SVGForeignObjectElement) => {
+              const foreignObject = target.closest('.price-line-title-object');
+              // eslint-disable-next-line no-underscore-dangle
+              return this.#items[convertType<{ _datumIndex: number }>(foreignObject)._datumIndex];
+            };
 
-            if (this.#handleClickTitle) {
-              titleGroup
-                .on('click', (_evt, d) => this.#handleClickTitle?.(d, this.#items))
-                .style('cursor', 'pointer');
-            }
-
-            titleGroup.append('rect')
-              .attr('fill', '#010025')
+            const titleGroup = horizontalWrapper.append('foreignObject')
+              .attr('class', 'price-line-title-object')
+              .attr('transform', `translate(${this.#resizeData.width - 120}, 0)`)
               .attr('x', 0)
               .attr('y', -12)
-              .attr('width', 150)
+              .attr('width', 110)
               .attr('height', 24)
-              .attr('rx', 4)
-              .attr('stroke', 'currentColor')
-              .attr('stroke-width', 1);
+              .property('_datumIndex', (d) => this.#items.indexOf(d))
+              .on('mouseenter', ({ target }: { target: SVGForeignObjectElement }) => {
+                const datum = getDatumFromTarget(target);
+                const check: HTMLElement | null = target.querySelector('.check');
+                if (check) check.hidden = !datum.isCheckable;
+              })
+              .on('mouseleave', ({ target }: { target: SVGForeignObjectElement }) => {
+                const check: HTMLElement | null = target.querySelector('.check');
+                if (check) check.hidden = true;
+              });
 
-            titleGroup.append('text')
-              .attr('x', 10)
-              .attr('y', 3)
+            const div = titleGroup.append('xhtml:div')
+              .attr('class', 'price-line-title-inner')
+              .style('border', '1px solid currentColor')
+              .style('border-radius', '4px')
+              .style('padding', '5px 10px')
               .style('pointer-events', 'none');
+
+            div.append('xhtml:span').attr('class', 'text').style('color', '#fff');
+
+            if (this.#handleClickClose) {
+              div.append('xhtml:span')
+                .property('textContent', '×')
+                .property('className', 'nodrag')
+                .style('color', 'var(--bs-red)')
+                .style('font-size', '1.3rem')
+                .style('line-height', 1)
+                .style('margin-top', '-5px')
+                .style('margin-left', '3px')
+                .style('float', 'right')
+                .style('cursor', 'pointer')
+                .style('pointer-events', 'auto')
+                .on('click', (evt: { target: HTMLElement }) => {
+                  this.#handleClickClose?.(getDatumFromTarget(evt.target), this.#items);
+                });
+            }
+
+            if (this.#handleClickCheck) {
+              div.append('xhtml:span')
+                .property('textContent', '✔')
+                .property('className', 'check nodrag')
+                .property('hidden', true)
+                .style('color', 'var(--bs-green)')
+                .style('font-size', '1rem')
+                .style('line-height', 1)
+                .style('margin-top', '-1px')
+                .style('float', 'right')
+                .style('cursor', 'pointer')
+                .style('pointer-events', 'auto')
+                .on('click', (evt: { target: HTMLElement }) => {
+                  this.#handleClickCheck?.(getDatumFromTarget(evt.target), this.#items);
+                });
+            }
           }
 
           // --- left label ---
@@ -285,8 +337,8 @@ export default class PriceLines implements ChartItem {
             }))
             .attr('class', 'price-line-left-background')
             .attr('fill', 'currentColor');
-          leftLabelGroup.append('text')
-            .attr('class', 'price-line-left-label');
+
+          leftLabelGroup.append('text').attr('class', 'price-line-left-label');
 
           // --- right label ---
           const rightLabelGroup = horizontalWrapper.append('g')
@@ -300,6 +352,7 @@ export default class PriceLines implements ChartItem {
             }))
             .attr('class', 'price-line-right-background')
             .attr('fill', 'currentColor');
+
           rightLabelGroup.append('text')
             .attr('class', 'price-line-right-label')
             .attr('fill', '#fff');
@@ -344,7 +397,9 @@ export default class PriceLines implements ChartItem {
           updateHorizontalLineHandler(updateWrapper, 'right', this.#axis.yRight);
           updateVerticalLineHandler(updateWrapper, this.#axis.x);
           if (this.#isTitleVisible) {
-            updateWrapper.select('.price-line-title-group text').text(({ title }) => title ?? '');
+            updateWrapper.select('.price-line-title-object .text').text(({ title }) => title ?? '');
+            updateWrapper.select('.price-line-title-object .price-line-title-inner')
+              .style('background-color', (d) => (this.#isBackgroundFill && d.color ? d.color : '#010025'));
           }
 
           return wrapper;
@@ -354,7 +409,9 @@ export default class PriceLines implements ChartItem {
           updateHorizontalLineHandler(update, 'right', this.#axis.yRight);
           updateVerticalLineHandler(update, this.#axis.x);
           if (this.#isTitleVisible) {
-            update.select('.price-line-title-group text').text(({ title }) => title ?? '');
+            update.select('.price-line-title-object .text').text(({ title }) => title ?? '');
+            update.select('.price-line-title-object .price-line-title-inner')
+              .style('background-color', (d) => (this.#isBackgroundFill && d.color ? d.color : '#010025'));
           }
           return update;
         },
@@ -433,8 +490,12 @@ export default class PriceLines implements ChartItem {
     }
   };
 
-  #onDragStart = (_evt: unknown, datum: PriceLinesDatum): void => {
-    this.#draggableItemIndex = this.#items.indexOf(datum);
+  #onDragStart = (evt: { sourceEvent: { target: Element } }, datum: PriceLinesDatum): void => {
+    // nodrag hack fixes issue when user pulls the line at close button
+    // and coordinates become eqial to zero
+    if (!evt.sourceEvent.target.closest('.nodrag')) {
+      this.#draggableItemIndex = this.#items.indexOf(datum);
+    }
   };
 
   #onDrag = (evt: { sourceEvent: MouseEvent }): void => {

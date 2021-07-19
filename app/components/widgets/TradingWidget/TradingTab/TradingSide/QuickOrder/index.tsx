@@ -9,14 +9,13 @@ import ButtonCol from './ButtonCol';
 interface Props {
   totalWalletBalance: number;
   availableBalance: number;
-  quantityPrecision: number;
   price: number | null;
   side: api.OrderSide;
   onOrder: (qty: number) => void;
 }
 
 const QuickOrder = ({
-  totalWalletBalance, availableBalance, quantityPrecision,
+  totalWalletBalance, availableBalance,
   price, side, onOrder,
 }: Props): ReactElement => (
   <>
@@ -29,7 +28,6 @@ const QuickOrder = ({
       <ButtonCol
         totalWalletBalance={totalWalletBalance}
         availableBalance={availableBalance}
-        quantityPrecision={quantityPrecision}
         price={price}
         side={side}
         percent={10}
@@ -38,7 +36,6 @@ const QuickOrder = ({
       <ButtonCol
         totalWalletBalance={totalWalletBalance}
         availableBalance={availableBalance}
-        quantityPrecision={quantityPrecision}
         price={price}
         side={side}
         percent={25}
@@ -47,7 +44,6 @@ const QuickOrder = ({
       <ButtonCol
         totalWalletBalance={totalWalletBalance}
         availableBalance={availableBalance}
-        quantityPrecision={quantityPrecision}
         price={price}
         side={side}
         percent={50}
@@ -56,7 +52,6 @@ const QuickOrder = ({
       <ButtonCol
         totalWalletBalance={totalWalletBalance}
         availableBalance={availableBalance}
-        quantityPrecision={quantityPrecision}
         price={price}
         side={side}
         isMax

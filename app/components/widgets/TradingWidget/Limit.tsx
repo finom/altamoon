@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
-import { useValue } from 'use-change';
-import { MARKET } from '../../../store';
+import useChange, { useValue } from 'use-change';
+import { MARKET, TRADING } from '../../../store';
 import TradingTab from './TradingTab';
 import TradingPriceInput from '../../controls/TradingPriceInput';
 import useDraftPrice from './TradingTab/useDraftPrice';
@@ -33,6 +33,9 @@ const Limit = ({
     price: sellPrice,
   } = useDraftPrice('limitSellPrice', 'shouldShowLimitSellPriceLine', { pricePrecision });
 
+  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeLimitBuyStr');
+  const [exactSizeSellStr, setExactSizeSellStr] = useChange(TRADING, 'exactSizeLimitSellStr');
+
   return (
     <TradingTab
       id="limitTab"
@@ -44,6 +47,10 @@ const Limit = ({
       postOnly={postOnly}
       reduceOnly={reduceOnly}
       tradingType={tradingType}
+      exactSizeBuyStr={exactSizeBuyStr}
+      setExactSizeBuyStr={setExactSizeBuyStr}
+      exactSizeSellStr={exactSizeSellStr}
+      setExactSizeSellStr={setExactSizeSellStr}
       buyNode={(
         <>
           <label htmlFor="limitBuyPrice" className="mb-1">Buy Price</label>

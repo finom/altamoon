@@ -1,13 +1,13 @@
 import { capitalize } from 'lodash';
 import React, {
-  ReactElement, Ref, useEffect, useState,
+  ReactElement, Ref, useEffect, useMemo,
 } from 'react';
 import { Button } from 'reactstrap';
-import { useValue } from 'use-change';
+import { useSilent, useValue } from 'use-change';
 
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
-import { MARKET, TRADING } from '../../../../../../store';
+import { MARKET, PERSISTENT, TRADING } from '../../../../../../store';
 import LabeledInput from '../../../../../controls/LabeledInput';
 import PercentSelector from './PercentSelector';
 
@@ -16,8 +16,9 @@ interface Props {
   totalWalletBalance: number;
   availableBalance: number;
   price: number | null;
-  quantityPrecision: number;
   id: string;
+  exactSizeStr: string;
+  setExactSizeStr: (value: string) => void;
   onOrder: (qty: number) => void;
 }
 
@@ -30,19 +31,29 @@ const ExactSize = ({
   totalWalletBalance,
   availableBalance,
   price,
-  quantityPrecision,
   id,
   onOrder,
+  exactSizeStr,
+  setExactSizeStr,
 }: Props): ReactElement => {
-  const [exactSizeStr, setExactSizeStr] = useState('0');
-  const exactSize = exactSizeStr.endsWith('%')
-    ? (+exactSizeStr.replace('%', '') / 100) * totalWalletBalance || 0
-    : +exactSizeStr || 0;
-  const currentSymbolLeverage = useValue(TRADING, 'currentSymbolLeverage');
-  const quantity = typeof price === 'number' ? Math.floor(
-    currentSymbolLeverage
-      * (exactSize / price) * (10 ** quantityPrecision),
-  ) / (10 ** quantityPrecision) : 0;
+  const calculateQuantity = useSilent(TRADING, 'calculateQuantity');
+  const calculateSizeFromString = useSilent(TRADING, 'calculateSizeFromString');
+  const symbol = useValue(PERSISTENT, 'symbol');
+  const exactSize = useMemo(
+    () => calculateSizeFromString(exactSizeStr),
+    [calculateSizeFromString, exactSizeStr],
+  );
+
+  const quantity = useMemo(() => {
+    if (typeof price !== 'number') return 0;
+
+    return calculateQuantity({
+      symbol,
+      price,
+      size: exactSize,
+    });
+  }, [calculateQuantity, exactSize, price, symbol]);
+
   const [inputRef, setInputTitle] = useBootstrapTooltip<HTMLInputElement>(tooltipOptions);
   const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
 

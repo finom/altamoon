@@ -18,11 +18,16 @@ interface Props {
   buyNode?: ReactNode;
   sellNode?: ReactNode;
   tradingType: api.OrderType;
+  exactSizeBuyStr: string;
+  setExactSizeBuyStr: (value: string) => void;
+  exactSizeSellStr: string;
+  setExactSizeSellStr: (value: string) => void;
 }
 
 const TradingTab = ({
   isWideLayout, postOnly, reduceOnly,
   buyPrice, sellPrice, stopBuyPrice, stopSellPrice, id, buyNode, sellNode, tradingType,
+  exactSizeBuyStr, setExactSizeBuyStr, exactSizeSellStr, setExactSizeSellStr,
 }: Props): ReactElement => {
   ((n: boolean) => n)(postOnly); // just to temporarily disable TS "never read" error
   const [compactModeSide, setCompactModeSide] = useState<api.OrderSide>('BUY');
@@ -50,6 +55,8 @@ const TradingTab = ({
             price={buyPrice}
             stopPrice={stopBuyPrice}
             tradingType={tradingType}
+            exactSizeStr={exactSizeBuyStr}
+            setExactSizeStr={setExactSizeBuyStr}
           >
             {buyNode}
           </TradingSide>
@@ -63,6 +70,8 @@ const TradingTab = ({
             price={sellPrice}
             stopPrice={stopSellPrice}
             tradingType={tradingType}
+            exactSizeStr={exactSizeSellStr}
+            setExactSizeStr={setExactSizeSellStr}
           >
             {sellNode}
           </TradingSide>

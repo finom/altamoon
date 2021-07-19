@@ -1,5 +1,5 @@
 import React, {
-  ReactElement, useCallback, useEffect, useMemo, useRef, useState,
+  ReactElement, useEffect, useMemo, useRef, useState,
 } from 'react';
 import useChange, { useValue, useSilent, useGet } from 'use-change';
 import * as api from '../../../api';
@@ -28,6 +28,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   const openOrders = useValue(TRADING, 'openOrders');
   const getOpenOrders = useGet(TRADING, 'openOrders');
   const updateDrafts = useSilent(TRADING, 'updateDrafts');
+  const createOrderFromDraft = useSilent(TRADING, 'createOrderFromDraft');
   const limitOrder = useSilent(TRADING, 'limitOrder');
   const cancelOrder = useSilent(TRADING, 'cancelOrder');
   const limitBuyPrice = useValue(TRADING, 'limitBuyPrice');
@@ -143,13 +144,14 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
       const instance = new CandlestickChart(ref.current, {
         onUpdateAlerts: (d: number[]) => setAlerts(d),
         onUpdateDrafts: updateDrafts,
+        onClickDraftCheck: createOrderFromDraft,
         alerts,
         draftPriceItems: [],
         pricePrecision: currentSymbolInfo?.pricePrecision ?? 0,
         onDragLimitOrder: async (orderId: number, price: number) => {
           const order = getOpenOrders().find((orderItem) => orderId === orderItem.orderId);
-
           if (order) {
+            if (price === order.price) return;
             if (await cancelOrder(order.symbol, orderId)) {
               await limitOrder({
                 side: order.side,
@@ -162,7 +164,12 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
             }
           }
         },
+        onCancelOrder: async (orderId: number) => {
+          const order = getOpenOrders().find((orderItem) => orderId === orderItem.orderId);
+          if (order) await cancelOrder(order.symbol, orderId);
+        },
       });
+
       instance.update({ candles });
 
       setCandleChart(instance);

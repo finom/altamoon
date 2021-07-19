@@ -1,17 +1,18 @@
-import React, { LegacyRef, useEffect, ReactElement } from 'react';
+import React, {
+  LegacyRef, useEffect, ReactElement, useMemo,
+} from 'react';
 import { format } from 'd3-format';
 import { Button, Col } from 'reactstrap';
-import { useValue } from 'use-change';
+import { useSilent, useValue } from 'use-change';
 
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
-import { MARKET, TRADING } from '../../../../../../store';
+import { MARKET, PERSISTENT, TRADING } from '../../../../../../store';
 import css from './style.css';
 
 interface Props {
   totalWalletBalance: number;
   availableBalance: number;
-  quantityPrecision: number;
   price: number | null;
   side: api.OrderSide;
   percent?: number;
@@ -22,14 +23,22 @@ interface Props {
 const formatMoney = (value: number) => format(value > 1000 ? ',.0f' : ',.2f')(value);
 
 const ButtonCol = ({
-  totalWalletBalance, availableBalance, quantityPrecision,
+  totalWalletBalance, availableBalance,
   price, side, percent, isMax, onOrder,
 }: Props): ReactElement => {
   const preciseSize = isMax ? availableBalance : totalWalletBalance * ((percent ?? 0) / 100);
-  const currentSymbolLeverage = useValue(TRADING, 'currentSymbolLeverage');
-  const quantity: number = typeof price === 'number' ? Math.floor(
-    currentSymbolLeverage * (preciseSize / price) * (10 ** quantityPrecision),
-  ) / (10 ** quantityPrecision) || 0 : 0;
+  const calculateQuantity = useSilent(TRADING, 'calculateQuantity');
+  const symbol = useValue(PERSISTENT, 'symbol');
+
+  const quantity = useMemo(() => {
+    if (typeof price !== 'number') return 0;
+
+    return calculateQuantity({
+      symbol,
+      price,
+      size: preciseSize,
+    });
+  }, [calculateQuantity, preciseSize, price, symbol]);
   const [buttonRef, setButtonTitle] = useBootstrapTooltip<HTMLSpanElement>();
   const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
 

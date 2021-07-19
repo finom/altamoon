@@ -5,17 +5,19 @@ import PriceLines from './PriceLines';
 interface Params {
   axis: ChartAxis;
   onDragLimitOrder: (orderId: number, price: number) => void;
+  onCancelOrder: (orderId: number) => void;
 }
 
 export default class OrderPriceLines extends PriceLines {
-  constructor({ axis, onDragLimitOrder }: Params, resizeData: ResizeData) {
+  constructor({ axis, onDragLimitOrder, onCancelOrder }: Params, resizeData: ResizeData) {
     super({
       axis,
       items: [],
       isTitleVisible: true,
       lineStyle: 'solid',
+      isBackgroundFill: true,
       onDragEnd: (d) => onDragLimitOrder(d.id as number, d.yValue ?? 0), // args ensure TS
-      onClickTitle: () => {},
+      onClickClose: (d) => onCancelOrder(d.id as number),
     }, resizeData);
   }
 

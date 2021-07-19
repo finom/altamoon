@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { useValue } from 'use-change';
 import { MARKET } from '../../../store';
 import TradingTab from './TradingTab';
@@ -15,6 +15,9 @@ const Market = ({
 }: Props): ReactElement => {
   const price = useValue(MARKET, 'currentSymbolLastPrice');
 
+  const [exactSizeBuyStr, setExactSizeBuyStr] = useState('');
+  const [exactSizeSellStr, setExactSizeSellStr] = useState('');
+
   return (
     <TradingTab
       id="marketTab"
@@ -26,6 +29,10 @@ const Market = ({
       postOnly={postOnly}
       reduceOnly={reduceOnly}
       tradingType={tradingType}
+      exactSizeBuyStr={exactSizeBuyStr}
+      setExactSizeBuyStr={setExactSizeBuyStr}
+      exactSizeSellStr={exactSizeSellStr}
+      setExactSizeSellStr={setExactSizeSellStr}
     />
   );
 };

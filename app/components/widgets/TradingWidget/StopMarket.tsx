@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { useValue } from 'use-change';
 import { MARKET } from '../../../store';
 import TradingTab from './TradingTab';
@@ -16,6 +16,9 @@ const StopMarket = ({
   isWideLayout, postOnly, reduceOnly, tradingType,
 }: Props): ReactElement => {
   const pricePrecision = useValue(MARKET, 'currentSymbolPricePrecision');
+
+  const [exactSizeBuyStr, setExactSizeBuyStr] = useState('');
+  const [exactSizeSellStr, setExactSizeSellStr] = useState('');
 
   const {
     shouldShowPriceLine: shouldShowStopBuyPriceLine,
@@ -36,14 +39,18 @@ const StopMarket = ({
   return (
     <TradingTab
       id="stopMarketTab"
-      buyPrice={null}
-      sellPrice={null}
+      buyPrice={stopBuyPrice}
+      sellPrice={stopSellPrice}
       stopBuyPrice={stopBuyPrice}
       stopSellPrice={stopSellPrice}
       isWideLayout={isWideLayout}
       postOnly={postOnly}
       reduceOnly={reduceOnly}
       tradingType={tradingType}
+      exactSizeBuyStr={exactSizeBuyStr}
+      setExactSizeBuyStr={setExactSizeBuyStr}
+      exactSizeSellStr={exactSizeSellStr}
+      setExactSizeSellStr={setExactSizeSellStr}
       buyNode={(
         <>
           <label htmlFor="stopBuyPrice" className="mb-1">Stop Buy Price</label>

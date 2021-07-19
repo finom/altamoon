@@ -49,6 +49,7 @@ export interface PriceLinesDatum {
   id?: string | number;
   isVisible?: boolean;
   isDraggable?: boolean;
+  isCheckable?: boolean;
 }
 
 export interface ChartAxis {
