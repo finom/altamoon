@@ -1,5 +1,5 @@
 {
-	"version": "0.0.34",
+	"version": "0.0.35",
 	"name": "biduul-types",
 	"description": "TypeScript definitions for Biduul plugin development",
 	"main": "types/index.js",
@@ -8,8 +8,8 @@
 	},
 	"author": "",
 	"license": "AGPL",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Letiliel/biduul.git"
-  }
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Letiliel/biduul.git"
+	}
 }
