@@ -1,11 +1,11 @@
 export default {
   defaultPlugins: [
     {
-      id: 'biduul-hello-world',
+      id: 'biduul-phlegmatic',
       isThirdParty: false,
     },
     {
-      id: 'lodash',
+      id: 'biduul-hello-world',
       isThirdParty: true,
     },
   ],

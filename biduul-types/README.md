@@ -1,3 +1,3 @@
 # biduul-types
 
-TypeScript types for plugin development
+> TypeScript definitions for Biduul plugin development

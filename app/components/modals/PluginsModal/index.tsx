@@ -54,6 +54,7 @@ const PluginsModal = ({ isOpen, onRequestClose }: Props): ReactElement => {
             type="text"
             className="form-control"
             id="customPluginInput"
+            spellCheck={false}
             value={customPluginId}
             placeholder="Script URL or NPM package name"
             aria-describedby="customPluginInputAddon"
