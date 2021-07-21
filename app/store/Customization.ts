@@ -23,7 +23,7 @@ interface WidgetData {
   currentScript: HTMLOrSVGScriptElement;
   listenSettingsSave: (handler: () => void) => (() => void);
   listenSettingsCancel: (handler: () => void) => (() => void);
-  listenIsWidgetEnabled: (handler: () => void) => ((isEnabled: boolean) => void);
+  listenIsWidgetEnabled: (handler: (isEnabled: boolean) => void) => (() => void);
   listenWidgetDestroy: (handler: () => void) => (() => void);
   onSettingsSave: () => void;
   onSettingsCancel: () => void;
