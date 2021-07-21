@@ -19,11 +19,16 @@ interface WidgetData {
   noPadding?: boolean;
   bodyClassName?: string;
   shouldCheckAccount?: boolean;
+  isWidgetInitiallyEnabled: boolean;
   currentScript: HTMLOrSVGScriptElement;
   listenSettingsSave: (handler: () => void) => (() => void);
   listenSettingsCancel: (handler: () => void) => (() => void);
+  listenIsWidgetEnabled: (handler: () => void) => ((isEnabled: boolean) => void);
+  listenWidgetDestroy: (handler: () => void) => (() => void);
   onSettingsSave: () => void;
   onSettingsCancel: () => void;
+  onSetEnabled: (isEnabled: boolean) => void;
+  onDestroy: () => void;
 }
 
 interface PluginInfo {
@@ -146,11 +151,12 @@ export default class App {
     bodyClassName?: string;
     shouldCheckAccount?: boolean;
     currentScript: HTMLOrSVGScriptElement;
-  }): Omit<WidgetData, 'onSettingsSave' | 'onSettingsCancel'> => {
+  }): Omit<WidgetData, 'onSettingsSave' | 'onSettingsCancel' | 'onSetEnabled' | 'onDestroy'> => {
     try {
       const { pluginId } = currentScript.dataset;
       const existingPluginWidget = this.pluginWidgets.find((w) => w.id === id);
       const existingBuiltInWidget = this.builtInWidgets.find((w) => w.id === id);
+      const { persistent } = this.#store;
 
       if (!pluginId) throw new Error('Plugin script does not provide pluginId');
       if (!currentScript) throw new Error('Widget Error: currentScript is required');
@@ -164,16 +170,23 @@ export default class App {
       // settings element is going to be rendered at settings content
       // which appeares when user clicks widget settings icon
       const settingsElement = hasSettings ? document.createElement('div') : null;
+      const isWidgetInitiallyEnabled = !persistent.widgetsDisabled.includes(id);
 
       // the code is a trick that allows to return functions similar to addEventListener
       // example: listenSettingsSave(() => console.log('settings saved'))
-      const eventTarget = { saveCount: 0, cancelCount: 0 };
+      const eventTarget = {
+        saveCount: 0, cancelCount: 0, isEnabled: isWidgetInitiallyEnabled, isPluginEnabled: true,
+      };
       const listenSettingsSave = (handler: () => void) => listenChange(eventTarget, 'saveCount', () => handler());
       const listenSettingsCancel = (handler: () => void) => listenChange(eventTarget, 'cancelCount', () => handler());
+      const listenIsWidgetEnabled = (handler: (isEnabled: boolean) => void) => listenChange(eventTarget, 'isEnabled', handler);
+      const listenWidgetDestroy = (handler: () => void) => listenChange(eventTarget, 'isPluginEnabled', () => handler());
       const onSettingsSave = () => { eventTarget.saveCount += 1; };
       const onSettingsCancel = () => { eventTarget.cancelCount += 1; };
+      const onSetEnabled = (isEnabled: boolean) => { eventTarget.isEnabled = isEnabled; };
+      const onDestroy = () => { eventTarget.isPluginEnabled = false; };
 
-      const widgetData: Omit<WidgetData, 'onSettingsSave' | 'onSettingsCancel'> = {
+      const widgetData: Omit<WidgetData, 'onSettingsSave' | 'onSettingsCancel' | 'onSetEnabled' | 'onDestroy'> = {
         pluginId,
         element,
         settingsElement,
@@ -184,14 +197,23 @@ export default class App {
         noPadding,
         bodyClassName,
         shouldCheckAccount,
+        isWidgetInitiallyEnabled,
         currentScript,
         listenSettingsSave,
         listenSettingsCancel,
+        listenIsWidgetEnabled,
+        listenWidgetDestroy,
       };
+
+      listenChange(persistent, 'widgetsDisabled', () => {
+        onSetEnabled(!persistent.widgetsDisabled.includes(id));
+      });
 
       this.pluginWidgets = [
         ...this.pluginWidgets,
-        { ...widgetData, onSettingsSave, onSettingsCancel },
+        {
+          ...widgetData, onSettingsSave, onSettingsCancel, onSetEnabled, onDestroy,
+        },
       ];
 
       return widgetData;
@@ -325,9 +347,10 @@ export default class App {
     if (!plugin) throw new Error(`Unable to disable an unknown plugin "${id}"`);
 
     // disable widgets created by the plugin
-    for (const { pluginId, id: widgetId } of this.pluginWidgets) {
+    for (const { pluginId, id: widgetId, onDestroy } of this.pluginWidgets) {
       if (pluginId === id) {
         persistent.widgetsDisabled = persistent.widgetsDisabled.filter((w) => w !== widgetId);
+        onDestroy();
       }
     }
 
