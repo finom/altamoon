@@ -189,6 +189,7 @@ export default class CandlestickChart {
     candles?: api.FuturesChartCandle[],
     position?: TradingPosition | null;
     orders?: TradingOrder[];
+    alerts?: number[];
 
     buyDraftPrice?: number | null;
     sellDraftPrice?: number | null;
@@ -220,24 +221,24 @@ export default class CandlestickChart {
       const isNewInterval = this.#candles[0]?.interval !== data.candles[0]?.interval;
       this.#candles = data.candles;
       const lastPrice = +(last(data.candles ?? [])?.close ?? 0);
+
       if (lastPrice) {
+        if (isNewSymbol) {
+          this.#alertLines.update({ lastPrice });
+        }
+
         this.#alertLines.checkAlerts(lastPrice);
       }
 
       this.#draw();
 
-      if (isNewSymbol) {
-        this.resetAlerts();
-
+      if (isNewSymbol || isNewInterval) {
+        this.#resize();
         this.#positionLines.update();
         this.#alertLines.update();
         this.#orderLines.update();
         this.#draftLines.update();
         this.#currentPriceLines.update();
-      }
-
-      if (isNewInterval) {
-        this.#resize();
       }
     }
 
@@ -253,13 +254,11 @@ export default class CandlestickChart {
 
     if (typeof data.canCreateDraftLines !== 'undefined') this.#canCreateDraftLines = data.canCreateDraftLines;
 
-    if (typeof data.position !== 'undefined') {
-      this.#positionLines.updatePositionLine(data.position);
-    }
+    if (typeof data.position !== 'undefined') this.#positionLines.updatePositionLine(data.position);
 
-    if (typeof data.orders !== 'undefined') {
-      this.#orderLines.updateOrderLines(data.orders);
-    }
+    if (typeof data.orders !== 'undefined') this.#orderLines.updateOrderLines(data.orders);
+
+    if (typeof data.alerts !== 'undefined') this.#alertLines.updateAlertLines(data.alerts);
   }
 
   /**

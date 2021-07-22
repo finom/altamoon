@@ -48,4 +48,15 @@ export default class AlertPriceLines extends PriceLines {
 
     this.#lastPrice = lastPrice;
   };
+
+  public updateAlertLines = (alerts: number[]): void => {
+    this.update({ items: alerts.map((yValue) => ({ yValue, title: 'Alert', isDraggable: true })) });
+  };
+
+  public update = (data: Parameters<PriceLines['update']>[0] & { lastPrice?: number } = {}): void => {
+    super.update(data);
+    if (typeof data.lastPrice === 'number') {
+      this.#lastPrice = data.lastPrice;
+    }
+  };
 }

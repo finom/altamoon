@@ -19,9 +19,10 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   const candles = useValue(MARKET, 'candles');
   const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
   const symbol = useValue(PERSISTENT, 'symbol');
+  const getSymbol = useGet(PERSISTENT, 'symbol');
 
   const [interval, setCandleInterval] = useChange(PERSISTENT, 'interval');
-  const [alerts, setAlerts] = useChange(PERSISTENT, 'alerts');
+  const [symbolAlerts, setSymbolAlerts] = useChange(PERSISTENT, 'symbolAlerts');
   const tradingType = useValue(PERSISTENT, 'tradingType');
 
   const position = useValue(TRADING, 'openPositions').find((pos) => pos.symbol === symbol) ?? null;
@@ -43,6 +44,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
     () => openOrders.filter((order) => order.symbol === symbol),
     [openOrders, symbol],
   );
+  const alerts = symbolAlerts[symbol];
 
   useEffect(() => {
     candleChart?.update({ pricePrecision: currentSymbolInfo?.pricePrecision ?? 1 });
@@ -59,6 +61,10 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   useEffect(() => {
     candleChart?.update({ orders });
   }, [orders, candleChart]);
+
+  useEffect(() => {
+    candleChart?.update({ alerts: alerts || [] });
+  }, [alerts, candleChart]);
 
   useEffect(() => {
     if (candleChart) {
@@ -142,10 +148,13 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   useEffect(() => {
     if (ref.current && !candleChart) {
       const instance = new CandlestickChart(ref.current, {
-        onUpdateAlerts: (d: number[]) => setAlerts(d),
+        onUpdateAlerts: (d: number[]) => setSymbolAlerts((v) => ({
+          ...v,
+          [`${getSymbol()}`]: d,
+        })),
         onUpdateDrafts: updateDrafts,
         onClickDraftCheck: createOrderFromDraft,
-        alerts,
+        alerts: alerts || [],
         draftPriceItems: [],
         pricePrecision: currentSymbolInfo?.pricePrecision ?? 0,
         onDragLimitOrder: async (orderId: number, price: number) => {

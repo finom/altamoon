@@ -28,7 +28,7 @@ export default class Persistent {
 
   public ignoreValuesBelowNumber = getPersistentStorageValue<number>('ignoreValuesBelowNumber', 10);
 
-  public alerts = getPersistentStorageValue<number[]>('alerts', []);
+  public symbolAlerts = getPersistentStorageValue<Record<string, number[]>>('symbolAlerts', {});
 
   public pluginsEnabled = getPersistentStorageValue<string[]>('pluginsEnabled', []);
 
