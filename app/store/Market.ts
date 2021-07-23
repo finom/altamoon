@@ -40,7 +40,6 @@ export default class Market {
 
     // call the handler on every symbol change but not on load
     listenChange(store.persistent, 'symbol', (symbol) => {
-      this.#store.persistent.alerts = [];
       void this.#onSymbolChange(symbol);
     });
 
