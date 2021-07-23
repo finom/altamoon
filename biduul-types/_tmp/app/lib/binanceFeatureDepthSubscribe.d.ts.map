@@ -1,0 +1,1 @@
+{"version":3,"file":"binanceFeatureDepthSubscribe.d.ts","sourceRoot":"","sources":["../../../../app/lib/binanceFeatureDepthSubscribe.ts"],"names":[],"mappings":"AAgCA,MAAM,CAAC,OAAO,UAAU,4BAA4B,CAClD,MAAM,EAAE,MAAM,EACd,QAAQ,EAAE,CAAC,IAAI,EAAE,CAAC,MAAM,EAAE,MAAM,CAAC,EAAE,EAAE,IAAI,EAAE,CAAC,MAAM,EAAE,MAAM,CAAC,EAAE,KAAK,IAAI,GACrE,MAAM,IAAI,CAoEZ"}

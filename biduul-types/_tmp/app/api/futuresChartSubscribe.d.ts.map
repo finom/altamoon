@@ -1,0 +1,1 @@
+{"version":3,"file":"futuresChartSubscribe.d.ts","sourceRoot":"","sources":["../../../../app/api/futuresChartSubscribe.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,kBAAkB,EAAE,wBAAwB,EAAE,MAAM,SAAS,CAAC;AAEvE,MAAM,CAAC,OAAO,UAAU,qBAAqB,CAC3C,MAAM,EAAE,MAAM,EACd,QAAQ,EAAE,wBAAwB,EAClC,QAAQ,EAAE,CAAC,kBAAkB,EAAE,kBAAkB,EAAE,KAAK,IAAI,EAC5D,KAAK,CAAC,EAAE,MAAM,GACb,MAAM,IAAI,CAiEZ"}

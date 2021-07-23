@@ -1,0 +1,2 @@
+export default function binanceFeatureDepthSubscribe(symbol: string, callback: (asks: [number, number][], bids: [number, number][]) => void): () => void;
+//# sourceMappingURL=binanceFeatureDepthSubscribe.d.ts.map
