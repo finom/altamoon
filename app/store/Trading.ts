@@ -1,4 +1,6 @@
-import { debounce, keyBy, throttle } from 'lodash';
+import {
+  debounce, keyBy, throttle, uniq,
+} from 'lodash';
 import { listenChange } from 'use-change';
 import * as api from '../api';
 import { OrderSide } from '../api';
@@ -132,9 +134,10 @@ export default class Trading {
   public loadOrders = throttle(async (): Promise<void> => {
     try {
       const futuresOrders = await api.futuresOpenOrders();
+      const prices = await api.futuresPrices();
 
       this.openOrders = futuresOrders
-        .map(this.#getOrderInfo)
+        .map((order) => this.#getOrderInfo(order, +prices[order.symbol]))
         .sort(({ orderId: a }, { orderId: b }) => (a > b ? 1 : -1));
       return undefined;
     } catch (e) {
@@ -511,9 +514,14 @@ export default class Trading {
     // if no position, don't create new subscription
     if (!this.openPositions.length) return;
 
+    const symbolsToListen = uniq([
+      ...this.openPositions.map(({ symbol }) => symbol),
+      ...this.openOrders.map(({ symbol }) => symbol),
+    ]);
+
     // create new subscription and preserve endpoint to unsubscribe
     this.#lastPriceUnsubscribe = api.futuresAggTradeStream(
-      this.openPositions.map(({ symbol }) => symbol),
+      symbolsToListen,
       (ticker) => {
         this.openPositions = this.openPositions.map((position) => {
           if (position.symbol === ticker.symbol) {
@@ -521,13 +529,18 @@ export default class Trading {
             return {
               ...position,
               lastPrice,
-              ...this.#getPositionPnl({
+              pnl: this.#getPnl({
+                positionAmt: position.positionAmt,
+                lastPrice,
+                entryPrice: position.entryPrice,
+              }),
+              pnlPositionPercent: this.#getPnlPositionPercent({
                 positionAmt: position.positionAmt,
                 lastPrice,
                 entryPrice: position.entryPrice,
                 leverage: position.leverage,
               }),
-              ...this.#getPositionTruePnl({
+              pnlBalancePercent: this.#getPnlBalancePercent({
                 positionAmt: position.positionAmt,
                 lastPrice,
                 entryPrice: position.entryPrice,
@@ -536,6 +549,18 @@ export default class Trading {
           }
 
           return position;
+        });
+
+        this.openOrders = this.openOrders.map((order) => {
+          if (order.symbol === ticker.symbol) {
+            const lastPrice = +ticker.price;
+            return {
+              ...order,
+              lastPrice,
+            };
+          }
+
+          return order;
         });
       },
     );
@@ -551,13 +576,18 @@ export default class Trading {
       +positionRisk.positionAmt,
     ),
     lastPrice,
-    ...this.#getPositionPnl({
+    pnl: this.#getPnl({
+      positionAmt: +positionRisk.positionAmt,
+      lastPrice,
+      entryPrice: +positionRisk.entryPrice,
+    }),
+    pnlPositionPercent: this.#getPnlPositionPercent({
       positionAmt: +positionRisk.positionAmt,
       lastPrice,
       entryPrice: +positionRisk.entryPrice,
       leverage: +positionRisk.leverage,
     }),
-    ...this.#getPositionTruePnl({
+    pnlBalancePercent: this.#getPnlBalancePercent({
       positionAmt: +positionRisk.positionAmt,
       lastPrice,
       entryPrice: +positionRisk.entryPrice,
@@ -575,7 +605,7 @@ export default class Trading {
     baseAsset: this.#store.market.futuresExchangeSymbols[positionRisk.symbol]?.baseAsset,
   });
 
-  #getPositionTruePnl = ({
+  #getPnl = ({
     positionAmt,
     lastPrice,
     entryPrice,
@@ -583,19 +613,9 @@ export default class Trading {
     positionAmt: number;
     lastPrice: number;
     entryPrice: number;
-  }): { truePnl: number; truePnlPercent: number; } => {
-    const qty = positionAmt;
-    const baseValue = positionAmt * entryPrice;
-    const fee = this.getFee(qty); // Todo: get fee sum from order histo
+  }): number => positionAmt * (lastPrice - entryPrice);
 
-    const pnl = ((lastPrice - entryPrice) / entryPrice) * baseValue - (fee * lastPrice);
-    return {
-      truePnl: pnl || 0,
-      truePnlPercent: (pnl / this.#store.account.totalWalletBalance) * 100 || 0,
-    };
-  };
-
-  #getPositionPnl = ({
+  #getPnlPositionPercent = ({
     positionAmt,
     lastPrice,
     entryPrice,
@@ -605,17 +625,30 @@ export default class Trading {
     lastPrice: number;
     entryPrice: number;
     leverage: number;
-  }): { pnl: number; pnlPercent: number; } => {
-    const pnl = positionAmt * (lastPrice - entryPrice);
+  }): number => {
+    const pnl = this.#getPnl({ positionAmt, lastPrice, entryPrice });
     const baseValue = Math.abs(positionAmt * entryPrice);
 
-    return {
-      pnl,
-      pnlPercent: (pnl * 100) / ((baseValue + pnl) / leverage),
-    };
+    return (pnl * 100) / ((baseValue + pnl) / leverage);
   };
 
-  #getOrderInfo = (order: api.FuturesOrder): TradingOrder => ({
+  #getPnlBalancePercent = ({
+    positionAmt,
+    lastPrice,
+    entryPrice,
+  }: {
+    positionAmt: number;
+    lastPrice: number;
+    entryPrice: number;
+  }): number => {
+    const baseValue = positionAmt * entryPrice;
+
+    const pnl = ((lastPrice - entryPrice) / entryPrice) * baseValue;
+    return (pnl / this.#store.account.totalWalletBalance) * 100 || 0;
+  };
+
+  #getOrderInfo = (order: api.FuturesOrder, lastPrice: number): TradingOrder => ({
+    lastPrice,
     clientOrderId: order.clientOrderId,
     cumQuote: order.cumQuote,
     executedQty: +order.executedQty,

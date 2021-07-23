@@ -2,8 +2,9 @@ import { format } from 'd3-format';
 import { remove } from 'lodash';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { Badge, Button, Table } from 'reactstrap';
-import { useSilent, useValue } from 'use-change';
-import { TRADING } from '../../../store';
+import { useSet, useSilent, useValue } from 'use-change';
+import tooltipRef from '../../../lib/tooltipRef';
+import { PERSISTENT, TRADING } from '../../../store';
 
 const formatNumber = (n: number, ignorePrecision?: boolean) => format(n < 10 && !ignorePrecision ? ',.4f' : ',.2f')(n);
 const formatPercent = format(',.1f');
@@ -17,6 +18,7 @@ const textClassName = (value: number) => {
 const Positions = (): ReactElement => {
   const openPositions = useValue(TRADING, 'openPositions');
   const closePosition = useSilent(TRADING, 'closePosition');
+  const setSymbol = useSet(PERSISTENT, 'symbol');
   const [symbolsToClose, setSymbolsToClose] = useState<string[]>([]);
   const onCloseMarket = useCallback(async (symbol: string) => {
     setSymbolsToClose([...symbolsToClose, symbol]);
@@ -30,29 +32,22 @@ const Positions = (): ReactElement => {
     <Table className="align-middle">
       <thead>
         <tr>
+          <th>Position Asset</th>
+          <th>Size</th>
+          <th>Last Price</th>
+          <th>Entry Price</th>
+          <th>Liq. Price</th>
+          <th>Margin</th>
+          <th><span className="help-text" ref={tooltipRef({ title: 'Profit and Loss' })}>PNL</span></th>
           <th>
-            Position Asset
+            <span className="help-text" ref={tooltipRef({ title: 'Return on Investment' })}>ROI</span>
+            {' '}
+            %
           </th>
           <th>
-            Size
-          </th>
-          <th>
-            Last Price
-          </th>
-          <th>
-            Entry Price
-          </th>
-          <th>
-            Liq. Price
-          </th>
-          <th>
-            Margin
-          </th>
-          <th>
-            Position PNL
-          </th>
-          <th>
-            True PNL
+            <span className="help-text" ref={tooltipRef({ title: 'Return on Wallet' })}>ROW</span>
+            {' '}
+            %
           </th>
           <th style={{ width: '100px' }}>
             Close
@@ -61,13 +56,21 @@ const Positions = (): ReactElement => {
       </thead>
       <tbody>
         {openPositions.map(({
-          baseAsset, symbol, baseValue, liquidationPrice, entryPrice, positionAmt,
+          symbol, baseValue, liquidationPrice, entryPrice, positionAmt,
           isolatedWallet, marginType, leverage, lastPrice,
-          side, pnl, pnlPercent, truePnl, truePnlPercent,
+          side, pnl, pnlBalancePercent, pnlPositionPercent,
         }) => (
           <tr key={symbol}>
             <td>
-              {baseAsset}
+              <span
+                className="link-alike"
+                onClick={() => setSymbol(symbol)}
+                onKeyDown={() => setSymbol(symbol)}
+                role="button"
+                tabIndex={0}
+              >
+                {symbol.slice(0, -4)}
+              </span>
               {' '}
               &nbsp;
               <Badge className={side === 'BUY' ? 'bg-success' : 'bg-danger'}>
@@ -101,24 +104,17 @@ const Positions = (): ReactElement => {
                 {' '}
                 ₮
               </span>
-              {' '}
-              <span className={textClassName(pnlPercent)}>
-                (
-                {formatPercent(pnlPercent)}
-                %)
+            </td>
+            <td>
+              <span className={textClassName(pnlPositionPercent)}>
+                {formatPercent(pnlPositionPercent)}
+                %
               </span>
             </td>
             <td>
-              <span className={textClassName(truePnl)}>
-                {formatNumber(truePnl, true)}
-                {' '}
-                ₮
-              </span>
-              {' '}
-              <span className={textClassName(truePnlPercent)}>
-                (
-                {formatPercent(truePnlPercent)}
-                %)
+              <span className={textClassName(pnlBalancePercent)}>
+                {formatPercent(pnlBalancePercent)}
+                %
               </span>
             </td>
             <td>

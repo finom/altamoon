@@ -5,6 +5,9 @@
 .cursor-help { cursor: help; }
 .nowrap { white-space: nowrap; }
 .text-ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.help-text { cursor: help; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px; }
+.link-alike { cursor: pointer; }
+.link-alike:hover { text-decoration: underline; }
 
 .o-0 { opacity: 0; }
 .o-25 { opacity: .25; }

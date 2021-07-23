@@ -16,9 +16,8 @@ export interface TradingPosition {
   baseValue: number;
   side: api.OrderSide;
   pnl: number;
-  truePnl: number;
-  pnlPercent: number;
-  truePnlPercent: number;
+  pnlPositionPercent: number;
+  pnlBalancePercent: number;
   leverage: number;
   marginType: api.FuturesPositionRisk['marginType'];
   baseAsset: string;
@@ -31,6 +30,7 @@ export interface TradingOrder {
   avgPrice: number;
   origQty: number;
   price: number;
+  lastPrice: number;
   reduceOnly: false,
   side: api.OrderSide;
   positionSide: api.PositionSide;

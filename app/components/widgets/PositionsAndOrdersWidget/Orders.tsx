@@ -3,8 +3,8 @@ import { capitalize, remove, uniq } from 'lodash';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { Trash } from 'react-bootstrap-icons';
 import { Badge, Button, Table } from 'reactstrap';
-import { useSilent, useValue } from 'use-change';
-import { TRADING } from '../../../store';
+import { useSet, useSilent, useValue } from 'use-change';
+import { PERSISTENT, TRADING } from '../../../store';
 
 const formatNumber = (n: number, ignorePrecision?: boolean) => format(n < 10 && !ignorePrecision ? ',.4f' : ',.2f')(n);
 const formatPercent = format(',.1f');
@@ -15,6 +15,7 @@ const Orders = (): ReactElement => {
   const cancelOrder = useSilent(TRADING, 'cancelOrder');
   const cancelAllOrders = useSilent(TRADING, 'cancelAllOrders');
   const [idsToClose, setIdsToClose] = useState<number[]>([]);
+  const setSymbol = useSet(PERSISTENT, 'symbol');
 
   const onCancel = useCallback(async (symbol: string, orderId: number) => {
     setIdsToClose([...idsToClose, orderId]);
@@ -42,6 +43,9 @@ const Orders = (): ReactElement => {
             Size
           </th>
           <th>
+            Last Price
+          </th>
+          <th>
             Price
           </th>
           <th>
@@ -67,13 +71,22 @@ const Orders = (): ReactElement => {
       </thead>
       <tbody>
         {openOrders.map(({
-          symbol, side, type, origQty, price, executedQty, stopPrice, reduceOnly, orderId,
+          symbol, side, type, origQty, lastPrice, price,
+          executedQty, stopPrice, reduceOnly, orderId,
         }) => (
           <tr key={orderId}>
             <td>
-              {symbol.slice(0, -4)}
+              <span
+                className="link-alike"
+                onClick={() => setSymbol(symbol)}
+                onKeyDown={() => setSymbol(symbol)}
+                role="button"
+                tabIndex={0}
+              >
+                {symbol.slice(0, -4)}
+              </span>
               {' '}
-                &nbsp;
+              &nbsp;
               <Badge className={side === 'BUY' ? 'bg-success' : 'bg-danger'}>
                 {allSymbolsPositionRisk[symbol]?.leverage ?? 0}
                 x
@@ -84,6 +97,11 @@ const Orders = (): ReactElement => {
               {origQty}
               {' '}
               {!price && stopPrice ? '' : `(${formatNumber(origQty * price, true)} ₮)`}
+            </td>
+            <td>
+              {formatNumber(lastPrice)}
+              {' '}
+              ₮
             </td>
             <td>
               {!price && stopPrice ? <>&mdash;</> : `${formatNumber(price)} ₮`}
