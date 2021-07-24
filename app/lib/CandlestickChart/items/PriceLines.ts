@@ -278,10 +278,10 @@ export default class PriceLines implements ChartItem {
 
             const titleGroup = horizontalWrapper.append('foreignObject')
               .attr('class', 'price-line-title-object')
-              .attr('transform', `translate(${this.#resizeData.width - 120}, 0)`)
+              .attr('transform', `translate(${this.#resizeData.width - 130}, 0)`)
               .attr('x', 0)
               .attr('y', -12)
-              .attr('width', 110)
+              .attr('width', 120)
               .attr('height', 24)
               .property('_datumIndex', (d) => this.#items.indexOf(d))
               .on('mouseenter', ({ target }: { target: SVGForeignObjectElement }) => {

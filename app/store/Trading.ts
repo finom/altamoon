@@ -159,7 +159,7 @@ export default class Trading {
         side, symbol, quantity, { reduceOnly },
       );
 
-      await this.loadOrders();
+      await this.loadPositions();
 
       notify('success', `Position for ${symbol} is created`);
 
