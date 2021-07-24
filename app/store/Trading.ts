@@ -25,6 +25,8 @@ export default class Trading {
 
   public positionsKey?: string;
 
+  public ordersKey?: string;
+
   public limitBuyPrice: number | null = null;
 
   public shouldShowLimitBuyPriceLine = false;
@@ -60,7 +62,12 @@ export default class Trading {
       this.positionsKey = openPositions.map(({ symbol }) => symbol).join();
     });
 
+    listenChange(this, 'openOrders', (openOrders) => {
+      this.ordersKey = openOrders.map(({ symbol }) => symbol).join();
+    });
+
     listenChange(this, 'positionsKey', this.#listenLastPrices);
+    listenChange(this, 'ordersKey', this.#listenLastPrices);
 
     listenChange(store.account, 'futuresAccount', async (futuresAccount) => {
       if (futuresAccount) {
@@ -139,6 +146,7 @@ export default class Trading {
       this.openOrders = futuresOrders
         .map((order) => this.#getOrderInfo(order, +prices[order.symbol]))
         .sort(({ orderId: a }, { orderId: b }) => (a > b ? 1 : -1));
+
       return undefined;
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -511,8 +519,8 @@ export default class Trading {
     // unsubscribe from previously used endpoint
     this.#lastPriceUnsubscribe?.();
 
-    // if no position, don't create new subscription
-    if (!this.openPositions.length) return;
+    // if no position/orders, don't create new subscription
+    if (!this.openPositions.length && !this.openOrders.length) return;
 
     const symbolsToListen = uniq([
       ...this.openPositions.map(({ symbol }) => symbol),
