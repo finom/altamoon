@@ -21,6 +21,7 @@ export interface TradingPosition {
   leverage: number;
   marginType: api.FuturesPositionRisk['marginType'];
   baseAsset: string;
+  pricePrecision: number;
 }
 
 export interface TradingOrder {

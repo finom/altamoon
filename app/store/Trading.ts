@@ -113,6 +113,17 @@ export default class Trading {
     });
 
     listenChange(store.persistent, 'symbol', (symbol) => this.#updateLeverage(symbol));
+
+    // if futuresExchangeSymbols is loaded after positions, update all positions wit missing data
+    listenChange(store.market, 'futuresExchangeSymbols', (futuresExchangeSymbols) => {
+      if (futuresExchangeSymbols) {
+        this.openPositions = this.openPositions.map((pos) => ({
+          ...pos,
+          baseAsset: futuresExchangeSymbols[pos.symbol].baseAsset,
+          pricePrecision: futuresExchangeSymbols[pos.symbol].pricePrecision,
+        }));
+      }
+    });
   }
 
   public loadPositions = throttle(async (): Promise<void> => {
@@ -577,6 +588,7 @@ export default class Trading {
   #getPositionInfo = (
     positionRisk: api.FuturesPositionRisk, lastPrice: number,
   ): TradingPosition => ({
+    // TODO refactor
     // if positionAmt is increased, then use it as initial value,
     // if decrreased or remains the same then do nothing
     initialAmt: +positionRisk.positionAmt >= 0 ? Math.max(
@@ -613,7 +625,9 @@ export default class Trading {
     leverage: +positionRisk.leverage,
     marginType: positionRisk.marginType,
     symbol: positionRisk.symbol,
-    baseAsset: this.#store.market.futuresExchangeSymbols[positionRisk.symbol]?.baseAsset,
+    baseAsset: this.#store.market.futuresExchangeSymbols[positionRisk.symbol]?.baseAsset ?? 'UNKNOWN',
+    pricePrecision: this.#store.market
+      .futuresExchangeSymbols[positionRisk.symbol]?.pricePrecision ?? 1,
   });
 
   #getPnl = ({
