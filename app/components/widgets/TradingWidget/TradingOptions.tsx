@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { Col, Row } from 'reactstrap';
 import useChange, { useValue } from 'use-change';
 import { TRADING } from '../../../store';
@@ -20,7 +20,11 @@ const Leverage = ({
 }: Props): ReactElement => {
   const maxLeverage = useValue(TRADING, 'currentSymbolMaxLeverage');
   const [isIsolated, setIsISolated] = useChange(TRADING, 'isCurrentSymbolMarginTypeIsolated');
-  const [leverage, setLeverage] = useChange(TRADING, 'currentSymbolLeverage');
+  const [currentSymbolLeverage, setCurrentSymbolLeverage] = useChange(TRADING, 'currentSymbolLeverage');
+
+  const [leverage, setLeverage] = useState(currentSymbolLeverage);
+
+  useEffect(() => setLeverage(currentSymbolLeverage), [currentSymbolLeverage]);
 
   return (
     <Row>
@@ -40,6 +44,7 @@ const Leverage = ({
           max={maxLeverage}
           step={1}
           onChange={({ target }) => setLeverage(+target.value)}
+          onMouseUp={() => setCurrentSymbolLeverage(leverage)}
         />
         <span className={`${css.minLeverage} text-muted`}>1x</span>
         <span className={`${css.maxLeverage} text-muted`}>
