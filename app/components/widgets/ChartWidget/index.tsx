@@ -4,7 +4,9 @@ import React, {
 import useChange, { useValue, useSilent, useGet } from 'use-change';
 import * as api from '../../../api';
 import CandlestickChart from '../../../lib/CandlestickChart';
-import { MARKET, PERSISTENT, TRADING } from '../../../store';
+import {
+  ACCOUNT, MARKET, PERSISTENT, TRADING,
+} from '../../../store';
 
 import Widget from '../../layout/Widget';
 
@@ -15,6 +17,8 @@ const intervals: api.CandlestickChartInterval[] = ['1m', '3m', '5m', '15m', '30m
 const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [candleChart, setCandleChart] = useState<CandlestickChart | null>(null);
+
+  const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
 
   const candles = useValue(MARKET, 'candles');
   const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
@@ -29,6 +33,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   const openOrders = useValue(TRADING, 'openOrders');
   const getOpenOrders = useGet(TRADING, 'openOrders');
   const updateDrafts = useSilent(TRADING, 'updateDrafts');
+  const currentSymbolLeverage = useSilent(TRADING, 'currentSymbolLeverage');
   const createOrderFromDraft = useSilent(TRADING, 'createOrderFromDraft');
   const limitOrder = useSilent(TRADING, 'limitOrder');
   const cancelOrder = useSilent(TRADING, 'cancelOrder');
@@ -47,8 +52,16 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   const alerts = symbolAlerts[symbol];
 
   useEffect(() => {
-    candleChart?.update({ pricePrecision: currentSymbolInfo?.pricePrecision ?? 1 });
-  }, [currentSymbolInfo?.pricePrecision, candleChart]);
+    candleChart?.update({ currentSymbolLeverage });
+  }, [currentSymbolLeverage, candleChart]);
+
+  useEffect(() => {
+    candleChart?.update({ currentSymbolInfo });
+  }, [currentSymbolInfo, candleChart]);
+
+  useEffect(() => {
+    candleChart?.update({ totalWalletBalance });
+  }, [totalWalletBalance, candleChart]);
 
   useEffect(() => {
     candleChart?.update({ candles });
@@ -59,8 +72,10 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   }, [position, candleChart]);
 
   useEffect(() => {
+    // TODO dirty fix to ignore fast lastPrice changes and update orders when length changed
     candleChart?.update({ orders });
-  }, [orders, candleChart]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orders.length, candleChart]);
 
   useEffect(() => {
     candleChart?.update({ alerts: alerts || [] });

@@ -22,6 +22,7 @@ export interface TradingPosition {
   marginType: api.FuturesPositionRisk['marginType'];
   baseAsset: string;
 }
+
 export interface TradingOrder {
   clientOrderId: string;
   cumQuote: string;
@@ -31,7 +32,7 @@ export interface TradingOrder {
   origQty: number;
   price: number;
   lastPrice: number;
-  reduceOnly: false,
+  reduceOnly: boolean;
   side: api.OrderSide;
   positionSide: api.PositionSide;
   status: string;

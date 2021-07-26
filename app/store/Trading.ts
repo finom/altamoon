@@ -579,7 +579,10 @@ export default class Trading {
   ): TradingPosition => ({
     // if positionAmt is increased, then use it as initial value,
     // if decrreased or remains the same then do nothing
-    initialAmt: Math.max(
+    initialAmt: +positionRisk.positionAmt >= 0 ? Math.max(
+      this.openPositions.find((p) => p.symbol === positionRisk.symbol)?.initialAmt ?? 0,
+      +positionRisk.positionAmt,
+    ) : Math.min(
       this.openPositions.find((p) => p.symbol === positionRisk.symbol)?.initialAmt ?? 0,
       +positionRisk.positionAmt,
     ),

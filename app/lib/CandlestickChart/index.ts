@@ -22,6 +22,7 @@ import OrderPriceLines from './items/OrderPriceLines';
 import AlertPriceLines from './items/AlertPriceLines';
 import PositionPriceLines from './items/PositionPriceLines';
 import CrosshairPriceLines from './items/CrosshairPriceLines';
+import Measurer from './items/Measurer';
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
@@ -80,6 +81,8 @@ export default class CandlestickChart {
   #orderLines: OrderPriceLines;
 
   #draftLines: DraftPriceLines;
+
+  #measurer: Measurer;
 
   #pricePrecision: number;
 
@@ -153,6 +156,8 @@ export default class CandlestickChart {
       onCancelOrder,
     }, resizeData);
 
+    this.#measurer = new Measurer({ scales: this.#scales, resizeData });
+
     this.#onUpdateDrafts = onUpdateDrafts;
 
     this.#plot = new Plot({ scales: this.#scales });
@@ -185,7 +190,9 @@ export default class CandlestickChart {
    * @param properties - New chart properties
    */
   public update(data: {
-    pricePrecision?: number;
+    totalWalletBalance?: number;
+    currentSymbolInfo?: api.FuturesExchangeInfoSymbol | null;
+    currentSymbolLeverage?: number;
     candles?: api.FuturesChartCandle[],
     position?: TradingPosition | null;
     orders?: TradingOrder[];
@@ -203,8 +210,9 @@ export default class CandlestickChart {
 
     canCreateDraftLines?: boolean;
   }): void {
-    if (typeof data.pricePrecision !== 'undefined') {
-      const { pricePrecision } = data;
+    if (typeof data.currentSymbolInfo !== 'undefined') {
+      const pricePrecision = data.currentSymbolInfo?.pricePrecision ?? 0;
+
       this.#pricePrecision = pricePrecision;
       this.#axes.update({ pricePrecision });
       this.#currentPriceLines.update({ pricePrecision });
@@ -254,7 +262,19 @@ export default class CandlestickChart {
 
     if (typeof data.canCreateDraftLines !== 'undefined') this.#canCreateDraftLines = data.canCreateDraftLines;
 
-    if (typeof data.position !== 'undefined') this.#positionLines.updatePositionLine(data.position);
+    if (typeof data.totalWalletBalance !== 'undefined') this.#measurer.update({ totalWalletBalance: data.totalWalletBalance });
+
+    if (typeof data.currentSymbolLeverage !== 'undefined') this.#measurer.update({ currentSymbolLeverage: data.currentSymbolLeverage });
+
+    if (typeof data.orders !== 'undefined') {
+      this.#measurer.update({ orders: data.orders });
+      this.#orderLines.updateOrderLines(data.orders);
+    }
+
+    if (typeof data.position !== 'undefined') {
+      this.#measurer.update({ position: data.position });
+      this.#positionLines.updatePositionLine(data.position);
+    }
 
     if (typeof data.orders !== 'undefined') this.#orderLines.updateOrderLines(data.orders);
 
@@ -341,6 +361,7 @@ export default class CandlestickChart {
     this.#orderLines.appendTo(svgContainer, resizeData);
     this.#alertLines.appendTo(svgContainer, resizeData);
     this.#draftLines.appendTo(svgContainer, resizeData);
+    this.#measurer.appendTo(svgContainer, resizeData);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);
 
@@ -391,11 +412,11 @@ export default class CandlestickChart {
     y.domain(yDomain);
   };
 
-  #onRightClick = (event: MouseEvent): void => {
-    event.stopPropagation();
-    event.preventDefault();
+  #onRightClick = (evt: MouseEvent): void => {
+    evt.stopPropagation();
+    evt.preventDefault();
 
-    const coords = d3.pointer(event);
+    const coords = d3.pointer(evt);
 
     this.#alertLines.addItem({
       yValue: this.#crosshairPriceLines.invertY(coords[1]),
@@ -404,13 +425,13 @@ export default class CandlestickChart {
     });
   };
 
-  #onDoubleClick = (event: MouseEvent): void => {
-    event.stopPropagation();
-    event.preventDefault();
+  #onDoubleClick = (evt: MouseEvent): void => {
+    evt.stopPropagation();
+    evt.preventDefault();
 
     if (!this.#canCreateDraftLines) return;
 
-    const coords = d3.pointer(event);
+    const coords = d3.pointer(evt);
     const yValue = this.#draftLines.invertY(coords[1]);
     const lastPrice: number = this.#currentPriceLines.getItems()[0]?.yValue ?? 0;
     const side: OrderSide = yValue < lastPrice ? 'BUY' : 'SELL';
@@ -420,8 +441,8 @@ export default class CandlestickChart {
     this.#onUpdateDrafts(this.#draftLines.getDraftPrices());
   };
 
-  #onMouseMove = (event: MouseEvent): void => {
-    const [x, y] = d3.pointer(event);
+  #onMouseMove = (evt: MouseEvent): void => {
+    const [x, y] = d3.pointer(evt);
 
     this.#crosshairPriceLines.show(x, y);
   };
