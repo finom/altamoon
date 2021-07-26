@@ -4,7 +4,7 @@ import React, { ReactElement, useCallback, useState } from 'react';
 import { Badge, Button, Table } from 'reactstrap';
 import { useSet, useSilent, useValue } from 'use-change';
 import tooltipRef from '../../../lib/tooltipRef';
-import { PERSISTENT, TRADING } from '../../../store';
+import { ACCOUNT, PERSISTENT, TRADING } from '../../../store';
 
 const formatNumber = (n: number, ignorePrecision?: boolean) => format(n < 10 && !ignorePrecision ? ',.4f' : ',.2f')(n);
 const formatPercent = format(',.1f');
@@ -18,6 +18,7 @@ const textClassName = (value: number) => {
 const Positions = (): ReactElement => {
   const openPositions = useValue(TRADING, 'openPositions');
   const closePosition = useSilent(TRADING, 'closePosition');
+  const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
   const setSymbol = useSet(PERSISTENT, 'symbol');
   const [symbolsToClose, setSymbolsToClose] = useState<string[]>([]);
   const onCloseMarket = useCallback(async (symbol: string) => {
@@ -97,7 +98,21 @@ const Positions = (): ReactElement => {
               ₮
             </td>
             <td>{marginType === 'isolated' ? `${formatNumber(liquidationPrice)} ₮` : <>&mdash;</>}</td>
-            <td>{marginType === 'isolated' ? `${formatNumber(isolatedWallet, true)} ₮` : <em className="text-warning">Cross</em>}</td>
+            <td>
+              {marginType === 'isolated'
+                ? (
+                  <>
+                    {formatNumber(isolatedWallet, true)}
+                    {' '}
+                    ₮
+                    {' '}
+                    (
+                    {formatPercent((isolatedWallet / totalWalletBalance) * 100)}
+                    %)
+                  </>
+                )
+                : <em className="text-warning">Cross</em>}
+            </td>
             <td>
               <span className={textClassName(pnl)}>
                 {formatNumber(pnl, true)}

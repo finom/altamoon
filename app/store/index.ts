@@ -33,8 +33,6 @@ export class RootStore {
   }
 }
 
-export type Foo = 'bar';
-
 const store = new RootStore();
 
 if (process.env.NODE_ENV === 'development') {
@@ -42,11 +40,11 @@ if (process.env.NODE_ENV === 'development') {
   convertType<{ store: RootStore }>(window).store = store;
 }
 
-declare global {
-  type Store = RootStore;
-}
+// allow to use it at class members
+declare global { type Store = RootStore; }
 
-export const ROOT = (rootStore: RootStore): RootStore => rootStore;
+// store selectors
+export const ROOT = (root: RootStore): RootStore => root;
 export const PERSISTENT = ({ persistent }: RootStore): Persistent => persistent;
 export const MARKET = ({ market }: RootStore): Market => market;
 export const ACCOUNT = ({ account }: RootStore): Account => account;

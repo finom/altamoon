@@ -24,7 +24,7 @@ const Leverage = ({
 
   const [leverage, setLeverage] = useState(currentSymbolLeverage);
 
-  useEffect(() => setLeverage(currentSymbolLeverage), [currentSymbolLeverage]);
+  useEffect(() => { setLeverage(currentSymbolLeverage); }, [currentSymbolLeverage]);
 
   return (
     <Row>
