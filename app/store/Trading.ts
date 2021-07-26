@@ -116,7 +116,7 @@ export default class Trading {
 
     // if futuresExchangeSymbols is loaded after positions, update all positions wit missing data
     listenChange(store.market, 'futuresExchangeSymbols', (futuresExchangeSymbols) => {
-      if (futuresExchangeSymbols) {
+      if (futuresExchangeSymbols && this.openPositions.length) {
         this.openPositions = this.openPositions.map((pos) => ({
           ...pos,
           baseAsset: futuresExchangeSymbols[pos.symbol].baseAsset,
@@ -542,45 +542,49 @@ export default class Trading {
     this.#lastPriceUnsubscribe = api.futuresAggTradeStream(
       symbolsToListen,
       (ticker) => {
-        this.openPositions = this.openPositions.map((position) => {
-          if (position.symbol === ticker.symbol) {
-            const lastPrice = +ticker.price;
-            return {
-              ...position,
-              lastPrice,
-              pnl: this.#getPnl({
-                positionAmt: position.positionAmt,
+        if (this.openPositions.length) {
+          this.openPositions = this.openPositions.map((position) => {
+            if (position.symbol === ticker.symbol) {
+              const lastPrice = +ticker.price;
+              return {
+                ...position,
                 lastPrice,
-                entryPrice: position.entryPrice,
-              }),
-              pnlPositionPercent: this.#getPnlPositionPercent({
-                positionAmt: position.positionAmt,
+                pnl: this.#getPnl({
+                  positionAmt: position.positionAmt,
+                  lastPrice,
+                  entryPrice: position.entryPrice,
+                }),
+                pnlPositionPercent: this.#getPnlPositionPercent({
+                  positionAmt: position.positionAmt,
+                  lastPrice,
+                  entryPrice: position.entryPrice,
+                  leverage: position.leverage,
+                }),
+                pnlBalancePercent: this.#getPnlBalancePercent({
+                  positionAmt: position.positionAmt,
+                  lastPrice,
+                  entryPrice: position.entryPrice,
+                }),
+              };
+            }
+
+            return position;
+          });
+        }
+
+        if (this.openOrders.length) {
+          this.openOrders = this.openOrders.map((order) => {
+            if (order.symbol === ticker.symbol) {
+              const lastPrice = +ticker.price;
+              return {
+                ...order,
                 lastPrice,
-                entryPrice: position.entryPrice,
-                leverage: position.leverage,
-              }),
-              pnlBalancePercent: this.#getPnlBalancePercent({
-                positionAmt: position.positionAmt,
-                lastPrice,
-                entryPrice: position.entryPrice,
-              }),
-            };
-          }
+              };
+            }
 
-          return position;
-        });
-
-        this.openOrders = this.openOrders.map((order) => {
-          if (order.symbol === ticker.symbol) {
-            const lastPrice = +ticker.price;
-            return {
-              ...order,
-              lastPrice,
-            };
-          }
-
-          return order;
-        });
+            return order;
+          });
+        }
       },
     );
   };

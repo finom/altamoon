@@ -115,7 +115,7 @@ export default class PriceLines implements ChartItem {
     this.#wrapper?.selectAll('.price-line-horizontal-group .price-line-line').attr('x2', resizeData.width);
     this.#wrapper?.selectAll('.price-line-vertical-group .price-line-line').attr('y2', resizeData.height);
 
-    this.#wrapper?.selectAll('.price-line-title-object').attr('transform', `translate(${this.#resizeData.width - 120}, 0)`);
+    this.#wrapper?.selectAll('.price-line-title-object').attr('transform', `translate(${this.#resizeData.width - 130}, 0)`);
 
     this.#draw();
   };
