@@ -5,7 +5,7 @@ import useChange, { useValue, useSilent, useGet } from 'use-change';
 import * as api from '../../../api';
 import CandlestickChart from '../../../lib/CandlestickChart';
 import {
-  ACCOUNT, MARKET, PERSISTENT, TRADING,
+  ACCOUNT, CUSTOMIZATION, MARKET, PERSISTENT, TRADING,
 } from '../../../store';
 
 import Widget from '../../layout/Widget';
@@ -20,11 +20,12 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
 
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
 
+  const customPriceLines = useValue(CUSTOMIZATION, 'customPriceLines');
+
   const candles = useValue(MARKET, 'candles');
   const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
   const symbol = useValue(PERSISTENT, 'symbol');
   const getSymbol = useGet(PERSISTENT, 'symbol');
-
   const [interval, setCandleInterval] = useChange(PERSISTENT, 'interval');
   const [symbolAlerts, setSymbolAlerts] = useChange(PERSISTENT, 'symbolAlerts');
   const tradingType = useValue(PERSISTENT, 'tradingType');
@@ -80,6 +81,10 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   useEffect(() => {
     candleChart?.update({ alerts: alerts || [] });
   }, [alerts, candleChart]);
+
+  useEffect(() => {
+    candleChart?.update({ customPriceLines });
+  }, [customPriceLines, candleChart]);
 
   useEffect(() => {
     if (candleChart) {

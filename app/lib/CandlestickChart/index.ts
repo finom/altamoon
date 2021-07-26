@@ -23,6 +23,7 @@ import AlertPriceLines from './items/AlertPriceLines';
 import PositionPriceLines from './items/PositionPriceLines';
 import CrosshairPriceLines from './items/CrosshairPriceLines';
 import Measurer from './items/Measurer';
+import CustomPriceLines from './items/CustomPriceLines';
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
@@ -81,6 +82,8 @@ export default class CandlestickChart {
   #orderLines: OrderPriceLines;
 
   #draftLines: DraftPriceLines;
+
+  #customLines: CustomPriceLines;
 
   #measurer: Measurer;
 
@@ -156,6 +159,10 @@ export default class CandlestickChart {
       onCancelOrder,
     }, resizeData);
 
+    this.#customLines = new CustomPriceLines({
+      axis: this.#axes.getAxis(),
+    }, resizeData);
+
     this.#measurer = new Measurer({ scales: this.#scales, resizeData });
 
     this.#onUpdateDrafts = onUpdateDrafts;
@@ -176,6 +183,7 @@ export default class CandlestickChart {
         this.#plot.update({ scaledX });
         this.#positionLines.update();
         this.#alertLines.update();
+        this.#customLines.update();
         this.#orderLines.update();
         this.#draftLines.update();
         this.#currentPriceLines.update();
@@ -197,6 +205,7 @@ export default class CandlestickChart {
     position?: TradingPosition | null;
     orders?: TradingOrder[];
     alerts?: number[];
+    customPriceLines?: PriceLinesDatum[];
 
     buyDraftPrice?: number | null;
     sellDraftPrice?: number | null;
@@ -218,6 +227,7 @@ export default class CandlestickChart {
       this.#currentPriceLines.update({ pricePrecision });
       this.#crosshairPriceLines.update({ pricePrecision });
       this.#alertLines.update({ pricePrecision });
+      this.#customLines.update({ pricePrecision });
       this.#draftLines.update({ pricePrecision });
       this.#positionLines.update({ pricePrecision });
       this.#orderLines.update({ pricePrecision });
@@ -244,6 +254,7 @@ export default class CandlestickChart {
         this.#resize();
         this.#positionLines.update();
         this.#alertLines.update();
+        this.#customLines.update();
         this.#orderLines.update();
         this.#draftLines.update();
         this.#currentPriceLines.update();
@@ -279,6 +290,8 @@ export default class CandlestickChart {
     if (typeof data.orders !== 'undefined') this.#orderLines.updateOrderLines(data.orders);
 
     if (typeof data.alerts !== 'undefined') this.#alertLines.updateAlertLines(data.alerts);
+
+    if (typeof data.customPriceLines !== 'undefined') this.#customLines.update({ items: data.customPriceLines });
   }
 
   /**
@@ -337,6 +350,7 @@ export default class CandlestickChart {
     this.#crosshairPriceLines.resize(resizeData);
     this.#alertLines.resize(resizeData);
     this.#draftLines.resize(resizeData);
+    this.#customLines.resize(resizeData);
 
     if (this.#candles.length) {
       this.#draw();
@@ -359,8 +373,9 @@ export default class CandlestickChart {
     this.#currentPriceLines.appendTo(svgContainer, resizeData);
     this.#positionLines.appendTo(svgContainer, resizeData);
     this.#orderLines.appendTo(svgContainer, resizeData);
-    this.#alertLines.appendTo(svgContainer, resizeData);
     this.#draftLines.appendTo(svgContainer, resizeData);
+    this.#alertLines.appendTo(svgContainer, resizeData);
+    this.#customLines.appendTo(svgContainer, resizeData);
     this.#measurer.appendTo(svgContainer, resizeData);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);

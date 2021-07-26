@@ -7,6 +7,7 @@ import * as api from '../api';
 import notify from '../lib/notify';
 import settings from '../settings';
 import { Plugin } from './types';
+import { PriceLinesDatum } from '../lib/CandlestickChart/types';
 
 interface WidgetData {
   hasSettings: boolean;
@@ -48,6 +49,8 @@ export default class App {
   public defaultPlugins: PluginInfo[] = [];
 
   public customPlugins: PluginInfo[] = [];
+
+  public customPriceLines: PriceLinesDatum[] = [];
 
   #pluginCache: Record<string, PluginInfo> = {};
 
