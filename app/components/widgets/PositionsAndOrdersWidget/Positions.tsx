@@ -42,13 +42,9 @@ const Positions = (): ReactElement => {
           <th><span className="help-text" ref={tooltipRef({ title: 'Profit and Loss' })}>PNL</span></th>
           <th>
             <span className="help-text" ref={tooltipRef({ title: 'Return on Investment' })}>ROI</span>
-            {' '}
-            %
           </th>
           <th>
             <span className="help-text" ref={tooltipRef({ title: 'Return on Wallet' })}>ROW</span>
-            {' '}
-            %
           </th>
           <th style={{ width: '100px' }}>
             Close
@@ -57,7 +53,7 @@ const Positions = (): ReactElement => {
       </thead>
       <tbody>
         {openPositions.map(({
-          symbol, baseValue, liquidationPrice, entryPrice, positionAmt,
+          symbol, baseAsset, baseValue, liquidationPrice, entryPrice, positionAmt,
           isolatedWallet, marginType, leverage, lastPrice,
           side, pnl, pnlBalancePercent, pnlPositionPercent,
         }) => (
@@ -70,7 +66,7 @@ const Positions = (): ReactElement => {
                 role="button"
                 tabIndex={0}
               >
-                {symbol.slice(0, -4)}
+                {baseAsset}
               </span>
               {' '}
               &nbsp;

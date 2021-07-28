@@ -36,6 +36,12 @@ export default class Persistent {
 
   public numberOfColumns = getPersistentStorageValue<number>('numberOfColumns', 12);
 
+  public chartPaddingTopPercent = getPersistentStorageValue<number>('chartPaddingTopPercent', 10);
+
+  public chartPaddingBottomPercent = getPersistentStorageValue<number>('chartPaddingBottomPercent', 10);
+
+  public chartPaddingRightPercent = getPersistentStorageValue<number>('chartPaddingRightPercent', 10);
+
   constructor() {
     Object.getOwnPropertyNames(this).forEach((key) => {
       listenChange(this, key as keyof Persistent, (value: unknown) => {

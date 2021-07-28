@@ -9,6 +9,7 @@ import {
 } from '../../../store';
 
 import Widget from '../../layout/Widget';
+import ChartSettings from './ChartSettings';
 
 import css from './style.css';
 
@@ -29,6 +30,9 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   const [interval, setCandleInterval] = useChange(PERSISTENT, 'interval');
   const [symbolAlerts, setSymbolAlerts] = useChange(PERSISTENT, 'symbolAlerts');
   const tradingType = useValue(PERSISTENT, 'tradingType');
+  const chartPaddingTopPercent = useValue(PERSISTENT, 'chartPaddingTopPercent');
+  const chartPaddingBottomPercent = useValue(PERSISTENT, 'chartPaddingBottomPercent');
+  const chartPaddingRightPercent = useValue(PERSISTENT, 'chartPaddingRightPercent');
 
   const position = useValue(TRADING, 'openPositions').find((pos) => pos.symbol === symbol) ?? null;
   const openOrders = useValue(TRADING, 'openOrders');
@@ -85,6 +89,19 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   useEffect(() => {
     candleChart?.update({ customPriceLines });
   }, [customPriceLines, candleChart]);
+
+  useEffect(() => {
+    candleChart?.update({
+      paddingPercents: {
+        top: chartPaddingTopPercent,
+        bottom: chartPaddingBottomPercent,
+        right: chartPaddingRightPercent,
+      },
+    });
+  }, [
+    customPriceLines, candleChart, chartPaddingTopPercent,
+    chartPaddingBottomPercent, chartPaddingRightPercent,
+  ]);
 
   useEffect(() => {
     if (candleChart) {
@@ -177,6 +194,11 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
         alerts: alerts || [],
         draftPriceItems: [],
         pricePrecision: currentSymbolInfo?.pricePrecision ?? 0,
+        paddingPercents: {
+          top: chartPaddingTopPercent,
+          bottom: chartPaddingBottomPercent,
+          right: chartPaddingRightPercent,
+        },
         onDragLimitOrder: async (orderId: number, price: number) => {
           const order = getOpenOrders().find((orderItem) => orderId === orderItem.orderId);
           if (order) {
@@ -206,7 +228,16 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   });
 
   return (
-    <Widget id={id} title={title}>
+    <Widget
+      id={id}
+      title={title}
+      settings={({ listenSettingsCancel, listenSettingsSave }) => (
+        <ChartSettings
+          listenSettingsCancel={listenSettingsCancel}
+          listenSettingsSave={listenSettingsSave}
+        />
+      )}
+    >
       <div className={`nav nav-pills ${css.intervals}`}>
         {intervals.map((intervalsItem, index) => (
           <div
@@ -225,9 +256,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
       </div>
       <div
         className={css.chartContainer}
-        ref={(node) => {
-          ref.current = node;
-        }}
+        ref={(node) => { ref.current = node; }}
       />
     </Widget>
   );

@@ -1,24 +1,28 @@
 import React, {
-  ReactElement, ReactNode, Ref, useCallback, useState,
+  ReactElement, ReactNode, Ref, useCallback, useRef, useState,
 } from 'react';
 import {
   Button, Card, CardBody, CardHeader, Row, Col,
 } from 'reactstrap';
 import classNames from 'classnames';
 import { Gear } from 'react-bootstrap-icons';
-import { useValue } from 'use-change';
+import { listenChange, useValue } from 'use-change';
 
 import css from './style.css';
 import { ACCOUNT } from '../../../store';
 import AccountError from './AccountError';
 import useWidgetSizeBreakpoint from '../../../hooks/useWidgetSizeBreakpoint';
 
+export interface WidgetSettingsProps {
+  listenSettingsSave: (handler: () => void) => (() => void);
+  listenSettingsCancel: (handler: () => void) => (() => void);
+}
 interface Props {
   id: string;
   title: string;
   noPadding?: boolean;
   bodyClassName?: string;
-  settings?: ReactNode;
+  settings?: ReactNode | ((settingsProps: WidgetSettingsProps) => ReactNode);
   children?: ReactNode;
   bodyRef?: Ref<HTMLElement>;
   shouldCheckAccount?: boolean;
@@ -33,16 +37,21 @@ const Widget = ({
   const [isSettingsOpen, setIsSettignsOpen] = useState(false);
   const futuresAccount = useValue(ACCOUNT, 'futuresAccount');
   const [isWideLayout, wideLayoutRef] = useWidgetSizeBreakpoint('lg');
+  const evtTargetRef = useRef({ saveCount: 0, cancelCount: 0 });
+  const listenSettingsSave = useCallback((handler) => listenChange(evtTargetRef.current, 'saveCount', handler), []);
+  const listenSettingsCancel = useCallback((handler) => listenChange(evtTargetRef.current, 'cancelCount', handler), []);
 
   const toggleSettings = useCallback(() => {
     if (isSettingsOpen) {
       onSettingsCancel?.();
+      evtTargetRef.current.cancelCount += 1;
     }
     setIsSettignsOpen(!isSettingsOpen);
   }, [isSettingsOpen, onSettingsCancel]);
 
   const onSaveClick = useCallback(() => {
     onSettingsSave?.();
+    evtTargetRef.current.saveCount += 1;
     setIsSettignsOpen(false);
   }, [onSettingsSave]);
 
@@ -79,7 +88,7 @@ const Widget = ({
             [css.settingsOpen]: isSettingsOpen,
           })}
         >
-          {settings}
+          {typeof settings === 'function' ? settings({ listenSettingsSave, listenSettingsCancel }) : settings}
           <Row>
             <Col xs={6}>
               <Button

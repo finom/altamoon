@@ -1,7 +1,7 @@
 import $ from 'balajs';
 import * as d3 from 'd3';
 
-import { last } from 'lodash';
+import { isEqual, last } from 'lodash';
 import * as api from '../../api';
 import Axes from './items/Axes';
 import ClipPath from './items/ClipPath';
@@ -12,7 +12,7 @@ import Svg from './items/Svg';
 import './chart.global.css';
 
 import {
-  ResizeData, DrawData, Scales, StyleMargin, D3Selection, PriceLinesDatum,
+  ResizeData, DrawData, Scales, StyleMargin, D3Selection, PriceLinesDatum, ChartPaddingPercents,
 } from './types';
 import PriceLines from './items/PriceLines';
 import { TradingOrder, TradingPosition } from '../../store/types';
@@ -46,6 +46,7 @@ interface Params {
   alerts: number[];
   draftPriceItems: PriceLinesDatum[];
   pricePrecision: number;
+  paddingPercents: ChartPaddingPercents;
 }
 
 export default class CandlestickChart {
@@ -66,6 +67,8 @@ export default class CandlestickChart {
   #margin: StyleMargin = {
     top: 0, right: 55, bottom: 30, left: 55,
   };
+
+  #paddingPercents: ChartPaddingPercents;
 
   #scales: Scales;
 
@@ -89,7 +92,7 @@ export default class CandlestickChart {
 
   #pricePrecision: number;
 
-  #isDrawn = false;
+  #hasInitialScroll = false;
 
   #candles: api.FuturesChartCandle[] = [];
 
@@ -99,10 +102,12 @@ export default class CandlestickChart {
 
   #canCreateDraftLines = true;
 
+  #zoomTransformXValue = 0;
+
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
     {
-      pricePrecision, alerts, onUpdateAlerts, onUpdateDrafts,
+      pricePrecision, alerts, paddingPercents, onUpdateAlerts, onUpdateDrafts,
       onClickDraftCheck, onDragLimitOrder, onCancelOrder,
     }: Params,
   ) {
@@ -129,6 +134,7 @@ export default class CandlestickChart {
     this.#axes = new Axes({ scales: this.#scales });
     this.#clipPath = new ClipPath();
     this.#gridLines = new GridLines({ scales: this.#scales });
+    this.#paddingPercents = paddingPercents;
 
     this.#currentPriceLines = new PriceLines({
       axis: this.#axes.getAxis(),
@@ -174,6 +180,9 @@ export default class CandlestickChart {
     d3.select(this.#container).select('svg').call(
       this.#zoom.on('zoom', (event: d3.D3ZoomEvent<Element, unknown>) => {
         const { transform } = event;
+
+        this.#zoomTransformXValue = transform.x;
+
         const scaledX = transform.rescaleX(this.#scales.x);
 
         this.#scales.scaledX = scaledX;
@@ -218,6 +227,8 @@ export default class CandlestickChart {
     shouldShowStopSellPrice?: boolean;
 
     canCreateDraftLines?: boolean;
+
+    paddingPercents?: ChartPaddingPercents;
   }): void {
     if (typeof data.currentSymbolInfo !== 'undefined') {
       const pricePrecision = data.currentSymbolInfo?.pricePrecision ?? 0;
@@ -292,6 +303,17 @@ export default class CandlestickChart {
     if (typeof data.alerts !== 'undefined') this.#alertLines.updateAlertLines(data.alerts);
 
     if (typeof data.customPriceLines !== 'undefined') this.#customLines.update({ items: data.customPriceLines });
+
+    if (typeof data.paddingPercents !== 'undefined' && !isEqual(data.paddingPercents, this.#paddingPercents)) {
+      this.#paddingPercents = data.paddingPercents;
+
+      this.#translateBy(
+        -this.#zoomTransformXValue
+        + (this.#width * (-Math.min(90, Math.max(0, this.#paddingPercents.right)) / 100 || 0)),
+      );
+
+      this.#draw();
+    }
   }
 
   /**
@@ -324,9 +346,11 @@ export default class CandlestickChart {
       yValue: +(this.#candles[this.#candles.length - 1]?.close ?? 0),
     });
 
-    if (!this.#isDrawn && this.#candles.length) {
-      this.#isDrawn = true;
-      this.#translateBy(-100);
+    if (!this.#hasInitialScroll && this.#candles.length) {
+      this.#hasInitialScroll = true;
+      this.#translateBy(
+        this.#width * (-Math.min(90, Math.max(0, this.#paddingPercents.right)) / 100 || 0),
+      );
     }
   };
 
@@ -417,12 +441,18 @@ export default class CandlestickChart {
 
     y.domain(yDomain);
 
+    const paddingTopPercent = Math.min(50, Math.max(0, this.#paddingPercents.top)) || 0;
+    const paddingBottomPercent = Math.min(50, Math.max(0, this.#paddingPercents.bottom)) || 0;
+    const paddingTop = this.#height * (paddingTopPercent / 100);
+    const paddingBottom = (this.#height * (paddingBottomPercent / 100));
+
     // Padding
-    const yPaddingTop = y.invert(-200) - y.invert(0);
-    const yPaddingBot = y.invert(this.#height) - y.invert(this.#height + 200);
+    const yPaddingTop = y.invert(-paddingTop) - y.invert(0);
+    const yPaddingBottom = y.invert(this.#height)
+      - y.invert(this.#height + paddingBottom);
 
     yDomain[1] = (yDomain[1] ?? 0) + (+yPaddingTop.toFixed(this.#pricePrecision));
-    yDomain[0] = (yDomain[0] ?? 0) - (+yPaddingBot.toFixed(this.#pricePrecision));
+    yDomain[0] = (yDomain[0] ?? 0) - (+yPaddingBottom.toFixed(this.#pricePrecision));
 
     y.domain(yDomain);
   };

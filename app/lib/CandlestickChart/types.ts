@@ -7,6 +7,10 @@ export interface StyleMargin {
   top: number; right: number; bottom: number; left: number;
 }
 
+export interface ChartPaddingPercents {
+  top: number; right: number; bottom: number;
+}
+
 export interface ChartItem {
   appendTo: (parent: Element, resizeData: ResizeData) => void;
   resize: ({ width, height, margin }: ResizeData) => void

@@ -42,15 +42,15 @@ const LastTradesWidget = ({ title, id }: { title: string; id: string; }): ReactE
       onSettingsSave={saveSettings}
       settings={(
         <>
-          <Label htmlFor="ignoreValuesBelowNumber" className="form-label">Ignore Values Below (₮)</Label>
+          <Label htmlFor="lastTradesIgnoreValuesBelowNumber" className="form-label">Ignore Values Below (₮)</Label>
           <Input
             type="number"
-            id="ignoreValuesBelowNumber"
+            id="lastTradesIgnoreValuesBelowNumber"
             value={ignoreValuesBelowNumber}
             onChange={onIgnoreValuesInputChange}
           />
         </>
-    )}
+      )}
     >
       <Table className={css.tableHeadTable}>
         <thead>
