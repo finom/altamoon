@@ -7,6 +7,7 @@ import { useSilent, useValue } from 'use-change';
 
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
+import formatBalanceMoneyNumber from '../../../../../../lib/formatBalanceMoneyNumber';
 import { MARKET, PERSISTENT, TRADING } from '../../../../../../store';
 import LabeledInput from '../../../../../controls/LabeledInput';
 import PercentSelector from './PercentSelector';
@@ -39,6 +40,7 @@ const ExactSize = ({
   const calculateQuantity = useSilent(TRADING, 'calculateQuantity');
   const calculateSizeFromString = useSilent(TRADING, 'calculateSizeFromString');
   const symbol = useValue(PERSISTENT, 'symbol');
+  const leverage = +useValue(TRADING, 'allSymbolsPositionRisk')[symbol]?.leverage || 1;
   const exactSize = useMemo(
     () => calculateSizeFromString(exactSizeStr),
     [calculateSizeFromString, exactSizeStr],
@@ -58,8 +60,8 @@ const ExactSize = ({
   const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
 
   useEffect(() => {
-    setInputTitle(`${quantity} ${currentSymbolBaseAsset ?? ''}`);
-  }, [currentSymbolBaseAsset, quantity, setInputTitle]);
+    setInputTitle(price ? `${formatBalanceMoneyNumber((quantity * price) / leverage)} USDT (${quantity} ${currentSymbolBaseAsset ?? ''})` : 'Unknown price');
+  }, [currentSymbolBaseAsset, leverage, price, quantity, setInputTitle]);
 
   return (
     <>

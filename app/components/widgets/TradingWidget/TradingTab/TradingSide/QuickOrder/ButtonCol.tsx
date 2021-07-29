@@ -1,14 +1,13 @@
 import React, {
   LegacyRef, useEffect, ReactElement, useMemo,
 } from 'react';
-import { format } from 'd3-format';
 import { Button, Col } from 'reactstrap';
 import { useSilent, useValue } from 'use-change';
 
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
 import { MARKET, PERSISTENT, TRADING } from '../../../../../../store';
-import css from './style.css';
+import formatBalanceMoneyNumber from '../../../../../../lib/formatBalanceMoneyNumber';
 
 interface Props {
   totalWalletBalance: number;
@@ -20,8 +19,6 @@ interface Props {
   onOrder: (qty: number) => void;
 }
 
-const formatMoney = (value: number) => format(value > 1000 ? ',.0f' : ',.2f')(value);
-
 const ButtonCol = ({
   totalWalletBalance, availableBalance,
   price, side, percent, isMax, onOrder,
@@ -29,6 +26,7 @@ const ButtonCol = ({
   const preciseSize = isMax ? availableBalance : totalWalletBalance * ((percent ?? 0) / 100);
   const calculateQuantity = useSilent(TRADING, 'calculateQuantity');
   const symbol = useValue(PERSISTENT, 'symbol');
+  const leverage = +useValue(TRADING, 'allSymbolsPositionRisk')[symbol]?.leverage || 1;
 
   const quantity = useMemo(() => {
     if (typeof price !== 'number') return 0;
@@ -43,8 +41,8 @@ const ButtonCol = ({
   const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
 
   useEffect(() => {
-    setButtonTitle(`${quantity} ${currentSymbolBaseAsset ?? ''}`);
-  }, [currentSymbolBaseAsset, quantity, setButtonTitle]);
+    setButtonTitle(price ? `${formatBalanceMoneyNumber((quantity * price) / leverage)} USDT (${quantity} ${currentSymbolBaseAsset ?? ''})` : 'Unknown price');
+  }, [currentSymbolBaseAsset, leverage, price, quantity, setButtonTitle]);
 
   return (
     <Col xs={3}>
@@ -60,16 +58,6 @@ const ButtonCol = ({
           onClick={() => onOrder(quantity)}
         >
           {isMax ? 'Max' : `~${percent ?? 0}%`}
-          <br />
-          <span className={css.value}>
-            <span className="o-50">≤</span>
-            {' '}
-            <span className="o-75">
-              {formatMoney(preciseSize)}
-            </span>
-            {' '}
-            <span className="o-75">₮</span>
-          </span>
         </Button>
       </div>
     </Col>

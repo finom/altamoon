@@ -29,16 +29,16 @@ const Trading = ({ title, id }: { title: string; id: string; }): ReactElement =>
       />
       <Nav tabs className="mt-3">
         <NavItem>
-          <NavLink active={type === 'LIMIT'} onClick={() => setType('LIMIT')} className="cursor-pointer">Limit</NavLink>
+          <NavLink active={type === 'LIMIT'} onClick={() => setType('LIMIT')} className="cursor-pointer px-3 py-1">Limit</NavLink>
         </NavItem>
         <NavItem>
-          <NavLink active={type === 'MARKET'} onClick={() => setType('MARKET')} className="cursor-pointer">Market</NavLink>
+          <NavLink active={type === 'MARKET'} onClick={() => setType('MARKET')} className="cursor-pointer px-3 py-1">Market</NavLink>
         </NavItem>
         <NavItem>
-          <NavLink active={type === 'STOP'} onClick={() => setType('STOP')} className="cursor-pointer">Stop Limit</NavLink>
+          <NavLink active={type === 'STOP'} onClick={() => setType('STOP')} className="cursor-pointer px-3 py-1">Stop Limit</NavLink>
         </NavItem>
         <NavItem>
-          <NavLink active={type === 'STOP_MARKET'} onClick={() => setType('STOP_MARKET')} className="cursor-pointer">Stop Market</NavLink>
+          <NavLink active={type === 'STOP_MARKET'} onClick={() => setType('STOP_MARKET')} className="cursor-pointer px-3 py-1">Stop Market</NavLink>
         </NavItem>
       </Nav>
       <TabContent className="p-1" data-trading-type={type}>
