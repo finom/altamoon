@@ -75,7 +75,7 @@ export default class Stats {
       }
     }
 
-    await delay(5000);
+    await delay(20000);
 
     return this.#incomeTicker();
   };

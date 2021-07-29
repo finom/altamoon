@@ -102,7 +102,7 @@ export default class CandlestickChart {
 
   #canCreateDraftLines = true;
 
-  #zoomTransformXValue = 0;
+  #zoomTransform: Pick<d3.ZoomTransform, 'x' | 'y' | 'k'> = { k: 1, x: 0, y: 0 };
 
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
@@ -181,7 +181,7 @@ export default class CandlestickChart {
       this.#zoom.on('zoom', (event: d3.D3ZoomEvent<Element, unknown>) => {
         const { transform } = event;
 
-        this.#zoomTransformXValue = transform.x;
+        this.#zoomTransform = transform;
 
         const scaledX = transform.rescaleX(this.#scales.x);
 
@@ -308,7 +308,7 @@ export default class CandlestickChart {
       this.#paddingPercents = data.paddingPercents;
 
       this.#translateBy(
-        -this.#zoomTransformXValue
+        -this.#zoomTransform.x
         + (this.#width * (-Math.min(90, Math.max(0, this.#paddingPercents.right)) / 100 || 0)),
       );
 
@@ -334,7 +334,7 @@ export default class CandlestickChart {
       width: this.#width, height: this.#height, margin: this.#margin, scales: this.#scales,
     };
 
-    const drawData: DrawData = { candles: this.#candles };
+    const drawData: DrawData = { candles: this.#candles, zoomTransform: this.#zoomTransform };
 
     this.#axes.draw(resizeData);
 

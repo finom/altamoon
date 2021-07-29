@@ -31,6 +31,7 @@ export interface ResizeData {
 
 export interface DrawData {
   candles: api.FuturesChartCandle[];
+  zoomTransform: Pick<d3.ZoomTransform, 'x' | 'y' | 'k'>;
 }
 
 export interface SmoozCandle extends Omit<api.FuturesChartCandle, 'open' | 'close'> {

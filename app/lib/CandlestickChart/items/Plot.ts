@@ -5,6 +5,10 @@ import {
 import * as api from '../../../api';
 
 export default class Plot implements ChartItem {
+  #lastCandle?: api.FuturesChartCandle;
+
+  #zoomTransform?: Pick<d3.ZoomTransform, 'k' | 'x' | 'y'>;
+
   #scaledX: Scales['x'];
 
   #scaledY: Scales['y'];
@@ -18,6 +22,14 @@ export default class Plot implements ChartItem {
   #pathWicksUp?: D3Selection<SVGPathElement>;
 
   #pathWicksDown?: D3Selection<SVGPathElement>;
+
+  #pathLastBodysUp?: D3Selection<SVGPathElement>;
+
+  #pathLastBodyDown?: D3Selection<SVGPathElement>;
+
+  #pathLastWickUp?: D3Selection<SVGPathElement>;
+
+  #pathLastWickDown?: D3Selection<SVGPathElement>;
 
   constructor({ scales }: { scales: Scales }) {
     this.#scaledX = scales.x;
@@ -35,20 +47,51 @@ export default class Plot implements ChartItem {
     this.#pathBodiesDown = wrapper.append('path').attr('class', 'body down');
     this.#pathWicksUp = wrapper.append('path').attr('class', 'wick up');
     this.#pathWicksDown = wrapper.append('path').attr('class', 'wick down');
+
+    this.#pathLastBodysUp = wrapper.append('path').attr('class', 'body up');
+    this.#pathLastBodyDown = wrapper.append('path').attr('class', 'body down');
+    this.#pathLastWickUp = wrapper.append('path').attr('class', 'wick up');
+    this.#pathLastWickDown = wrapper.append('path').attr('class', 'wick down');
   };
 
-  public draw = ({ candles }: DrawData): void => {
+  public draw = ({ candles, zoomTransform }: DrawData): void => {
     if (!candles.length) return;
 
-    const smoozCandles = Plot.smoozCandles(candles);
-    const upCandles = smoozCandles.filter((x) => x.direction === 'up');
-    const downCandles = smoozCandles.filter((x) => x.direction === 'down');
+    const lastCandle = candles[candles.length - 1];
 
-    this.#pathBodiesUp?.attr('d', this.#getBodies(upCandles, 'up'));
-    this.#pathWicksUp?.attr('d', this.#getWicks(upCandles));
+    // update all candles (except first) if zoom or last candle was changed
+    if (
+      lastCandle?.time !== this.#lastCandle?.time
+      || lastCandle?.interval !== this.#lastCandle?.interval
+      || lastCandle?.symbol !== this.#lastCandle?.symbol
+      || this.#zoomTransform !== zoomTransform
+    ) {
+      const smoozFirstCandles = Plot.smoozCandles(candles).slice(0, -1);
 
-    this.#pathBodiesDown?.attr('d', this.#getBodies(downCandles, 'down'));
-    this.#pathWicksDown?.attr('d', this.#getWicks(downCandles));
+      const upCandles = smoozFirstCandles.filter((x) => x.direction === 'up');
+      const downCandles = smoozFirstCandles.filter((x) => x.direction === 'down');
+
+      this.#pathBodiesUp?.attr('d', this.#getBodies(upCandles, 'up'));
+      this.#pathWicksUp?.attr('d', this.#getWicks(upCandles));
+      this.#pathBodiesDown?.attr('d', this.#getBodies(downCandles, 'down'));
+      this.#pathWicksDown?.attr('d', this.#getWicks(downCandles));
+    }
+
+    // update last candle
+    // candles.slice(-2) returns [prev, last]
+    // and allows smoozCandles to use previous candle to calculate itself
+    const [, smoozLastCandle] = Plot.smoozCandles(candles.slice(-2));
+
+    const upLastCandles = smoozLastCandle?.direction === 'up' ? [smoozLastCandle] : [];
+    const downLastCandles = smoozLastCandle?.direction === 'down' ? [smoozLastCandle] : [];
+
+    this.#pathLastBodysUp?.attr('d', this.#getBodies(upLastCandles, 'up'));
+    this.#pathLastWickUp?.attr('d', this.#getWicks(upLastCandles));
+    this.#pathLastBodyDown?.attr('d', this.#getBodies(downLastCandles, 'down'));
+    this.#pathLastWickDown?.attr('d', this.#getWicks(downLastCandles));
+
+    this.#lastCandle = lastCandle;
+    this.#zoomTransform = zoomTransform;
   };
 
   // eslint-disable-next-line class-methods-use-this
@@ -147,7 +190,7 @@ export default class Plot implements ChartItem {
       } = candles[i];
       const previous = newCandles[i - 1] as SmoozCandle | undefined;
 
-      let newOpen = (previous)
+      let newOpen = previous
         ? (+previous.open + +previous.close) / 2
         : (+open + +close) / 2;
       let newClose = (+open + +close + +high + +low) / 4;

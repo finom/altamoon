@@ -144,10 +144,10 @@ export default class Trading {
       // eslint-disable-next-line no-console
       console.error(e);
       // retry
-      await delay(3000);
+      await delay(5000);
       return this.loadPositions();
     }
-  }, 500);
+  }, 1000);
 
   public loadOrders = throttle(async (): Promise<void> => {
     try {
@@ -163,10 +163,10 @@ export default class Trading {
       // eslint-disable-next-line no-console
       console.error(e);
       // retry
-      await delay(3000);
+      await delay(5000);
       return this.loadOrders();
     }
-  }, 500);
+  }, 1000);
 
   public marketOrder = async ({
     side, quantity, symbol, reduceOnly = false,
