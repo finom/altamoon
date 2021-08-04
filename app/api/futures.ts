@@ -36,9 +36,9 @@ export async function futuresPrices(): Promise<Record<string, string>> {
 }
 
 export async function futuresLeverageBracket(
-  symbol: string,
-): Promise<{ brackets: FuturesLeverageBracket[] }[]> {
-  return promiseRequest('v1/leverageBracket', { symbol }, { type: 'USER_DATA' });
+  symbol?: string,
+): Promise<{ symbol: string; brackets: FuturesLeverageBracket[] }[]> {
+  return promiseRequest('v1/leverageBracket', symbol ? { symbol } : {}, { type: 'USER_DATA' });
 }
 
 export async function futuresGetDataStream(): Promise<{ listenKey: string; }> {
@@ -187,4 +187,10 @@ export function futuresAggTradeStream(
       maker,
     }));
   });
+}
+
+export function futuresPositionMargin(
+  symbol: string, amount: number, type: 1 | 2,
+): Promise<unknown> {
+  return promiseRequest('v1/positionMargin', { symbol, amount, type }, { method: 'POST', type: 'SIGNED' });
 }

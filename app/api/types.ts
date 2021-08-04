@@ -48,13 +48,14 @@ export interface FuturesAggTradeStreamTicker {
   total: number;
 }
 
+// https://binance-docs.github.io/apidocs/futures/en/#notional-and-leverage-brackets-user_data
 export interface FuturesLeverageBracket {
-  bracket: number;
-  cum: number;
-  initialLeverage: number;
-  maintMarginRatio: number;
-  notionalCap: number;
-  notionalFloor: number;
+  bracket: number; // Notional bracket
+  cum: number; // Auxiliary number for quick calculation
+  initialLeverage: number; // Max initial leverage for this bracket
+  maintMarginRatio: number; // Maintenance ratio for this bracket
+  notionalCap: number; // Cap notional of this bracket
+  notionalFloor: number; // Notional threshold of this bracket
 }
 
 export interface FutureAsset {

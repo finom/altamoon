@@ -19,6 +19,8 @@ export default class Account {
 
   public futuresAccountError: string | null = null;
 
+  public leverageBrackets: Record<string, api.FuturesLeverageBracket[]> = {};
+
   #store: Store;
 
   constructor(store: Store) {
@@ -33,6 +35,14 @@ export default class Account {
       }
       void this.#openStream();
       await this.reloadFuturesAccount();
+
+      const leverageBrackets: Account['leverageBrackets'] = {};
+
+      for (const { symbol, brackets } of await api.futuresLeverageBracket()) {
+        leverageBrackets[symbol] = brackets;
+      }
+
+      this.leverageBrackets = leverageBrackets;
     };
 
     const relaodApp = debounce(() => window.location.reload());

@@ -4,7 +4,6 @@ import {
 import { listenChange } from 'use-change';
 import * as api from '../api';
 import { OrderSide } from '../api';
-import binanceFuturesMaxLeverage from '../lib/binanceFuturesMaxLeverage';
 import delay from '../lib/delay';
 import floorByPrecision from '../lib/floorByPrecision';
 import notify from '../lib/notify';
@@ -51,6 +50,8 @@ export default class Trading {
 
   public exactSizeStopLimitSellStr = '';
 
+  public currentSymbolPseudoPosition: TradingPosition | null = null;
+
   #store: Store;
 
   #lastPriceUnsubscribe?: () => void;
@@ -76,7 +77,7 @@ export default class Trading {
           this.loadOrders(),
         ]);
 
-        await this.#updateLeverage(store.persistent.symbol);
+        this.#updateLeverage(store.persistent.symbol);
       }
     });
 
@@ -114,7 +115,8 @@ export default class Trading {
 
     listenChange(store.persistent, 'symbol', (symbol) => this.#updateLeverage(symbol));
 
-    // if futuresExchangeSymbols is loaded after positions, update all positions wit missing data
+    // if futuresExchangeSymbols or leverageBrackets is loaded after positions,
+    // update all positions wit missing data
     listenChange(store.market, 'futuresExchangeSymbols', (futuresExchangeSymbols) => {
       if (futuresExchangeSymbols && this.openPositions.length) {
         this.openPositions = this.openPositions.map((pos) => ({
@@ -124,6 +126,29 @@ export default class Trading {
         }));
       }
     });
+    listenChange(store.account, 'leverageBrackets', (leverageBrackets) => {
+      if (leverageBrackets && this.openPositions.length) {
+        this.openPositions = this.openPositions.map((pos) => {
+          const bracket = this.#store.account.leverageBrackets[pos.symbol]?.find(
+            ({ notionalCap }) => notionalCap > pos.baseValue,
+          );
+          const maintMarginRatio = bracket?.maintMarginRatio ?? 0;
+          return {
+            ...pos,
+            maxLeverage: bracket?.initialLeverage ?? 1,
+            maintMarginRatio,
+            maintMargin: maintMarginRatio * pos.baseValue,
+          };
+        });
+      }
+    });
+
+    listenChange(store.persistent, 'symbol', () => this.#updatePseudoPosition());
+    listenChange(store.market, 'currentSymbolLastPrice', () => this.#updatePseudoPosition());
+    listenChange(this, 'currentSymbolLeverage', () => this.#updatePseudoPosition());
+    listenChange(this, 'allSymbolsPositionRisk', () => this.#updatePseudoPosition());
+    listenChange(this, 'isCurrentSymbolMarginTypeIsolated', () => this.#updatePseudoPosition());
+    this.#updatePseudoPosition();
   }
 
   public loadPositions = throttle(async (): Promise<void> => {
@@ -138,7 +163,8 @@ export default class Trading {
         .map((position) => this.#getPositionInfo(position, +prices[position.symbol]))
         .sort(({ symbol: a }, { symbol: b }) => (a > b ? 1 : -1));
 
-      await this.#updateLeverage(this.#store.persistent.symbol);
+      this.#updateLeverage(this.#store.persistent.symbol);
+
       return undefined;
     } catch (e) {
       // eslint-disable-next-line no-console
@@ -315,8 +341,8 @@ export default class Trading {
 
       await this.loadPositions();
 
-      if (amount < positionAmt) {
-        notify('success', `Position ${symbol} is reduced by ${amount}`);
+      if (Math.abs(amount) < Math.abs(positionAmt)) {
+        notify('success', `Position ${symbol} is reduced by ${Math.abs(amount)}`);
       } else {
         notify('success', `Position ${symbol} is closed`);
       }
@@ -480,6 +506,16 @@ export default class Trading {
     }
   };
 
+  public adjustPositionMargin = async (symbol: string, amount: number, type: 'ADD' | 'REMOVE'): Promise<null | unknown> => {
+    try {
+      const result = await api.futuresPositionMargin(symbol, amount, type === 'REMOVE' ? 2 : 1);
+      notify('success', `Margin for ${symbol} is adjusted`);
+      return result;
+    } catch {
+      return null;
+    }
+  };
+
   public calculateQuantity = ({
     symbol, price, size,
   }: { symbol: string; price: number; size: number; }): number => {
@@ -500,6 +536,19 @@ export default class Trading {
       : +sizeStr || 0;
   };
 
+  #updatePseudoPosition = (): void => {
+    const positionRisk = this.allSymbolsPositionRisk[this.#store.persistent.symbol];
+    const lastPrice = this.#store.market.currentSymbolLastPrice ?? 0;
+
+    this.currentSymbolPseudoPosition = positionRisk
+      ? {
+        ...this.#getPositionInfo(positionRisk, lastPrice),
+        entryPrice: lastPrice,
+        leverage: this.currentSymbolLeverage,
+      }
+      : null;
+  };
+
   #floorPriceByTickSize = (symbol: string, price: number): number => {
     const info = this.#store.market.futuresExchangeSymbols[symbol];
 
@@ -515,8 +564,9 @@ export default class Trading {
     return floorByPrecision(price, precision);
   };
 
-  #updateLeverage = async (symbol: string): Promise<void> => {
-    const currentSymbolMaxLeverage = await binanceFuturesMaxLeverage(symbol);
+  #updateLeverage = (symbol: string): void => {
+    const currentSymbolMaxLeverage = this.#store.account
+      .leverageBrackets[symbol]?.[0].initialLeverage ?? 1;
     const currentPosition = this.allSymbolsPositionRisk[symbol];
     this.currentSymbolMaxLeverage = currentSymbolMaxLeverage;
     this.isCurrentSymbolMarginTypeIsolated = currentPosition?.marginType === 'isolated';
@@ -549,6 +599,7 @@ export default class Trading {
               return {
                 ...position,
                 lastPrice,
+                entryPrice: position.entryPrice,
                 pnl: this.#getPnl({
                   positionAmt: position.positionAmt,
                   lastPrice,
@@ -591,48 +642,67 @@ export default class Trading {
 
   #getPositionInfo = (
     positionRisk: api.FuturesPositionRisk, lastPrice: number,
-  ): TradingPosition => ({
-    // TODO refactor
-    // if positionAmt is increased, then use it as initial value,
-    // if decrreased or remains the same then do nothing
-    initialAmt: +positionRisk.positionAmt >= 0 ? Math.max(
-      this.openPositions.find((p) => p.symbol === positionRisk.symbol)?.initialAmt ?? 0,
-      +positionRisk.positionAmt,
+  ): TradingPosition => {
+    const positionAmt = +positionRisk.positionAmt;
+    const entryPrice = +positionRisk.entryPrice;
+    const leverage = +positionRisk.leverage;
+    const liquidationPrice = +positionRisk.liquidationPrice;
+    const isolatedWallet = +positionRisk.isolatedWallet;
+    const isolatedMargin = +positionRisk.isolatedMargin;
+    const { marginType, symbol } = positionRisk;
+    const baseValue = positionAmt * entryPrice;
+    const initialAmt = positionAmt >= 0 ? Math.max(
+      this.openPositions.find((p) => p.symbol === symbol)?.initialAmt ?? 0,
+      positionAmt,
     ) : Math.min(
-      this.openPositions.find((p) => p.symbol === positionRisk.symbol)?.initialAmt ?? 0,
-      +positionRisk.positionAmt,
-    ),
-    lastPrice,
-    pnl: this.#getPnl({
-      positionAmt: +positionRisk.positionAmt,
+      this.openPositions.find((p) => p.symbol === symbol)?.initialAmt ?? 0,
+      positionAmt,
+    );
+    const bracket = this.#store.account.leverageBrackets[symbol]?.find(
+      ({ notionalCap }) => notionalCap > baseValue,
+    );
+    const maintMarginRatio = bracket?.maintMarginRatio ?? 0;
+
+    return {
+      // if positionAmt is increased, then use it as initial value,
+      // if decrreased or remains the same then do nothing
+      initialAmt,
+      initialSize: (initialAmt * entryPrice) / leverage,
       lastPrice,
-      entryPrice: +positionRisk.entryPrice,
-    }),
-    pnlPositionPercent: this.#getPnlPositionPercent({
-      positionAmt: +positionRisk.positionAmt,
-      lastPrice,
-      entryPrice: +positionRisk.entryPrice,
-      leverage: +positionRisk.leverage,
-    }),
-    pnlBalancePercent: this.#getPnlBalancePercent({
-      positionAmt: +positionRisk.positionAmt,
-      lastPrice,
-      entryPrice: +positionRisk.entryPrice,
-    }),
-    entryPrice: +positionRisk.entryPrice,
-    positionAmt: +positionRisk.positionAmt,
-    liquidationPrice: +positionRisk.liquidationPrice,
-    isolatedWallet: +positionRisk.isolatedWallet,
-    isolatedMargin: +positionRisk.isolatedMargin,
-    baseValue: +positionRisk.positionAmt * +positionRisk.entryPrice,
-    side: +positionRisk.positionAmt >= 0 ? 'BUY' : 'SELL',
-    leverage: +positionRisk.leverage,
-    marginType: positionRisk.marginType,
-    symbol: positionRisk.symbol,
-    baseAsset: this.#store.market.futuresExchangeSymbols[positionRisk.symbol]?.baseAsset ?? 'UNKNOWN',
-    pricePrecision: this.#store.market
-      .futuresExchangeSymbols[positionRisk.symbol]?.pricePrecision ?? 1,
-  });
+      pnl: this.#getPnl({
+        positionAmt,
+        lastPrice,
+        entryPrice,
+      }),
+      pnlPositionPercent: this.#getPnlPositionPercent({
+        positionAmt,
+        lastPrice,
+        entryPrice,
+        leverage,
+      }),
+      pnlBalancePercent: this.#getPnlBalancePercent({
+        positionAmt,
+        lastPrice,
+        entryPrice,
+      }),
+      entryPrice,
+      positionAmt,
+      liquidationPrice,
+      isolatedWallet,
+      isolatedMargin,
+      baseValue,
+      baseSize: baseValue / leverage,
+      side: positionAmt >= 0 ? 'BUY' : 'SELL',
+      leverage,
+      marginType,
+      symbol,
+      baseAsset: this.#store.market.futuresExchangeSymbols[symbol]?.baseAsset ?? 'UNKNOWN',
+      pricePrecision: this.#store.market.futuresExchangeSymbols[symbol]?.pricePrecision ?? 1,
+      maxLeverage: bracket?.initialLeverage ?? 1,
+      maintMarginRatio,
+      maintMargin: maintMarginRatio * baseValue,
+    };
+  };
 
   #getPnl = ({
     positionAmt,
@@ -655,6 +725,7 @@ export default class Trading {
     entryPrice: number;
     leverage: number;
   }): number => {
+    if (positionAmt === 0) return positionAmt; // pseudo position has 0 positionAmt
     const pnl = this.#getPnl({ positionAmt, lastPrice, entryPrice });
     const baseValue = Math.abs(positionAmt * entryPrice);
 
@@ -670,6 +741,7 @@ export default class Trading {
     lastPrice: number;
     entryPrice: number;
   }): number => {
+    if (positionAmt === 0) return positionAmt; // pseudo position has 0 positionAmt
     const baseValue = positionAmt * entryPrice;
 
     const pnl = ((lastPrice - entryPrice) / entryPrice) * baseValue;

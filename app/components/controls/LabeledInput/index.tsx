@@ -11,6 +11,7 @@ interface Props {
   type: 'text' | 'number';
   value: string;
   innerRef?: Ref<HTMLInputElement>;
+  className?: string;
   onPressEnter?: () => void;
   onChange: (value: string) => void;
 }
@@ -24,10 +25,11 @@ const LabeledInput = ({
   type,
   value,
   innerRef,
+  className,
   onChange,
   onPressEnter,
 }: Props): ReactElement => (
-  <div className={`form-control labeled-input ${css.labeledInput}`}>
+  <div className={`form-control labeled-input ${css.labeledInput} ${className || ''}`}>
     <label htmlFor={id}>{label}</label>
     <input
       ref={innerRef}

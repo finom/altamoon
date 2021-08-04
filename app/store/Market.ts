@@ -49,9 +49,8 @@ export default class Market {
       this.#chartUnsubscribe = api.futuresChartSubscribe(
         store.persistent.symbol,
         interval,
-        (data) => {
-          this.candles = data;
-        }, 1000,
+        (data) => { this.candles = data; },
+        1000,
       );
     });
 
@@ -95,9 +94,8 @@ export default class Market {
     this.#chartUnsubscribe = api.futuresChartSubscribe(
       symbol,
       this.#store.persistent.interval,
-      (data) => {
-        this.candles = data;
-      }, 1000,
+      (data) => { this.candles = data; },
+      1000,
     );
 
     this.currentSymbolInfo = this.futuresExchangeSymbols[this.#store.persistent.symbol] ?? null;

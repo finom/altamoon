@@ -19,9 +19,14 @@ export interface TradingPosition {
   pnlPositionPercent: number;
   pnlBalancePercent: number;
   leverage: number;
+  maxLeverage: number;
   marginType: api.FuturesPositionRisk['marginType'];
   baseAsset: string;
   pricePrecision: number;
+  initialSize: number;
+  baseSize: number;
+  maintMarginRatio: number;
+  maintMargin: number;
 }
 
 export interface TradingOrder {
