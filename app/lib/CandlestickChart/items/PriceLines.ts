@@ -115,7 +115,7 @@ export default class PriceLines implements ChartItem {
     this.#wrapper?.selectAll('.price-line-horizontal-group .price-line-line').attr('x2', resizeData.width);
     this.#wrapper?.selectAll('.price-line-vertical-group .price-line-line').attr('y2', resizeData.height);
 
-    this.#wrapper?.selectAll('.price-line-title-object').attr('transform', `translate(${this.#resizeData.width - 130}, 0)`);
+    this.#wrapper?.selectAll('.price-line-title-object').attr('transform', `translate(${this.#resizeData.width - 330}, 0)`);
 
     this.#draw();
   };
@@ -278,28 +278,23 @@ export default class PriceLines implements ChartItem {
 
             const titleGroup = horizontalWrapper.append('foreignObject')
               .attr('class', 'price-line-title-object')
-              .attr('transform', `translate(${this.#resizeData.width - 130}, 0)`)
+              .attr('transform', `translate(${this.#resizeData.width - 330}, 0)`)
               .attr('x', 0)
               .attr('y', -12)
-              .attr('width', 120)
+              .attr('width', 400)
               .attr('height', 24)
-              .property('_datumIndex', (d) => this.#items.indexOf(d))
-              .on('mouseenter', ({ target }: { target: SVGForeignObjectElement }) => {
-                const datum = getDatumFromTarget(target);
-                const check: HTMLElement | null = target.querySelector('.check');
-                if (check) check.hidden = !datum.isCheckable;
-              })
-              .on('mouseleave', ({ target }: { target: SVGForeignObjectElement }) => {
-                const check: HTMLElement | null = target.querySelector('.check');
-                if (check) check.hidden = true;
-              });
+              .style('text-align', 'right')
+              .property('_datumIndex', (d) => this.#items.indexOf(d));
 
             const div = titleGroup.append('xhtml:div')
               .attr('class', 'price-line-title-inner')
               .style('border', '1px solid currentColor')
               .style('border-radius', '4px')
               .style('padding', '5px 10px')
-              .style('pointer-events', 'none');
+              .style('pointer-events', 'none')
+              .style('display', 'inline-block')
+              .style('height', '100%')
+              .style('margin-right', '85px');
 
             div.append('xhtml:span').attr('class', 'text').style('color', '#fff');
 
@@ -311,7 +306,7 @@ export default class PriceLines implements ChartItem {
                 .style('font-size', '1.3rem')
                 .style('line-height', 1)
                 .style('margin-top', '-5px')
-                .style('margin-left', '3px')
+                .style('margin-left', '7px')
                 .style('float', 'right')
                 .style('cursor', 'pointer')
                 .style('pointer-events', 'auto')
@@ -324,11 +319,11 @@ export default class PriceLines implements ChartItem {
               div.append('xhtml:span')
                 .property('textContent', '✔')
                 .property('className', 'check nodrag')
-                .property('hidden', true)
                 .style('color', 'var(--bs-green)')
                 .style('font-size', '1rem')
                 .style('line-height', 1)
                 .style('margin-top', '-1px')
+                .style('margin-left', '10px')
                 .style('float', 'right')
                 .style('cursor', 'pointer')
                 .style('pointer-events', 'auto')

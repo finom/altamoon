@@ -23,7 +23,7 @@ export default class PositionPriceLines extends PriceLines {
       this.updateItem('position', {
         isVisible: true,
         yValue: position.entryPrice,
-        color: position.side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)',
+        color: position.side === 'BUY' ? '#30b332' : '#ab257c',
         title: `${position.positionAmt} ${position.baseAsset}`,
       });
     }
