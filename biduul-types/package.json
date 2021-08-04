@@ -1,5 +1,5 @@
 {
-	"version": "0.0.45",
+	"version": "0.0.46",
 	"name": "biduul-types",
 	"description": "TypeScript definitions for Biduul plugin development",
 	"main": "types/index.js",
