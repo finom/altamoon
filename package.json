@@ -1,6 +1,6 @@
 {
   "name": "biduul",
-  "version": "0.0.45",
+  "version": "0.0.46",
   "private": true,
   "productName": "ElectronReact",
   "description": "Electron application boilerplate based on React, React Router, Webpack, React Fast Refresh for rapid application development",
