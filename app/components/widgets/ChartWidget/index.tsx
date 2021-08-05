@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import useChange, { useValue, useSilent, useGet } from 'use-change';
 import * as api from '../../../api';
+import useMultiValue from '../../../hooks/useMultiValue';
 import CandlestickChart from '../../../lib/CandlestickChart';
 import {
   ACCOUNT, CUSTOMIZATION, MARKET, PERSISTENT, TRADING,
@@ -25,31 +26,40 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
 
   const candles = useValue(MARKET, 'candles');
   const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
-  const symbol = useValue(PERSISTENT, 'symbol');
+
   const getSymbol = useGet(PERSISTENT, 'symbol');
   const [interval, setCandleInterval] = useChange(PERSISTENT, 'interval');
   const [symbolAlerts, setSymbolAlerts] = useChange(PERSISTENT, 'symbolAlerts');
-  const tradingType = useValue(PERSISTENT, 'tradingType');
-  const chartPaddingTopPercent = useValue(PERSISTENT, 'chartPaddingTopPercent');
-  const chartPaddingBottomPercent = useValue(PERSISTENT, 'chartPaddingBottomPercent');
-  const chartPaddingRightPercent = useValue(PERSISTENT, 'chartPaddingRightPercent');
+  const {
+    symbol, tradingType, chartPaddingTopPercent,
+    chartPaddingBottomPercent, chartPaddingRightPercent,
+  } = useMultiValue(PERSISTENT, [
+    'symbol', 'tradingType', 'chartPaddingTopPercent',
+    'chartPaddingBottomPercent', 'chartPaddingRightPercent',
+  ]);
 
-  const position = useValue(TRADING, 'openPositions').find((pos) => pos.symbol === symbol) ?? null;
-  const openOrders = useValue(TRADING, 'openOrders');
   const getOpenOrders = useGet(TRADING, 'openOrders');
-  const updateDrafts = useSilent(TRADING, 'updateDrafts');
-  const currentSymbolLeverage = useSilent(TRADING, 'currentSymbolLeverage');
-  const createOrderFromDraft = useSilent(TRADING, 'createOrderFromDraft');
-  const limitOrder = useSilent(TRADING, 'limitOrder');
-  const cancelOrder = useSilent(TRADING, 'cancelOrder');
-  const limitBuyPrice = useValue(TRADING, 'limitBuyPrice');
-  const limitSellPrice = useValue(TRADING, 'limitSellPrice');
-  const stopBuyPrice = useValue(TRADING, 'stopBuyPrice');
-  const stopSellPrice = useValue(TRADING, 'stopSellPrice');
-  const shouldShowLimitBuyPriceLine = useValue(TRADING, 'shouldShowLimitBuyPriceLine');
-  const shouldShowLimitSellPriceLine = useValue(TRADING, 'shouldShowLimitSellPriceLine');
-  const shouldShowStopBuyPriceLine = useValue(TRADING, 'shouldShowStopBuyPriceLine');
-  const shouldShowStopSellPriceLine = useValue(TRADING, 'shouldShowStopSellPriceLine');
+  const {
+    openPositions, openOrders,
+    limitBuyPrice, limitSellPrice, stopBuyPrice, stopSellPrice,
+    shouldShowLimitBuyPriceLine, shouldShowLimitSellPriceLine,
+    shouldShowStopBuyPriceLine, shouldShowStopSellPriceLine,
+    exactSizeLimitBuyStr, exactSizeLimitSellStr,
+    exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
+    // silent values
+    updateDrafts, currentSymbolLeverage, createOrderFromDraft, limitOrder, cancelOrder,
+    calculateSizeFromString,
+  } = useMultiValue(TRADING, [
+    'openPositions', 'openOrders',
+    'limitBuyPrice', 'limitSellPrice', 'stopBuyPrice', 'stopSellPrice',
+    'shouldShowLimitBuyPriceLine', 'shouldShowLimitSellPriceLine',
+    'shouldShowStopBuyPriceLine', 'shouldShowStopSellPriceLine',
+    'exactSizeLimitBuyStr', 'exactSizeLimitSellStr',
+    'exactSizeStopLimitBuyStr', 'exactSizeStopLimitSellStr',
+  ]);
+
+  const position = openPositions.find((pos) => pos.symbol === symbol) ?? null;
+
   const orders = useMemo(
     () => openOrders.filter((order) => order.symbol === symbol),
     [openOrders, symbol],
@@ -112,6 +122,8 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
+            buyDraftSize: calculateSizeFromString(exactSizeLimitBuyStr),
+            sellDraftSize: calculateSizeFromString(exactSizeLimitSellStr),
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
 
@@ -129,6 +141,8 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
+            buyDraftSize: calculateSizeFromString(exactSizeStopLimitBuyStr),
+            sellDraftSize: calculateSizeFromString(exactSizeStopLimitSellStr),
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
 
@@ -146,6 +160,8 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
 
             buyDraftPrice: 0,
             sellDraftPrice: 0,
+            buyDraftSize: 0,
+            sellDraftSize: 0,
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
 
@@ -163,6 +179,8 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
 
             buyDraftPrice: 0,
             sellDraftPrice: 0,
+            buyDraftSize: 0,
+            sellDraftSize: 0,
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
 
@@ -176,9 +194,10 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
     }
   }, [
     limitBuyPrice, limitSellPrice, shouldShowLimitBuyPriceLine,
-    shouldShowLimitSellPriceLine, shouldShowStopBuyPriceLine,
-    shouldShowStopSellPriceLine, stopBuyPrice, stopSellPrice, tradingType,
-    candleChart,
+    shouldShowLimitSellPriceLine, shouldShowStopBuyPriceLine, shouldShowStopSellPriceLine,
+    stopBuyPrice, stopSellPrice, tradingType, candleChart, calculateSizeFromString,
+    exactSizeLimitBuyStr, exactSizeLimitSellStr,
+    exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
   ]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

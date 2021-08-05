@@ -24,6 +24,7 @@ import PositionPriceLines from './items/PositionPriceLines';
 import CrosshairPriceLines from './items/CrosshairPriceLines';
 import Measurer from './items/Measurer';
 import CustomPriceLines from './items/CustomPriceLines';
+import formatBalanceMoneyNumber from '../formatBalanceMoneyNumber';
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
@@ -218,6 +219,8 @@ export default class CandlestickChart {
 
     buyDraftPrice?: number | null;
     sellDraftPrice?: number | null;
+    buyDraftSize?: number | null;
+    sellDraftSize?: number | null;
     shouldShowBuyPrice?: boolean;
     shouldShowSellPrice?: boolean;
 
@@ -274,6 +277,8 @@ export default class CandlestickChart {
 
     if (typeof data.buyDraftPrice !== 'undefined') this.#draftLines.updateItem('BUY', { yValue: data.buyDraftPrice ?? 0 });
     if (typeof data.sellDraftPrice !== 'undefined') this.#draftLines.updateItem('SELL', { yValue: data.sellDraftPrice ?? 0 });
+    if (typeof data.buyDraftSize !== 'undefined') this.#draftLines.updateItem('BUY', { title: `Sell draft (${data.buyDraftSize ? formatBalanceMoneyNumber(data.buyDraftSize) : 0} USDT)` });
+    if (typeof data.sellDraftSize !== 'undefined') this.#draftLines.updateItem('SELL', { title: `Sell draft (${data.sellDraftSize ? formatBalanceMoneyNumber(data.sellDraftSize) : 0} USDT)` });
     if (typeof data.shouldShowBuyPrice !== 'undefined') this.#draftLines.updateItem('BUY', { isVisible: data.shouldShowBuyPrice });
     if (typeof data.shouldShowSellPrice !== 'undefined') this.#draftLines.updateItem('SELL', { isVisible: data.shouldShowSellPrice });
 
