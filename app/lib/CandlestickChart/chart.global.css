@@ -269,3 +269,8 @@ svg.chart-svg .measurer-label div {
   padding: 10px;
   text-align: left;
 }
+svg.chart-svg .measurer-label p {
+  white-space: nowrap;
+  padding: 0;
+  margin: 0;
+}
