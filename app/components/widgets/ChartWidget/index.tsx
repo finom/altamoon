@@ -1,7 +1,7 @@
 import React, {
   ReactElement, useEffect, useMemo, useRef, useState,
 } from 'react';
-import useChange, { useValue, useSilent, useGet } from 'use-change';
+import useChange, { useValue, useGet } from 'use-change';
 import * as api from '../../../api';
 import useMultiValue from '../../../hooks/useMultiValue';
 import CandlestickChart from '../../../lib/CandlestickChart';
