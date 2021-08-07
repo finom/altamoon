@@ -20,7 +20,8 @@ module.exports = {
     }],
     'react-hooks/exhaustive-deps': ['error', {
       additionalHooks: "(useDepsUpdateEffect)"
-    }]
+    }],
+    'max-lines': ["error", {"max": 500, "skipComments": true}]
   },
   parserOptions: {
     ecmaVersion: 2020,
