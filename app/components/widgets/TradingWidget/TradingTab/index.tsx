@@ -29,7 +29,6 @@ const TradingTab = ({
   buyPrice, sellPrice, stopBuyPrice, stopSellPrice, id, buyNode, sellNode, tradingType,
   exactSizeBuyStr, setExactSizeBuyStr, exactSizeSellStr, setExactSizeSellStr,
 }: Props): ReactElement => {
-  ((n: boolean) => n)(postOnly); // just to temporarily disable TS "never read" error
   const [compactModeSide, setCompactModeSide] = useState<api.OrderSide>('BUY');
   const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'BUY' : 'SELL'), []);
 

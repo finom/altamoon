@@ -23,10 +23,14 @@ const ButtonCol = ({
   totalWalletBalance, availableBalance,
   price, side, percent, isMax, onOrder,
 }: Props): ReactElement => {
-  const preciseSize = isMax ? availableBalance : totalWalletBalance * ((percent ?? 0) / 100);
   const calculateQuantity = useSilent(TRADING, 'calculateQuantity');
   const symbol = useValue(PERSISTENT, 'symbol');
+
   const leverage = +useValue(TRADING, 'allSymbolsPositionRisk')[symbol]?.leverage || 1;
+  const dirtyMarginInsufficientFix = 1 - (leverage * 0.002);
+  const preciseSize = isMax
+    ? availableBalance * leverage * dirtyMarginInsufficientFix
+    : totalWalletBalance * ((percent ?? 0) / 100) * leverage;
 
   const quantity = useMemo(() => {
     if (typeof price !== 'number') return 0;
@@ -41,8 +45,12 @@ const ButtonCol = ({
   const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
 
   useEffect(() => {
-    setButtonTitle(price ? `${formatBalanceMoneyNumber((quantity * price) / leverage)} USDT (${quantity} ${currentSymbolBaseAsset ?? ''})` : 'Unknown price');
-  }, [currentSymbolBaseAsset, leverage, price, quantity, setButtonTitle]);
+    setButtonTitle(price ? `
+    ${formatBalanceMoneyNumber(quantity * price)}&nbsp;USDT<br>
+    ${quantity}&nbsp;${currentSymbolBaseAsset ?? ''}<br>
+    Est. margin = ${formatBalanceMoneyNumber(preciseSize / leverage)}&nbsp;USDT
+  ` : 'Unknown price');
+  }, [currentSymbolBaseAsset, leverage, preciseSize, price, quantity, setButtonTitle]);
 
   return (
     <Col xs={3}>
@@ -53,7 +61,7 @@ const ButtonCol = ({
       >
         <Button
           className="w-100 nowrap"
-          disabled={preciseSize > availableBalance || quantity <= 0}
+          disabled={preciseSize > availableBalance * leverage || quantity <= 0}
           color={side === 'BUY' ? 'success' : 'sell'}
           onClick={() => onOrder(quantity)}
         >

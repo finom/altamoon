@@ -41,9 +41,11 @@ const ExactSize = ({
   const calculateSizeFromString = useSilent(TRADING, 'calculateSizeFromString');
   const symbol = useValue(PERSISTENT, 'symbol');
   const leverage = +useValue(TRADING, 'allSymbolsPositionRisk')[symbol]?.leverage || 1;
+
   const exactSize = useMemo(
-    () => calculateSizeFromString(exactSizeStr),
-    [calculateSizeFromString, exactSizeStr],
+    () => calculateSizeFromString(symbol, exactSizeStr),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [calculateSizeFromString, exactSizeStr, symbol, totalWalletBalance, leverage],
   );
 
   const quantity = useMemo(() => {
@@ -60,8 +62,14 @@ const ExactSize = ({
   const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
 
   useEffect(() => {
-    setInputTitle(price ? `${formatBalanceMoneyNumber((quantity * price) / leverage)} USDT (${quantity} ${currentSymbolBaseAsset ?? ''})` : 'Unknown price');
-  }, [currentSymbolBaseAsset, leverage, price, quantity, setInputTitle]);
+    setInputTitle(price ? `
+    ${formatBalanceMoneyNumber(quantity * price)}&nbsp;USDT<br>
+    ${quantity}&nbsp;${currentSymbolBaseAsset ?? ''}<br>
+    Est. margin = ${formatBalanceMoneyNumber(exactSize / leverage)}&nbsp;USDT
+  ` : 'Unknown price');
+  }, [
+    currentSymbolBaseAsset, exactSize, leverage, price, quantity, totalWalletBalance, setInputTitle,
+  ]);
 
   return (
     <>
@@ -78,7 +86,7 @@ const ExactSize = ({
         />
         <Button
           color={side === 'BUY' ? 'success' : 'sell'}
-          disabled={exactSize > availableBalance || exactSize <= 0}
+          disabled={exactSize > availableBalance * leverage || exactSize <= 0}
           onClick={() => onOrder(quantity)}
         >
           {capitalize(side)}

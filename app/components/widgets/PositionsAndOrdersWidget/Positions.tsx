@@ -76,7 +76,7 @@ const Positions = (): ReactElement => {
                   {baseAsset}
                 </span>
                 {' '}
-              &nbsp;
+                &nbsp;
                 <Badge className={side === 'BUY' ? 'bg-success' : 'bg-danger'}>
                   {leverage}
                   x
@@ -87,27 +87,30 @@ const Positions = (): ReactElement => {
                 {' '}
                 (
                 {formatNumber(baseValue, true)}
-                {' '}
-                ₮)
+                &nbsp;₮)
               </td>
               <td>
                 {formatNumber(lastPrice)}
-                {' '}
-                ₮
+                &nbsp;₮
               </td>
               <td>
                 {formatNumber(entryPrice)}
-                {' '}
-                ₮
+                &nbsp;₮
               </td>
-              <td>{marginType === 'isolated' ? `${formatNumber(liquidationPrice)} ₮` : <>&mdash;</>}</td>
+              <td>
+                {marginType === 'isolated' ? (
+                  <>
+                    {formatNumber(liquidationPrice)}
+&nbsp;₮
+                  </>
+                ) : <>&mdash;</>}
+              </td>
               <td>
                 {marginType === 'isolated'
                   ? (
                     <>
                       {formatNumber(isolatedWallet, true)}
-                      {' '}
-                      ₮
+                      &nbsp;₮
                       {' '}
                       (
                       {formatPercent((isolatedWallet / totalWalletBalance) * 100)}
@@ -121,8 +124,7 @@ const Positions = (): ReactElement => {
               <td>
                 <span className={textClassName(pnl)}>
                   {formatNumber(pnl, true)}
-                  {' '}
-                  ₮
+                  &nbsp;₮
                 </span>
               </td>
               <td>

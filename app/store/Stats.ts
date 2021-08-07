@@ -117,7 +117,7 @@ export default class Stats {
       lastPrice, entryPrice, baseValue, positionAmt,
     } of openPositions) {
       const netPnl = ((lastPrice - entryPrice) / entryPrice) * baseValue;
-      const fee = this.#store.trading.getFee(positionAmt) * lastPrice;
+      const fee = this.#store.trading.getFeeRate('maker') * positionAmt * lastPrice;
       pnl += netPnl - fee;
     }
 

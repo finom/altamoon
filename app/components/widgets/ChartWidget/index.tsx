@@ -122,8 +122,8 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
-            buyDraftSize: calculateSizeFromString(exactSizeLimitBuyStr),
-            sellDraftSize: calculateSizeFromString(exactSizeLimitSellStr),
+            buyDraftSize: calculateSizeFromString(symbol, exactSizeLimitBuyStr),
+            sellDraftSize: calculateSizeFromString(symbol, exactSizeLimitSellStr),
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
 
@@ -141,8 +141,8 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
-            buyDraftSize: calculateSizeFromString(exactSizeStopLimitBuyStr),
-            sellDraftSize: calculateSizeFromString(exactSizeStopLimitSellStr),
+            buyDraftSize: calculateSizeFromString(symbol, exactSizeStopLimitBuyStr),
+            sellDraftSize: calculateSizeFromString(symbol, exactSizeStopLimitSellStr),
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
 
@@ -193,7 +193,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
       }
     }
   }, [
-    limitBuyPrice, limitSellPrice, shouldShowLimitBuyPriceLine,
+    symbol, limitBuyPrice, limitSellPrice, shouldShowLimitBuyPriceLine,
     shouldShowLimitSellPriceLine, shouldShowStopBuyPriceLine, shouldShowStopSellPriceLine,
     stopBuyPrice, stopSellPrice, tradingType, candleChart, calculateSizeFromString,
     exactSizeLimitBuyStr, exactSizeLimitSellStr,

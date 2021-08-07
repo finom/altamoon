@@ -379,13 +379,13 @@ export default class Trading {
     } catch {} // caught by called methods
   };
 
-  public getFee = (qty: number, type: 'maker' | 'taker' = 'maker'): number => {
+  public getFeeRate = (type: 'maker' | 'taker'): number => {
     const feeTier = this.#store.account.futuresAccount?.feeTier ?? 0;
     const feeRate = type === 'taker'
       ? [0.04, 0.04, 0.035, 0.032, 0.03, 0.027, 0.025, 0.022, 0.020, 0.017][feeTier]
       : [0.02, 0.016, 0.014, 0.012, 0.01, 0.008, 0.006, 0.004, 0.002, 0][feeTier];
 
-    return (qty * feeRate) / 100;
+    return feeRate / 100;
   };
 
   // used by Chart Widget compoment
@@ -457,7 +457,7 @@ export default class Trading {
         return;
       }
 
-      const size = this.calculateSizeFromString(side === 'BUY' ? this.exactSizeStopLimitBuyStr : this.exactSizeStopLimitSellStr);
+      const size = this.calculateSizeFromString(symbol, side === 'BUY' ? this.exactSizeStopLimitBuyStr : this.exactSizeStopLimitSellStr);
 
       const quantity = this.calculateQuantity({
         symbol,
@@ -481,7 +481,7 @@ export default class Trading {
         postOnly,
       });
     } else {
-      const size = this.calculateSizeFromString(side === 'BUY' ? this.exactSizeLimitBuyStr : this.exactSizeLimitSellStr);
+      const size = this.calculateSizeFromString(symbol, side === 'BUY' ? this.exactSizeLimitBuyStr : this.exactSizeLimitSellStr);
 
       const quantity = this.calculateQuantity({
         symbol,
@@ -522,17 +522,23 @@ export default class Trading {
     const positionRisk = this.allSymbolsPositionRisk[symbol];
     const symbolInfo = this.#store.market.futuresExchangeSymbols[symbol];
     if (!positionRisk || !symbolInfo) return 0;
+    const feeMultiplier = 1 - this.getFeeRate('maker') * +positionRisk.leverage;
+
     return Math.floor(
-      +positionRisk.leverage
-        * (size / price) * (10 ** symbolInfo.quantityPrecision),
+      (size / price) * (10 ** symbolInfo.quantityPrecision) * feeMultiplier,
     ) / (10 ** symbolInfo.quantityPrecision);
   };
 
-  public calculateSizeFromString = (sizeStr: string): number => {
+  public calculateSizeFromString = (symbol: string, sizeStr: string): number => {
     const { totalWalletBalance } = this.#store.account;
+    const positionRisk = this.allSymbolsPositionRisk[symbol];
+    if (!positionRisk) return 0;
+    const leverage = +positionRisk.leverage;
+
+    const dirtyMarginInsufficientFix = sizeStr === '100%' ? 1 - (leverage * 0.002) : 1;
 
     return sizeStr.endsWith('%')
-      ? (+sizeStr.replace('%', '') / 100) * totalWalletBalance || 0
+      ? (+sizeStr.replace('%', '') / 100) * totalWalletBalance * leverage * dirtyMarginInsufficientFix || 0
       : +sizeStr || 0;
   };
 
@@ -667,7 +673,7 @@ export default class Trading {
       // if positionAmt is increased, then use it as initial value,
       // if decrreased or remains the same then do nothing
       initialAmt,
-      initialSize: (initialAmt * entryPrice) / leverage,
+      initialValue: initialAmt * entryPrice,
       lastPrice,
       pnl: this.#getPnl({
         positionAmt,
@@ -691,7 +697,6 @@ export default class Trading {
       isolatedWallet,
       isolatedMargin,
       baseValue,
-      baseSize: baseValue / leverage,
       side: positionAmt >= 0 ? 'BUY' : 'SELL',
       leverage,
       marginType,

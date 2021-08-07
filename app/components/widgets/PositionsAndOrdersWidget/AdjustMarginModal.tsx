@@ -64,7 +64,7 @@ const AdjustMarginModal = ({
           Current margin:
           {' '}
           {format(',.2f')(position?.isolatedWallet || 0)}
-          {' ₮'}
+          &nbsp;₮
         </ModalBody>
         <ModalFooter>
           <Button color="primary" disabled={!isValid} onClick={adjust}>Confirm</Button>

@@ -23,8 +23,7 @@ export interface TradingPosition {
   marginType: api.FuturesPositionRisk['marginType'];
   baseAsset: string;
   pricePrecision: number;
-  initialSize: number;
-  baseSize: number;
+  initialValue: number;
   maintMarginRatio: number;
   maintMargin: number;
 }
