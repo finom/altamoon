@@ -8,8 +8,8 @@ export default function useDraftPrice(
   priceKey: 'limitBuyPrice' | 'limitSellPrice' | 'stopBuyPrice' | 'stopSellPrice',
   shouldShowKey: 'shouldShowLimitBuyPriceLine'
   | 'shouldShowLimitSellPriceLine'
-  | 'shouldShowStopBuyPriceLine'
-  | 'shouldShowStopSellPriceLine',
+  | 'shouldShowStopBuyDraftPriceLine'
+  | 'shouldShowStopSellDraftPriceLine',
   { pricePrecision } : { pricePrecision: number },
 ): {
     shouldShowPriceLine: boolean;
@@ -26,6 +26,7 @@ export default function useDraftPrice(
 
   useDepsUpdateEffect(() => {
     if (!priceStr || !Number.isNaN(+priceStr)) {
+      // TODO use Trading['parsePrice']
       setPrice(+priceStr > 0 ? floorByPrecision(+priceStr, pricePrecision) : null);
     }
   }, [pricePrecision, priceStr, setPrice]);

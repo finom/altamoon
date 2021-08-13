@@ -37,20 +37,20 @@ const StopLimit = ({
   } = useDraftPrice('limitSellPrice', 'shouldShowLimitSellPriceLine', { pricePrecision });
 
   const {
-    shouldShowPriceLine: shouldShowStopBuyPriceLine,
+    shouldShowPriceLine: shouldShowStopBuyDraftPriceLine,
     setShouldShowPriceLine: setShouldShowStopBuyPriceLine,
     priceStr: stopBuyPriceStr,
     setPriceStr: setStopBuyPriceStr,
     price: stopBuyPrice,
-  } = useDraftPrice('stopBuyPrice', 'shouldShowStopBuyPriceLine', { pricePrecision });
+  } = useDraftPrice('stopBuyPrice', 'shouldShowStopBuyDraftPriceLine', { pricePrecision });
 
   const {
-    shouldShowPriceLine: shouldShowStopSellPriceLine,
+    shouldShowPriceLine: shouldShowStopSellDraftPriceLine,
     setShouldShowPriceLine: setShouldShowStopSellPriceLine,
     priceStr: stopSellPriceStr,
     setPriceStr: setStopSellPriceStr,
     price: stopSellPrice,
-  } = useDraftPrice('stopSellPrice', 'shouldShowStopSellPriceLine', { pricePrecision });
+  } = useDraftPrice('stopSellPrice', 'shouldShowStopSellDraftPriceLine', { pricePrecision });
 
   return (
     <TradingTab
@@ -84,7 +84,7 @@ const StopLimit = ({
             id="stopBuyPrice"
             value={stopBuyPriceStr}
             onChange={setStopBuyPriceStr}
-            shouldShowPriceLine={shouldShowStopBuyPriceLine}
+            shouldShowPriceLine={shouldShowStopBuyDraftPriceLine}
             onChangeShouldShowPriceLine={setShouldShowStopBuyPriceLine}
           />
         </>
@@ -106,7 +106,7 @@ const StopLimit = ({
             id="stopSellPrice"
             value={stopSellPriceStr}
             onChange={setStopSellPriceStr}
-            shouldShowPriceLine={shouldShowStopSellPriceLine}
+            shouldShowPriceLine={shouldShowStopSellDraftPriceLine}
             onChangeShouldShowPriceLine={setShouldShowStopSellPriceLine}
           />
         </>

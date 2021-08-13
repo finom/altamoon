@@ -40,35 +40,32 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
 
   const getOpenOrders = useGet(TRADING, 'openOrders');
   const {
+    isCurrentSymbolMarginTypeIsolated, currentSymbolLeverage,
     openPositions, openOrders,
     limitBuyPrice, limitSellPrice, stopBuyPrice, stopSellPrice,
     shouldShowLimitBuyPriceLine, shouldShowLimitSellPriceLine,
-    shouldShowStopBuyPriceLine, shouldShowStopSellPriceLine,
+    shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
     exactSizeLimitBuyStr, exactSizeLimitSellStr,
     exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
     // silent values
-    updateDrafts, currentSymbolLeverage, createOrderFromDraft, limitOrder, cancelOrder,
-    calculateSizeFromString,
+    updateDrafts, createOrderFromDraft, limitOrder, cancelOrder,
+    calculateSizeFromString, calculateLiquidationPrice, getPseudoPosition,
   } = useMultiValue(TRADING, [
+    'isCurrentSymbolMarginTypeIsolated', 'currentSymbolLeverage',
     'openPositions', 'openOrders',
     'limitBuyPrice', 'limitSellPrice', 'stopBuyPrice', 'stopSellPrice',
     'shouldShowLimitBuyPriceLine', 'shouldShowLimitSellPriceLine',
-    'shouldShowStopBuyPriceLine', 'shouldShowStopSellPriceLine',
+    'shouldShowStopBuyDraftPriceLine', 'shouldShowStopSellDraftPriceLine',
     'exactSizeLimitBuyStr', 'exactSizeLimitSellStr',
     'exactSizeStopLimitBuyStr', 'exactSizeStopLimitSellStr',
   ]);
 
   const position = openPositions.find((pos) => pos.symbol === symbol) ?? null;
-
   const orders = useMemo(
     () => openOrders.filter((order) => order.symbol === symbol),
     [openOrders, symbol],
   );
   const alerts = symbolAlerts[symbol];
-
-  useEffect(() => {
-    candleChart?.update({ currentSymbolLeverage });
-  }, [currentSymbolLeverage, candleChart]);
 
   useEffect(() => {
     candleChart?.update({ currentSymbolInfo });
@@ -118,6 +115,9 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
       switch (tradingType) {
         case 'LIMIT': {
           candleChart.update({
+            isCurrentSymbolMarginTypeIsolated,
+            currentSymbolLeverage,
+
             canCreateDraftLines: true,
 
             buyDraftPrice: limitBuyPrice,
@@ -127,16 +127,19 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
 
-            shouldShowBuyPrice: shouldShowLimitBuyPriceLine,
-            shouldShowSellPrice: shouldShowLimitSellPriceLine,
-            shouldShowStopBuyPrice: false,
-            shouldShowStopSellPrice: false,
+            shouldShowBuyDraftPrice: shouldShowLimitBuyPriceLine,
+            shouldShowSellDraftPrice: shouldShowLimitSellPriceLine,
+            shouldShowStopBuyDraftPrice: false,
+            shouldShowStopSellDraftPrice: false,
           });
           break;
         }
 
         case 'STOP': {
           candleChart.update({
+            isCurrentSymbolMarginTypeIsolated,
+            currentSymbolLeverage,
+
             canCreateDraftLines: true,
 
             buyDraftPrice: limitBuyPrice,
@@ -146,16 +149,19 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
 
-            shouldShowBuyPrice: shouldShowLimitBuyPriceLine,
-            shouldShowSellPrice: shouldShowLimitSellPriceLine,
-            shouldShowStopBuyPrice: shouldShowStopBuyPriceLine,
-            shouldShowStopSellPrice: shouldShowStopSellPriceLine,
+            shouldShowBuyDraftPrice: shouldShowLimitBuyPriceLine,
+            shouldShowSellDraftPrice: shouldShowLimitSellPriceLine,
+            shouldShowStopBuyDraftPrice: shouldShowStopBuyDraftPriceLine,
+            shouldShowStopSellDraftPrice: shouldShowStopSellDraftPriceLine,
           });
           break;
         }
 
         case 'STOP_MARKET': {
           candleChart.update({
+            isCurrentSymbolMarginTypeIsolated,
+            currentSymbolLeverage,
+
             canCreateDraftLines: true,
 
             buyDraftPrice: 0,
@@ -165,16 +171,19 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
 
-            shouldShowBuyPrice: false,
-            shouldShowSellPrice: false,
-            shouldShowStopBuyPrice: shouldShowStopBuyPriceLine,
-            shouldShowStopSellPrice: shouldShowStopSellPriceLine,
+            shouldShowBuyDraftPrice: false,
+            shouldShowSellDraftPrice: false,
+            shouldShowStopBuyDraftPrice: shouldShowStopBuyDraftPriceLine,
+            shouldShowStopSellDraftPrice: shouldShowStopSellDraftPriceLine,
           });
           break;
         }
 
         default: {
           candleChart.update({
+            isCurrentSymbolMarginTypeIsolated,
+            currentSymbolLeverage,
+
             canCreateDraftLines: false,
 
             buyDraftPrice: 0,
@@ -184,20 +193,22 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
 
-            shouldShowBuyPrice: false,
-            shouldShowSellPrice: false,
-            shouldShowStopBuyPrice: false,
-            shouldShowStopSellPrice: false,
+            shouldShowBuyDraftPrice: false,
+            shouldShowSellDraftPrice: false,
+            shouldShowStopBuyDraftPrice: false,
+            shouldShowStopSellDraftPrice: false,
           });
         }
       }
     }
   }, [
-    symbol, limitBuyPrice, limitSellPrice, shouldShowLimitBuyPriceLine,
-    shouldShowLimitSellPriceLine, shouldShowStopBuyPriceLine, shouldShowStopSellPriceLine,
-    stopBuyPrice, stopSellPrice, tradingType, candleChart, calculateSizeFromString,
-    exactSizeLimitBuyStr, exactSizeLimitSellStr,
+    symbol, limitBuyPrice, limitSellPrice,
+    shouldShowLimitBuyPriceLine, shouldShowLimitSellPriceLine,
+    shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
+    stopBuyPrice, stopSellPrice, tradingType, candleChart,
+    calculateSizeFromString, exactSizeLimitBuyStr, exactSizeLimitSellStr,
     exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
+    isCurrentSymbolMarginTypeIsolated, currentSymbolLeverage,
   ]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -218,6 +229,8 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
           bottom: chartPaddingBottomPercent,
           right: chartPaddingRightPercent,
         },
+        calculateLiquidationPrice,
+        getPseudoPosition,
         onDragLimitOrder: async (orderId: number, price: number) => {
           const order = getOpenOrders().find((orderItem) => orderId === orderItem.orderId);
           if (order) {

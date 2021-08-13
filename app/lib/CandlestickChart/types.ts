@@ -53,12 +53,22 @@ export interface PriceLinesDatum {
   color?: string;
   id?: string | number;
   isVisible?: boolean;
-  isDraggable?: boolean;
-  isCheckable?: boolean;
+  isDraggable?: boolean; // non-dynamic so far
+  isCheckable?: boolean; // non-dynamic so far
+  isClosable?: boolean; // non-dynamic so far
+  isTitleVisible?: boolean; // non-dynamic so far
+  lineStyle?: 'solid' | 'dashed' | 'dotted';
 }
 
 export interface ChartAxis {
   x: d3.Axis<d3.NumberValue>;
   yLeft: d3.Axis<d3.NumberValue>;
   yRight: d3.Axis<d3.NumberValue>;
+}
+
+export interface DraftPrices {
+  buyDraftPrice: number | null;
+  sellDraftPrice: number | null;
+  stopBuyDraftPrice: number | null;
+  stopSellDraftPrice: number | null;
 }

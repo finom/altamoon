@@ -26,6 +26,7 @@ export interface TradingPosition {
   initialValue: number;
   maintMarginRatio: number;
   maintMargin: number;
+  leverageBracket: api.FuturesLeverageBracket | null;
 }
 
 export interface TradingOrder {
@@ -50,6 +51,9 @@ export interface TradingOrder {
   updateTime: number;
   workingType: api.WorkingType;
   priceProtect: boolean;
+  leverageBracket: api.FuturesLeverageBracket | null;
+  marginType: api.FuturesPositionRisk['marginType'];
+  leverage: number;
 }
 
 declare global {

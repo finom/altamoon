@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import * as d3 from 'd3';
 import { TodoAny } from '../../../types';
 import convertType from '../../convertType';
@@ -63,6 +64,8 @@ export default class PriceLines implements ChartItem {
 
   #handleClickCheck?: Handler;
 
+  protected eventsArea?: D3Selection<SVGRectElement>;
+
   constructor(
     {
       items, axis, showX, color, lineStyle, isTitleVisible, isBackgroundFill,
@@ -86,12 +89,14 @@ export default class PriceLines implements ChartItem {
     this.#handleClickCheck = onClickCheck;
   }
 
-  public appendTo = (
+  public appendTo(
     parent: Element,
     resizeData: ResizeData,
     { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
-  ): void => {
+  ): void {
     this.#parent = convertType<D3Selection<SVGElement>>(d3.select(parent));
+
+    this.eventsArea = this.#parent.select('#plotMouseEventsArea');
 
     this.#wrapper = this.#parent.append('g');
 
@@ -100,7 +105,7 @@ export default class PriceLines implements ChartItem {
     this.update({ items: this.#items });
 
     this.resize(resizeData);
-  };
+  }
 
   public resize = (resizeData: ResizeData): void => {
     this.#resizeData = resizeData;
@@ -180,6 +185,14 @@ export default class PriceLines implements ChartItem {
         .attr('color', ({ color }) => color ?? this.#color)
         .style('visibility', ({ isVisible }) => (typeof isVisible === 'undefined' || isVisible ? '' : 'hidden'));
 
+      update.select('.price-line-horizontal-group .price-line-line')
+        .attr('stroke-dasharray', (d) => {
+          const lineStyle = d.lineStyle ?? this.#lineStyle;
+          if (lineStyle === 'dashed') return '10 7';
+          if (lineStyle === 'dotted') return '2 4';
+          return null;
+        });
+
       this.#setPriceTextAttributes({
         textSelection,
         axis,
@@ -201,6 +214,14 @@ export default class PriceLines implements ChartItem {
         .attr('transform', (d) => `translate(${String(axis.scale()(d.xValue ?? 0))}, 0)`)
         .attr('color', ({ color }) => color ?? this.#color)
         .style('visibility', ({ isVisible }) => (typeof isVisible === 'undefined' || isVisible ? '' : 'hidden'));
+
+      update.select('.price-line-vertical-group .price-line-line')
+        .attr('stroke-dasharray', (d) => {
+          const lineStyle = d.lineStyle ?? this.#lineStyle;
+          if (lineStyle === 'dashed') return '10 7';
+          if (lineStyle === 'dotted') return '2 4';
+          return null;
+        });
 
       this.#setPriceTextAttributes({
         textSelection,
@@ -228,17 +249,13 @@ export default class PriceLines implements ChartItem {
           const horizontalWrapper = wrapper.append('g').attr('class', 'price-line-horizontal-group');
 
           // --- line ---
-          const horizontalLine = horizontalWrapper.append('line')
+          horizontalWrapper.append('line')
             .attr('x1', 0)
             .attr('y1', 0)
             .attr('x2', this.#resizeData.width)
             .attr('y2', 0)
             .attr('stroke', 'currentColor')
             .attr('class', 'price-line-line');
-
-          if (this.#lineStyle !== 'solid') {
-            horizontalLine.attr('stroke-dasharray', this.#lineStyle === 'dashed' ? '10 7' : '2 4');
-          }
 
           // --- dragging ---
           // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -284,6 +301,7 @@ export default class PriceLines implements ChartItem {
               .attr('width', 400)
               .attr('height', 24)
               .style('text-align', 'right')
+              .style('display', (d) => (d.isTitleVisible === false ? 'none' : 'auto')) // TODO support dynamic change
               .property('_datumIndex', (d) => this.#items.indexOf(d));
 
             const div = titleGroup.append('xhtml:div')
@@ -310,6 +328,7 @@ export default class PriceLines implements ChartItem {
                 .style('float', 'right')
                 .style('cursor', 'pointer')
                 .style('pointer-events', 'auto')
+                .style('display', (d) => (d.isClosable === false ? 'none' : 'auto')) // TODO support dynamic change
                 .on('click', (evt: { target: HTMLElement }) => {
                   this.#handleClickClose?.(getDatumFromTarget(evt.target), this.#items);
                 });
@@ -327,6 +346,7 @@ export default class PriceLines implements ChartItem {
                 .style('float', 'right')
                 .style('cursor', 'pointer')
                 .style('pointer-events', 'auto')
+                .style('display', (d) => (d.isCheckable === false ? 'none' : 'auto')) // TODO support dynamic change
                 .on('click', (evt: { target: HTMLElement }) => {
                   this.#handleClickCheck?.(getDatumFromTarget(evt.target), this.#items);
                 });
@@ -367,17 +387,13 @@ export default class PriceLines implements ChartItem {
             const verticalWrapper = wrapper.append('g').attr('class', 'price-line-vertical-group');
 
             // --- line ---
-            const verticalLine = verticalWrapper.append('line')
+            verticalWrapper.append('line')
               .attr('x1', 1)
               .attr('y1', 0)
               .attr('x2', 1)
               .attr('y2', this.#resizeData.height)
               .attr('stroke', 'currentColor')
               .attr('class', 'price-line-line');
-
-            if (this.#lineStyle !== 'solid') {
-              verticalLine.attr('stroke-dasharray', this.#lineStyle === 'dashed' ? '10 7' : '2 4');
-            }
 
             // --- left label ---
             const bottomLabelGroup = verticalWrapper.append('g')

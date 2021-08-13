@@ -20,6 +20,7 @@ const textClassName = (value: number) => {
 const Positions = (): ReactElement => {
   const openPositions = useValue(TRADING, 'openPositions');
   const closePosition = useSilent(TRADING, 'closePosition');
+
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
   const setSymbol = useSet(PERSISTENT, 'symbol');
   const [currentAdjustMarginSymbol, setCurrentAdjustMarginSymbol] = useState<string | null>(null);
@@ -101,7 +102,7 @@ const Positions = (): ReactElement => {
                 {marginType === 'isolated' ? (
                   <>
                     {formatNumber(liquidationPrice)}
-&nbsp;₮
+                    &nbsp;₮
                   </>
                 ) : <>&mdash;</>}
               </td>

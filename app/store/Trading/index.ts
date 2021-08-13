@@ -8,6 +8,7 @@ import notify from '../../lib/notify';
 import { TradingOrder, TradingPosition } from '../types';
 
 import calculateSizeFromString from './calculateSizeFromString';
+import calculateLiquidationPrice from './calculateLiquidationPrice';
 import createOrderFromDraft from './createOrderFromDraft';
 import limitOrder from './limitOrder';
 import marketOrder from './marketOrder';
@@ -34,7 +35,7 @@ export default class Trading {
 
   public currentSymbolLeverage = 1;
 
-  public isCurrentSymbolMarginTypeIsolated: boolean | null = null;
+  public isCurrentSymbolMarginTypeIsolated = false;
 
   public positionsKey?: string;
 
@@ -50,11 +51,19 @@ export default class Trading {
 
   public stopBuyPrice: number | null = null;
 
-  public shouldShowStopBuyPriceLine = false;
+  public shouldShowStopBuyDraftPriceLine = false;
 
   public stopSellPrice: number | null = null;
 
-  public shouldShowStopSellPriceLine = false;
+  public shouldShowStopSellDraftPriceLine = false;
+
+  public exactSizeMarketBuyStr = '';
+
+  public exactSizeMarketSellStr = '';
+
+  public exactSizeStopMarketBuyStr = '';
+
+  public exactSizeStopMarketSellStr = '';
 
   public exactSizeLimitBuyStr = '';
 
@@ -160,12 +169,66 @@ export default class Trading {
       }
     });
 
+    // ----- Update pseudoPosition -----
     listenChange(store.persistent, 'symbol', () => this.#updatePseudoPosition());
     listenChange(store.market, 'currentSymbolLastPrice', () => this.#updatePseudoPosition());
     listenChange(this, 'currentSymbolLeverage', () => this.#updatePseudoPosition());
     listenChange(this, 'allSymbolsPositionRisk', () => this.#updatePseudoPosition());
     listenChange(this, 'isCurrentSymbolMarginTypeIsolated', () => this.#updatePseudoPosition());
     this.#updatePseudoPosition();
+
+    // ----- Update orders -----
+    // update orders if allSymbolsPositionRisk is loaded after them
+    listenChange(this, 'allSymbolsPositionRisk', (allSymbolsPositionRisk) => {
+      if (allSymbolsPositionRisk && this.openOrders.length) {
+        this.openOrders = this.openOrders.map((order) => {
+          const positionRisk = allSymbolsPositionRisk[order.symbol];
+
+          const marginType = positionRisk?.marginType || 'isolated';
+          const leverage = +positionRisk?.leverage || 1;
+          return {
+            ...order,
+            marginType,
+            leverage,
+          };
+        });
+      }
+    });
+
+    // update orders if leverageBrackets is loaded after them
+    listenChange(store.account, 'leverageBrackets', (leverageBrackets) => {
+      if (leverageBrackets && this.openOrders.length) {
+        this.openOrders = this.openOrders.map((order) => {
+          const value = +order.price * (+order.origQty - +order.executedQty);
+          const leverageBracket = this.store.account.leverageBrackets[order.symbol]?.find(
+            ({ notionalCap }) => notionalCap > value,
+          ) ?? null;
+
+          return {
+            ...order,
+            leverageBracket,
+          };
+        });
+      }
+    });
+
+    listenChange(this, 'currentSymbolLeverage', (currentSymbolLeverage) => {
+      const { symbol } = this.#store.persistent;
+      if (this.openOrders.find((order) => order.symbol === symbol)) {
+        this.openOrders = this.openOrders.map((order) => (order.symbol === symbol ? {
+          ...order, leverage: currentSymbolLeverage,
+        } : order));
+      }
+    });
+
+    listenChange(this, 'isCurrentSymbolMarginTypeIsolated', (isCurrentSymbolMarginTypeIsolated) => {
+      const { symbol } = this.#store.persistent;
+      if (this.openOrders.find((order) => order.symbol === symbol)) {
+        this.openOrders = this.openOrders.map((order) => (order.symbol === symbol ? {
+          ...order, marginType: isCurrentSymbolMarginTypeIsolated ? 'isolated' : 'cross',
+        } : order));
+      }
+    });
   }
 
   public marketOrder = (
@@ -204,6 +267,17 @@ export default class Trading {
     ...args: Parameters<typeof updateDrafts>
   ): ReturnType<typeof updateDrafts> => updateDrafts.apply(this, args);
 
+  public calculateSizeFromString = (
+    ...args: Parameters<typeof calculateSizeFromString>
+  ): ReturnType<typeof calculateSizeFromString> => calculateSizeFromString.apply(this, args);
+
+  public calculateLiquidationPrice = (
+    position: Parameters<typeof calculateLiquidationPrice>[1],
+    options?: { side: api.OrderSide },
+  ): ReturnType<typeof calculateLiquidationPrice> => calculateLiquidationPrice.call(
+    this, this.store.account.totalWalletBalance, position, options,
+  );
+
   public loadPositions = throttle(async (): Promise<void> => {
     try {
       const positions = await api.futuresPositionRisk();
@@ -234,7 +308,7 @@ export default class Trading {
       const prices = await api.futuresPrices();
 
       this.openOrders = futuresOrders
-        .map((order) => getOrderInfo(order, +prices[order.symbol]))
+        .map((order) => getOrderInfo.call(this, order, +prices[order.symbol]))
         .sort(({ orderId: a }, { orderId: b }) => (a > b ? 1 : -1));
 
       return undefined;
@@ -279,21 +353,58 @@ export default class Trading {
     ) / (10 ** symbolInfo.quantityPrecision);
   };
 
-  public calculateSizeFromString = (
-    ...args: Parameters<typeof calculateSizeFromString>
-  ): ReturnType<typeof calculateSizeFromString> => calculateSizeFromString.apply(this, args);
+  public getPseudoPosition = ({ side = 'BUY' }: { side?: api.OrderSide } = {}): TradingPosition | null => {
+    const { tradingType, symbol } = this.#store.persistent;
+    const {
+      limitSellPrice,
+      limitBuyPrice,
+      exactSizeMarketBuyStr,
+      exactSizeMarketSellStr,
+      exactSizeStopMarketBuyStr,
+      exactSizeStopMarketSellStr,
+      exactSizeLimitBuyStr,
+      exactSizeLimitSellStr,
+      exactSizeStopLimitBuyStr,
+      exactSizeStopLimitSellStr,
+    } = this;
+
+    const lastPrice = this.#store.market.currentSymbolLastPrice ?? 0;
+    const limitPrice = side === 'BUY' ? limitBuyPrice : limitSellPrice;
+
+    const exactSizeStrMap: Record<Extract<api.OrderType, 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_MARKET'>, string> = {
+      MARKET: side === 'BUY' ? exactSizeMarketBuyStr : exactSizeMarketSellStr,
+      LIMIT: side === 'BUY' ? exactSizeLimitBuyStr : exactSizeLimitSellStr,
+      STOP: side === 'BUY' ? exactSizeStopMarketBuyStr : exactSizeStopMarketSellStr,
+      STOP_MARKET: side === 'BUY' ? exactSizeStopLimitBuyStr : exactSizeStopLimitSellStr,
+    };
+
+    const exactSizeStr = exactSizeStrMap[tradingType as 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_MARKET'] || '0';
+    const price = tradingType.includes('MARKET') ? lastPrice : (limitPrice ?? lastPrice);
+
+    const quantity = this.calculateQuantity({
+      symbol,
+      price,
+      size: this.calculateSizeFromString(symbol, exactSizeStr),
+    });
+    const positionRisk = this.allSymbolsPositionRisk[this.#store.persistent.symbol];
+
+    if (!positionRisk) return null;
+
+    const pseudoPositionRisk: api.FuturesPositionRisk = {
+      ...positionRisk,
+      positionAmt: ((side === 'SELL' ? -1 : 1) * quantity).toString(),
+      entryPrice: price.toString(),
+      leverage: this.currentSymbolLeverage.toString(),
+      isolatedWallet: ((quantity * price) / this.currentSymbolLeverage).toString(),
+    };
+
+    const position = getPositionInfo.call(this, pseudoPositionRisk, lastPrice);
+    position.liquidationPrice = this.calculateLiquidationPrice(position, { side });
+    return position;
+  };
 
   #updatePseudoPosition = (): void => {
-    const positionRisk = this.allSymbolsPositionRisk[this.#store.persistent.symbol];
-    const lastPrice = this.#store.market.currentSymbolLastPrice ?? 0;
-
-    this.currentSymbolPseudoPosition = positionRisk
-      ? {
-        ...getPositionInfo.call(this, positionRisk, lastPrice),
-        entryPrice: lastPrice,
-        leverage: this.currentSymbolLeverage,
-      }
-      : null;
+    this.currentSymbolPseudoPosition = this.getPseudoPosition();
   };
 
   #updateLeverage = (symbol: string): void => {

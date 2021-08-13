@@ -1,15 +1,21 @@
+import { RootStore } from '../../../store';
 import { TradingOrder } from '../../../store/types';
 import { ChartAxis, PriceLinesDatum, ResizeData } from '../types';
 import PriceLines from './PriceLines';
 
 interface Params {
   axis: ChartAxis;
+  calculateLiquidationPrice: RootStore['trading']['calculateLiquidationPrice'];
   onDragLimitOrder: (orderId: number, price: number) => void;
   onCancelOrder: (orderId: number) => void;
 }
 
 export default class OrderPriceLines extends PriceLines {
-  constructor({ axis, onDragLimitOrder, onCancelOrder }: Params, resizeData: ResizeData) {
+  #calculateLiquidationPrice: Params['calculateLiquidationPrice'];
+
+  constructor({
+    axis, calculateLiquidationPrice, onDragLimitOrder, onCancelOrder,
+  }: Params, resizeData: ResizeData) {
     super({
       axis,
       items: [],
@@ -19,6 +25,8 @@ export default class OrderPriceLines extends PriceLines {
       onDragEnd: (d) => onDragLimitOrder(d.id as number, d.yValue ?? 0), // args ensure TS
       onClickClose: (d) => onCancelOrder(d.id as number),
     }, resizeData);
+
+    this.#calculateLiquidationPrice = calculateLiquidationPrice;
   }
 
   public updateOrderLines(orders: TradingOrder[]): void {
@@ -44,6 +52,25 @@ export default class OrderPriceLines extends PriceLines {
           color: side === 'BUY' ? 'var(--biduul-stop-buy-color)' : 'var(--biduul-stop-sell-color)',
           title: 'Stop price',
           id: orderId,
+        })),
+      ...orders
+        .map(({
+          price, side, origQty, executedQty, symbol, marginType, leverageBracket, leverage,
+        }) => ({
+          yValue: this.#calculateLiquidationPrice({
+            positionAmt: (side === 'SELL' ? -1 : 1) * (origQty - executedQty),
+            entryPrice: price,
+            symbol,
+            leverageBracket,
+            side,
+            marginType,
+            isolatedWallet: ((origQty - executedQty) * price) / leverage,
+            leverage,
+          }),
+          title: 'Order liquidation',
+          color: 'var(--bs-red)',
+          isTitleVisible: false,
+          lineStyle: 'dashed' as const,
         })),
     ];
 

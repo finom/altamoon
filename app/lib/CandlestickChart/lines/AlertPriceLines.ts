@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { ChartAxis, ResizeData } from '../types';
 import PriceLines from './PriceLines';
 
@@ -58,5 +59,27 @@ export default class AlertPriceLines extends PriceLines {
     if (typeof data.lastPrice === 'number') {
       this.#lastPrice = data.lastPrice;
     }
+  };
+
+  public appendTo = (
+    parent: Element,
+    resizeData: ResizeData,
+    { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
+  ): void => {
+    super.appendTo(parent, resizeData, { wrapperCSSStyle });
+    this.eventsArea?.on('contextmenu', this.#onRightClick);
+  };
+
+  #onRightClick = (evt: MouseEvent): void => {
+    evt.stopPropagation();
+    evt.preventDefault();
+
+    const coords = d3.pointer(evt);
+
+    this.addItem({
+      yValue: this.invertY(coords[1]),
+      title: 'Alert',
+      isDraggable: true,
+    });
   };
 }

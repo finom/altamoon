@@ -1,6 +1,6 @@
-import React, { ReactElement, useState } from 'react';
-import { useValue } from 'use-change';
-import { MARKET } from '../../../store';
+import React, { ReactElement } from 'react';
+import useChange, { useValue } from 'use-change';
+import { MARKET, TRADING } from '../../../store';
 import TradingTab from './TradingTab';
 
 interface Props {
@@ -15,8 +15,8 @@ const Market = ({
 }: Props): ReactElement => {
   const price = useValue(MARKET, 'currentSymbolLastPrice');
 
-  const [exactSizeBuyStr, setExactSizeBuyStr] = useState('');
-  const [exactSizeSellStr, setExactSizeSellStr] = useState('');
+  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeMarketBuyStr');
+  const [exactSizeSellStr, setExactSizeSellStr] = useChange(TRADING, 'exactSizeMarketSellStr');
 
   return (
     <TradingTab

@@ -22,10 +22,12 @@ export default function getPositionInfo(
     this.openPositions.find((p) => p.symbol === symbol)?.initialAmt ?? 0,
     positionAmt,
   );
-  const bracket = this.store.account.leverageBrackets[symbol]?.find(
+
+  const leverageBracket = this.store.account.leverageBrackets[symbol]?.find(
     ({ notionalCap }) => notionalCap > baseValue,
-  );
-  const maintMarginRatio = bracket?.maintMarginRatio ?? 0;
+  ) ?? null;
+
+  const maintMarginRatio = leverageBracket?.maintMarginRatio ?? 0;
   const { totalWalletBalance } = this.store.account;
 
   return {
@@ -63,8 +65,9 @@ export default function getPositionInfo(
     symbol,
     baseAsset: this.store.market.futuresExchangeSymbols[symbol]?.baseAsset ?? 'UNKNOWN',
     pricePrecision: this.store.market.futuresExchangeSymbols[symbol]?.pricePrecision ?? 1,
-    maxLeverage: bracket?.initialLeverage ?? 1,
+    maxLeverage: leverageBracket?.initialLeverage ?? 1,
     maintMarginRatio,
-    maintMargin: maintMarginRatio * baseValue,
+    maintMargin: maintMarginRatio * baseValue - (leverageBracket?.cum ?? 0),
+    leverageBracket,
   };
 }

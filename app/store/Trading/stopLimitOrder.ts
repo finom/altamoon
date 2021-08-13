@@ -29,10 +29,10 @@ export default async function stopLimitOrder(this: Store['trading'], {
 
     if (side === 'BUY') {
       this.shouldShowLimitBuyPriceLine = false;
-      this.shouldShowStopBuyPriceLine = false;
+      this.shouldShowStopBuyDraftPriceLine = false;
     } else {
       this.shouldShowLimitSellPriceLine = false;
-      this.shouldShowStopSellPriceLine = false;
+      this.shouldShowStopSellDraftPriceLine = false;
     }
 
     return result;

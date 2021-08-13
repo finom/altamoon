@@ -1,7 +1,19 @@
 import { TradingOrder } from '../types';
 import * as api from '../../api';
 
-export default function getOrderInfo(order: api.FuturesOrder, lastPrice: number): TradingOrder {
+export default function getOrderInfo(
+  this: Store['trading'], order: api.FuturesOrder, lastPrice: number,
+): TradingOrder {
+  const value = +order.price * (+order.origQty - +order.executedQty);
+  const leverageBracket = this.store.account.leverageBrackets[order.symbol]?.find(
+    ({ notionalCap }) => notionalCap > value,
+  ) ?? null;
+
+  const positionRisk = this.allSymbolsPositionRisk[order.symbol];
+
+  const marginType = positionRisk?.marginType || 'isolated';
+  const leverage = +positionRisk?.leverage || 1;
+
   return {
     lastPrice,
     clientOrderId: order.clientOrderId,
@@ -24,5 +36,8 @@ export default function getOrderInfo(order: api.FuturesOrder, lastPrice: number)
     updateTime: order.updateTime,
     workingType: order.workingType,
     priceProtect: order.priceProtect,
+    leverageBracket,
+    marginType,
+    leverage,
   };
 }

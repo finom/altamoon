@@ -29,16 +29,16 @@ export default function updateDrafts(this: Store['trading'], {
   if (tradingType === 'STOP' || tradingType === 'STOP_MARKET') {
     if (typeof stopBuyDraftPrice === 'number') {
       this.stopBuyPrice = stopBuyDraftPrice;
-      this.shouldShowStopBuyPriceLine = true;
+      this.shouldShowStopBuyDraftPriceLine = true;
     } else {
-      this.shouldShowStopBuyPriceLine = false;
+      this.shouldShowStopBuyDraftPriceLine = false;
     }
 
     if (typeof stopSellDraftPrice === 'number') {
       this.stopSellPrice = stopSellDraftPrice;
-      this.shouldShowStopSellPriceLine = true;
+      this.shouldShowStopSellDraftPriceLine = true;
     } else {
-      this.shouldShowStopSellPriceLine = false;
+      this.shouldShowStopSellDraftPriceLine = false;
     }
   }
 }
