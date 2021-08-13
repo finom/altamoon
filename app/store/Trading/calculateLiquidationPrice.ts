@@ -269,6 +269,7 @@ if (process.env.NODE_ENV === 'development') {
         maintMargin: leverageBracket.maintMarginRatio * baseValue - leverageBracket.cum,
         leverageBracket,
         isolatedWallet: 0,
+        leverage: 1,
       };
     };
 
@@ -294,6 +295,7 @@ if (process.env.NODE_ENV === 'development') {
         maintMargin: leverageBracket.maintMarginRatio * baseValue - leverageBracket.cum,
         leverageBracket,
         isolatedWallet: 0,
+        leverage: 1,
       };
     };
 
