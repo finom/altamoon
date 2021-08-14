@@ -244,7 +244,7 @@ if (process.env.NODE_ENV === 'development') {
     },
   ];
 
-  void import('expect').then(({ default: expect }) => {
+  void import('expect.js').then(({ default: expect }) => {
     const { store } = convertType<{ store: Store }>(window);
 
     const getBTCPosition = (): Parameters<
@@ -305,11 +305,11 @@ if (process.env.NODE_ENV === 'development') {
     expect(+calculateLiquidationPrice.call({
       store,
       openPositions: [ethPosition, btcPosition],
-    }, 1_535_443.01, btcPosition).toFixed(2)).toBe(26316.89);
+    }, 1_535_443.01, btcPosition).toFixed(2)).to.be(26316.89);
 
     expect(+calculateLiquidationPrice.call({
       store,
       openPositions: [ethPosition, btcPosition],
-    }, 1_535_443.01, ethPosition).toFixed(2)).toBe(1153.26);
+    }, 1_535_443.01, ethPosition).toFixed(2)).to.be(1153.26);
   });
 }
