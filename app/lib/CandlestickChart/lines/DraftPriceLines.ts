@@ -2,24 +2,14 @@ import * as d3 from 'd3';
 import { OrderSide } from '../../../api';
 import { RootStore } from '../../../store';
 import formatBalanceMoneyNumber from '../../formatBalanceMoneyNumber';
-import { ChartAxis, ResizeData } from '../types';
+import { ChartAxis, DraftPrices, ResizeData } from '../types';
 import PriceLines from './PriceLines';
 
 interface Params {
   axis: ChartAxis;
   getPseudoPosition: RootStore['trading']['getPseudoPosition'];
-  onUpdateDrafts: ((r: {
-    buyDraftPrice: number | null;
-    sellDraftPrice: number | null;
-    stopBuyDraftPrice: number | null;
-    stopSellDraftPrice: number | null;
-  }) => void);
-  onClickDraftCheck: ((r: {
-    buyDraftPrice: number | null;
-    sellDraftPrice: number | null;
-    stopBuyDraftPrice: number | null;
-    stopSellDraftPrice: number | null;
-  }, side: OrderSide) => void);
+  onUpdateDrafts: ((r: DraftPrices) => void);
+  onClickDraftCheck: ((r: DraftPrices, side: OrderSide) => void);
 }
 
 export default class DraftPriceLines extends PriceLines {
@@ -201,10 +191,10 @@ export default class DraftPriceLines extends PriceLines {
 
     const coords = d3.pointer(evt);
     const yValue = this.invertY(coords[1]);
+
     const side: OrderSide = yValue < this.#lastPrice ? 'BUY' : 'SELL';
 
     this.updateItem(side, { yValue, isVisible: true });
-
     this.#onUpdateDrafts(this.getDraftPrices());
   };
 }

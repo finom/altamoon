@@ -9,18 +9,17 @@ export default function updateDrafts(this: Store['trading'], {
   stopSellDraftPrice: number | null;
 }): void {
   const { tradingType } = this.store.persistent;
-
   if (tradingType === 'LIMIT' || tradingType === 'STOP') {
     if (typeof buyDraftPrice === 'number') {
-      this.limitBuyPrice = buyDraftPrice;
       this.shouldShowLimitBuyPriceLine = true;
+      this.limitBuyPrice = buyDraftPrice;
     } else {
       this.shouldShowLimitBuyPriceLine = false;
     }
 
     if (typeof sellDraftPrice === 'number') {
-      this.limitSellPrice = sellDraftPrice;
       this.shouldShowLimitSellPriceLine = true;
+      this.limitSellPrice = sellDraftPrice;
     } else {
       this.shouldShowLimitSellPriceLine = false;
     }
@@ -28,15 +27,15 @@ export default function updateDrafts(this: Store['trading'], {
 
   if (tradingType === 'STOP' || tradingType === 'STOP_MARKET') {
     if (typeof stopBuyDraftPrice === 'number') {
-      this.stopBuyPrice = stopBuyDraftPrice;
       this.shouldShowStopBuyDraftPriceLine = true;
+      this.stopBuyPrice = stopBuyDraftPrice;
     } else {
       this.shouldShowStopBuyDraftPriceLine = false;
     }
 
     if (typeof stopSellDraftPrice === 'number') {
-      this.stopSellPrice = stopSellDraftPrice;
       this.shouldShowStopSellDraftPriceLine = true;
+      this.stopSellPrice = stopSellDraftPrice;
     } else {
       this.shouldShowStopSellDraftPriceLine = false;
     }

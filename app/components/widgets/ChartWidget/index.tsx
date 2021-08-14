@@ -112,6 +112,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
 
   useEffect(() => {
     if (candleChart) {
+      console.log('shouldShowLimitSellPriceLine', shouldShowLimitSellPriceLine)
       switch (tradingType) {
         case 'LIMIT': {
           candleChart.update({
