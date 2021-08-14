@@ -1,13 +1,11 @@
-import React, {
-  LegacyRef, useEffect, ReactElement, useMemo,
-} from 'react';
+import React, { LegacyRef, ReactElement, useMemo } from 'react';
 import { Button, Col } from 'reactstrap';
 import { useSilent, useValue } from 'use-change';
 
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
 import { MARKET, PERSISTENT, TRADING } from '../../../../../../store';
-import formatBalanceMoneyNumber from '../../../../../../lib/formatBalanceMoneyNumber';
+import usePriceTitle from '../usePriceTitle';
 
 interface Props {
   totalWalletBalance: number;
@@ -24,6 +22,7 @@ const ButtonCol = ({
   price, side, percent, isMax, onOrder,
 }: Props): ReactElement => {
   const calculateQuantity = useSilent(TRADING, 'calculateQuantity');
+  const getFeeRate = useSilent(TRADING, 'getFeeRate');
   const symbol = useValue(PERSISTENT, 'symbol');
 
   const leverage = +useValue(TRADING, 'allSymbolsPositionRisk')[symbol]?.leverage || 1;
@@ -44,13 +43,16 @@ const ButtonCol = ({
   const [buttonRef, setButtonTitle] = useBootstrapTooltip<HTMLSpanElement>();
   const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
 
-  useEffect(() => {
-    setButtonTitle(price ? `
-    ${formatBalanceMoneyNumber(quantity * price)}&nbsp;USDT<br>
-    ${quantity}&nbsp;${currentSymbolBaseAsset ?? ''}<br>
-    Est. margin = ${formatBalanceMoneyNumber(preciseSize / leverage)}&nbsp;USDT
-  ` : 'Unknown price');
-  }, [currentSymbolBaseAsset, leverage, preciseSize, price, quantity, setButtonTitle]);
+  usePriceTitle({
+    feeRate: getFeeRate('maker'),
+    totalWalletBalance,
+    currentSymbolBaseAsset,
+    leverage,
+    size: preciseSize,
+    price,
+    quantity,
+    setTitle: setButtonTitle,
+  });
 
   return (
     <Col xs={3}>

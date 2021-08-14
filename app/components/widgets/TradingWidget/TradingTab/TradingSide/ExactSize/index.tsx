@@ -1,15 +1,13 @@
 import { capitalize } from 'lodash';
-import React, {
-  ReactElement, Ref, useEffect, useMemo,
-} from 'react';
+import React, { ReactElement, Ref, useMemo } from 'react';
 import { Button } from 'reactstrap';
 import { useSilent, useValue } from 'use-change';
 
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
-import formatBalanceMoneyNumber from '../../../../../../lib/formatBalanceMoneyNumber';
 import { MARKET, PERSISTENT, TRADING } from '../../../../../../store';
 import LabeledInput from '../../../../../controls/LabeledInput';
+import usePriceTitle from '../usePriceTitle';
 import PercentSelector from './PercentSelector';
 
 interface Props {
@@ -39,6 +37,7 @@ const ExactSize = ({
 }: Props): ReactElement => {
   const calculateQuantity = useSilent(TRADING, 'calculateQuantity');
   const calculateSizeFromString = useSilent(TRADING, 'calculateSizeFromString');
+  const getFeeRate = useSilent(TRADING, 'getFeeRate');
   const symbol = useValue(PERSISTENT, 'symbol');
   const leverage = +useValue(TRADING, 'allSymbolsPositionRisk')[symbol]?.leverage || 1;
 
@@ -61,15 +60,16 @@ const ExactSize = ({
   const [inputRef, setInputTitle] = useBootstrapTooltip<HTMLInputElement>(tooltipOptions);
   const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
 
-  useEffect(() => {
-    setInputTitle(price ? `
-    ${formatBalanceMoneyNumber(quantity * price)}&nbsp;USDT<br>
-    ${quantity}&nbsp;${currentSymbolBaseAsset ?? ''}<br>
-    Est. margin = ${formatBalanceMoneyNumber(exactSize / leverage)}&nbsp;USDT
-  ` : 'Unknown price');
-  }, [
-    currentSymbolBaseAsset, exactSize, leverage, price, quantity, totalWalletBalance, setInputTitle,
-  ]);
+  usePriceTitle({
+    feeRate: getFeeRate('maker'),
+    totalWalletBalance,
+    currentSymbolBaseAsset,
+    leverage,
+    size: exactSize,
+    price,
+    quantity,
+    setTitle: setInputTitle,
+  });
 
   return (
     <>
