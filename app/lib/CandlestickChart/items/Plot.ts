@@ -172,9 +172,9 @@ export default class Plot implements ChartItem {
   }
 
   /**
- * Returns an array of smoothed candles.
- * (Based on heikin ashi candles, but keeps the real high & low)
- * */
+   * Returns an array of smoothed candles.
+   * (Based on heikin ashi candles, but keeps the real high & low)
+   */
   private static smoozCandles = (
     candles: api.FuturesChartCandle[],
     prevSmooz: SmoozCandle[] = [], // If updating

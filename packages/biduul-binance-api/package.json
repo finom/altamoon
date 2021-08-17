@@ -1,0 +1,19 @@
+{
+	"version": "0.0.47",
+	"name": "biduul-binance-api",
+	"description": "Browser-based Binance API functions used at Biduul",
+	"main": "api/index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "",
+	"license": "AGPL",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Letiliel/biduul.git"
+	},
+	"dependencies": {
+		"qs": "^6.10.1",
+		"crypto-browserify": "^3.12.0"
+	}
+}

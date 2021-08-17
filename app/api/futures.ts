@@ -5,7 +5,6 @@ import {
   FuturesAccount, FuturesLeverageBracket, FuturesUserTrades, FuturesDepth, FuturesExchangeInfo,
   IncomeType, FuturesIncome, TimeInForce, OrderType, OrderSide, FuturesOrder,
 } from './types';
-import convertType from '../lib/convertType';
 
 const isArrayUnique = (array: unknown[]) => new Set(array).size === array.length;
 
@@ -173,7 +172,7 @@ export function futuresAggTradeStream(
       q: amount, f: firstTradeId, l: lastTradeId, T: timestamp, m: maker,
     } = ticker;
 
-    callback(convertType<FuturesAggTradeStreamTicker>({
+    callback({
       eventType,
       eventTime,
       symbol,
@@ -185,7 +184,7 @@ export function futuresAggTradeStream(
       lastTradeId,
       timestamp,
       maker,
-    }));
+    } as unknown as FuturesAggTradeStreamTicker);
   });
 }
 

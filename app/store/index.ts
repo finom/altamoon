@@ -6,6 +6,7 @@ import Account from './Account';
 import Stats from './Stats';
 import Trading from './Trading';
 import Customization from './Customization';
+import notify from '../lib/notify';
 
 export class RootStore {
   public readonly persistent: Persistent;
@@ -30,6 +31,11 @@ export class RootStore {
     this.stats = new Stats(this);
     this.customization = new Customization(this);
     this.isSettingsModalOpen = !this.persistent.binanceApiKey;
+
+    window.addEventListener('binance-api-error', (evt) => {
+      const { detail } = evt as CustomEvent<{ error: string | Error }>;
+      notify('error', detail.error);
+    });
   }
 }
 

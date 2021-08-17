@@ -1,8 +1,8 @@
 /* eslint-disable no-param-reassign */
 import qs from 'qs';
-import crypto from 'crypto';
-import notify from '../lib/notify';
+import crypto from 'crypto-browserify';
 import options from './options';
+import emitError from './emitError';
 
 interface Flags {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -65,7 +65,7 @@ export default async function promiseRequest<T>(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
-    notify('error', e);
+    emitError(e);
     throw e;
   }
 }

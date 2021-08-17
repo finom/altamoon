@@ -216,11 +216,4 @@ export default merge(baseConfig, {
       index: 'src/browser.html',
     },
   },
-
-  resolve: {
-    fallback: {
-      crypto: require.resolve("crypto-browserify"),
-      stream: require.resolve("stream-browserify")
-    }
-  }
 });
