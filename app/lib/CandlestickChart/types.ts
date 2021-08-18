@@ -33,13 +33,6 @@ export interface DrawData {
   candles: api.FuturesChartCandle[];
   zoomTransform: Pick<d3.ZoomTransform, 'x' | 'y' | 'k'>;
 }
-
-export interface SmoozCandle extends Omit<api.FuturesChartCandle, 'open' | 'close'> {
-  direction: 'up' | 'down';
-  open: number;
-  close: number;
-}
-
 export interface LineData {
   text: string;
   value: string;

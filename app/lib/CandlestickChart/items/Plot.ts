@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {
-  ChartItem, D3Selection, DrawData, Scales, SmoozCandle,
+  ChartItem, D3Selection, DrawData, Scales,
 } from '../types';
 import * as api from '../../../api';
 
@@ -68,12 +68,12 @@ export default class Plot implements ChartItem {
     ) {
       const smoozFirstCandles = Plot.smoozCandles(candles).slice(0, -1);
 
-      const upCandles = smoozFirstCandles.filter((x) => x.direction === 'up');
-      const downCandles = smoozFirstCandles.filter((x) => x.direction === 'down');
+      const upCandles = smoozFirstCandles.filter((x) => x.direction === 'UP');
+      const downCandles = smoozFirstCandles.filter((x) => x.direction === 'DOWN');
 
-      this.#pathBodiesUp?.attr('d', this.#getBodies(upCandles, 'up'));
+      this.#pathBodiesUp?.attr('d', this.#getBodies(upCandles, 'UP'));
       this.#pathWicksUp?.attr('d', this.#getWicks(upCandles));
-      this.#pathBodiesDown?.attr('d', this.#getBodies(downCandles, 'down'));
+      this.#pathBodiesDown?.attr('d', this.#getBodies(downCandles, 'DOWN'));
       this.#pathWicksDown?.attr('d', this.#getWicks(downCandles));
     }
 
@@ -82,12 +82,12 @@ export default class Plot implements ChartItem {
     // and allows smoozCandles to use previous candle to calculate itself
     const [, smoozLastCandle] = Plot.smoozCandles(candles.slice(-2));
 
-    const upLastCandles = smoozLastCandle?.direction === 'up' ? [smoozLastCandle] : [];
-    const downLastCandles = smoozLastCandle?.direction === 'down' ? [smoozLastCandle] : [];
+    const upLastCandles = smoozLastCandle?.direction === 'UP' ? [smoozLastCandle] : [];
+    const downLastCandles = smoozLastCandle?.direction === 'DOWN' ? [smoozLastCandle] : [];
 
-    this.#pathLastBodysUp?.attr('d', this.#getBodies(upLastCandles, 'up'));
+    this.#pathLastBodysUp?.attr('d', this.#getBodies(upLastCandles, 'UP'));
     this.#pathLastWickUp?.attr('d', this.#getWicks(upLastCandles));
-    this.#pathLastBodyDown?.attr('d', this.#getBodies(downLastCandles, 'down'));
+    this.#pathLastBodyDown?.attr('d', this.#getBodies(downLastCandles, 'DOWN'));
     this.#pathLastWickDown?.attr('d', this.#getWicks(downLastCandles));
 
     this.#lastCandle = lastCandle;
@@ -105,7 +105,7 @@ export default class Plot implements ChartItem {
     }
   };
 
-  #getBodies = (candles: SmoozCandle[], direction: 'up' | 'down'): string => {
+  #getBodies = (candles: api.FuturesChartCandle[], direction: api.FuturesChartCandle['direction']): string => {
     const width = this.bodyWidth;
     let string = '';
 
@@ -115,13 +115,13 @@ export default class Plot implements ChartItem {
     return string;
   };
 
-  #getBodyString = (candle: SmoozCandle, direction: 'up' | 'down', width: number): string => {
+  #getBodyString = (candle: api.FuturesChartCandle, direction: api.FuturesChartCandle['direction'], width: number): string => {
     const open = Math.round(this.#scaledY(candle.open));
     const close = Math.round(this.#scaledY(candle.close));
     let top; let
       bottom;
 
-    if (direction === 'up') {
+    if (direction === 'UP') {
       bottom = open;
       top = close;
     } else {
@@ -136,7 +136,7 @@ export default class Plot implements ChartItem {
     return `M${x},${y} h${width}v${-height}h${-width}z `;
   };
 
-  #getWicks = (candles: SmoozCandle[]): string => {
+  #getWicks = (candles: api.FuturesChartCandle[]): string => {
     let string = '';
 
     for (const candle of candles) {
@@ -145,7 +145,7 @@ export default class Plot implements ChartItem {
     return string;
   };
 
-  #getWickString = (candle: SmoozCandle): string => {
+  #getWickString = (candle: api.FuturesChartCandle): string => {
     const x = Math.round(this.#scaledX(candle.time));
     const y1 = Math.round(this.#scaledY(+candle.high));
     const y2 = Math.round(this.#scaledY(+candle.low));
@@ -177,10 +177,10 @@ export default class Plot implements ChartItem {
    */
   private static smoozCandles = (
     candles: api.FuturesChartCandle[],
-    prevSmooz: SmoozCandle[] = [], // If updating
+    prevSmooz: api.FuturesChartCandle[] = [], // If updating
     startIndex = 0, // If updating
-  ): SmoozCandle[] => {
-    const newCandles: (SmoozCandle | api.FuturesChartCandle)[] = [
+  ): api.FuturesChartCandle[] => {
+    const newCandles: api.FuturesChartCandle[] = [
       ...prevSmooz.slice(0, startIndex),
     ];
 
@@ -188,20 +188,20 @@ export default class Plot implements ChartItem {
       const {
         open, close, high, low,
       } = candles[i];
-      const previous = newCandles[i - 1] as SmoozCandle | undefined;
+      const previous = newCandles[i - 1] as api.FuturesChartCandle | undefined;
 
       let newOpen = previous
         ? (+previous.open + +previous.close) / 2
-        : (+open + +close) / 2;
-      let newClose = (+open + +close + +high + +low) / 4;
+        : (open + close) / 2;
+      let newClose = (open + close + high + low) / 4;
 
       const newDirection = (newOpen <= newClose)
-        ? 'up' : 'down';
+        ? 'UP' : 'DOWN';
 
       // Clamp new open to low/high
-      newOpen = (newDirection === 'up')
-        ? Math.max(newOpen, +low)
-        : Math.min(newOpen, +high);
+      newOpen = newDirection === 'UP'
+        ? Math.max(newOpen, low)
+        : Math.min(newOpen, high);
 
       // Keep last candle close as vanilla (to visually keep track of price)
       if (i === candles.length - 1) {
@@ -218,17 +218,17 @@ export default class Plot implements ChartItem {
       // Adjust close/open of previous candle, we don't want gaps
       if (previous) {
         if (newDirection === previous.direction) {
-          previous.close = (previous.direction === 'up')
+          previous.close = (previous.direction === 'UP')
             ? Math.max(previous.close, newOpen)
             : Math.min(previous.close, newOpen);
         } else {
-          previous.open = (previous.direction === 'down')
+          previous.open = (previous.direction === 'DOWN')
             ? Math.max(previous.open, newOpen)
             : Math.min(previous.open, newOpen);
         }
       }
     }
 
-    return newCandles as SmoozCandle[];
+    return newCandles;
   };
 }

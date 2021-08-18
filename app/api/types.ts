@@ -114,18 +114,19 @@ export interface FuturesAccount {
 export interface FuturesChartCandle {
   symbol: string;
   interval: CandlestickChartInterval;
-  close: string;
+  close: number;
   closeTime: number;
-  high: string;
-  low: string;
-  open: string;
-  quoteVolume: string;
-  takerBuyBaseVolume: string;
-  takerBuyQuoteVolume: string;
+  high: number;
+  low: number;
+  open: number;
+  quoteVolume: number;
+  takerBuyBaseVolume: number;
+  takerBuyQuoteVolume: number;
   time: number;
   trades: number;
-  volume: string;
+  volume: number;
   isFinal?: boolean;
+  direction: 'UP' | 'DOWN';
 }
 
 export interface FuturesUserTrades {
