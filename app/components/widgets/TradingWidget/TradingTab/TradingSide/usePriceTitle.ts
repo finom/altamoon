@@ -22,8 +22,8 @@ export default function usePriceTitle({
     setTitle(price ? `
     ${formatBalanceMoneyNumber(quantity * price)}&nbsp;USDT<br>
     ${quantity}&nbsp;${currentSymbolBaseAsset ?? ''}<br>
-    Est.&nbsp;margin&nbsp;= ${formatBalanceMoneyNumber(margin)}&nbsp;USDT (${percentage(margin)}%)<br>
-    Est.&nbsp;fee&nbsp;= ${formatBalanceMoneyNumber(fee)}&nbsp;USDT (${percentage(fee)}%)
+    &nbsp;Margin&nbsp;=&nbsp;${formatBalanceMoneyNumber(margin)}&nbsp;USDT&nbsp;(${percentage(margin)}%)<br>
+    Est.&nbsp;fee&nbsp;=&nbsp;${formatBalanceMoneyNumber(fee)}&nbsp;USDT&nbsp;(${percentage(fee)}%)
   ` : 'Unknown price');
   }, [
     totalWalletBalance, currentSymbolBaseAsset, leverage, size, price, quantity, setTitle, feeRate,
