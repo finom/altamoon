@@ -195,11 +195,11 @@ export function futuresPositionMargin(
   return promiseRequest('v1/positionMargin', { symbol, amount, type }, { method: 'POST', type: 'SIGNED' });
 }
 
-export const futuresCandles = async ({
+export async function futuresCandles({
   symbol, interval, limit,
 }: {
-  symbol: string, interval: CandlestickChartInterval, limit: number;
-}): Promise<FuturesChartCandle[]> => {
+  symbol: string; interval: CandlestickChartInterval; limit: number;
+}): Promise<FuturesChartCandle[]> {
   const klines = await promiseRequest<(string | number)[][]>('v1/klines', {
     symbol, interval, limit,
   });
@@ -227,4 +227,74 @@ export const futuresCandles = async ({
 
     return candle;
   });
-};
+}
+
+export function futuresCandlesSubscribe(
+  symbolIntervalPairs: [string, CandlestickChartInterval][],
+  callback: (candle: FuturesChartCandle) => void,
+): () => void {
+  type KLineTicker = {
+    e: 'kline'; // evt type
+    E: number; // evt time
+    s: string; // symbol
+    k: Record<string, string | number | boolean>; // klines
+  };
+  const streams = symbolIntervalPairs.map(([symbol, interval]) => `${symbol.toLowerCase()}@kline_${interval}`);
+  const intervalMap = Object.fromEntries(symbolIntervalPairs);
+  return futuresSubscribe<KLineTicker>(
+    streams,
+    (ticker) => {
+      const {
+        o: open, h: high, l: low, c: close, v: volume,
+        x: isFinal, q: quoteVolume, V: takerBuyBaseVolume, Q: takerBuyQuoteVolume,
+        n: trades, t: time, T: closeTime,
+      } = ticker.k;
+
+      const candle: FuturesChartCandle = {
+        symbol: ticker.s,
+        interval: intervalMap[ticker.s],
+        time: time as number,
+        closeTime: closeTime as number,
+        open: +open,
+        high: +high,
+        low: +low,
+        close: +close,
+        volume: +volume,
+        quoteVolume: +quoteVolume,
+        takerBuyBaseVolume: +takerBuyBaseVolume,
+        takerBuyQuoteVolume: +takerBuyQuoteVolume,
+        trades: trades as number,
+        direction: +open <= +close ? 'UP' : 'DOWN',
+        isFinal: isFinal as boolean,
+      };
+
+      callback(candle);
+    },
+  );
+}
+
+export function futuresChartSubscribe(
+  symbol: string,
+  interval: CandlestickChartInterval,
+  callback: (futuresKlineConcat: FuturesChartCandle[]) => void,
+  limit: number,
+): () => void {
+  let data: null | FuturesChartCandle[] = null;
+
+  void futuresCandles({ symbol, interval, limit }).then((candles) => {
+    data = candles;
+    callback(data);
+  });
+
+  return futuresCandlesSubscribe([[symbol, interval]], (candle) => {
+    if (!data) return;
+
+    if (candle.time === data[data.length - 1].time) {
+      Object.assign(data[data.length - 1], candle);
+    } else {
+      data.push(candle);
+    }
+
+    callback([...data]);
+  });
+}
