@@ -1,36 +1,17 @@
 import futuresSubscribe from './futuresSubscribe';
-import promiseRequest from './promiseRequest';
+import { futuresCandles } from './futures';
 import { FuturesChartCandle, CandlestickChartInterval } from './types';
 
 export default function futuresChartSubscribe(
   symbol: string,
   interval: CandlestickChartInterval,
   callback: (futuresKlineConcat: FuturesChartCandle[]) => void,
-  limit?: number,
+  limit: number,
 ): () => void {
   let data: null | FuturesChartCandle[] = null;
 
-  void promiseRequest<(string | number)[][]>('v1/klines', { symbol, interval, limit }).then((klines) => {
-    data = klines.map(([
-      time, open, high, low, close, volume, closeTime, quoteVolume,
-      trades, takerBuyBaseVolume, takerBuyQuoteVolume,
-    ]) => ({
-      symbol,
-      interval,
-      time,
-      closeTime,
-      open: +open,
-      high: +high,
-      low: +low,
-      close: +close,
-      volume: +volume,
-      quoteVolume: +quoteVolume,
-      takerBuyBaseVolume: +takerBuyBaseVolume,
-      takerBuyQuoteVolume: +takerBuyQuoteVolume,
-      trades,
-      direction: +open <= +close ? 'UP' : 'DOWN',
-    } as FuturesChartCandle));
-
+  void futuresCandles({ symbol, interval, limit }).then((candles) => {
+    data = candles;
     callback(data);
   });
 
@@ -45,11 +26,11 @@ export default function futuresChartSubscribe(
         n: trades, t: time, T: closeTime,
       } = ticker.k;
 
-      const candle = {
+      const candle: FuturesChartCandle = {
         symbol,
         interval,
-        time,
-        closeTime,
+        time: time as number,
+        closeTime: closeTime as number,
         open: +open,
         high: +high,
         low: +low,
@@ -58,10 +39,10 @@ export default function futuresChartSubscribe(
         quoteVolume: +quoteVolume,
         takerBuyBaseVolume: +takerBuyBaseVolume,
         takerBuyQuoteVolume: +takerBuyQuoteVolume,
-        trades,
+        trades: trades as number,
         direction: +open <= +close ? 'UP' : 'DOWN',
-        isFinal,
-      } as FuturesChartCandle;
+        isFinal: isFinal as boolean,
+      };
 
       if (candle.time === data[data.length - 1].time) {
         Object.assign(data[data.length - 1], candle);
