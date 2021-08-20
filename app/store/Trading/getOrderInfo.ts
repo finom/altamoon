@@ -2,20 +2,19 @@ import { TradingOrder } from '../types';
 import * as api from '../../api';
 
 export default function getOrderInfo(
-  this: Store['trading'], order: api.FuturesOrder, lastPrice: number,
+  this: Store['trading'],
+  order: api.FuturesOrder,
+  override: {
+    lastPrice: number, leverage: number, marginType: api.FuturesPositionRisk['marginType'],
+  },
 ): TradingOrder {
   const value = +order.price * (+order.origQty - +order.executedQty);
   const leverageBracket = this.store.account.leverageBrackets[order.symbol]?.find(
     ({ notionalCap }) => notionalCap > value,
   ) ?? null;
 
-  const positionRisk = this.allSymbolsPositionRisk[order.symbol];
-
-  const marginType = positionRisk?.marginType || 'isolated';
-  const leverage = +positionRisk?.leverage || 1;
-
   return {
-    lastPrice,
+    lastPrice: override.lastPrice,
     clientOrderId: order.clientOrderId,
     cumQuote: order.cumQuote,
     executedQty: +order.executedQty,
@@ -37,7 +36,7 @@ export default function getOrderInfo(
     workingType: order.workingType,
     priceProtect: order.priceProtect,
     leverageBracket,
-    marginType,
-    leverage,
+    marginType: override.marginType,
+    leverage: override.leverage,
   };
 }

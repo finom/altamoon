@@ -83,11 +83,11 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
     candleChart?.update({ position });
   }, [position, candleChart]);
 
-  useEffect(() => {
-    // TODO dirty fix to ignore fast lastPrice changes and update orders when length changed
+  useMemo(() => { // TODO dirty fix useMemo works more robust than useEffect for some reason
+    // TODO dirty fix to ignore lastPrice changes and update orders when length or leverage changed
     candleChart?.update({ orders });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orders.length, candleChart]);
+  }, [orders.length, orders[0]?.leverage, orders[0]?.marginType, candleChart]);
 
   useEffect(() => {
     candleChart?.update({ alerts: alerts || [] });
@@ -110,7 +110,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
     chartPaddingBottomPercent, chartPaddingRightPercent,
   ]);
 
-  useEffect(() => {
+  useMemo(() => {
     if (candleChart) {
       switch (tradingType) {
         case 'LIMIT': {
@@ -179,7 +179,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
           break;
         }
 
-        default: {
+        default: { // MARKET
           candleChart.update({
             isCurrentSymbolMarginTypeIsolated,
             currentSymbolLeverage,

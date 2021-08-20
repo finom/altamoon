@@ -13,6 +13,8 @@ interface Params {
 export default class OrderPriceLines extends PriceLines {
   #calculateLiquidationPrice: Params['calculateLiquidationPrice'];
 
+  #orders: TradingOrder[] = [];
+
   constructor({
     axis, calculateLiquidationPrice, onDragLimitOrder, onCancelOrder,
   }: Params, resizeData: ResizeData) {
@@ -24,12 +26,27 @@ export default class OrderPriceLines extends PriceLines {
       isBackgroundFill: true,
       onDragEnd: (d) => onDragLimitOrder(d.id as number, d.yValue ?? 0), // args ensure TS
       onClickClose: (d) => onCancelOrder(d.id as number),
+      onDrag: (d) => {
+        const order = this.#orders.find(({ orderId }) => orderId === d.id);
+
+        if (!order) return; // TS ensure
+
+        this.updateItem(`LIQ_${d.id as string}`, {
+          yValue: this.#getLiquidationPrice({
+            ...order,
+            price: d.yValue ?? 0,
+          }),
+        });
+      },
     }, resizeData);
 
     this.#calculateLiquidationPrice = calculateLiquidationPrice;
   }
 
-  public updateOrderLines(orders: TradingOrder[]): void {
+  public updateOrderLines(givenOrders: TradingOrder[] | null): void {
+    const orders = givenOrders ?? this.#orders;
+    this.#orders = orders;
+
     const items: PriceLinesDatum[] = [
       ...orders
         .map(({
@@ -54,26 +71,29 @@ export default class OrderPriceLines extends PriceLines {
           id: orderId,
         })),
       ...orders
-        .map(({
-          price, side, origQty, executedQty, symbol, marginType, leverageBracket, leverage,
-        }) => ({
-          yValue: this.#calculateLiquidationPrice({
-            positionAmt: (side === 'SELL' ? -1 : 1) * (origQty - executedQty),
-            entryPrice: price,
-            symbol,
-            leverageBracket,
-            side,
-            marginType,
-            isolatedWallet: ((origQty - executedQty) * price) / leverage,
-            leverage,
-          }),
+        .map((order) => ({
+          yValue: this.#getLiquidationPrice(order),
           title: 'Order liquidation',
           color: 'var(--bs-red)',
           isTitleVisible: false,
           lineStyle: 'dashed' as const,
+          id: `LIQ_${order.orderId}`,
         })),
     ];
 
     this.update({ items });
   }
+
+  #getLiquidationPrice = ({
+    price, side, origQty, executedQty, symbol, marginType, leverageBracket, leverage,
+  }: TradingOrder): number => this.#calculateLiquidationPrice({
+    positionAmt: (side === 'SELL' ? -1 : 1) * (origQty - executedQty),
+    entryPrice: price,
+    symbol,
+    leverageBracket,
+    side,
+    marginType,
+    isolatedWallet: ((origQty - executedQty) * price) / leverage,
+    leverage,
+  });
 }

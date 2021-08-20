@@ -21,6 +21,7 @@ interface Params {
   lineStyle?: 'solid' | 'dashed' | 'dotted';
   pointerEventsNone?: boolean;
   onDragEnd?: Handler;
+  onDrag?: Handler;
   onAdd?: Handler;
   onRemove?: Handler;
   onClickClose?: Handler;
@@ -56,6 +57,8 @@ export default class PriceLines implements ChartItem {
 
   #handleDragEnd?: Handler;
 
+  #handleDrag?: Handler;
+
   #handleAdd?: Handler;
 
   #handleRemove?: Handler;
@@ -69,7 +72,7 @@ export default class PriceLines implements ChartItem {
   constructor(
     {
       items, axis, showX, color, lineStyle, isTitleVisible, isBackgroundFill,
-      pointerEventsNone, onDragEnd, onAdd, onRemove, onClickClose, onClickCheck,
+      pointerEventsNone, onDrag, onDragEnd, onAdd, onRemove, onClickClose, onClickCheck,
     }: Params,
     resizeData: ResizeData,
   ) {
@@ -83,6 +86,7 @@ export default class PriceLines implements ChartItem {
     this.#isBackgroundFill = isBackgroundFill ?? false;
     this.#pointerEventsNone = !!pointerEventsNone;
     this.#handleDragEnd = onDragEnd;
+    this.#handleDrag = onDrag;
     this.#handleAdd = onAdd;
     this.#handleRemove = onRemove;
     this.#handleClickClose = onClickClose;
@@ -277,7 +281,7 @@ export default class PriceLines implements ChartItem {
               d3.drag<Element, PriceLinesDatum>()
                 .on('start', that.#onDragStart)
                 .on('drag', that.#onDrag)
-                .on('end', (_evt, datum) => that.#onDragEnd(datum)) as TodoAny,
+                .on('end', that.#onDragEnd) as TodoAny,
             );
 
             return this;
@@ -519,15 +523,17 @@ export default class PriceLines implements ChartItem {
     }
   };
 
-  #onDrag = (evt: { sourceEvent: MouseEvent }): void => {
+  #onDrag = (evt: { sourceEvent: MouseEvent }, datum: PriceLinesDatum): void => {
     if (this.#draggableItemIndex === null) return;
+
+    this.#handleDrag?.(datum, this.#items);
 
     this.updateItem(this.#draggableItemIndex, {
       yValue: this.invertY(evt.sourceEvent.offsetY),
     });
   };
 
-  #onDragEnd = (datum: PriceLinesDatum): void => {
+  #onDragEnd = (_evt: unknown, datum: PriceLinesDatum): void => {
     this.#draggableItemIndex = null;
     this.#handleDragEnd?.(datum, this.#items);
   };

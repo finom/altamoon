@@ -225,7 +225,9 @@ export default class CandlestickChart {
 
     if (typeof data.totalWalletBalance !== 'undefined') this.#measurer.update({ totalWalletBalance: data.totalWalletBalance });
 
-    if (typeof data.currentSymbolLeverage !== 'undefined') this.#measurer.update({ currentSymbolLeverage: data.currentSymbolLeverage });
+    if (typeof data.currentSymbolLeverage !== 'undefined') {
+      this.#measurer.update({ currentSymbolLeverage: data.currentSymbolLeverage });
+    }
 
     if (typeof data.orders !== 'undefined') {
       this.#measurer.update({ orders: data.orders });
@@ -236,8 +238,6 @@ export default class CandlestickChart {
       this.#measurer.update({ position: data.position });
       this.#lines.positionLines.updatePositionLine(data.position);
     }
-
-    if (typeof data.orders !== 'undefined') this.#lines.orderLines.updateOrderLines(data.orders);
 
     if (typeof data.alerts !== 'undefined') this.#lines.alertLines.updateAlertLines(data.alerts);
 

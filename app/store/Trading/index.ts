@@ -306,9 +306,23 @@ export default class Trading {
     try {
       const futuresOrders = await api.futuresOpenOrders();
       const prices = await api.futuresPrices();
+      const { symbol } = this.#store.persistent;
+      const currentSymbolMarginType = this.isCurrentSymbolMarginTypeIsolated ? 'isolated' : 'cross';
+      const { currentSymbolLeverage } = this;
 
       this.openOrders = futuresOrders
-        .map((order) => getOrderInfo.call(this, order, +prices[order.symbol]))
+        .map((order) => {
+          const positionRisk = this.allSymbolsPositionRisk[order.symbol];
+          const marginType = positionRisk?.marginType || 'isolated';
+          const leverage = +positionRisk?.leverage || 1;
+          return getOrderInfo.call(this, order, {
+            lastPrice: +prices[order.symbol],
+            marginType: symbol === order.symbol
+              ? currentSymbolMarginType
+              : marginType,
+            leverage: symbol === order.symbol ? currentSymbolLeverage : leverage,
+          });
+        })
         .sort(({ orderId: a }, { orderId: b }) => (a > b ? 1 : -1));
 
       return undefined;
@@ -353,7 +367,7 @@ export default class Trading {
     ) / (10 ** symbolInfo.quantityPrecision);
   };
 
-  public getPseudoPosition = ({ side = 'BUY' }: { side?: api.OrderSide } = {}): TradingPosition | null => {
+  public getPseudoPosition = ({ side = 'BUY', price: priceOverride }: { side?: api.OrderSide, price?: number } = {}): TradingPosition | null => {
     const { tradingType, symbol } = this.#store.persistent;
     const {
       limitSellPrice,
@@ -379,7 +393,7 @@ export default class Trading {
     };
 
     const exactSizeStr = exactSizeStrMap[tradingType as 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_MARKET'] || '0';
-    const price = tradingType.includes('MARKET') ? lastPrice : (limitPrice ?? lastPrice);
+    const price = priceOverride ?? (tradingType.includes('MARKET') ? lastPrice : (limitPrice ?? lastPrice));
 
     const quantity = this.calculateQuantity({
       symbol,

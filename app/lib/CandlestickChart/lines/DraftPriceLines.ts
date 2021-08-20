@@ -81,6 +81,12 @@ export default class DraftPriceLines extends PriceLines {
         this.updateItem(datum.id as string, { isVisible: false });
         onUpdateDrafts(this.getDraftPrices());
       },
+      onDrag: (d) => {
+        const id = d.id as OrderSide;
+        this.updateItem(`LIQ_${id}`, {
+          yValue: this.#getPseudoPosition({ side: id, price: d.yValue })?.liquidationPrice ?? 0,
+        });
+      },
     }, resizeData);
 
     this.#onUpdateDrafts = onUpdateDrafts;
