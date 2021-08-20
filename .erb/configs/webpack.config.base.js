@@ -33,6 +33,7 @@ export default {
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
     modules: [path.join(__dirname, '../src'), 'node_modules'],
+    fallback: { "stream": require.resolve("stream-browserify") }
   },
 
   plugins: [
