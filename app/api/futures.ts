@@ -195,10 +195,30 @@ export function futuresPositionMargin(
   return promiseRequest('v1/positionMargin', { symbol, amount, type }, { method: 'POST', type: 'SIGNED' });
 }
 
+/* const intervalStrToMs = (interval: CandlestickChartInterval) => {
+  // '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h'
+  // | '4h' | '6h' | '8h' | '12h' | '1d' | '3d' | '1w' | '1M';
+  const num = +interval.replace(/(\d+)\S/, '$1');
+  const sym = interval.replace(/\d+(\S)/, '$1') as 'm' | 'h' | 'd' | 'w' | 'M';
+  const m = 1000 * 60;
+  const h = m * 60;
+  const d = h * 24;
+  const w = d * 7;
+  const M = d * 28; // ignore the fact that 1 month can be more than 28 days
+
+  return {
+    m: m * num,
+    h: h * num,
+    d: d * num,
+    w: w * num,
+    M: M * num,
+  }[sym];
+}; */
+
 export async function futuresCandles({
-  symbol, interval, limit,
+  symbol, interval, limit, // cache,
 }: {
-  symbol: string; interval: CandlestickChartInterval; limit: number;
+  symbol: string; interval: CandlestickChartInterval; limit: number; // cache?: boolean;
 }): Promise<FuturesChartCandle[]> {
   const klines = await promiseRequest<(string | number)[][]>('v1/klines', {
     symbol, interval, limit,
@@ -276,7 +296,7 @@ export function futuresCandlesSubscribe(
 export function futuresChartSubscribe(
   symbol: string,
   interval: CandlestickChartInterval,
-  callback: (futuresKlineConcat: FuturesChartCandle[]) => void,
+  callback: (candles: FuturesChartCandle[]) => void,
   limit: number,
 ): () => void {
   let data: null | FuturesChartCandle[] = null;
