@@ -2,7 +2,7 @@ import React, {
   ReactElement, useEffect, useMemo, useRef, useState,
 } from 'react';
 import useChange, { useValue, useGet } from 'use-change';
-import * as api from '../../../api';
+import { futuresIntervals } from '../../../api';
 import useMultiValue from '../../../hooks/useMultiValue';
 import CandlestickChart from '../../../lib/CandlestickChart';
 import {
@@ -13,8 +13,6 @@ import Widget from '../../layout/Widget';
 import ChartSettings from './ChartSettings';
 
 import css from './style.css';
-
-const intervals: api.CandlestickChartInterval[] = ['1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '12h', '1d'];
 
 const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -271,7 +269,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
       )}
     >
       <div className={`nav nav-pills ${css.intervals}`}>
-        {intervals.map((intervalsItem, index) => (
+        {futuresIntervals.map((intervalsItem, index) => (
           <div
             role="button"
             tabIndex={index}
