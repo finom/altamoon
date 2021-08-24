@@ -46,12 +46,13 @@ export default class Market {
     listenChange(store.persistent, 'interval', (interval) => {
       this.#chartUnsubscribe?.();
 
-      this.#chartUnsubscribe = api.futuresChartSubscribe(
-        store.persistent.symbol,
+      this.#chartUnsubscribe = api.futuresChartSubscribe({
+        symbol: store.persistent.symbol,
         interval,
-        (data) => { this.candles = data; },
-        1000,
-      );
+        callback: (data) => { this.candles = data; },
+        limit: 1000,
+        firstTickFromCache: true,
+      });
     });
 
     listenChange(this, 'candles', (candles) => {
@@ -91,12 +92,13 @@ export default class Market {
     });
 
     this.#chartUnsubscribe?.();
-    this.#chartUnsubscribe = api.futuresChartSubscribe(
+    this.#chartUnsubscribe = api.futuresChartSubscribe({
       symbol,
-      this.#store.persistent.interval,
-      (data) => { this.candles = data; },
-      1000,
-    );
+      interval: this.#store.persistent.interval,
+      callback: (data) => { this.candles = data; },
+      limit: 1000,
+      firstTickFromCache: true,
+    });
 
     this.currentSymbolInfo = this.futuresExchangeSymbols[this.#store.persistent.symbol] ?? null;
   };

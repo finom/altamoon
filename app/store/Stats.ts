@@ -43,9 +43,13 @@ export default class Stats {
 
     listenChange(store.trading, 'openPositions', () => this.#calcStats());
 
-    api.futuresChartSubscribe('BNBUSDT', '5m', (bnbCandles) => {
-      this.#bnbCandles = bnbCandles;
-    }, 12 * 24); // last 24 hours
+    api.futuresChartSubscribe({
+
+      symbol: 'BNBUSDT',
+      interval: '5m',
+      callback: (bnbCandles) => { this.#bnbCandles = bnbCandles; },
+      limit: 12 * 24,
+    }); // last 24 hours
 
     void this.#calcStats();
 

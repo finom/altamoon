@@ -127,6 +127,9 @@ export interface FuturesChartCandle {
   volume: number;
   isFinal?: boolean;
   direction: 'UP' | 'DOWN';
+  closeTimeISOString: string;
+  timeISOString: string;
+  isFirstEver?: boolean;
 }
 
 export interface FuturesUserTrades {
