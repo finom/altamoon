@@ -227,6 +227,8 @@ export default class PriceLines implements ChartItem {
           return null;
         });
 
+      update.select('.price-line-title-object').style('display', (d) => (d.isTitleVisible === false || !this.#isTitleVisible ? 'none' : 'auto')); // TODO support dynamic change
+
       this.#setPriceTextAttributes({
         textSelection,
         axis,
@@ -305,7 +307,6 @@ export default class PriceLines implements ChartItem {
               .attr('width', 400)
               .attr('height', 24)
               .style('text-align', 'right')
-              .style('display', (d) => (d.isTitleVisible === false ? 'none' : 'auto')) // TODO support dynamic change
               .property('_datumIndex', (d) => this.#items.indexOf(d));
 
             const div = titleGroup.append('xhtml:div')
