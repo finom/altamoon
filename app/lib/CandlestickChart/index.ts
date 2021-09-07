@@ -10,6 +10,7 @@ import Plot from './items/Plot';
 import Svg from './items/Svg';
 
 import './chart.global.css';
+import './goodnight.global.css';
 
 import {
   ResizeData, DrawData, Scales, StyleMargin, D3Selection,

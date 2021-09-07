@@ -45,7 +45,7 @@ export default class Lines {
     this.currentPriceLines = new PriceLines({
       axis,
       items: [{ id: 'currentPrice' }],
-      color: '#0000ff',
+      color: 'var(--biduul-chart-last-price-line-color)',
       pointerEventsNone: true,
     }, resizeData);
 
@@ -71,9 +71,7 @@ export default class Lines {
       onCancelOrder,
     }, resizeData);
 
-    this.customLines = new CustomPriceLines({
-      axis,
-    }, resizeData);
+    this.customLines = new CustomPriceLines({ axis }, resizeData);
   }
 
   update(data?: { pricePrecision?: number }): void {

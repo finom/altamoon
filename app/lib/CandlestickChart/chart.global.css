@@ -1,10 +1,23 @@
+:root {
+  --biduul-chart-background: #202020;
+  --biduul-chart-text-fill: #fff;
+  --biduul-chart-axis-line-stroke: rgba(255, 255, 255, 0.1);
+  --biduul-chart-gridlines-stroke: rgba(255, 255, 255, 0.05);
+  --biduul-chart-last-price-line-color: var(--bs-info);
+
+  --biduul-chart-plot-up-body-fill: var(--bs-green);
+  --biduul-chart-plot-up-body-stroke: var(--bs-green);
+  --biduul-chart-plot-up-wick-stroke: var(--bs-green);
+  --biduul-chart-plot-down-body-fill: var(--bs-red);
+  --biduul-chart-plot-down-body-stroke: var(--bs-red);
+  --biduul-chart-plot-down-wick-stroke: var(--bs-red);
+}
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   SVG
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg {
   font: 10px sans-serif;
-  background: #010025;
-  /* height: 100%; */
+  background: var(--biduul-chart-background);
   shape-rendering: crispEdges;
 }
 svg.chart-svg text {
@@ -14,39 +27,36 @@ svg.chart-svg text {
 /*   Axis
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg .axis text {
-  fill: #67bcff ;
+  fill: var(--biduul-chart-text-fill);
 }
 svg.chart-svg .axis path, svg.chart-svg .axis line {
-  stroke: #3F51B5;
+  stroke: var(--biduul-chart-axis-line-stroke);
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Grid
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg .gridlines line, svg.chart-svg .gridlines path {
-  stroke: #001242;
+  stroke: var(--biduul-chart-gridlines-stroke);
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Candles
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-svg.chart-svg .plot {
-  stroke: #0077ff;
-}
 svg.chart-svg .plot .wick {
   stroke-width: 1px;
 }
 svg.chart-svg .plot .up.body {
-  fill: #00a7ff;
-  stroke: #0098ff;
+  fill: var(--biduul-chart-plot-up-body-fill);
+  stroke: var(--biduul-chart-plot-up-body-stroke);
 }
 svg.chart-svg .plot .up.wick {
-  stroke: #00aeff;
+  stroke: var(--biduul-chart-plot-up-wick-stroke);
 }
 svg.chart-svg .plot .down.body {
-  fill: #003eff;
-  stroke: #0022ff;
+  fill: var(--biduul-chart-plot-down-body-fill);
+  stroke: var(--biduul-chart-plot-down-body-stroke);
 }
 svg.chart-svg .plot .down.wick {
-  stroke: #0046ff;
+  stroke: var(--biduul-chart-plot-down-wick-stroke);
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Lines
@@ -58,7 +68,7 @@ svg.chart-svg .scope-supstance .interaction path {
 /*   Price line
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg .price-line .supstance path {
-  stroke: #0000ff;
+  stroke: var(--biduul-chart-last-price-line-color);
   stroke-dasharray: 10 6;
   visibility: hidden;
 }
