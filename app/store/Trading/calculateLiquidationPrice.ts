@@ -71,7 +71,7 @@ export default function calculateLiquidationPrice(
   const MMS = 0;
 
   // https://public.bnbstatic.com/image/cms/article/body/202106/0123551429dae7094a5ffc278443f88c.png
-  return (
+  return Math.max(0, (
     WB - TMM1 + UPNL1 + cumB + cumL + cumS
     - Side1BOTH * Position1BOTH * EP1BOTH
     - Position1LONG * EP1LONG
@@ -82,7 +82,7 @@ export default function calculateLiquidationPrice(
     + Position1SHORT * MMS
     - Side1BOTH * Position1BOTH
     - Position1LONG + Position1SHORT
-  );
+  ));
 }
 
 if (process.env.NODE_ENV === 'development') {

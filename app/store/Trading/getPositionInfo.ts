@@ -5,7 +5,9 @@ import getPnlBalancePercent from './getPnlBalancePercent';
 import getPnlPositionPercent from './getPnlPositionPercent';
 
 export default function getPositionInfo(
-  this: Store['trading'], positionRisk: api.FuturesPositionRisk, lastPrice: number,
+  this: Store['trading'],
+  positionRisk: api.FuturesPositionRisk,
+  { side: givenSide, lastPrice }: { side?: api.OrderSide; lastPrice: number; },
 ): TradingPosition {
   const positionAmt = +positionRisk.positionAmt;
   const entryPrice = +positionRisk.entryPrice;
@@ -29,8 +31,9 @@ export default function getPositionInfo(
 
   const maintMarginRatio = leverageBracket?.maintMarginRatio ?? 0;
   const { totalWalletBalance } = this.store.account;
+  const side = givenSide ?? (positionAmt >= 0 ? 'BUY' : 'SELL');
 
-  return {
+  const position: TradingPosition = {
     // if positionAmt is increased, then use it as initial value,
     // if decrreased or remains the same then do nothing
     initialAmt,
@@ -59,7 +62,7 @@ export default function getPositionInfo(
     isolatedWallet,
     isolatedMargin,
     baseValue,
-    side: positionAmt >= 0 ? 'BUY' : 'SELL',
+    side,
     leverage,
     marginType,
     symbol,
@@ -70,4 +73,9 @@ export default function getPositionInfo(
     maintMargin: maintMarginRatio * baseValue - (leverageBracket?.cum ?? 0),
     leverageBracket,
   };
+
+  // TODO remove this comment if https://trello.com/c/TGyLXMDu/98-liquidation-line is resolved
+  // position.liquidationPrice = this.calculateLiquidationPrice(position, { side })
+
+  return position;
 }

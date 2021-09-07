@@ -287,7 +287,9 @@ export default class Trading {
 
       this.openPositions = positions
         .filter((position) => !!+position.positionAmt)
-        .map((position) => getPositionInfo.call(this, position, +prices[position.symbol]))
+        .map((position) => getPositionInfo.call(
+          this, position, { lastPrice: +prices[position.symbol] },
+        ))
         .sort(({ symbol: a }, { symbol: b }) => (a > b ? 1 : -1));
 
       this.#updateLeverage(this.#store.persistent.symbol);
@@ -412,7 +414,7 @@ export default class Trading {
       isolatedWallet: ((quantity * price) / this.currentSymbolLeverage).toString(),
     };
 
-    const position = getPositionInfo.call(this, pseudoPositionRisk, lastPrice);
+    const position = getPositionInfo.call(this, pseudoPositionRisk, { lastPrice });
     position.liquidationPrice = this.calculateLiquidationPrice(position, { side });
     return position;
   };

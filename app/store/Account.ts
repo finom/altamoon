@@ -113,7 +113,7 @@ export default class Account {
             void this.#openStream();
           }
         } catch (e) {
-          notify('error', e);
+          notify('error', e as Error);
         }
       };
 
