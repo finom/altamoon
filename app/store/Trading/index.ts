@@ -139,7 +139,12 @@ export default class Trading {
       }
     });
 
-    listenChange(store.persistent, 'symbol', (symbol) => this.#updateLeverage(symbol));
+    listenChange(store.persistent, 'symbol', (symbol) => {
+      this.#updateLeverage(symbol);
+
+      this.shouldShowLimitSellPriceLine = false;
+      this.shouldShowLimitBuyPriceLine = false;
+    });
 
     // if futuresExchangeSymbols or leverageBrackets is loaded after positions,
     // update all positions wit missing data
