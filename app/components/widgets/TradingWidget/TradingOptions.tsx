@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Col, Row } from 'reactstrap';
-import useChange, { useValue } from 'use-change';
+import useChange, { useSilent, useValue } from 'use-change';
 import { TRADING } from '../../../store';
 
 import css from './style.css';
@@ -18,13 +18,10 @@ const Leverage = ({
   setPostOnly,
   setReduceOnly,
 }: Props): ReactElement => {
+  const updateLeverage = useSilent(TRADING, 'updateLeverage');
   const maxLeverage = useValue(TRADING, 'currentSymbolMaxLeverage');
   const [isIsolated, setIsISolated] = useChange(TRADING, 'isCurrentSymbolMarginTypeIsolated');
   const [currentSymbolLeverage, setCurrentSymbolLeverage] = useChange(TRADING, 'currentSymbolLeverage');
-
-  const [leverage, setLeverage] = useState(currentSymbolLeverage);
-
-  useEffect(() => { setLeverage(currentSymbolLeverage); }, [currentSymbolLeverage]);
 
   return (
     <Row>
@@ -32,19 +29,20 @@ const Leverage = ({
         <div className="nowrap">Leverage</div>
       </Col>
       <Col xs={6} className="nowrap text-end">
-        {leverage}
+        {currentSymbolLeverage}
         x
       </Col>
       <Col xs={12} className="mb-3">
         <input
           type="range"
           className="form-range"
-          value={leverage}
+          value={currentSymbolLeverage}
           min={1}
           max={maxLeverage}
           step={1}
-          onChange={({ target }) => setLeverage(+target.value)}
-          onMouseUp={() => setCurrentSymbolLeverage(leverage)}
+          onChange={({ target }) => setCurrentSymbolLeverage(+target.value)}
+          onMouseUp={() => updateLeverage()}
+          onKeyUp={() => updateLeverage()}
         />
         <span className={`${css.minLeverage} text-muted`}>1x</span>
         <span className={`${css.maxLeverage} text-muted`}>

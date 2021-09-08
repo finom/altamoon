@@ -107,7 +107,8 @@ export default class Trading {
       }
     });
 
-    listenChange(this, 'currentSymbolLeverage', debounce(async (currentSymbolLeverage: number) => {
+    /* listenChange(this, 'currentSymbolLeverage',
+      debounce(async (currentSymbolLeverage: number) => {
       const { symbol } = store.persistent;
       try {
         const resp = await api.futuresLeverage(symbol, currentSymbolLeverage);
@@ -121,7 +122,7 @@ export default class Trading {
           this.currentSymbolLeverage = +currentPosition.leverage; // if errored, roll it back
         }
       }
-    }, 200));
+    }, 200)); */
 
     listenChange(this, 'isCurrentSymbolMarginTypeIsolated', async (isIsolated, prev) => {
       const { symbol } = store.persistent;
@@ -282,6 +283,22 @@ export default class Trading {
   ): ReturnType<typeof calculateLiquidationPrice> => calculateLiquidationPrice.call(
     this, this.store.account.totalWalletBalance, position, options,
   );
+
+  public updateLeverage = async (): Promise<void> => {
+    const { symbol } = this.#store.persistent;
+    try {
+      const resp = await api.futuresLeverage(symbol, this.currentSymbolLeverage);
+      this.currentSymbolLeverage = resp.leverage;
+      this.openPositions = this.openPositions
+        .map((item) => (item.symbol === symbol
+          ? { ...item, leverage: resp.leverage } : item));
+    } catch {
+      const currentPosition = this.allSymbolsPositionRisk[symbol];
+      if (currentPosition) {
+        this.currentSymbolLeverage = +currentPosition.leverage; // if errored, roll it back
+      }
+    }
+  };
 
   public loadPositions = throttle(async (): Promise<void> => {
     try {
