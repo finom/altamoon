@@ -31,12 +31,14 @@ const PluginsModal = ({ isOpen, onRequestClose }: Props): ReactElement => {
       <ModalHeader onRequestClose={onRequestClose}>Plugins</ModalHeader>
       <ModalBody>
         {defaultPlugins.map(({
-          id, name, version, description, isThirdParty, isDevelopment,
+          id, name, main, style, version, description, isThirdParty, isDevelopment,
         }) => (
           <Plugin
             key={id}
             id={id}
             name={name}
+            main={main}
+            style={style}
             version={version}
             description={description}
             isDefault

@@ -4,10 +4,10 @@ import AlertPriceLines from './AlertPriceLines';
 import PositionPriceLines from './PositionPriceLines';
 import CrosshairPriceLines from './CrosshairPriceLines';
 import CustomPriceLines from './CustomPriceLines';
-import PriceLines from './PriceLines';
 import { ChartAxis, DraftPrices, ResizeData } from '../types';
 import { OrderSide } from '../../../api';
 import { RootStore } from '../../../store';
+import CurrentPriceLines from './CurrentPriceLines';
 
 interface Params {
   axis: ChartAxis;
@@ -22,7 +22,7 @@ interface Params {
 }
 
 export default class Lines {
-  public currentPriceLines: PriceLines;
+  public currentPriceLines: CurrentPriceLines;
 
   public crosshairPriceLines: CrosshairPriceLines;
 
@@ -42,12 +42,7 @@ export default class Lines {
   }: Params, resizeData: ResizeData) {
     this.crosshairPriceLines = new CrosshairPriceLines({ axis }, resizeData);
 
-    this.currentPriceLines = new PriceLines({
-      axis,
-      items: [{ id: 'currentPrice' }],
-      color: 'var(--biduul-chart-last-price-line-color)',
-      pointerEventsNone: true,
-    }, resizeData);
+    this.currentPriceLines = new CurrentPriceLines({ axis }, resizeData);
 
     this.alertLines = new AlertPriceLines({
       axis,

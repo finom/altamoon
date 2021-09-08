@@ -12,6 +12,8 @@ interface Props {
   name: string;
   version: string | null;
   description: string;
+  main?: string | null;
+  style?: string | null;
   isDefault: boolean;
   isEnabled: boolean;
   isThirdParty: boolean;
@@ -22,7 +24,7 @@ interface Props {
 }
 
 const Plugin = ({
-  id, name, isThirdParty, description, version, isDefault,
+  id, name, isThirdParty, description, main, style, version, isDefault,
   isDevelopment, isEnabled, onEnablePlugin, onDisablePlugin,
 }: Props): ReactElement => (
   <Card className={`mb-3 ${css.plugin}`}>
@@ -50,7 +52,6 @@ const Plugin = ({
           </Badge>
         )}
         {' '}
-
         {isDefault ? (
           <FormSwitch
             className="float-end"

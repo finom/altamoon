@@ -37,7 +37,8 @@ interface PluginInfo {
   id: string;
   version: string | null;
   description: string;
-  main: string | null;
+  main?: string | null;
+  style?: string | null;
   isDefault: boolean;
   isThirdParty: boolean;
   isDevelopment: boolean;
@@ -118,17 +119,17 @@ export default class App {
     listenChange(store.persistent, 'pluginsEnabled', reloadPlugins);
     await reloadPlugins(store.persistent.pluginsEnabled);
 
-    // load all plugin scripts
+    // load all plugins
     await Promise.all(
-      [...this.defaultPlugins, ...this.customPlugins].map(async ({ version, main, id }) => {
+      [...this.defaultPlugins, ...this.customPlugins].map(async ({
+        version, main, style, id,
+      }) => {
         const isEnabled = store.persistent.pluginsEnabled.includes(id);
 
-        if (isEnabled && main) {
-          try {
-            await this.#loadPluginScript({ id, main, version });
-          } catch {
-            notify('error', `Unable to load plugin script "${id}"`);
-          }
+        if (isEnabled && (main || style)) {
+          await this.#loadPlugin({
+            id, main, style, version,
+          });
         }
       }),
     );
@@ -221,7 +222,7 @@ export default class App {
 
       return widgetData;
     } catch (e) {
-      notify('error', e);
+      notify('error', e as Error);
       throw e;
     }
   };
@@ -286,6 +287,53 @@ export default class App {
     }
   };
 
+  #loadPlugin = async ({
+    version,
+    id,
+    main,
+    style,
+  }: {
+    version: string | null;
+    id: string;
+    main?: string | null;
+    style?: string | null;
+  }): Promise<void> => {
+    if (main) {
+      try {
+        await this.#loadPluginScript({ id, main, version });
+      } catch {
+        notify('error', `Unable to load plugin script "${id}"`);
+      }
+    }
+
+    if (style) {
+      try {
+        await this.#loadPluginStyle({ id, style, version });
+      } catch {
+        notify('error', `Unable to load plugin style "${id}"`);
+      }
+    }
+  };
+
+  #loadPluginStyle = async ({
+    version,
+    id,
+    style,
+  }: {
+    version: string | null;
+    id: string;
+    style: string;
+  }): Promise<void> => new Promise((resolve, reject) => {
+    // eslint-disable-next-line no-console
+    console.log('loadPluginStyle', {
+      resolve,
+      reject,
+      version,
+      id,
+      style,
+    });
+  });
+
   #loadPluginScript = async ({
     version,
     id,
@@ -318,23 +366,18 @@ export default class App {
       if (existing) throw new Error(`Plugin with ID "${id}" already exists`);
 
       // fetch plugin info
-      const { main, version } = await this.#getPluginInfo({ id, isThirdParty, isDefault });
+      const { main, style, version } = await this.#getPluginInfo({ id, isThirdParty, isDefault });
 
-      // if "main" key is there (ensure for TypeScript, thought it's not required for the app)
-      // then load the plugin itself
-      if (main) {
-        try {
-          await this.#loadPluginScript({ id, main, version });
-          // add the plugin to the list of enabled plugins
-          persistent.pluginsEnabled = [...persistent.pluginsEnabled, id];
-        } catch (e) {
-          notify('error', `Unable to load plugin script "${id}"`);
-
-          throw e;
-        }
+      // load the plugin itself
+      if (main || style) {
+        await this.#loadPlugin({
+          id, main, style, version,
+        });
+        // add the plugin to the list of enabled plugins
+        persistent.pluginsEnabled = [...persistent.pluginsEnabled, id];
       }
     } catch (e) {
-      notify('error', e);
+      notify('error', e as Error);
       throw e;
     }
   };
@@ -367,12 +410,8 @@ export default class App {
         layout: 'bottomRight',
         timeout: 10_000,
         buttons: [
-          Noty.button('Reload', 'btn btn-primary', () => {
-            window.location.reload();
-          }),
-          Noty.button('Skip', 'btn btn-success float-end', () => {
-            noty.close();
-          }),
+          Noty.button('Reload', 'btn btn-primary', () => window.location.reload()),
+          Noty.button('Skip', 'btn btn-success float-end', () => noty.close()),
         ],
       });
       noty.show();

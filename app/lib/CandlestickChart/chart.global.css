@@ -4,6 +4,7 @@
   --biduul-chart-axis-line-stroke: rgba(255, 255, 255, 0.1);
   --biduul-chart-gridlines-stroke: rgba(255, 255, 255, 0.05);
   --biduul-chart-last-price-line-color: var(--bs-info);
+  --biduul-chart-crosshair-color: var(--bs-info);
 
   --biduul-chart-plot-up-body-fill: var(--bs-green);
   --biduul-chart-plot-up-body-stroke: var(--bs-green);
@@ -240,19 +241,6 @@ svg.chart-svg .alert-lines [data-side='sell'] path {
 }
 svg.chart-svg .alert-labels [data-side='sell'] rect {
   stroke: #828282;
-}
-/* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-/*   Crosshair
-/* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-svg.chart-svg .crosshair path.wire {
-  stroke: #3F51B5;
-  stroke-dasharray: 2, 4;
-}
-svg.chart-svg .crosshair .axisannotation path {
-  fill: #555;
-}
-svg.chart-svg .crosshair .axisannotation text {
-  fill: #fff;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Measure tool
