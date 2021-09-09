@@ -12,8 +12,8 @@ interface Props {
   name: string;
   version: string | null;
   description: string;
-  main?: string | null;
-  style?: string | null;
+  main: string | null | undefined;
+  style: string | null | undefined;
   isDefault: boolean;
   isEnabled: boolean;
   isThirdParty: boolean;
@@ -40,6 +40,26 @@ const Plugin = ({
             v
             {version}
           </span>
+        )}
+        {!!main && (
+          <Badge
+            className="bg-secondary cursor-help ms-2"
+            innerRef={tooltipRef({
+              title: 'The plugin includes a&nbsp;JavaScript&nbsp;file',
+            })}
+          >
+            <em>JS</em>
+          </Badge>
+        )}
+        {!!style && (
+          <Badge
+            className="bg-secondary cursor-help ms-2"
+            innerRef={tooltipRef({
+              title: 'The plugin includes a&nbsp;CSS&nbsp;file',
+            })}
+          >
+            <em>CSS</em>
+          </Badge>
         )}
         {(!!isThirdParty || isDevelopment) && (
           <Badge

@@ -6,7 +6,7 @@ export default function tooltipRef(
   return (element: null | HTMLElement): void => {
     if (element && !bootstrap.Tooltip.getInstance(element)) {
       // eslint-disable-next-line no-new
-      new bootstrap.Tooltip(element, options);
+      new bootstrap.Tooltip(element, { html: true, ...options });
     }
   };
 }

@@ -235,12 +235,14 @@ export default class App {
     // if this is a directy injected script, then
     // use an imaginary package.json with improvised name and desccription
     if (id.startsWith('http://') || id.startsWith('https://')) {
+      const isCSS = id.endsWith('.css');
       return {
-        name: 'Development',
+        name: isCSS ? 'Custom style' : 'Custom script',
         id,
         version: null,
-        description: `Development script ${id}`,
-        main: id,
+        description: id,
+        main: isCSS ? null : id,
+        style: isCSS ? id : null,
         isDefault,
         isThirdParty: true,
         isDevelopment: true,
@@ -254,13 +256,14 @@ export default class App {
     try {
       // fetch package info
       const request = await fetch(`https://unpkg.com/${id}/package.json`);
-      const pkg = await request.json() as PackageJson;
+      const pkg = await request.json() as PackageJson & { style?: string; };
       const pluginInfo: PluginInfo = {
         id,
         name: id,
         version: pkg.version as string,
         description: pkg.description ?? '',
-        main: pkg.main ?? 'index.js',
+        main: pkg.main,
+        style: pkg.style,
         isDefault,
         isThirdParty,
         isDevelopment: false,
@@ -332,6 +335,20 @@ export default class App {
       id,
       style,
     });
+    const link = document.createElement('link');
+    const href = style.startsWith('http://') || style.startsWith('https://')
+      ? style
+      : `https://unpkg.com/${id}${version ? `@${version}` : ''}/${style}`;
+
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', href);
+
+    link.addEventListener('load', () => resolve());
+    link.addEventListener('error', () => reject());
+
+    // allows to detect a plugin that created one or another widget
+    link.dataset.pluginId = id;
+    document.body.appendChild(link);
   });
 
   #loadPluginScript = async ({
@@ -400,10 +417,17 @@ export default class App {
       }
     }
 
+    const script = document.querySelector(`script[data-plugin-id="${id}"]`);
+    script?.parentElement?.removeChild(script);
+
+    const styleLink = document.querySelector(`link[rel="stylesheet"][data-plugin-id="${id}"]`);
+
+    styleLink?.parentElement?.removeChild(styleLink);
+
     this.pluginWidgets = this.pluginWidgets.filter(({ pluginId }) => pluginId !== id);
 
     // warn user that they need to reload the app to get rid of any side effects of the plugin
-    if (!plugin.isDefault || plugin.isThirdParty) {
+    if (script && (!plugin.isDefault || plugin.isThirdParty)) {
       const noty = new Noty({
         text: 'The third-party plugin is disabled. In order to make it completely deleted and get rid of any potential side effects you can reload the application by clicking the "Reload" button.',
         type: 'success',

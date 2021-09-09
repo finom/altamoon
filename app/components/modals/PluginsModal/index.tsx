@@ -58,14 +58,10 @@ const PluginsModal = ({ isOpen, onRequestClose }: Props): ReactElement => {
             id="customPluginInput"
             spellCheck={false}
             value={customPluginId}
-            placeholder="Script URL or NPM package name"
+            placeholder="Script URL, style URL or NPM package name"
             aria-describedby="customPluginInputAddon"
             onChange={({ target }) => setCustomPluginId(target.value)}
-            onKeyDown={({ key }) => {
-              if (key === 'Enter') {
-                void createCustomPlugin();
-              }
-            }}
+            onKeyDown={({ key }) => { if (key === 'Enter') void createCustomPlugin(); }}
           />
           <Button
             color="success"
@@ -78,12 +74,14 @@ const PluginsModal = ({ isOpen, onRequestClose }: Props): ReactElement => {
         </div>
 
         {customPlugins.map(({
-          id, name, version, description, isDevelopment,
+          id, name, version, description, main, style, isDevelopment,
         }) => (
           <Plugin
             key={id}
             id={id}
             name={name}
+            main={main}
+            style={style}
             version={version}
             description={description}
             isDefault={false}

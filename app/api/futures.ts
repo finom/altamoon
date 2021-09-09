@@ -1,3 +1,4 @@
+import localForage from 'localforage';
 import promiseRequest from './promiseRequest';
 import futuresSubscribe from './futuresSubscribe';
 import {
@@ -223,8 +224,15 @@ export async function futuresCandles({
   const storageKey = `${symbol}_${interval}`;
   let startDate: number | undefined;
   let calculatedLimit = limit;
+  let cachedCandles: FuturesChartCandle[] = [];
 
-  const cachedCandles = JSON.parse(localStorage.getItem(storageKey) ?? '[]') as FuturesChartCandle[];
+  try {
+    const storedValue: string | null = await localForage.getItem(storageKey);
+    cachedCandles = JSON.parse(storedValue ?? '[]') as FuturesChartCandle[];
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+  }
 
   const lastCachedCandleOpenTime = cachedCandles.length
     ? cachedCandles[cachedCandles.length - 1].time
@@ -317,9 +325,14 @@ export async function futuresCandles({
     ]
     : requestedCandles;
 
-  localStorage.setItem(
-    storageKey, JSON.stringify(candles),
-  );
+  try {
+    await localForage.setItem(
+      storageKey, JSON.stringify(candles),
+    );
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error(e);
+  }
 
   return candles;
 }
