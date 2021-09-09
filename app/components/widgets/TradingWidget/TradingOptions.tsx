@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement } from 'react';
 import { Col, Row } from 'reactstrap';
 import useChange, { useSilent, useValue } from 'use-change';
 import { TRADING } from '../../../store';

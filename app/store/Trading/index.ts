@@ -1,7 +1,6 @@
-import {
-  debounce, keyBy, throttle, uniq,
-} from 'lodash';
+import { keyBy, throttle, uniq } from 'lodash';
 import { listenChange } from 'use-change';
+
 import * as api from '../../api';
 import delay from '../../lib/delay';
 import notify from '../../lib/notify';
