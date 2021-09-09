@@ -1,5 +1,5 @@
 {
-	"version": "0.0.59",
+	"version": "0.0.61",
 	"name": "biduul-binance-api",
 	"description": "Browser-based Binance API functions used at Biduul",
 	"main": "api/index.js",
@@ -15,6 +15,6 @@
 	"dependencies": {
 		"crypto-browserify": "^3.12.0",
 		"qs": "^6.10.1",
-    "localforage": "^1.10.0"
+		"localforage": "^1.10.0"
 	}
 }
