@@ -186,8 +186,13 @@ export default class CandlestickChart {
       const isNewSymbol = !!this.#candles.length
         && this.#candles[0]?.symbol !== data.candles[0]?.symbol;
       const isNewInterval = this.#candles[0]?.interval !== data.candles[0]?.interval;
-      this.#candles = data.candles;
+      const isNewCandle = !isNewSymbol
+        && !isNewInterval
+        && this.#candles.length
+        && this.#candles.length !== data.candles.length;
+
       const lastPrice = +(last(data.candles ?? [])?.close ?? 0);
+      this.#candles = data.candles;
 
       if (lastPrice) {
         this.#lines.draftLines.updateDraftLines({ lastPrice });
@@ -204,6 +209,8 @@ export default class CandlestickChart {
       if (isNewSymbol || isNewInterval) {
         this.#resize();
         this.#lines.update();
+      } else if (isNewCandle) {
+        this.#translateBy(0);
       }
     }
 

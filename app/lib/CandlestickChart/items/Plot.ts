@@ -118,8 +118,8 @@ export default class Plot implements ChartItem {
   #getBodyString = (candle: api.FuturesChartCandle, direction: api.FuturesChartCandle['direction'], width: number): string => {
     const open = Math.round(this.#scaledY(candle.open));
     const close = Math.round(this.#scaledY(candle.close));
-    let top; let
-      bottom;
+    let top;
+    let bottom;
 
     if (direction === 'UP') {
       bottom = open;
