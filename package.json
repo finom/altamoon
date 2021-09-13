@@ -2,8 +2,8 @@
   "name": "biduul",
   "version": "0.0.61",
   "private": true,
-  "productName": "ElectronReact",
-  "description": "Electron application boilerplate based on React, React Router, Webpack, React Fast Refresh for rapid application development",
+  "productName": "Biduul",
+  "description": "Binance trading",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.main.prod.babel.js",
@@ -26,23 +26,9 @@
     "publish-api": "npm publish ./packages/biduul-binance-api/",
     "patch": "npm version patch && npm run build-types && npm run build-api && git commit -am 'chore: Build types and API' && npm run publish-types && npm run publish-api && git push && git push --tags"
   },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "cross-env NODE_ENV=development eslint --cache"
-    ],
-    "{*.json,.{babelrc,eslintrc,prettierrc}}": [
-      "prettier --ignore-path .eslintignore --parser json --write"
-    ],
-    "*.{css,scss}": [
-      "prettier --ignore-path .eslintignore --single-quote --write"
-    ],
-    "*.{html,md,yml}": [
-      "prettier --ignore-path .eslintignore --single-quote --write"
-    ]
-  },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "Biduul",
+    "appId": "org.biduul",
     "files": [
       "dist/",
       "node_modules/",
@@ -124,30 +110,9 @@
   ],
   "license": "AGPL",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/Letiliel/biduul/issues"
   },
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
-  "jest": {
-    "testURL": "http://localhost/",
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/.erb/mocks/fileMock.js",
-      "\\.(css|less|sass|scss)$": "identity-obj-proxy"
-    },
-    "moduleFileExtensions": [
-      "js",
-      "jsx",
-      "ts",
-      "tsx",
-      "json"
-    ],
-    "moduleDirectories": [
-      "node_modules",
-      "src/node_modules"
-    ],
-    "setupFiles": [
-      "./.erb/scripts/CheckBuildsExist.js"
-    ]
-  },
+  "homepage": "https://github.com/Letiliel/biduul#readme",
   "devDependencies": {
     "@babel/core": "^7.15.0",
     "@babel/plugin-proposal-class-properties": "^7.14.5",
@@ -301,33 +266,5 @@
   "collective": {
     "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
-  "browserslist": [],
-  "prettier": {
-    "overrides": [
-      {
-        "files": [
-          ".prettierrc",
-          ".babelrc",
-          ".eslintrc"
-        ],
-        "options": {
-          "parser": "json"
-        }
-      }
-    ],
-    "singleQuote": true
-  },
-  "renovate": {
-    "extends": [
-      "bliss"
-    ],
-    "baseBranches": [
-      "next"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  }
+  "browserslist": []
 }
