@@ -29,7 +29,7 @@ export default merge(baseConfig, {
   ],
 
   output: {
-    publicPath: `http://localhost:${port}/dist/`,
+    publicPath,
     filename: 'renderer.dev.js',
   },
 
@@ -196,25 +196,19 @@ export default merge(baseConfig, {
 
   devServer: {
     port,
-    publicPath,
     compress: true,
-    noInfo: false,
-    stats: 'errors-only',
-    inline: true,
-    lazy: false,
     hot: true,
     headers: { 'Access-Control-Allow-Origin': '*' },
-    contentBase: path.join(__dirname, 'dist'),
-    watchOptions: {
-      aggregateTimeout: 300,
-      ignored: /node_modules/,
-      poll: 100,
+    static: {
+      staticOptions: {
+        contentBase: path.join(__dirname, 'dist'),
+      },
     },
     historyApiFallback: {
       verbose: true,
       disableDotRule: false,
     },
-    before() {
+    onBeforeSetupMiddleware() {
       console.log('Starting Main Process...');
         spawn('npm', ['run', 'start:main'], {
           shell: true,
@@ -224,5 +218,9 @@ export default merge(baseConfig, {
           .on('close', (code) => process.exit(code))
           .on('error', (spawnError) => console.error(spawnError));
     },
+    devMiddleware: {
+      stats: 'errors-only',
+      publicPath,
+    }
   },
 });
