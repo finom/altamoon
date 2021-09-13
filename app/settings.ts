@@ -5,8 +5,8 @@ export default {
       isThirdParty: false,
     },
     {
-      id: 'biduul-hello-world',
-      isThirdParty: true,
+      id: 'biduul-minichart-grid',
+      isThirdParty: false,
     },
   ],
 };
