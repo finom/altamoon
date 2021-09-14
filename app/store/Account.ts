@@ -32,17 +32,19 @@ export default class Account {
           apiKey: binanceApiKey,
           apiSecret: binanceApiSecret,
         });
+
+        void this.#openStream();
+
+        await this.reloadFuturesAccount();
+
+        const leverageBrackets: Account['leverageBrackets'] = {};
+
+        for (const { symbol, brackets } of await api.futuresLeverageBracket()) {
+          leverageBrackets[symbol] = brackets;
+        }
+
+        this.leverageBrackets = leverageBrackets;
       }
-      void this.#openStream();
-      await this.reloadFuturesAccount();
-
-      const leverageBrackets: Account['leverageBrackets'] = {};
-
-      for (const { symbol, brackets } of await api.futuresLeverageBracket()) {
-        leverageBrackets[symbol] = brackets;
-      }
-
-      this.leverageBrackets = leverageBrackets;
     };
 
     const relaodApp = debounce(() => window.location.reload());
@@ -54,6 +56,10 @@ export default class Account {
   }
 
   public readonly reloadFuturesAccount = throttle(async (): Promise<void> => {
+    if (!this.#store.persistent.binanceApiKey || !this.#store.persistent.binanceApiSecret) {
+      await delay(3000);
+      return this.reloadFuturesAccount();
+    }
     try {
       const futuresAccount = await api.futuresAccount();
       this.futuresAccount = futuresAccount;

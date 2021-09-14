@@ -68,7 +68,7 @@ const WalletWidget = ({ title, id }: { title: string; id: string; }): ReactEleme
               {formatNumber(dailyPnlValue)}
               {' '}
               (
-              {format(',.1%')(dailyPnlPercent)}
+              {format(',.1%')(dailyPnlPercent || 0)}
               )
             </td>
           </tr>
@@ -80,7 +80,7 @@ const WalletWidget = ({ title, id }: { title: string; id: string; }): ReactEleme
               {formatNumber(totalPositionInitialMargin)}
               {' '}
               (
-              {format(',.1%')(totalPositionInitialMargin / totalWalletBalance)}
+              {format(',.1%')(totalPositionInitialMargin / totalWalletBalance || 0)}
               )
             </td>
           </tr>
@@ -92,7 +92,7 @@ const WalletWidget = ({ title, id }: { title: string; id: string; }): ReactEleme
               {formatNumber(totalOpenOrderInitialMargin)}
               {' '}
               (
-              {format(',.1%')(totalOpenOrderInitialMargin / totalWalletBalance)}
+              {format(',.1%')(totalOpenOrderInitialMargin / totalWalletBalance || 0)}
               )
             </td>
           </tr>

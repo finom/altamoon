@@ -12,7 +12,7 @@ export default class Persistent {
 
   public interval = getPersistentStorageValue<api.CandlestickChartInterval>('interval', '1d');
 
-  public theme = getPersistentStorageValue<'dark' | 'light'>('theme', 'light');
+  public theme = getPersistentStorageValue<'dark' | 'light'>('theme', 'dark');
 
   public layout = getPersistentStorageValue<Layout[]>('layout', []);
 

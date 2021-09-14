@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import qs from 'qs';
 import crypto from 'crypto-browserify';
 import options from './options';
