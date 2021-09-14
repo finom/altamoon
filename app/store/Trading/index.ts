@@ -78,6 +78,8 @@ export default class Trading {
 
   public store: Store;
 
+  #leverageChangeRequestsCount = 0; // allows to wait for leverage update ignoring account changes
+
   #lastPriceUnsubscribe?: () => void;
 
   constructor(store: Store) {
@@ -101,8 +103,6 @@ export default class Trading {
           this.loadPositions(),
           this.loadOrders(),
         ]);
-
-        this.#updateLeverage(store.persistent.symbol);
       }
     });
 
@@ -285,9 +285,17 @@ export default class Trading {
 
   public updateLeverage = async (): Promise<void> => {
     const { symbol } = this.#store.persistent;
+
+    this.#leverageChangeRequestsCount += 1;
+
     try {
-      const resp = await api.futuresLeverage(symbol, this.currentSymbolLeverage);
-      this.currentSymbolLeverage = resp.leverage;
+      const { currentSymbolLeverage } = this;
+      const resp = await api.futuresLeverage(symbol, currentSymbolLeverage);
+
+      if (currentSymbolLeverage !== resp.leverage) {
+        this.currentSymbolLeverage = resp.leverage;
+      }
+
       this.openPositions = this.openPositions
         .map((item) => (item.symbol === symbol
           ? { ...item, leverage: resp.leverage } : item));
@@ -297,6 +305,8 @@ export default class Trading {
         this.currentSymbolLeverage = +currentPosition.leverage; // if errored, roll it back
       }
     }
+
+    this.#leverageChangeRequestsCount -= 1;
   };
 
   public loadPositions = throttle(async (): Promise<void> => {
@@ -313,7 +323,9 @@ export default class Trading {
         ))
         .sort(({ symbol: a }, { symbol: b }) => (a > b ? 1 : -1));
 
-      this.#updateLeverage(this.#store.persistent.symbol);
+      if (this.#leverageChangeRequestsCount === 0) {
+        this.#updateLeverage(this.#store.persistent.symbol);
+      }
 
       return undefined;
     } catch (e) {
@@ -448,6 +460,7 @@ export default class Trading {
     const currentSymbolMaxLeverage = this.#store.account
       .leverageBrackets[symbol]?.[0].initialLeverage ?? 1;
     const currentPosition = this.allSymbolsPositionRisk[symbol];
+
     this.currentSymbolMaxLeverage = currentSymbolMaxLeverage;
     this.isCurrentSymbolMarginTypeIsolated = currentPosition?.marginType === 'isolated';
     this.currentSymbolLeverage = Math.min(
