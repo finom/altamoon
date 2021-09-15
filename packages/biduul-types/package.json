@@ -1,5 +1,5 @@
 {
-	"version": "0.0.61",
+	"version": "0.0.63",
 	"name": "biduul-types",
 	"description": "TypeScript definitions for Biduul plugin development",
 	"main": "types/index.js",
@@ -7,17 +7,17 @@
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"author": {
-    "name": "Letiliel",
-    "email": "dev@xod.me",
-    "url": "https://github.com/Letiliel"
-  },
-  "contributors": [
-    {
-      "name": "Andrey Gubanov",
-      "email": "andrey@gubanov.eu",
-      "url": "https://opensource.gubanov.eu/"
-    }
-  ],
+		"name": "Letiliel",
+		"email": "dev@xod.me",
+		"url": "https://github.com/Letiliel"
+	},
+	"contributors": [
+		{
+			"name": "Andrey Gubanov",
+			"email": "andrey@gubanov.eu",
+			"url": "https://opensource.gubanov.eu/"
+		}
+	],
 	"license": "AGPL-3.0-or-later",
 	"repository": {
 		"type": "git",
