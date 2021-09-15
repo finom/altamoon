@@ -22,9 +22,10 @@ interface ErrorResponse {
 }
 
 export default async function promiseRequest<T>(
-  url: string, data: Data = {}, flags: Flags = {},
+  url: string, givenData: Data = {}, flags: Flags = {},
 ): Promise<T> {
   let query = '';
+  const data = { ...givenData };
   const headers: { 'Content-type': string; 'X-MBX-APIKEY'?: string } = {
     'Content-type': 'application/x-www-form-urlencoded',
   };
