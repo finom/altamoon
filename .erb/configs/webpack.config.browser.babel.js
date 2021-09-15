@@ -26,7 +26,7 @@ export default {
     filename: 'biduul-browser.js',
     library: 'biduul',
     libraryTarget: 'var',
-    path: path.resolve(__dirname, '../docs')
+    path: path.resolve(__dirname, '../../docs')
   },
 
   module: {
@@ -194,7 +194,6 @@ export default {
   },
   resolve: {
     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
-    modules: [path.join(__dirname, '../src'), 'node_modules'],
     fallback: { "stream": require.resolve("stream-browserify") }
   },
 };
