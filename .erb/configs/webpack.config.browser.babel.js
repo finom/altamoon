@@ -175,6 +175,7 @@ export default {
     new CopyPlugin({
       patterns: [
         { from: "src/browser.html", to: "index.html" },
+        { from: "assets", to: "assets" },
       ],
     }),
 
