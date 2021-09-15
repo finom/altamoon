@@ -93,20 +93,15 @@
     "url": "git+https://github.com/Letiliel/biduul.git"
   },
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "Letiliel",
+    "email": "dev@xod.me",
+    "url": "https://github.com/Letiliel"
   },
   "contributors": [
     {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
-    },
-    {
-      "name": "John Tran",
-      "email": "jptran318@gmail.com",
-      "url": "https://github.com/jooohhn"
+      "name": "Andrey Gubanov",
+      "email": "andrey@gubanov.eu",
+      "url": "https://opensource.gubanov.eu/"
     }
   ],
   "license": "AGPL",
