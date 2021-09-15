@@ -64,7 +64,7 @@ export default async function promiseRequest<T>(
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(e);
-    emitError(e);
+    emitError(e as Error);
     throw e;
   }
 }

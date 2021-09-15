@@ -3,7 +3,6 @@ import { listenChange } from 'use-change';
 import Noty from 'noty';
 import { Layout } from 'react-grid-layout';
 
-import * as api from '../api';
 import notify from '../lib/notify';
 import settings from '../settings';
 import { Plugin } from './types';
