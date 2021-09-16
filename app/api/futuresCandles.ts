@@ -19,6 +19,42 @@ const intervalStrToMs = (interval: Exclude<CandlestickChartInterval, '1M'>) => {
   }[sym];
 };
 
+// the test can be moved to a separate script later
+function runtimeTestCandlesOrder(
+  interval: CandlestickChartInterval, candles: FuturesChartCandle[],
+) {
+  if (process.env.NODE_ENV === 'development') {
+    if (!candles.length) return;
+
+    void import('expect.js').then(({ default: expect }) => {
+      let prevTime = candles[candles.length - 1].time;
+
+      if (interval !== '1M') {
+        const intervalMs = intervalStrToMs(interval);
+
+        for (let i = candles.length - 2; i >= 0; i -= 1) {
+          const { time } = candles[i];
+          expect(new Date(time).toISOString()).to.be(new Date(prevTime - intervalMs).toISOString());
+          prevTime = time;
+        }
+      } else {
+        const date = new Date(prevTime);
+
+        for (let i = candles.length - 2; i >= 0; i -= 1) {
+          const { time } = candles[i];
+          // set hours to ignore yearly time shifts
+          date.setMonth(date.getMonth() - 1);
+          date.setHours(0);
+
+          const candleDate = new Date(time);
+          candleDate.setHours(0);
+          expect(candleDate.toISOString()).to.be(date.toISOString());
+        }
+      }
+    });
+  }
+}
+
 export default async function futuresCandles({
   symbol, interval, limit, lastCandleFromCache,
 }: {
@@ -136,6 +172,8 @@ export default async function futuresCandles({
     // eslint-disable-next-line no-console
     console.error(e);
   }
+
+  runtimeTestCandlesOrder(interval, candles);
 
   return candles;
 }

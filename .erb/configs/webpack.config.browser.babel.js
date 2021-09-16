@@ -3,8 +3,6 @@ import CopyPlugin from "copy-webpack-plugin";
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import path from 'path';
 
-import baseConfig from './webpack.config.base';
-
 const port = process.env.PORT || 1213;
 const publicPath = `http://localhost:${port}/`;
 
