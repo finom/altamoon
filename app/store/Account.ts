@@ -130,9 +130,10 @@ export default class Account {
         void reconnect(e, 'Account stream error. Reconnecting...');
       };
 
-      stream.onclose = (e) => {
+      stream.onclose = async (e) => {
         // eslint-disable-next-line no-console
         console.info('Account stream closed. Re-opening it...', e);
+        await delay(3000);
         void this.#openStream();
       };
     } catch (e) {
