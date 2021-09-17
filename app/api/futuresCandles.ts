@@ -51,6 +51,10 @@ function runtimeTestCandlesOrder(
           expect(candleDate.toISOString()).to.be(date.toISOString());
         }
       }
+    }).catch((e) => {
+      // eslint-disable-next-line no-console
+      console.log('candles', candles.map((c) => c.timeISOString));
+      throw e;
     });
   }
 }

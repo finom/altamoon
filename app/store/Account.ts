@@ -94,6 +94,9 @@ export default class Account {
     try {
       const { listenKey } = await api.futuresGetDataStream();
 
+      // eslint-disable-next-line no-console
+      console.info('listenKey is received, establishing a new account stream connection...');
+
       const stream = new WebSocket(`wss://fstream.binance.com/ws/${listenKey}`);
 
       stream.onmessage = ({ data }) => {
@@ -115,8 +118,8 @@ export default class Account {
             void this.reloadFuturesAccount();
           } else if (e === 'listenKeyExpired') {
             // eslint-disable-next-line no-console
-            console.info('Reconnecting...');
-            void this.#openStream();
+            console.info('Closing...');
+            stream.close();
           }
         } catch (e) {
           notify('error', e as Error);
@@ -125,6 +128,12 @@ export default class Account {
 
       stream.onerror = (e) => {
         void reconnect(e, 'Account stream error. Reconnecting...');
+      };
+
+      stream.onclose = (e) => {
+        // eslint-disable-next-line no-console
+        console.info('Account stream closed. Re-opening it...', e);
+        void this.#openStream();
       };
     } catch (e) {
       void reconnect(e as Error, 'Could not open account stream. Reconnecting...');
