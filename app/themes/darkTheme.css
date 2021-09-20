@@ -1,8 +1,12 @@
 :root {
   --biduul-sell-color: #673ab7;
-  --biduul-buy-color: var(--bs-green);
+  --biduul-buy-color: #008765;
   --biduul-stop-buy-color: var(--bs-red);
   --biduul-stop-sell-color: var(--bs-red);
+
+  --bs-success: var(--biduul-buy-color);
+  --bs-danger: #ff4557;
+  --bs-danger-rgb: 255, 69, 87;
 }
 
 /* fixes (can be removed if they're not needed anymore) */
@@ -14,60 +18,42 @@ td { box-shadow: none!important; } /* fixes weird table background bug caused by
   background-color: rgba(105, 60, 186, 0.5);
 }
 
-/* add custom "sell" color */
-.btn-sell {
-  background-color: #673ab7;
-  border-color: #6a3eb8;
+.btn:disabled, .btn.disabled, fieldset:disabled .btn {
+  opacity: 0.5; /* darker than default (0.65) */
 }
 
-.btn-sell:hover {
-  background-color: #6537b8;
-  border-color: #693cba;
+/* "buy" color */
+.bg-buy {
+  background-color: var(--biduul-buy-color);
 }
 
-.btn-sell:focus, .btn-sell.focus {
-  background-color: #6537b8;
-  border-color: #693cba;
-  box-shadow: 0 0 0 0.2rem rgba(105, 60, 186, 0.5);
+.table-buy {
+  --bs-table-bg: var(--biduul-buy-color);
+  border-color: var(--biduul-buy-color);
 }
 
-.btn-sell.disabled, .btn-sell:disabled {
-  background-color: #6c42b8;
-  border-color: #6c42b8;
+.btn-success,
+.btn-success:disabled,
+.btn-success.disabled {
+  background-color: var(--biduul-buy-color);
+  border-color: var(--biduul-buy-color);
 }
 
-.btn-sell:not(:disabled):not(.disabled):active, .btn-sell:not(:disabled):not(.disabled).active,
-.show > .btn-sell.dropdown-toggle {
-  background-color: #6537b8;
-  border-color: #693cba;
+/* "sell" color */
+.bg-sell {
+  background-color: var(--biduul-sell-color);
 }
 
-.btn-sell:not(:disabled):not(.disabled):active:focus, .btn-sell:not(:disabled):not(.disabled).active:focus,
-.show > .btn-sell.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem rgba(105, 60, 186, 0.5);
+.btn-sell,
+.btn-sell:disabled,
+.btn-sell.disabled {
+  background-color: var(--biduul-sell-color);
+  border-color: var(--biduul-sell-color);
 }
 
-.table-sell th,
-.table-sell td,
-.table-sell thead th,
-.table-sell tbody + tbody {
-  border-color: #8d72ba;
-}
-
-.table-sell,
-.table-sell > th,
-.table-sell > td {
-  background-color: #6c3fba;
-}
-
-td.table-sell {
-  background-color: #6c3fba;
-}
-
-.table-hover .table-sell:hover,
-.table-hover .table-sell:hover > th,
-.table-hover .table-sell:hover > td {
-  background-color: #673ab7;
+.table-sell {
+  --bs-table-bg: var(--biduul-sell-color);
+  border-color: var(--biduul-sell-color);
 }
 
 .form-control, .form-control:focus {

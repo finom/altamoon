@@ -55,7 +55,7 @@ export default class OrderPriceLines extends PriceLines {
           isDraggable: type === 'LIMIT',
           yValue: price,
           isVisible: true,
-          color: side === 'BUY' ? '#20884c' : '#6d28d2',
+          color: side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)',
           // TODO this is a potentially wrong way to retrieve
           // asset name from symbol name because of BNB/BUSD pairs
           title: `Limit ${origQty - executedQty} ${symbol.replace('USDT', '')}`,

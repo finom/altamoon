@@ -87,7 +87,7 @@ const Orders = (): ReactElement => {
               </span>
               {' '}
               &nbsp;
-              <Badge className={side === 'BUY' ? 'bg-success' : 'bg-danger'}>
+              <Badge className={side === 'BUY' ? 'bg-buy' : 'bg-sell'}>
                 {allSymbolsPositionRisk[symbol]?.leverage ?? 0}
                 x
               </Badge>

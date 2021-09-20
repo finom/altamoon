@@ -1,4 +1,5 @@
 :root {
+
   --biduul-chart-background: #202020e8;
   --biduul-chart-text-fill: #fff;
   --biduul-chart-axis-line-stroke: rgba(255, 255, 255, 0.1);
@@ -6,12 +7,14 @@
   --biduul-chart-last-price-line-color: var(--bs-info);
   --biduul-chart-crosshair-color: var(--bs-info);
 
-  --biduul-chart-plot-up-body-fill: var(--bs-green);
-  --biduul-chart-plot-up-body-stroke: var(--bs-green);
-  --biduul-chart-plot-up-wick-stroke: var(--bs-green);
-  --biduul-chart-plot-down-body-fill: var(--bs-red);
-  --biduul-chart-plot-down-body-stroke: var(--bs-red);
-  --biduul-chart-plot-down-wick-stroke: var(--bs-red);
+  --biduul-chart-up: var(--bs-green);
+  --biduul-chart-down: #e73a4a;
+  --biduul-chart-plot-up-body-fill: var(--biduul-chart-up);
+  --biduul-chart-plot-up-body-stroke: var(--biduul-chart-up);
+  --biduul-chart-plot-up-wick-stroke: var(--biduul-chart-up);
+  --biduul-chart-plot-down-body-fill: var(--biduul-chart-down);
+  --biduul-chart-plot-down-body-stroke: var(--biduul-chart-down);
+  --biduul-chart-plot-down-wick-stroke: var(--biduul-chart-down);
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   SVG

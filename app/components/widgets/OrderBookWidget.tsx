@@ -19,10 +19,10 @@ const LastTradesWidget = ({ title, id }: { title: string; id: string; }): ReactE
 
             return (
               <tr key={askPrice}>
-                <td className="col-3 table-success">
+                <td className="col-3 table-buy">
                   {bidAmount}
                 </td>
-                <td className="col-3 table-success">
+                <td className="col-3 table-buy">
                   {bidPrice}
                 </td>
                 <td className="col-3 table-sell">
