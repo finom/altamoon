@@ -71,7 +71,7 @@ const LastTradesWidget = ({ title, id }: { title: string; id: string; }): ReactE
               const valueStr = format(value >= 10000 ? '.2s' : ',d')(value);
 
               return (
-                <tr key={aggTradeId} className={maker ? 'table-sell' : 'table-success'}>
+                <tr key={aggTradeId} className={maker ? 'table-sell' : 'table-buy'}>
                   <td className="col-4">
                     {price}
                   </td>
