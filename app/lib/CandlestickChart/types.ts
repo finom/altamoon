@@ -51,6 +51,7 @@ export interface PriceLinesDatum {
   isClosable?: boolean; // non-dynamic so far
   isTitleVisible?: boolean; // non-dynamic so far
   lineStyle?: 'solid' | 'dashed' | 'dotted';
+  customData?: unknown;
 }
 
 export interface ChartAxis {

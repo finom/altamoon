@@ -239,6 +239,7 @@
     "history": "^5.0.1",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
+    "moment": "^2.29.1",
     "noty": "^3.2.0-beta-deprecated",
     "qs": "^6.10.1",
     "react": "^17.0.2",

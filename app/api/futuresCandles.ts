@@ -53,7 +53,7 @@ function runtimeTestCandlesOrder(
       }
     }).catch((e) => {
       // eslint-disable-next-line no-console
-      console.log('candles', candles.map((c) => c.timeISOString));
+      console.log('candles', candles[0]?.symbol, candles[0]?.interval, candles.map((c) => c.timeISOString));
       throw e;
     });
   }
@@ -68,6 +68,8 @@ export default async function futuresCandles({
   let startDate: number | undefined;
   let calculatedLimit = limit;
   let cachedCandles: FuturesChartCandle[] = [];
+
+  await localForage.removeItem(storageKey);
 
   try {
     const storedValue: string | null = await localForage.getItem(storageKey);
@@ -181,3 +183,5 @@ export default async function futuresCandles({
 
   return candles;
 }
+
+(window as unknown as { clearCandles: () => void }).clearCandles = () => localForage.clear();

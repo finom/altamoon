@@ -1,5 +1,7 @@
 import * as d3 from 'd3';
-import { ChartAxis, ResizeData } from '../types';
+import moment from 'moment';
+
+import { ChartAxis, PriceLinesDatum, ResizeData } from '../types';
 import PriceLines from './PriceLines';
 
 interface Params {
@@ -8,23 +10,65 @@ interface Params {
   onUpdateAlerts: (d: number[]) => void;
 }
 
+interface CustomData {
+  triggerTime?: number;
+}
+
+interface AlertLinesDatum extends PriceLinesDatum {
+  customData: CustomData;
+}
+
+moment.relativeTimeThreshold('ss', 0);
+
 export default class AlertPriceLines extends PriceLines {
+  private static readonly color = '#828282' ;
+
+  private static createAlertLine = (yValue: number): AlertLinesDatum => ({
+    yValue,
+    title: 'Alert',
+    isDraggable: true,
+    customData: {},
+    color: this.color,
+    id: yValue,
+  });
+
   #lastPrice: number | null = null;
+
+  #handleUpdate: Params['onUpdateAlerts'];
 
   constructor({ axis, alerts, onUpdateAlerts }: Params, resizeData: ResizeData) {
     super({
       axis,
-      items: alerts.map((yValue) => ({ yValue, title: 'Alert', isDraggable: true })),
-      color: '#828282',
+      items: alerts.map(AlertPriceLines.createAlertLine),
       isTitleVisible: true,
+
       lineStyle: 'dashed',
-      onDragEnd: () => onUpdateAlerts?.(this.getItems().map(({ yValue }) => yValue ?? -1)),
-      onAdd: () => onUpdateAlerts?.(this.getItems().map(({ yValue }) => yValue ?? -1)),
-      onRemove: () => onUpdateAlerts?.(this.getItems().map(({ yValue }) => yValue ?? -1)),
+      onDragEnd: () => this.#triggerUpdate(),
+      onAdd: () => this.#triggerUpdate(),
+      onRemove: () => this.#triggerUpdate(),
       onClickClose: (datum, d) => {
         this.removeItem(d.findIndex(({ yValue }) => datum.yValue === yValue));
       },
     }, resizeData);
+
+    this.#handleUpdate = onUpdateAlerts;
+
+    setInterval(() => {
+      const items = this.#getTriggeredItems();
+      const now = Date.now();
+
+      for (const item of items) {
+        const { triggerTime } = item.customData;
+        const index = this.getItems().indexOf(item);
+        if (triggerTime && triggerTime < now - 2 * 60_000) {
+          this.removeItem(index);
+        } else {
+          this.updateItem(index, {
+            title: `<span class="triggered-alert-indicator"></span> Alerted ${moment(triggerTime).fromNow()}`,
+          });
+        }
+      }
+    }, 1000);
   }
 
   public checkAlerts = (lastPrice: number): void => {
@@ -39,11 +83,9 @@ export default class AlertPriceLines extends PriceLines {
         ({ yValue }) => yValue && lastPrice <= yValue && previousLastPrice > yValue,
       );
       if (up) {
-        void new Audio('../assets/audio/alert-up.mp3').play();
-        this.removeItem(items.indexOf(up));
+        this.#triggerAlert(up, 'up');
       } else if (down) {
-        void new Audio('../assets/audio/alert-down.mp3').play();
-        this.removeItem(items.indexOf(down));
+        this.#triggerAlert(down, 'down');
       }
     }
 
@@ -51,7 +93,12 @@ export default class AlertPriceLines extends PriceLines {
   };
 
   public updateAlertLines = (alerts: number[]): void => {
-    this.update({ items: alerts.map((yValue) => ({ yValue, title: 'Alert', isDraggable: true })) });
+    this.update({
+      items: [
+        ...alerts.map(AlertPriceLines.createAlertLine),
+        ...this.#getTriggeredItems(),
+      ],
+    });
   };
 
   public update = (data: Parameters<PriceLines['update']>[0] & { lastPrice?: number } = {}): void => {
@@ -70,16 +117,37 @@ export default class AlertPriceLines extends PriceLines {
     this.eventsArea?.on('contextmenu', this.#onRightClick);
   };
 
+  public getItems(): AlertLinesDatum[] {
+    return super.getItems() as AlertLinesDatum[];
+  }
+
+  #triggerUpdate = (): void => {
+    this.#handleUpdate(this.#getActualItems().map(({ yValue }) => yValue ?? -1));
+  };
+
   #onRightClick = (evt: MouseEvent): void => {
     evt.stopPropagation();
     evt.preventDefault();
 
     const coords = d3.pointer(evt);
 
-    this.addItem({
-      yValue: this.invertY(coords[1]),
-      title: 'Alert',
-      isDraggable: true,
-    });
+    this.addItem(AlertPriceLines.createAlertLine(this.invertY(coords[1])));
   };
+
+  #triggerAlert = (datum: AlertLinesDatum, direction: 'up' | 'down'): void => {
+    if (datum.customData.triggerTime) return;
+    void new Audio(`../assets/audio/alert-${direction}.mp3`).play();
+    this.updateItem(this.getItems().indexOf(datum), {
+      isDraggable: false,
+      customData: { triggerTime: Date.now() },
+    });
+
+    this.#triggerUpdate();
+  };
+
+  #getActualItems = (): AlertLinesDatum[] => this.getItems()
+    .filter(({ customData }) => !customData.triggerTime);
+
+  #getTriggeredItems = (): AlertLinesDatum[] => this.getItems()
+    .filter(({ customData }) => !!customData.triggerTime);
 }

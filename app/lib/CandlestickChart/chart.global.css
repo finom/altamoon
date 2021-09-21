@@ -211,36 +211,27 @@ svg.chart-svg .draft-labels [data-side='sell'] .line-label {
 /*   Alert lines
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-svg.chart-svg .alert-lines .scope-supstance.mouseover path {
-  cursor: grab;
-}
-svg.chart-svg .alert-lines .supstance path {
-  stroke-dasharray: 10 6;
-}
-svg.chart-svg .alert-lines path {
-  fill: #828282;
-  stroke: #828282;
-}
-svg.chart-svg .alert-labels .line-label {
-  background-color: #191919;
-  border: 2px solid #828282;
-  border-radius: 5px;
-  box-sizing: content-box;
-  width: 70px;
-  height: 19px;
-}
-svg.chart-svg .alert-labels .line-label div {
+svg.chart-svg .triggered-alert-indicator {
+  animation-duration: 1s;
+  animation-name: triggered-alert-indicator;
+  animation-iteration-count: infinite;
   display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   vertical-align: top;
-  height: 19px;
-  padding: 4px 3px;
+  margin-top: 1px;
+  margin-right: 2px;
 }
-svg.chart-svg .alert-lines [data-side='sell'] path {
-  fill: #828282;
-  stroke: #828282;
-}
-svg.chart-svg .alert-labels [data-side='sell'] rect {
-  stroke: #828282;
+
+@keyframes triggered-alert-indicator {
+  0%, 100% {
+    background-color: var(--bs-red);
+  }
+
+  50% {
+    background-color: #ff000060;
+  }
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Measure tool

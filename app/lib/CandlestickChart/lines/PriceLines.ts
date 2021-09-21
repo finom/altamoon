@@ -172,7 +172,7 @@ export default class PriceLines implements ChartItem {
   public invertY = (px: number): number => convertType<{ invert:(px: number) => number }>(
     this.#axis.yLeft.scale()).invert(px);
 
-  public getItems = (): PriceLinesDatum[] => this.#items;
+  public getItems(): PriceLinesDatum[] { return this.#items; }
 
   #draw = (): void => {
     if (!this.#wrapper) return;
@@ -196,6 +196,8 @@ export default class PriceLines implements ChartItem {
           if (lineStyle === 'dotted') return '2 4';
           return null;
         });
+
+      update.style('cursor', (d) => (d.isDraggable ? 'ns-resize' : 'auto'));
 
       this.#setPriceTextAttributes({
         textSelection,
@@ -250,8 +252,6 @@ export default class PriceLines implements ChartItem {
             wrapper.style('pointer-events', 'none');
           }
 
-          wrapper.style('cursor', (d) => (d.isDraggable ? 'ns-resize' : 'auto'));
-
           const horizontalWrapper = wrapper.append('g').attr('class', 'price-line-horizontal-group');
 
           // --- line ---
@@ -266,9 +266,7 @@ export default class PriceLines implements ChartItem {
           // --- dragging ---
           // eslint-disable-next-line @typescript-eslint/no-this-alias
           const that = this;
-          horizontalWrapper.select(function selector(d) {
-            if (!d.isDraggable) return this;
-
+          horizontalWrapper.select(function selector() {
             const horizontalWrapperItem = d3.select(this);
 
             horizontalWrapperItem.append('rect')
@@ -423,7 +421,7 @@ export default class PriceLines implements ChartItem {
           updateHorizontalLineHandler(updateWrapper, 'right', this.#axis.yRight);
           updateVerticalLineHandler(updateWrapper, this.#axis.x);
           if (this.#isTitleVisible) {
-            updateWrapper.select('.price-line-title-object .text').text(({ title }) => title ?? '');
+            updateWrapper.select('.price-line-title-object .text').html(({ title }) => title ?? '');
             updateWrapper.select('.price-line-title-object .price-line-title-inner')
               .style('background-color', (d) => (this.#isBackgroundFill && d.color ? d.color : '#010025'));
           }
@@ -435,7 +433,7 @@ export default class PriceLines implements ChartItem {
           updateHorizontalLineHandler(update, 'right', this.#axis.yRight);
           updateVerticalLineHandler(update, this.#axis.x);
           if (this.#isTitleVisible) {
-            update.select('.price-line-title-object .text').text(({ title }) => title ?? '');
+            update.select('.price-line-title-object .text').html(({ title }) => title ?? '');
             update.select('.price-line-title-object .price-line-title-inner')
               .style('background-color', (d) => (this.#isBackgroundFill && d.color ? d.color : '#010025'));
           }
@@ -519,13 +517,13 @@ export default class PriceLines implements ChartItem {
   #onDragStart = (evt: { sourceEvent: { target: Element } }, datum: PriceLinesDatum): void => {
     // nodrag hack fixes issue when user pulls the line at close button
     // and coordinates become eqial to zero
-    if (!evt.sourceEvent.target.closest('.nodrag')) {
+    if (!evt.sourceEvent.target.closest('.nodrag') && datum.isDraggable) {
       this.#draggableItemIndex = this.#items.indexOf(datum);
     }
   };
 
   #onDrag = (evt: { sourceEvent: MouseEvent }, datum: PriceLinesDatum): void => {
-    if (this.#draggableItemIndex === null) return;
+    if (this.#draggableItemIndex === null || !datum.isDraggable) return;
 
     this.#handleDrag?.(datum, this.#items);
 
@@ -535,6 +533,7 @@ export default class PriceLines implements ChartItem {
   };
 
   #onDragEnd = (_evt: unknown, datum: PriceLinesDatum): void => {
+    if (!datum.isDraggable) return;
     this.#draggableItemIndex = null;
     this.#handleDragEnd?.(datum, this.#items);
   };
