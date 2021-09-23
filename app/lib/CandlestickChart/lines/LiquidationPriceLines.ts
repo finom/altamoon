@@ -1,5 +1,5 @@
 import { pick } from 'lodash';
-import { TradingPosition } from '../../..';
+import { TradingPosition } from '../../../store/types';
 import { ChartAxis, LiquidationLineSizeItem, ResizeData } from '../types';
 import PriceLines from './PriceLines';
 import { RootStore } from '../../../store';

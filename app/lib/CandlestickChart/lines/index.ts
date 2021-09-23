@@ -11,7 +11,7 @@ import { OrderSide } from '../../../api';
 import { RootStore } from '../../../store';
 import CurrentPriceLines from './CurrentPriceLines';
 import LiquidationPriceLines from './LiquidationPriceLines';
-import { TradingOrder } from '../../..';
+import { TradingOrder } from '../../../store/types';
 
 interface Params {
   axis: ChartAxis;
