@@ -24,6 +24,7 @@ interface Params {
   onDrag?: Handler;
   onAdd?: Handler;
   onRemove?: Handler;
+  onUpdateItems?: (d: PriceLinesDatum[]) => void;
   onClickClose?: Handler;
   onClickCheck?: Handler;
 }
@@ -67,12 +68,14 @@ export default class PriceLines implements ChartItem {
 
   #handleClickCheck?: Handler;
 
+  #handleUpdateItems?: Params['onUpdateItems'];
+
   protected eventsArea?: D3Selection<SVGRectElement>;
 
   constructor(
     {
-      items, axis, showX, color, lineStyle, isTitleVisible, isBackgroundFill,
-      pointerEventsNone, onDrag, onDragEnd, onAdd, onRemove, onClickClose, onClickCheck,
+      items, axis, showX, color, lineStyle, isTitleVisible, isBackgroundFill, pointerEventsNone,
+      onDrag, onDragEnd, onAdd, onRemove, onClickClose, onClickCheck, onUpdateItems,
     }: Params,
     resizeData: ResizeData,
   ) {
@@ -91,6 +94,7 @@ export default class PriceLines implements ChartItem {
     this.#handleRemove = onRemove;
     this.#handleClickClose = onClickClose;
     this.#handleClickCheck = onClickCheck;
+    this.#handleUpdateItems = onUpdateItems;
   }
 
   public appendTo(
@@ -139,8 +143,10 @@ export default class PriceLines implements ChartItem {
     if (typeof data.items !== 'undefined') {
       this.#items = data.items;
     }
-
     this.#draw();
+
+    // call it after draw
+    if (typeof data.items !== 'undefined') this.#handleUpdateItems?.(data.items);
   }
 
   public empty = (): void => this.update({ items: [] });

@@ -1,15 +1,16 @@
 import * as d3 from 'd3';
 import { OrderSide } from '../../../api';
-import { RootStore } from '../../../store';
 import formatBalanceMoneyNumber from '../../formatBalanceMoneyNumber';
-import { ChartAxis, DraftPrices, ResizeData } from '../types';
+import {
+  ChartAxis, DraftPrices, PriceLinesDatum, ResizeData,
+} from '../types';
 import PriceLines from './PriceLines';
 
 interface Params {
   axis: ChartAxis;
-  getPseudoPosition: RootStore['trading']['getPseudoPosition'];
   onUpdateDrafts: ((r: DraftPrices) => void);
   onClickDraftCheck: ((r: DraftPrices, side: OrderSide) => void);
+  onUpdateItems: (d: PriceLinesDatum[]) => void;
 }
 
 export default class DraftPriceLines extends PriceLines {
@@ -17,12 +18,10 @@ export default class DraftPriceLines extends PriceLines {
 
   #onUpdateDrafts: Params['onUpdateDrafts'];
 
-  #getPseudoPosition: Params['getPseudoPosition'];
-
   #lastPrice = 0;
 
   constructor({
-    axis, getPseudoPosition, onUpdateDrafts, onClickDraftCheck,
+    axis, onUpdateDrafts, onClickDraftCheck, onUpdateItems,
   }: Params, resizeData: ResizeData) {
     super({
       axis,
@@ -33,6 +32,7 @@ export default class DraftPriceLines extends PriceLines {
         isCheckable: true,
         color: 'var(--biduul-buy-color)',
         title: 'Buy draft',
+        customData: { draftAmount: 0 },
       }, {
         id: 'SELL',
         isVisible: false,
@@ -40,36 +40,21 @@ export default class DraftPriceLines extends PriceLines {
         isCheckable: true,
         color: 'var(--biduul-sell-color)',
         title: 'Sell draft',
+        customData: { draftAmount: 0 },
       }, {
         id: 'STOP_BUY',
         isVisible: false,
         isDraggable: true,
         color: 'var(--biduul-stop-buy-color)',
         title: 'Stop buy draft',
+        customData: {},
       }, {
         id: 'STOP_SELL',
         isVisible: false,
         isDraggable: true,
         color: 'var(--biduul-stop-sell-color)',
         title: 'Stop sell draft',
-      }, {
-        id: 'LIQ_BUY',
-        isVisible: false,
-        isDraggable: false,
-        isCheckable: false,
-        isClosable: false,
-        color: 'var(--bs-red)',
-        title: 'Buy liquidation',
-        isTitleVisible: false,
-      }, {
-        id: 'LIQ_SELL',
-        isVisible: false,
-        isDraggable: false,
-        isCheckable: false,
-        isClosable: false,
-        color: 'var(--bs-red)',
-        title: 'Sell liquidation',
-        isTitleVisible: false,
+        customData: {},
       }],
       isTitleVisible: true,
       lineStyle: 'dashed',
@@ -81,16 +66,10 @@ export default class DraftPriceLines extends PriceLines {
         this.updateItem(datum.id as string, { isVisible: false });
         onUpdateDrafts(this.getDraftPrices());
       },
-      onDrag: (d) => {
-        const id = d.id as OrderSide;
-        this.updateItem(`LIQ_${id}`, {
-          yValue: this.#getPseudoPosition({ side: id, price: d.yValue })?.liquidationPrice ?? 0,
-        });
-      },
+      onUpdateItems,
     }, resizeData);
 
     this.#onUpdateDrafts = onUpdateDrafts;
-    this.#getPseudoPosition = getPseudoPosition;
   }
 
   public getDraftPrices = (): {
@@ -143,30 +122,22 @@ export default class DraftPriceLines extends PriceLines {
       this.updateItem('BUY', {
         yValue: data.buyDraftPrice ?? 0,
         title: `Buy draft (${data.buyDraftSize ? formatBalanceMoneyNumber(data.buyDraftSize) : 0} USDT)`,
-      });
-
-      this.updateItem('LIQ_BUY', {
-        yValue: this.#getPseudoPosition({ side: 'BUY' })?.liquidationPrice ?? 0,
+        customData: { draftAmount: data.buyDraftSize },
       });
     }
     if (typeof data.sellDraftPrice !== 'undefined' && typeof data.sellDraftSize !== 'undefined') {
       this.updateItem('SELL', {
         yValue: data.sellDraftPrice ?? 0,
         title: `Sell draft (${data.sellDraftSize ? formatBalanceMoneyNumber(data.sellDraftSize) : 0} USDT)`,
-      });
-
-      this.updateItem('LIQ_SELL', {
-        yValue: this.#getPseudoPosition({ side: 'SELL' })?.liquidationPrice ?? 0,
+        customData: { draftAmount: data.sellDraftSize },
       });
     }
 
     if (typeof data.shouldShowBuyDraftPrice !== 'undefined') {
       this.updateItem('BUY', { isVisible: data.shouldShowBuyDraftPrice });
-      this.updateItem('LIQ_BUY', { isVisible: data.shouldShowBuyDraftPrice });
     }
     if (typeof data.shouldShowSellDraftPrice !== 'undefined') {
       this.updateItem('SELL', { isVisible: data.shouldShowSellDraftPrice });
-      this.updateItem('LIQ_SELL', { isVisible: data.shouldShowSellDraftPrice });
     }
 
     if (typeof data.stopBuyDraftPrice !== 'undefined') {

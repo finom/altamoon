@@ -39,7 +39,7 @@ export interface LineData {
   color: string;
 }
 
-export interface PriceLinesDatum {
+export interface PriceLinesDatum<T = unknown> {
   xValue?: Date;
   yValue?: number;
   title?: string;
@@ -51,7 +51,7 @@ export interface PriceLinesDatum {
   isClosable?: boolean; // non-dynamic so far
   isTitleVisible?: boolean; // non-dynamic so far
   lineStyle?: 'solid' | 'dashed' | 'dotted';
-  customData?: unknown;
+  customData?: T;
 }
 
 export interface ChartAxis {
@@ -65,4 +65,10 @@ export interface DraftPrices {
   sellDraftPrice: number | null;
   stopBuyDraftPrice: number | null;
   stopSellDraftPrice: number | null;
+}
+
+export interface LiquidationLineSizeItem {
+  price: number;
+  amount: number;
+  side: api.OrderSide;
 }

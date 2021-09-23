@@ -147,6 +147,7 @@ export default class CandlestickChart {
    * @param properties - New chart properties
    */
   public update(data: {
+    currentSymbolPseudoPosition?: TradingPosition | null;
     totalWalletBalance?: number;
     currentSymbolInfo?: api.FuturesExchangeInfoSymbol | null;
     currentSymbolLeverage?: number;
@@ -228,6 +229,10 @@ export default class CandlestickChart {
       || typeof data.canCreateDraftLines !== 'undefined'
     ) {
       this.#lines.draftLines.updateDraftLines(data);
+    }
+
+    if (typeof data.position !== 'undefined') {
+      this.#lines.liquidationPriceLines.updateLiquidationLines(data);
     }
 
     if (typeof data.totalWalletBalance !== 'undefined') this.#measurer.update({ totalWalletBalance: data.totalWalletBalance });

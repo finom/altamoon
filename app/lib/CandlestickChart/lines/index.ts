@@ -4,10 +4,14 @@ import AlertPriceLines from './AlertPriceLines';
 import PositionPriceLines from './PositionPriceLines';
 import CrosshairPriceLines from './CrosshairPriceLines';
 import CustomPriceLines from './CustomPriceLines';
-import { ChartAxis, DraftPrices, ResizeData } from '../types';
+import {
+  ChartAxis, DraftPrices, LiquidationLineSizeItem, PriceLinesDatum, ResizeData,
+} from '../types';
 import { OrderSide } from '../../../api';
 import { RootStore } from '../../../store';
 import CurrentPriceLines from './CurrentPriceLines';
+import LiquidationPriceLines from './LiquidationPriceLines';
+import { TradingOrder } from '../../..';
 
 interface Params {
   axis: ChartAxis;
@@ -36,6 +40,8 @@ export default class Lines {
 
   public customLines: CustomPriceLines;
 
+  public liquidationPriceLines: LiquidationPriceLines;
+
   constructor({
     axis, alerts, calculateLiquidationPrice, getPseudoPosition,
     onUpdateAlerts, onUpdateDrafts, onClickDraftCheck, onDragLimitOrder, onCancelOrder,
@@ -54,19 +60,59 @@ export default class Lines {
 
     this.draftLines = new DraftPriceLines({
       axis,
-      getPseudoPosition,
       onUpdateDrafts,
       onClickDraftCheck,
+      onUpdateItems: (d) => {
+        const items = d as PriceLinesDatum<{ draftAmount?: number }>[];
+        const buyDatum = items.find(({ id }) => id === 'BUY');
+        const sellDatum = items.find(({ id }) => id === 'SELL');
+        const draftSizes: LiquidationLineSizeItem[] = [];
+
+        if (buyDatum?.isVisible && buyDatum.customData?.draftAmount) {
+          draftSizes.push({
+            side: 'BUY',
+            amount: buyDatum.customData?.draftAmount,
+            price: buyDatum.yValue ?? 0,
+          });
+        }
+
+        if (sellDatum?.isVisible && sellDatum.customData?.draftAmount) {
+          draftSizes.push({
+            side: 'SELL',
+            amount: sellDatum.customData?.draftAmount,
+            price: sellDatum.yValue ?? 0,
+          });
+        }
+
+        this.liquidationPriceLines.updateLiquidationLines({ draftSizes });
+      },
     }, resizeData);
 
     this.orderLines = new OrderPriceLines({
       axis,
-      calculateLiquidationPrice,
       onDragLimitOrder,
       onCancelOrder,
+      onUpdateItems: (d) => {
+        const items = d as PriceLinesDatum<{ order?: TradingOrder }>[];
+        const orderSizes: LiquidationLineSizeItem[] = items
+          .filter((datum) => !!datum.customData?.order)
+          .map(({ customData, yValue }) => ({
+            price: yValue ?? 0,
+            amount: Math.abs(customData?.order?.origQty ?? 0),
+            side: customData?.order?.side ?? 'BUY',
+          }));
+
+        this.liquidationPriceLines.updateLiquidationLines({ orderSizes });
+      },
     }, resizeData);
 
     this.customLines = new CustomPriceLines({ axis }, resizeData);
+
+    this.liquidationPriceLines = new LiquidationPriceLines({
+      axis,
+      getPseudoPosition,
+      calculateLiquidationPrice,
+    }, resizeData);
   }
 
   update(data?: { pricePrecision?: number }): void {
@@ -77,6 +123,7 @@ export default class Lines {
     this.draftLines.update(data);
     this.positionLines.update(data);
     this.orderLines.update(data);
+    this.liquidationPriceLines.update(data);
   }
 
   resize(resizeData: ResizeData): void {
@@ -87,6 +134,7 @@ export default class Lines {
     this.alertLines.resize(resizeData);
     this.draftLines.resize(resizeData);
     this.customLines.resize(resizeData);
+    this.liquidationPriceLines.resize(resizeData);
   }
 
   appendTo(svgContainer: SVGGElement, resizeData: ResizeData): void {
@@ -97,5 +145,6 @@ export default class Lines {
     this.draftLines.appendTo(svgContainer, resizeData);
     this.alertLines.appendTo(svgContainer, resizeData);
     this.customLines.appendTo(svgContainer, resizeData);
+    this.liquidationPriceLines.appendTo(svgContainer, resizeData);
   }
 }
