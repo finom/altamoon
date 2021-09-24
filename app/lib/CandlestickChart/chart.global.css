@@ -216,7 +216,7 @@ svg.chart-svg .draft-labels [data-side='sell'] .line-label {
 
 svg.chart-svg .triggered-alert-indicator {
   animation-duration: 1s;
-  animation-name: triggered-alert-indicator;
+  animation-name: biduul-triggered-alert-indicator;
   animation-iteration-count: infinite;
   display: inline-block;
   width: 10px;
@@ -225,15 +225,16 @@ svg.chart-svg .triggered-alert-indicator {
   vertical-align: top;
   margin-top: 1px;
   margin-right: 2px;
+  background-color: var(--bs-yellow);
 }
 
-@keyframes triggered-alert-indicator {
+@keyframes biduul-triggered-alert-indicator {
   0%, 100% {
-    background-color: var(--bs-red);
+    opacity: 1;
   }
 
   50% {
-    background-color: #ff000060;
+    opacity: 0.5;
   }
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */

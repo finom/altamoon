@@ -217,9 +217,9 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
           ...v,
           [`${getSymbol()}`]: d,
         })),
+        alerts: alerts || [],
         onUpdateDrafts: updateDrafts,
         onClickDraftCheck: createOrderFromDraft,
-        alerts: alerts || [],
         draftPriceItems: [],
         pricePrecision: currentSymbolInfo?.pricePrecision ?? 0,
         paddingPercents: {
