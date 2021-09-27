@@ -1,5 +1,5 @@
 {
-	"version": "0.0.63",
+	"version": "0.0.64",
 	"name": "biduul-binance-api",
 	"description": "Browser-based Binance API functions used at Biduul",
 	"main": "api/index.js",
