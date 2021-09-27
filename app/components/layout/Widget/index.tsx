@@ -20,6 +20,7 @@ export interface WidgetSettingsProps {
 interface Props {
   id: string;
   title: string;
+  canSettingsSave?: boolean;
   noPadding?: boolean;
   bodyClassName?: string;
   settings?: ReactNode | ((settingsProps: WidgetSettingsProps) => ReactNode);
@@ -31,7 +32,7 @@ interface Props {
 }
 
 const Widget = ({
-  id, title, noPadding, bodyClassName, settings, children,
+  id, title, canSettingsSave, noPadding, bodyClassName, settings, children,
   bodyRef, shouldCheckAccount, onSettingsCancel, onSettingsSave,
 }: Props): ReactElement => {
   const [isSettingsOpen, setIsSettignsOpen] = useState(false);
@@ -91,14 +92,17 @@ const Widget = ({
           {typeof settings === 'function' ? settings({ listenSettingsSave, listenSettingsCancel }) : settings}
           <Row>
             <Col xs={6}>
-              <Button
-                color="info"
-                block
-                className={`mt-3${!isWideLayout ? ' w-100' : ''}`}
-                onClick={onSaveClick}
-              >
-                Save
-              </Button>
+              {canSettingsSave !== false && (
+                <Button
+                  color="info"
+                  block
+                  className={`mt-3${!isWideLayout ? ' w-100' : ''}`}
+                  onClick={onSaveClick}
+                >
+                  Save
+                </Button>
+              )}
+
             </Col>
             <Col xs={6} className="text-end">
               <Button
@@ -106,11 +110,10 @@ const Widget = ({
                 className={`mt-3${!isWideLayout ? ' w-100' : ''}`}
                 onClick={toggleSettings}
               >
-                Cancel
+                {canSettingsSave !== false ? 'Cancel' : 'Close'}
               </Button>
             </Col>
           </Row>
-
         </div>
         )}
 

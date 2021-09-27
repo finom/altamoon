@@ -10,6 +10,7 @@ import { PriceLinesDatum } from '../lib/CandlestickChart/types';
 
 interface WidgetData {
   hasSettings: boolean;
+  canSettingsSave: boolean;
   element: HTMLElement;
   settingsElement: HTMLElement | null;
   id: string;
@@ -137,6 +138,7 @@ export default class App {
   };
 
   public createWidget = ({
+    canSettingsSave = true,
     hasSettings = false,
     id,
     title,
@@ -146,6 +148,7 @@ export default class App {
     shouldCheckAccount,
     currentScript,
   }: {
+    canSettingsSave?: boolean,
     hasSettings: boolean;
     id: string;
     title: string;
@@ -193,6 +196,7 @@ export default class App {
         pluginId,
         element,
         settingsElement,
+        canSettingsSave,
         hasSettings,
         id,
         title,

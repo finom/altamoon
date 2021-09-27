@@ -188,6 +188,7 @@ const FeatureTradingScreen = (): ReactElement => {
             id,
             hasSettings,
             settingsElement,
+            canSettingsSave,
             element,
             noPadding,
             layout: itemLayout,
@@ -205,6 +206,7 @@ const FeatureTradingScreen = (): ReactElement => {
                 id={id}
                 title={title}
                 settings={hasSettings ? <DOMElement>{settingsElement}</DOMElement> : null}
+                canSettingsSave={canSettingsSave}
                 noPadding={noPadding}
                 bodyClassName={bodyClassName}
                 shouldCheckAccount={shouldCheckAccount}
