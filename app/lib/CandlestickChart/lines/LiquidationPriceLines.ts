@@ -53,8 +53,7 @@ export default class LiquidationPriceLines extends PriceLines {
         title: 'Sell liquidation',
       }],
       color: 'var(--bs-red)',
-      pointerEventsNone: true,
-      isTitleVisible: true,
+      isTitleVisible: 'hover',
     }, resizeData);
 
     this.#calculateLiquidationPrice = calculateLiquidationPrice;

@@ -49,7 +49,7 @@ export interface PriceLinesDatum<T = unknown> {
   isDraggable?: boolean; // non-dynamic so far
   isCheckable?: boolean; // non-dynamic so far
   isClosable?: boolean; // non-dynamic so far
-  isTitleVisible?: boolean; // non-dynamic so far
+  isTitleVisible?: boolean | 'hover'; // non-dynamic so far
   lineStyle?: 'solid' | 'dashed' | 'dotted';
   customData?: T;
 }

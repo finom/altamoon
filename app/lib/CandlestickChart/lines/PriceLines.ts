@@ -16,7 +16,7 @@ interface Params {
   showX?: boolean;
   color?: string;
   isVisible?: boolean;
-  isTitleVisible?: boolean;
+  isTitleVisible?: boolean | 'hover';
   isBackgroundFill?: boolean;
   lineStyle?: 'solid' | 'dashed' | 'dotted';
   pointerEventsNone?: boolean;
@@ -48,7 +48,7 @@ export default class PriceLines implements ChartItem {
 
   #pricePrecision = 1;
 
-  readonly #isTitleVisible: boolean;
+  readonly #isTitleVisible: Params['isTitleVisible'];
 
   readonly #isBackgroundFill: boolean;
 
@@ -182,6 +182,10 @@ export default class PriceLines implements ChartItem {
 
   #draw = (): void => {
     if (!this.#wrapper) return;
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const that = this;
+
     const updateHorizontalLineHandler = (
       update: d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown>,
       orient: Orient,
@@ -251,8 +255,21 @@ export default class PriceLines implements ChartItem {
       .data(this.#items)
       .join(
         (enter) => {
+          // eslint-disable-next-line @typescript-eslint/no-this-alias
           // --- horizontal line ---
-          const wrapper = enter.append('g').attr('class', 'price-line-wrapper');
+          const wrapper = enter.append('g').attr('class', 'price-line-wrapper')
+            .on('mouseover', function mouseover(_evt, datum) {
+              const titleElement = this.querySelector('.price-line-title-inner') as HTMLElement;
+              if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
+                titleElement.style.display = 'inline-block';
+              }
+            })
+            .on('mouseleave', function mouseleave(_evt, datum) {
+              const titleElement = this.querySelector('.price-line-title-inner') as HTMLElement;
+              if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
+                titleElement.style.display = 'none';
+              }
+            });
 
           if (this.#pointerEventsNone) {
             wrapper.style('pointer-events', 'none');
@@ -270,8 +287,6 @@ export default class PriceLines implements ChartItem {
             .attr('class', 'price-line-line');
 
           // --- dragging ---
-          // eslint-disable-next-line @typescript-eslint/no-this-alias
-          const that = this;
           horizontalWrapper.select(function selector() {
             const horizontalWrapperItem = d3.select(this);
 
@@ -321,7 +336,12 @@ export default class PriceLines implements ChartItem {
               .style('pointer-events', 'none')
               .style('display', 'inline-block')
               .style('height', '100%')
-              .style('margin-right', '85px');
+              .style('margin-right', '85px')
+              .style('display', (d) => (this.#isTitleVisible === false
+                  || this.#isTitleVisible === 'hover'
+                  || d.isTitleVisible === false
+                  || d.isTitleVisible === 'hover'
+                ? 'none' : 'inline-block'));
 
             div.append('xhtml:span').attr('class', 'text').style('color', '#fff');
 

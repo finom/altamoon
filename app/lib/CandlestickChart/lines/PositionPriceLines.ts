@@ -13,10 +13,10 @@ export default class PositionPriceLines extends PriceLines {
       items: [{
         id: 'position', isVisible: false,
       }, {
-        id: 'liquidation', isVisible: false, title: 'Pos. liquidation', isTitleVisible: false, color: 'var(--bs-red)',
+        id: 'liquidation', isVisible: false, title: 'Pos. liquidation', isTitleVisible: 'hover', color: 'var(--bs-red)',
       }],
-      isTitleVisible: true,
       isBackgroundFill: true,
+      isTitleVisible: true,
     }, resizeData);
   }
 
@@ -35,7 +35,6 @@ export default class PositionPriceLines extends PriceLines {
       this.updateItem('liquidation', {
         isVisible: true,
         yValue: position.liquidationPrice,
-        lineStyle: 'dashed',
       });
     }
   };
