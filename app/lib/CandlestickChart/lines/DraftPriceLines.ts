@@ -157,7 +157,11 @@ export default class DraftPriceLines extends PriceLines {
     { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
   ): void => {
     super.appendTo(parent, resizeData, { wrapperCSSStyle });
-    this.eventsArea?.on('dblclick', this.#onDoubleClick);
+    this.eventsArea
+      ?.on('dblclick', this.#onDoubleClick)
+      .on('mousedown', (evt: MouseEvent) => {
+        if (evt.which === 2) this.#onDoubleClick(evt);
+      });
   };
 
   #onDoubleClick = (evt: MouseEvent): void => {
