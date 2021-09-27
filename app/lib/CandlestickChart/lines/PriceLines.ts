@@ -269,7 +269,8 @@ export default class PriceLines implements ChartItem {
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
                 titleElement.style.display = 'none';
               }
-            });
+            })
+            .on('dblclick', (evt: MouseEvent) => evt.stopPropagation());
 
           if (this.#pointerEventsNone) {
             wrapper.style('pointer-events', 'none');
