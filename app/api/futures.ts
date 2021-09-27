@@ -202,13 +202,17 @@ export function futuresPositionMargin(
   return promiseRequest('v1/positionMargin', { symbol, amount, type }, { method: 'POST', type: 'SIGNED' });
 }
 
-type MiniTickerCallback = (ticker: FuturesMiniTicker | FuturesMiniTicker[]) => void;
-export function futuresMiniTickerStream(callback: MiniTickerCallback): () => void;
+type MiniTickerCallback<T> = (ticker: T) => void;
 export function futuresMiniTickerStream(
-  symbol: string, callback: MiniTickerCallback
+  callback: MiniTickerCallback<FuturesMiniTicker[]>
 ): () => void;
 export function futuresMiniTickerStream(
-  symbolOrCallback: string | MiniTickerCallback, callback?: MiniTickerCallback,
+  symbol: string,
+  callback: MiniTickerCallback<FuturesMiniTicker>
+): () => void;
+export function futuresMiniTickerStream(
+  symbolOrCallback: string | MiniTickerCallback<FuturesMiniTicker[]>,
+  callback?: MiniTickerCallback<FuturesMiniTicker>,
 ): () => void {
   type MiniTicker = {
     e: '24hrMiniTicker', // Event type
@@ -243,12 +247,16 @@ export function futuresMiniTickerStream(
     ? ['!miniTicker@arr']
     : [`${(symbolOrCallback as string).toLowerCase()}@miniTicker`];
 
-  const cbc = typeof callback === 'undefined' ? symbolOrCallback as MiniTickerCallback : callback;
-
   return futuresSubscribe<MiniTicker | MiniTicker[]>(
     streams,
     (ticker) => {
-      cbc(ticker instanceof Array ? ticker.map(convert) : convert(ticker));
+      if (typeof callback === 'undefined') {
+        (symbolOrCallback as MiniTickerCallback<FuturesMiniTicker[]>)(
+          (ticker as MiniTicker[]).map(convert),
+        );
+      } else {
+        callback(convert(ticker as MiniTicker));
+      }
     },
   );
 }
