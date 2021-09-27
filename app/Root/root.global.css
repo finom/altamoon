@@ -1,3 +1,5 @@
+body { overflow: auto; } /* make the app scrollable */
+
 /* ==== Utilities ==== */
 
 .flex-one { flex: 1; }
