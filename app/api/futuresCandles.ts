@@ -23,7 +23,7 @@ const intervalStrToMs = (interval: Exclude<CandlestickChartInterval, '1M'>) => {
 function runtimeTestCandlesOrder(
   interval: CandlestickChartInterval, candles: FuturesChartCandle[],
 ) {
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'development' && !process.env.SKIP_RUNTIME_TESTS) {
     if (!candles.length) return;
 
     void import('expect.js').then(({ default: expect }) => {
