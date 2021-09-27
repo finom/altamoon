@@ -5,7 +5,7 @@ import {
   FuturesLeverageResponse, FuturesPositionRisk, MarginType, FuturesAggTradeStreamTicker,
   FuturesAccount, FuturesLeverageBracket, FuturesUserTrades, FuturesDepth, FuturesExchangeInfo,
   IncomeType, FuturesIncome, TimeInForce, OrderType, OrderSide,
-  FuturesOrder, CandlestickChartInterval, FuturesChartCandle,
+  FuturesOrder, CandlestickChartInterval, FuturesChartCandle, FuturesMiniTicker,
 } from './types';
 
 export { futuresCandles };
@@ -200,6 +200,57 @@ export function futuresPositionMargin(
   symbol: string, amount: number, type: 1 | 2,
 ): Promise<unknown> {
   return promiseRequest('v1/positionMargin', { symbol, amount, type }, { method: 'POST', type: 'SIGNED' });
+}
+
+type MiniTickerCallback = (ticker: FuturesMiniTicker | FuturesMiniTicker[]) => void;
+export function futuresMiniTickerStream(callback: MiniTickerCallback): () => void;
+export function futuresMiniTickerStream(
+  symbol: string, callback: MiniTickerCallback
+): () => void;
+export function futuresMiniTickerStream(
+  symbolOrCallback: string | MiniTickerCallback, callback?: MiniTickerCallback,
+): () => void {
+  type MiniTicker = {
+    e: '24hrMiniTicker', // Event type
+    E: number, // Event time
+    s: string; // Symbol
+    c: string; // Close price
+    o: string; // Open price
+    h: string; // High price
+    l: string; // Low price
+    v: string; // Total traded base asset volume
+    q: string; // Total traded quote asset volume
+  };
+
+  const convert = (ticker: MiniTicker) => {
+    const {
+      E: time,
+      s: symbol,
+      c: close,
+      o: open,
+      h: high,
+      l: low,
+      v: volume,
+      q: quoteVolume,
+    } = ticker;
+
+    return {
+      time, symbol, close, open, high, low, volume, quoteVolume,
+    };
+  };
+
+  const streams = typeof callback === 'undefined'
+    ? ['!miniTicker@arr']
+    : [`${(symbolOrCallback as string).toLowerCase()}@miniTicker`];
+
+  const cbc = typeof callback === 'undefined' ? symbolOrCallback as MiniTickerCallback : callback;
+
+  return futuresSubscribe<MiniTicker | MiniTicker[]>(
+    streams,
+    (ticker) => {
+      cbc(ticker instanceof Array ? ticker.map(convert) : convert(ticker));
+    },
+  );
 }
 
 export function futuresCandlesSubscribe(

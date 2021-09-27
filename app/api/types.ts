@@ -132,6 +132,17 @@ export interface FuturesChartCandle {
   isFirstEver?: boolean;
 }
 
+export interface FuturesMiniTicker {
+  time: number; // Event time
+  symbol: string; // Symbol
+  close: string; // Close price
+  open: string; // Open price
+  high: string; // High price
+  low: string; // Low price
+  volume: string; // Total traded base asset volume
+  quoteVolume: string; // Total traded quote asset volume
+}
+
 export interface FuturesUserTrades {
   buyer: boolean;
   commission: string;
