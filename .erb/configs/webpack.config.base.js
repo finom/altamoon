@@ -39,6 +39,7 @@ export default {
   plugins: [
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'production',
+      SKIP_RUNTIME_TESTS: '',
     }),
 
   ],

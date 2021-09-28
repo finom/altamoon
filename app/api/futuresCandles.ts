@@ -23,7 +23,12 @@ const intervalStrToMs = (interval: Exclude<CandlestickChartInterval, '1M'>) => {
 function runtimeTestCandlesOrder(
   interval: CandlestickChartInterval, candles: FuturesChartCandle[],
 ) {
-  if (process.env.NODE_ENV === 'development' && !process.env.SKIP_RUNTIME_TESTS) {
+  let SKIP_RUNTIME_TESTS = null;
+
+  // do not require this env variable to exist
+  try { SKIP_RUNTIME_TESTS = process.env.SKIP_RUNTIME_TESTS; } catch {}
+
+  if (process.env.NODE_ENV !== 'production' && !SKIP_RUNTIME_TESTS) {
     if (!candles.length) return;
 
     void import('expect.js').then(({ default: expect }) => {
