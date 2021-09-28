@@ -3,6 +3,7 @@ import moment from 'moment';
 
 import { ChartAxis, PriceLinesDatum, ResizeData } from '../types';
 import PriceLines from './PriceLines';
+import { alertUpUri, alertDownUri } from './alertSounds';
 
 interface Params {
   axis: ChartAxis;
@@ -19,6 +20,9 @@ interface AlertLinesDatum extends PriceLinesDatum {
 }
 
 moment.relativeTimeThreshold('ss', 0);
+
+const upSound = new Audio(alertUpUri);
+const downSound = new Audio(alertDownUri);
 
 export default class AlertPriceLines extends PriceLines {
   private static readonly color = '#828282' ;
@@ -136,7 +140,8 @@ export default class AlertPriceLines extends PriceLines {
 
   #triggerAlert = (datum: AlertLinesDatum, direction: 'up' | 'down'): void => {
     if (datum.customData.triggerTime) return;
-    void new Audio(`../assets/audio/alert-${direction}.mp3`).play();
+    const sound = direction === 'up' ? upSound : downSound;
+    void sound.play();
     this.updateItem(this.getItems().indexOf(datum), {
       isDraggable: false,
       customData: { triggerTime: Date.now() },
