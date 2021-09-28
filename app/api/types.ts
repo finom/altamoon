@@ -143,6 +143,26 @@ export interface FuturesMiniTicker {
   quoteVolume: string; // Total traded quote asset volume
 }
 
+export interface FuturesTicker {
+  time: number; // Event time
+  symbol: string; // Symbol
+  priceChange: string; // Price change
+  priceChangePercent: string; // Price change percent
+  averagePrice: string; // Weighted average price
+  close: string; // Last price
+  lastQuantity: string; // Last quantity
+  open: string; // Open price
+  high: string; // High price
+  low: string; // Low price
+  volume: string; // Total traded base asset volume
+  quoteVolume: string; // Total traded quote asset volume
+  openTime: number; // Statistics open time
+  closeTime: number; // Statistics close time
+  firstTradeId: number; // First trade ID
+  lastTradeId: number; // Last trade Id
+  numberOfTrades: number; // Total number of trades
+}
+
 export interface FuturesUserTrades {
   buyer: boolean;
   commission: string;
