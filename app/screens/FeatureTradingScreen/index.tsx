@@ -213,7 +213,7 @@ const FeatureTradingScreen = (): ReactElement => {
                 onSettingsSave={onSettingsSave}
                 onSettingsCancel={onSettingsCancel}
               >
-                <DOMElement>{element}</DOMElement>
+                <DOMElement className="h-100">{element}</DOMElement>
               </Widget>
             </div>
           ))}

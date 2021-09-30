@@ -21,7 +21,7 @@ interface WidgetData {
   bodyClassName?: string;
   shouldCheckAccount?: boolean;
   isWidgetInitiallyEnabled: boolean;
-  currentScript: HTMLOrSVGScriptElement;
+  currentScript: HTMLOrSVGScriptElement | HTMLIFrameElement;
   listenSettingsSave: (handler: () => void) => (() => void);
   listenSettingsCancel: (handler: () => void) => (() => void);
   listenIsWidgetEnabled: (handler: (isEnabled: boolean) => void) => (() => void);
@@ -42,6 +42,7 @@ interface PluginInfo {
   isDefault: boolean;
   isThirdParty: boolean;
   isDevelopment: boolean;
+  execute?: () => void;
 }
 
 type WidgetId = 'chart' | 'trading' | 'positionAndOrders' | 'lastTrades' | 'orderBook' | 'wallet';
@@ -122,13 +123,13 @@ export default class App {
     // load all plugins
     await Promise.all(
       [...this.defaultPlugins, ...this.customPlugins].map(async ({
-        version, main, style, id,
+        version, main, style, id, execute,
       }) => {
         const isEnabled = store.persistent.pluginsEnabled.includes(id);
 
-        if (isEnabled && (main || style)) {
+        if (isEnabled && (main || style || execute)) {
           await this.#loadPlugin({
-            id, main, style, version,
+            id, main, style, version, execute,
           });
         }
       }),
@@ -156,7 +157,7 @@ export default class App {
     noPadding?: boolean;
     bodyClassName?: string;
     shouldCheckAccount?: boolean;
-    currentScript: HTMLOrSVGScriptElement;
+    currentScript: HTMLOrSVGScriptElement | HTMLIFrameElement;
   }): Omit<WidgetData, 'onSettingsSave' | 'onSettingsCancel' | 'onSetEnabled' | 'onDestroy'> => {
     try {
       const { pluginId } = currentScript.dataset;
@@ -173,6 +174,7 @@ export default class App {
 
       // the element is going to be rendered as widget content
       const element = document.createElement('div');
+      element.className = 'h-100';
       // settings element is going to be rendered at settings content
       // which appeares when user clicks widget settings icon
       const settingsElement = hasSettings ? document.createElement('div') : null;
@@ -235,6 +237,38 @@ export default class App {
     isThirdParty: boolean;
     isDefault: boolean;
   }): Promise<PluginInfo> => {
+    // if it's a js sandbox
+    // https://codesandbox.io/embed/bold-dew-cbkns?fontsize=14&hidenavigation=1&theme=dark
+    if (id.startsWith('https://codesandbox.io/embed/')) {
+      return {
+        name: '[Codesandbox]',
+        id,
+        version: null,
+        description: id,
+        main: null,
+        style: null,
+        isDefault,
+        isThirdParty: true,
+        isDevelopment: false,
+        execute: () => {
+          const iframe = document.createElement('iframe');
+          iframe.src = id;
+          iframe.dataset.pluginId = id;
+          iframe.style.width = '100%';
+          iframe.style.height = '100%';
+          const { element } = this.createWidget({
+            id: 'minichart_grid',
+            hasSettings: false,
+            title: `[Codesandbox Widget] ${id.replace(/https:\/\/codesandbox.io\/embed\/([^?]+)?.*/, '$1')}`,
+            currentScript: iframe,
+            layout: { h: 8, w: 8, minH: 5 } as Layout,
+          });
+
+          element.appendChild(iframe);
+        },
+      };
+    }
+
     // if this is a directy injected script, then
     // use an imaginary package.json with improvised name and desccription
     if (id.startsWith('http://') || id.startsWith('https://')) {
@@ -298,12 +332,18 @@ export default class App {
     id,
     main,
     style,
+    execute,
   }: {
     version: string | null;
     id: string;
     main?: string | null;
     style?: string | null;
+    execute?: () => void;
   }): Promise<void> => {
+    if (execute) {
+      execute();
+    }
+
     if (main) {
       try {
         await this.#loadPluginScript({ id, main, version });
@@ -386,12 +426,13 @@ export default class App {
       if (existing) throw new Error(`Plugin with ID "${id}" already exists`);
 
       // fetch plugin info
-      const { main, style, version } = await this.#getPluginInfo({ id, isThirdParty, isDefault });
+      const {
+        main, style, version, execute,
+      } = await this.#getPluginInfo({ id, isThirdParty, isDefault });
 
-      // load the plugin itself
-      if (main || style) {
+      if (main || style || execute) {
         await this.#loadPlugin({
-          id, main, style, version,
+          id, main, style, version, execute,
         });
         // add the plugin to the list of enabled plugins
         persistent.pluginsEnabled = [...persistent.pluginsEnabled, id];
