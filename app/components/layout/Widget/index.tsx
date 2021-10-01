@@ -73,18 +73,9 @@ const Widget = ({
           </span>
         )}
       </CardHeader>
-      <CardBody
-        innerRef={bodyRef}
-        className={classNames({
-          'p-0': !!noPadding,
-          [css.cardBody]: true,
-          [String(bodyClassName)]: !!bodyClassName,
-        })}
-      >
-        {!!settings && (
-        <div
+      {!!settings && (
+        <CardBody
           className={classNames({
-            'card-body': true,
             [css.settings]: true,
             [css.settingsOpen]: isSettingsOpen,
           })}
@@ -114,9 +105,16 @@ const Widget = ({
               </Button>
             </Col>
           </Row>
-        </div>
-        )}
-
+        </CardBody>
+      )}
+      <CardBody
+        innerRef={bodyRef}
+        className={classNames({
+          'p-0': !!noPadding,
+          [css.cardBody]: true,
+          [String(bodyClassName)]: !!bodyClassName,
+        })}
+      >
         {!shouldCheckAccount || futuresAccount ? children : <AccountError />}
       </CardBody>
     </Card>
