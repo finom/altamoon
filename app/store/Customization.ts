@@ -258,7 +258,7 @@ export default class App {
           iframe.style.width = '100%';
           iframe.style.height = '100%';
           const { element } = this.createWidget({
-            id: 'minichart_grid',
+            id,
             hasSettings: false,
             title: name,
             currentScript: iframe,
@@ -371,14 +371,6 @@ export default class App {
     id: string;
     style: string;
   }): Promise<void> => new Promise((resolve, reject) => {
-    // eslint-disable-next-line no-console
-    console.log('loadPluginStyle', {
-      resolve,
-      reject,
-      version,
-      id,
-      style,
-    });
     const link = document.createElement('link');
     const href = style.startsWith('http://') || style.startsWith('https://')
       ? style

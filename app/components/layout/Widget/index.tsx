@@ -93,7 +93,6 @@ const Widget = ({
                   Save
                 </Button>
               )}
-
             </Col>
             <Col xs={6} className="text-end">
               <Button
