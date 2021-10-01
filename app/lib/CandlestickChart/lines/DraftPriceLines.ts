@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import { OrderSide } from '../../../api';
-import formatBalanceMoneyNumber from '../../formatBalanceMoneyNumber';
+import formatMoneyNumber from '../../formatMoneyNumber';
 import {
   ChartAxis, DraftPrices, PriceLinesDatum, ResizeData,
 } from '../types';
@@ -121,14 +121,14 @@ export default class DraftPriceLines extends PriceLines {
     if (typeof data.buyDraftPrice !== 'undefined' && typeof data.buyDraftSize !== 'undefined') {
       this.updateItem('BUY', {
         yValue: data.buyDraftPrice ?? 0,
-        title: `Buy draft (${data.buyDraftSize ? formatBalanceMoneyNumber(data.buyDraftSize) : 0} USDT)`,
+        title: `Buy draft (${data.buyDraftSize ? formatMoneyNumber(data.buyDraftSize) : 0} USDT)`,
         customData: { draftAmount: data.buyDraftSize },
       });
     }
     if (typeof data.sellDraftPrice !== 'undefined' && typeof data.sellDraftSize !== 'undefined') {
       this.updateItem('SELL', {
         yValue: data.sellDraftPrice ?? 0,
-        title: `Sell draft (${data.sellDraftSize ? formatBalanceMoneyNumber(data.sellDraftSize) : 0} USDT)`,
+        title: `Sell draft (${data.sellDraftSize ? formatMoneyNumber(data.sellDraftSize) : 0} USDT)`,
         customData: { draftAmount: data.sellDraftSize },
       });
     }

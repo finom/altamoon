@@ -240,8 +240,9 @@ export default class App {
     // if it's a js sandbox
     // https://codesandbox.io/embed/bold-dew-cbkns?fontsize=14&hidenavigation=1&theme=dark
     if (id.startsWith('https://codesandbox.io/embed/')) {
+      const name = `[Codesandbox] ${id.replace(/https:\/\/codesandbox.io\/embed\/([^?]+)?.*/, '$1')}`;
       return {
-        name: '[Codesandbox]',
+        name,
         id,
         version: null,
         description: id,
@@ -259,7 +260,7 @@ export default class App {
           const { element } = this.createWidget({
             id: 'minichart_grid',
             hasSettings: false,
-            title: `[Codesandbox Widget] ${id.replace(/https:\/\/codesandbox.io\/embed\/([^?]+)?.*/, '$1')}`,
+            title: name,
             currentScript: iframe,
             layout: { h: 8, w: 8, minH: 5 } as Layout,
           });
