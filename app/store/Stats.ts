@@ -84,7 +84,7 @@ export default class Stats {
     return this.#incomeTicker();
   };
 
-  #getBNBPriceByTyme = (time: number): number | null => {
+  #getBNBPriceByTime = (time: number): number | null => {
     const bnbCandles = this.#bnbCandles;
 
     if (!bnbCandles.length || time < bnbCandles[0].time) {
@@ -139,7 +139,7 @@ export default class Stats {
 
       if (incomeType === 'COMMISSION') {
         if (asset === 'BNB') {
-          return acc + (this.#getBNBPriceByTyme(+income) ?? 0);
+          return acc + (this.#getBNBPriceByTime(+income) ?? 0);
         }
 
         return acc + +income;

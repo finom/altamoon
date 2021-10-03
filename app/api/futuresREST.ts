@@ -31,6 +31,10 @@ export async function futuresOpenOrders(symbol?: string): Promise<FuturesOrder[]
   return promiseRequest('v1/openOrders', symbol ? { symbol } : {}, { type: 'SIGNED' });
 }
 
+export async function futuresAllOrders(symbol?: string): Promise<FuturesOrder[]> {
+  return promiseRequest('v1/allOrders', symbol ? { symbol } : {}, { type: 'SIGNED' });
+}
+
 export async function futuresPrices(): Promise<Record<string, string>> {
   const data = await promiseRequest<{ symbol: string; price: string }[]>('v1/ticker/price');
   return data.reduce((out, i) => {
