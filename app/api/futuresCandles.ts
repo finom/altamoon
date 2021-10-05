@@ -74,7 +74,7 @@ export default async function futuresCandles({
   let calculatedLimit = limit;
   let cachedCandles: FuturesChartCandle[] = [];
 
-  await localForage.removeItem(storageKey);
+  // await localForage.removeItem(storageKey);
 
   try {
     const storedValue: string | null = await localForage.getItem(storageKey);
@@ -184,7 +184,7 @@ export default async function futuresCandles({
     console.error(e);
   }
 
-  runtimeTestCandlesOrder(interval, candles);
+  // runtimeTestCandlesOrder(interval, candles);
 
   return candles;
 }
