@@ -20,9 +20,10 @@ const intervalStrToMs = (interval: Exclude<CandlestickChartInterval, '1M'>) => {
 };
 
 // the test can be moved to a separate script later
-function runtimeTestCandlesOrder(
+// TODO remove "export" once the function is used (it's added to fix TS errors)
+export function runtimeTestCandlesOrder(
   interval: CandlestickChartInterval, candles: FuturesChartCandle[],
-) {
+): void {
   let SKIP_RUNTIME_TESTS = null;
 
   // do not require this env variable to exist
