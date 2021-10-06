@@ -72,7 +72,7 @@ const Orders = (): ReactElement => {
       <tbody>
         {openOrders.sort((a, b) => {
           if (a.symbol === b.symbol) {
-            return a.price > b.price ? 1 : -1;
+            return a.price < b.price ? 1 : -1;
           }
           return a.symbol > b.symbol ? 1 : -1;
         }).map(({
