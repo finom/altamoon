@@ -138,6 +138,9 @@ export default class CandlestickChart {
         this.#lines.update();
 
         this.#draw();
+
+        // fixes https://trello.com/c/HqXtZ5St/150-chart-wheel-zooming-doesnt-redraw-lines-where-they-should-be
+        this.#lines.resize(this.#calcDimensions());
       }) as (selection: D3Selection<d3.BaseType>) => void,
     );
   }
