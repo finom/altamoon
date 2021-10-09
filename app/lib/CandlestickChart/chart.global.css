@@ -219,13 +219,8 @@ svg.chart-svg .triggered-alert-indicator {
   animation-name: biduul-triggered-alert-indicator;
   animation-iteration-count: infinite;
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
   vertical-align: top;
-  margin-top: 1px;
-  margin-right: 2px;
-  background-color: var(--bs-yellow);
+  color: var(--bs-yellow);
 }
 
 @keyframes biduul-triggered-alert-indicator {
