@@ -99,24 +99,27 @@ export default class Account {
 
       const stream = new WebSocket(`wss://fstream.binance.com/ws/${listenKey}`);
 
-      stream.onmessage = ({ data }) => {
+      stream.onmessage = ({ data: messageData }) => {
         try {
-          const { e } = JSON.parse(data) as { e: string };
+          const data = JSON.parse(messageData) as api.UserDataEvent;
+          const { e: event, E: updateTime } = data;
 
           // eslint-disable-next-line no-console
-          console.info('Received data stream message', e);
+          console.info('Received data stream message', event);
 
-          if (e === 'ACCOUNT_UPDATE') {
+          if (event === 'ACCOUNT_UPDATE') {
+            this.#store.trading.eventAccountUpdate(data.a);
             void this.#store.trading.loadPositions();
             void this.reloadFuturesAccount();
-          } else if (e === 'ORDER_TRADE_UPDATE') {
+          } else if (event === 'ORDER_TRADE_UPDATE') {
+            this.#store.trading.eventOrderUpdate(data.o, updateTime);
             void this.#store.trading.loadOrders();
             void this.reloadFuturesAccount();
-          } else if (e === 'ACCOUNT_CONFIG_UPDATE') {
+          } else if (event === 'ACCOUNT_CONFIG_UPDATE') {
             void this.#store.trading.loadPositions();
             void this.#store.trading.loadOrders();
             void this.reloadFuturesAccount();
-          } else if (e === 'listenKeyExpired') {
+          } else if (event === 'listenKeyExpired') {
             // eslint-disable-next-line no-console
             console.info('Closing...');
             stream.close();

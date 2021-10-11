@@ -7,6 +7,8 @@ import binanceFeatureDepthSubscribe from '../lib/binanceFeatureDepthSubscribe';
 const LAST_TRADES_COUNT = 30;
 
 export default class Market {
+  public allSymbolsTickers: Record<string, api.FuturesTicker> = {};
+
   public lastTrades: api.FuturesAggTradeStreamTicker[] = [];
 
   public lastTrade: api.FuturesAggTradeStreamTicker | null = null;
@@ -37,6 +39,8 @@ export default class Market {
 
   constructor(store: Store) {
     this.#store = store;
+
+    this.#listenTickers();
 
     // call the handler on every symbol change but not on load
     listenChange(store.persistent, 'symbol', (symbol) => {
@@ -114,5 +118,17 @@ export default class Market {
       }
       this.lastTrades = lastTrades;
     }
+  };
+
+  #listenTickers = (): void => {
+    api.futuresTickerStream(
+      (ticker) => {
+        const ticks = keyBy(ticker, 'symbol');
+        this.allSymbolsTickers = {
+          ...this.allSymbolsTickers,
+          ...ticks,
+        };
+      },
+    );
   };
 }

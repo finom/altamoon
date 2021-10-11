@@ -23,6 +23,8 @@ import cancelAllOrders from './cancelAllOrders';
 import cancelOrder from './cancelOrder';
 import updateDrafts from './updateDrafts';
 import getPseudoPosition from './getPseudoPosition';
+import eventOrderUpdate from './eventOrderUpdate';
+import eventAccountUpdate from './eventAccountUpdate';
 
 export default class Trading {
   public openPositions: TradingPosition[] = [];
@@ -88,11 +90,11 @@ export default class Trading {
     this.store = store;
 
     listenChange(this, 'openPositions', (openPositions) => {
-      this.positionsKey = openPositions.map(({ symbol }) => symbol).join();
+      this.positionsKey = openPositions.map(({ symbol }) => symbol).join('/');
     });
 
     listenChange(this, 'openOrders', (openOrders) => {
-      this.ordersKey = openOrders.map(({ symbol }) => symbol).join();
+      this.ordersKey = openOrders.map(({ symbol }) => symbol).join('/');
     });
 
     listenChange(this, 'positionsKey', this.#listenLastPrices);
@@ -273,6 +275,14 @@ export default class Trading {
     ...args: Parameters<typeof updateDrafts>
   ): ReturnType<typeof updateDrafts> => updateDrafts.apply(this, args);
 
+  public eventOrderUpdate = (
+    ...args: Parameters<typeof eventOrderUpdate>
+  ): ReturnType<typeof eventOrderUpdate> => eventOrderUpdate.apply(this, args);
+
+  public eventAccountUpdate = (
+    ...args: Parameters<typeof eventAccountUpdate>
+  ): ReturnType<typeof eventAccountUpdate> => eventAccountUpdate.apply(this, args);
+
   public calculateSizeFromString = (
     ...args: Parameters<typeof calculateSizeFromString>
   ): ReturnType<typeof calculateSizeFromString> => calculateSizeFromString.apply(this, args);
@@ -340,7 +350,7 @@ export default class Trading {
       await delay(5000);
       return this.loadPositions();
     }
-  }, 1000);
+  }, 5000);
 
   public loadOrders = throttle(async (): Promise<void> => {
     try {
@@ -373,7 +383,7 @@ export default class Trading {
       await delay(5000);
       return this.loadOrders();
     }
-  }, 1000);
+  }, 5000);
 
   public getFeeRate = (type: 'maker' | 'taker'): number => {
     const feeTier = this.#store.account.futuresAccount?.feeTier ?? 0;
