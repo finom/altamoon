@@ -42,6 +42,10 @@ export default class Persistent {
 
   public chartPaddingRightPercent = getPersistentStorageValue<number>('chartPaddingRightPercent', 10);
 
+  public shouldChartShowOrders = getPersistentStorageValue<boolean>('shouldChartShowOrders', true);
+
+  public chartOrdersNumber = getPersistentStorageValue<number>('chartOrdersNumber', 1000);
+
   constructor() {
     Object.getOwnPropertyNames(this).forEach((key) => {
       listenChange(this, key as keyof Persistent, (value: unknown) => {

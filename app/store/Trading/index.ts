@@ -33,6 +33,9 @@ export default class Trading {
 
   public openOrders: TradingOrder[] = [];
 
+  // used at chart
+  public currentSymbolAllOrders: api.FuturesOrder[] = [];
+
   public currentSymbolMaxLeverage = 1;
 
   public currentSymbolLeverage = 1;
@@ -144,6 +147,7 @@ export default class Trading {
 
     listenChange(store.persistent, 'symbol', (symbol) => {
       this.#updateLeverage(symbol);
+      void this.#updateCurrentSymbolAllOrders();
 
       this.shouldShowLimitSellPriceLine = false;
       this.shouldShowLimitBuyPriceLine = false;
@@ -354,13 +358,17 @@ export default class Trading {
 
   public loadOrders = throttle(async (): Promise<void> => {
     try {
-      const futuresOrders = await api.futuresOpenOrders();
-      const prices = await api.futuresPrices();
       const { symbol } = this.#store.persistent;
-      const currentSymbolMarginType = this.isCurrentSymbolMarginTypeIsolated ? 'isolated' : 'cross';
+      void this.#updateCurrentSymbolAllOrders();
+      const [futuresOpenOrders, prices] = await Promise.all([
+        api.futuresOpenOrders(),
+        api.futuresPrices(),
+      ]);
+
+      const currentSymbolMarginType: api.PositionMarginType = this.isCurrentSymbolMarginTypeIsolated ? 'isolated' : 'cross';
       const { currentSymbolLeverage } = this;
 
-      this.openOrders = futuresOrders
+      this.openOrders = futuresOpenOrders
         .map((order) => {
           const positionRisk = this.allSymbolsPositionRisk[order.symbol];
           const marginType = positionRisk?.marginType || 'isolated';
@@ -432,6 +440,10 @@ export default class Trading {
       currentSymbolMaxLeverage,
       +(currentPosition?.leverage ?? 1),
     );
+  };
+
+  #updateCurrentSymbolAllOrders = async (): Promise<void> => {
+    this.currentSymbolAllOrders = await api.futuresAllOrders(this.#store.persistent.symbol);
   };
 
   #listenLastPrices = (): void => {

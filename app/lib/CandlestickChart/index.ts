@@ -20,6 +20,7 @@ import { OrderSide } from '../../api';
 import Measurer from './items/Measurer';
 import { RootStore } from '../../store';
 import Lines from './lines';
+import OrderArrows from './items/OrderArrows';
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
@@ -64,6 +65,8 @@ export default class CandlestickChart {
 
   #measurer: Measurer;
 
+  #orderArrows: OrderArrows;
+
   #pricePrecision: number;
 
   #hasInitialScroll = false;
@@ -91,7 +94,7 @@ export default class CandlestickChart {
 
     const x = d3.scaleTime().range([0, this.#width]);
 
-    this.#scales = {
+    const scales = {
       x,
       scaledX: x,
       y: localStorage.getItem('forceChartLinearScale') === 'true'
@@ -99,14 +102,17 @@ export default class CandlestickChart {
         : d3.scaleSymlog().range([this.#height, 0]),
     };
 
+    this.#scales = scales;
+
     this.#pricePrecision = pricePrecision;
     this.#svg = new Svg();
-    this.#axes = new Axes({ scales: this.#scales });
+    this.#axes = new Axes({ scales });
     this.#clipPath = new ClipPath();
-    this.#gridLines = new GridLines({ scales: this.#scales });
+    this.#gridLines = new GridLines({ scales });
     this.#paddingPercents = paddingPercents;
-    this.#measurer = new Measurer({ scales: this.#scales, resizeData });
-    this.#plot = new Plot({ scales: this.#scales });
+    this.#measurer = new Measurer({ scales, resizeData });
+    this.#plot = new Plot({ scales });
+    this.#orderArrows = new OrderArrows({ scales });
 
     this.#lines = new Lines({
       axis: this.#axes.getAxis(),
@@ -135,6 +141,7 @@ export default class CandlestickChart {
         this.#axes.update({ scaledX });
         this.#gridLines.update({ scaledX });
         this.#plot.update({ scaledX });
+        this.#orderArrows.update({ scaledX });
         this.#lines.update();
 
         this.#draw();
@@ -154,6 +161,7 @@ export default class CandlestickChart {
     totalWalletBalance?: number;
     currentSymbolInfo?: api.FuturesExchangeInfoSymbol | null;
     currentSymbolLeverage?: number;
+    filledOrders?: api.FuturesOrder[];
     // not implicitly used but required for component updates
     isCurrentSymbolMarginTypeIsolated?: boolean;
     candles?: api.FuturesChartCandle[],
@@ -244,6 +252,10 @@ export default class CandlestickChart {
       this.#measurer.update({ currentSymbolLeverage: data.currentSymbolLeverage });
     }
 
+    if (typeof data.filledOrders !== 'undefined') {
+      this.#orderArrows.update({ filledOrders: data.filledOrders });
+    }
+
     if (typeof data.orders !== 'undefined') {
       this.#measurer.update({ orders: data.orders });
       this.#lines.orderLines.updateOrderLines(data.orders);
@@ -291,10 +303,9 @@ export default class CandlestickChart {
     const drawData: DrawData = { candles: this.#candles, zoomTransform: this.#zoomTransform };
 
     this.#axes.draw(resizeData);
-
     this.#gridLines.draw();
-
     this.#plot.draw(drawData);
+    this.#orderArrows.draw();
 
     this.#lines.currentPriceLines.updateItem('currentPrice', {
       yValue: +(this.#candles[this.#candles.length - 1]?.close ?? 0),
@@ -343,6 +354,7 @@ export default class CandlestickChart {
     this.#clipPath.appendTo(svgContainer, resizeData);
     this.#lines.appendTo(svgContainer, resizeData);
     this.#measurer.appendTo(svgContainer, resizeData);
+    this.#orderArrows.appendTo(svgContainer);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);
   };

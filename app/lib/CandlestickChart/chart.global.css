@@ -262,3 +262,18 @@ svg.chart-svg .measurer-label p {
   padding: 0;
   margin: 0;
 }
+
+/* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+/*   Order arrows
+/* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+svg.chart-svg .order-arrows-tooltip-wrapper { overflow: visible; }
+
+svg.chart-svg .order-arrows-tooltip-wrapper > div {
+  border-radius: 0.25rem;
+  padding: 10px;
+  font-size: 1.5em;
+  line-height: 1.3em;
+  display: inline-block;
+}
+
+svg.chart-svg .order-arrows-tooltip-wrapper p { white-space: nowrap; margin: 0; }

@@ -2,12 +2,14 @@ import React, {
   ReactElement, useEffect, useMemo, useRef, useState,
 } from 'react';
 import useChange, { useValue, useGet } from 'use-change';
+
 import { futuresIntervals } from '../../../api';
 import useMultiValue from '../../../hooks/useMultiValue';
 import CandlestickChart from '../../../lib/CandlestickChart';
 import {
   ACCOUNT, CUSTOMIZATION, MARKET, PERSISTENT, TRADING,
 } from '../../../store';
+import FormSwitch from '../../controls/FormSwitch';
 
 import Widget from '../../layout/Widget';
 import ChartSettings from './ChartSettings';
@@ -28,6 +30,9 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   const getSymbol = useGet(PERSISTENT, 'symbol');
   const [interval, setCandleInterval] = useChange(PERSISTENT, 'interval');
   const [symbolAlerts, setSymbolAlerts] = useChange(PERSISTENT, 'symbolAlerts');
+  const [shouldChartShowOrders, setShouldChartShowOrders] = useChange(PERSISTENT, 'shouldChartShowOrders');
+  const chartOrdersNumber = useValue(PERSISTENT, 'chartOrdersNumber');
+
   const {
     symbol, tradingType, chartPaddingTopPercent,
     chartPaddingBottomPercent, chartPaddingRightPercent,
@@ -45,6 +50,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
     shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
     exactSizeLimitBuyStr, exactSizeLimitSellStr,
     exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
+    currentSymbolAllOrders,
     // silent values
     updateDrafts, createOrderFromDraft, limitOrder, cancelOrder,
     calculateSizeFromString, calculateLiquidationPrice, getPseudoPosition,
@@ -56,6 +62,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
     'shouldShowStopBuyDraftPriceLine', 'shouldShowStopSellDraftPriceLine',
     'exactSizeLimitBuyStr', 'exactSizeLimitSellStr',
     'exactSizeStopLimitBuyStr', 'exactSizeStopLimitSellStr',
+    'currentSymbolAllOrders',
   ]);
 
   const position = openPositions.find((pos) => pos.symbol === symbol) ?? null;
@@ -94,6 +101,19 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   useEffect(() => {
     candleChart?.update({ customPriceLines });
   }, [customPriceLines, candleChart]);
+
+  useEffect(() => {
+    const isAllOrdersRelevant = !currentSymbolAllOrders.length
+      || currentSymbolAllOrders[0].symbol === symbol;
+
+    candleChart?.update({
+      filledOrders: isAllOrdersRelevant && shouldChartShowOrders
+        ? currentSymbolAllOrders
+          .filter(({ status }) => status === 'FILLED')
+          .slice(-chartOrdersNumber)
+        : [],
+    });
+  }, [currentSymbolAllOrders, candleChart, symbol, shouldChartShowOrders, chartOrdersNumber]);
 
   useEffect(() => {
     candleChart?.update({
@@ -268,6 +288,15 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
         />
       )}
     >
+      <label className={`float-end ${css.showOrders}`}>
+        <FormSwitch
+          className="d-inline-block align-middle"
+          isChecked={shouldChartShowOrders}
+          onChange={setShouldChartShowOrders}
+        />
+        {' '}
+        Show Orders
+      </label>
       <div className={`nav nav-pills ${css.intervals}`}>
         {futuresIntervals.map((intervalsItem, index) => (
           <div
