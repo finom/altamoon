@@ -176,7 +176,7 @@ export default class PriceLines implements ChartItem {
     this.#axis.x.scale()).invert(px);
 
   public invertY = (px: number): number => convertType<{ invert:(px: number) => number }>(
-    this.#axis.yLeft.scale()).invert(px);
+    this.#axis.yRight.scale()).invert(px);
 
   public getItems(): PriceLinesDatum[] { return this.#items; }
 
@@ -383,18 +383,6 @@ export default class PriceLines implements ChartItem {
             }
           }
 
-          // --- left label ---
-          const leftLabelGroup = horizontalWrapper.append('g').attr('class', 'price-line-left-group');
-          leftLabelGroup.append('path')
-            .attr('d', this.#getPriceTextBackgroundPath({
-              axis: this.#axis.yLeft,
-              orient: 'left',
-            }))
-            .attr('class', 'price-line-left-background')
-            .attr('fill', 'currentColor');
-
-          leftLabelGroup.append('text').attr('class', 'price-line-left-label');
-
           // --- right label ---
           const rightLabelGroup = horizontalWrapper.append('g')
             .attr('class', 'price-line-right-group')
@@ -425,7 +413,7 @@ export default class PriceLines implements ChartItem {
               .attr('stroke', 'currentColor')
               .attr('class', 'price-line-line');
 
-            // --- left label ---
+            // --- bottom label ---
             const bottomLabelGroup = verticalWrapper.append('g')
               .attr('class', 'price-line-bottom-group')
               .attr('transform', `translate(0, ${this.#resizeData.height})`);
@@ -444,7 +432,6 @@ export default class PriceLines implements ChartItem {
           const updateWrapper = convertType<
           d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown>
           >(wrapper);
-          updateHorizontalLineHandler(updateWrapper, 'left', this.#axis.yLeft);
           updateHorizontalLineHandler(updateWrapper, 'right', this.#axis.yRight);
           updateVerticalLineHandler(updateWrapper, this.#axis.x);
           if (this.#isTitleVisible) {
@@ -456,7 +443,6 @@ export default class PriceLines implements ChartItem {
           return wrapper;
         },
         (update) => {
-          updateHorizontalLineHandler(update, 'left', this.#axis.yLeft);
           updateHorizontalLineHandler(update, 'right', this.#axis.yRight);
           updateVerticalLineHandler(update, this.#axis.x);
           if (this.#isTitleVisible) {

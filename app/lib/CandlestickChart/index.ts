@@ -54,7 +54,7 @@ export default class CandlestickChart {
   #height = 0;
 
   #margin: StyleMargin = {
-    top: 0, right: 55, bottom: 30, left: 55,
+    top: 0, right: 55, bottom: 30, left: 0,
   };
 
   #paddingPercents: ChartPaddingPercents;

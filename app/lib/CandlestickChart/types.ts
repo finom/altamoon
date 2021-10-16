@@ -56,7 +56,6 @@ export interface PriceLinesDatum<T = unknown> {
 
 export interface ChartAxis {
   x: d3.Axis<d3.NumberValue>;
-  yLeft: d3.Axis<d3.NumberValue>;
   yRight: d3.Axis<d3.NumberValue>;
 }
 
