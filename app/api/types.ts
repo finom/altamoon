@@ -51,6 +51,16 @@ export interface FuturesAggTradeStreamTicker {
   total: number;
 }
 
+export interface FuturesMarkPriceTicker {
+  eventType: 'markPriceUpdate';
+  eventTime: number;
+  symbol: string;
+  markPrice: string;
+  indexPrice: string;
+  fundingRate: string;
+  fundingTime: number;
+}
+
 // https://binance-docs.github.io/apidocs/futures/en/#notional-and-leverage-brackets-user_data
 export interface FuturesLeverageBracket {
   bracket: number; // Notional bracket

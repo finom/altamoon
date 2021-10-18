@@ -2,7 +2,7 @@ import futuresSubscribe from './futuresSubscribe';
 import futuresCandles from './futuresCandles';
 import {
   FuturesAggTradeStreamTicker, CandlestickChartInterval,
-  FuturesChartCandle, FuturesMiniTicker, FuturesTicker,
+  FuturesChartCandle, FuturesMiniTicker, FuturesTicker, FuturesMarkPriceTicker,
 } from './types';
 
 const isArrayUnique = (array: unknown[]) => new Set(array).size === array.length;
@@ -180,6 +180,69 @@ export function futuresTickerStream(
     (ticker) => {
       if (typeof callback === 'undefined') {
         (symbolOrCallback as TickerCallback<FuturesTicker[]>)(
+          (ticker as Ticker[]).map(convert),
+        );
+      } else {
+        callback(convert(ticker as Ticker));
+      }
+    },
+  );
+}
+
+type MarkPriceCallback<T> = (ticker: T) => void;
+export function futuresMarkPriceStream(
+  callback: MarkPriceCallback<FuturesMarkPriceTicker[]>
+): () => void;
+export function futuresMarkPriceStream(
+  symbol: string,
+  callback: MarkPriceCallback<FuturesMarkPriceTicker>
+): () => void;
+export function futuresMarkPriceStream(
+  symbolOrCallback: string | MarkPriceCallback<FuturesMarkPriceTicker[]>,
+  callback?: MarkPriceCallback<FuturesMarkPriceTicker>,
+): () => void {
+  type Ticker = {
+    e: 'markPriceUpdate'; // Event type
+    E: number; // Event time
+    s: string; // Symbol
+    p: string; // Mark price
+    i: string; // Index price
+    P: string; // Estimated Settle Price, only useful in the last hour before the settlement starts
+    r: string; // Funding rate
+    T: number; // Next funding time
+  };
+
+  const convert = (ticker: Ticker) => {
+    const {
+      e: eventType,
+      E: eventTime,
+      s: symbol,
+      p: markPrice,
+      i: indexPrice,
+      r: fundingRate,
+      T: fundingTime,
+    } = ticker;
+
+    return {
+      eventType,
+      eventTime,
+      symbol,
+      markPrice,
+      indexPrice,
+      fundingRate,
+      fundingTime,
+    };
+  };
+
+  const streams = typeof callback === 'undefined'
+    ? ['!markPrice@arr@1s']
+    : [`${(symbolOrCallback as string).toLowerCase()}@markPrice@1s`];
+
+  return futuresSubscribe<Ticker | Ticker[]>(
+    streams,
+    (ticker) => {
+      if (typeof callback === 'undefined') {
+        (symbolOrCallback as MarkPriceCallback<FuturesMarkPriceTicker[]>)(
           (ticker as Ticker[]).map(convert),
         );
       } else {

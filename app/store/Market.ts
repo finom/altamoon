@@ -7,8 +7,6 @@ import binanceFeatureDepthSubscribe from '../lib/binanceFeatureDepthSubscribe';
 const LAST_TRADES_COUNT = 30;
 
 export default class Market {
-  public allSymbolsTickers: Record<string, api.FuturesTicker> = {};
-
   public lastTrades: api.FuturesAggTradeStreamTicker[] = [];
 
   public lastTrade: api.FuturesAggTradeStreamTicker | null = null;
@@ -29,6 +27,20 @@ export default class Market {
 
   public candles: api.FuturesChartCandle[] = [];
 
+  public priceDirection: 'NEUTRAL' | 'UP' | 'DOWN' = 'NEUTRAL';
+
+  public get allSymbolsTickers(): Record<string, api.FuturesTicker> {
+    return this.#allSymbolsTickers;
+  }
+
+  #allSymbolsTickers: Record<string, api.FuturesTicker> = {};
+
+  public get allMarkPriceTickers(): Record<string, api.FuturesMarkPriceTicker> {
+    return this.#allMarkPriceTickers;
+  }
+
+  #allMarkPriceTickers: Record<string, api.FuturesMarkPriceTicker> = {};
+
   #store: Store;
 
   #depthUnsubscribe?: () => void;
@@ -41,11 +53,13 @@ export default class Market {
     this.#store = store;
 
     this.#listenTickers();
+    this.#listenMarkPrices();
 
-    // call the handler on every symbol change but not on load
     listenChange(store.persistent, 'symbol', (symbol) => {
-      void this.#onSymbolChange(symbol);
+      this.#onSymbolChange(symbol);
     });
+
+    this.#onSymbolChange(store.persistent.symbol);
 
     listenChange(store.persistent, 'interval', (interval) => {
       this.#chartUnsubscribe?.();
@@ -59,17 +73,12 @@ export default class Market {
       });
     });
 
-    listenChange(this, 'candles', (candles) => {
-      this.currentSymbolLastPrice = candles.length ? +candles[candles.length - 1].close : null;
-    });
+    listenChange(this, 'candles', this.#calculateLastPrice);
 
     listenChange(this, 'currentSymbolInfo', (currentSymbolInfo) => {
       this.currentSymbolBaseAsset = currentSymbolInfo?.baseAsset ?? null;
       this.currentSymbolPricePrecision = currentSymbolInfo?.pricePrecision ?? 0;
     });
-
-    // call onSymbolChange on every symbol change and on load
-    void this.#onSymbolChange(store.persistent.symbol);
 
     void api.futuresExchangeInfo().then(({ symbols }) => {
       this.futuresExchangeSymbols = keyBy(symbols, 'symbol');
@@ -88,6 +97,8 @@ export default class Market {
     // reset market data
     this.lastTrades = [];
     this.lastTrade = null;
+    this.currentSymbolLastPrice = null;
+    this.priceDirection = 'NEUTRAL';
 
     this.#depthUnsubscribe?.();
     this.#depthUnsubscribe = binanceFeatureDepthSubscribe(symbol, (asks, bids) => {
@@ -105,6 +116,8 @@ export default class Market {
     });
 
     this.currentSymbolInfo = this.futuresExchangeSymbols[this.#store.persistent.symbol] ?? null;
+
+    this.#calculateLastPrice();
   };
 
   #onAggTradeStreamTick = (ticker: api.FuturesAggTradeStreamTicker): void => {
@@ -120,15 +133,37 @@ export default class Market {
     }
   };
 
+  #calculateLastPrice = (): void => {
+    const { candles } = this;
+    const { symbol } = this.#store.persistent;
+    const tickerPrice = +this.#allSymbolsTickers[symbol]?.close || null;
+    const lastPrice = candles.length && candles[0].symbol === symbol
+      ? +candles[candles.length - 1].close : tickerPrice;
+    const prevPrice = this.currentSymbolLastPrice;
+
+    if (prevPrice && lastPrice) {
+      if (prevPrice !== lastPrice) {
+        this.priceDirection = lastPrice > prevPrice ? 'UP' : 'DOWN';
+      } // else keep same
+    } else {
+      this.priceDirection = 'NEUTRAL';
+    }
+
+    this.currentSymbolLastPrice = lastPrice;
+  };
+
   #listenTickers = (): void => {
     api.futuresTickerStream(
       (ticker) => {
-        const ticks = keyBy(ticker, 'symbol');
-        this.allSymbolsTickers = {
-          ...this.allSymbolsTickers,
-          ...ticks,
-        };
+        Object.assign(this.#allSymbolsTickers, keyBy(ticker, 'symbol'));
+        this.#calculateLastPrice();
       },
+    );
+  };
+
+  #listenMarkPrices = (): void => {
+    api.futuresMarkPriceStream(
+      (ticker) => Object.assign(this.#allMarkPriceTickers, keyBy(ticker, 'symbol')),
     );
   };
 }
