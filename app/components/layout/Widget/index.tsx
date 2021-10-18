@@ -78,6 +78,7 @@ const Widget = ({
           className={classNames({
             [css.settings]: true,
             [css.settingsOpen]: isSettingsOpen,
+            'overflow-auto': true,
           })}
         >
           {typeof settings === 'function' ? settings({ listenSettingsSave, listenSettingsCancel }) : settings}
