@@ -16,7 +16,7 @@ import PluginsModal from '../../../components/modals/PluginsModal';
 
 const Headbar = (): ReactElement => {
   const [symbol, setSymbol] = useChange(PERSISTENT, 'symbol');
-  const futuresExchangeSymbols = Object.values(useValue(MARKET, 'futuresExchangeSymbols')).sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
+  const futuresExchangeSymbols = useValue(MARKET, 'futuresExchangeSymbols');
   const theme = useValue(PERSISTENT, 'theme');
   const currentSymbolLastPrice = useValue(MARKET, 'currentSymbolLastPrice');
   const priceDirection = useValue(MARKET, 'priceDirection');
@@ -24,6 +24,9 @@ const Headbar = (): ReactElement => {
   const [isPluginsModalOpen, setIsPluginsModalOpen] = useState(false);
   const setLayout = useSet(PERSISTENT, 'layout');
   const resetLayout = useCallback(() => { setLayout([]); }, [setLayout]);
+  const perpetualSymbols = useMemo(() => Object.values(futuresExchangeSymbols)
+    .filter(({ contractType }) => contractType === 'PERPETUAL')
+    .sort(((a, b) => (a.symbol > b.symbol ? 1 : -1))), [futuresExchangeSymbols]);
 
   const ticker = useValue(
     ({ market }: RootStore) => market.allSymbolsTickers, symbol,
@@ -74,8 +77,8 @@ const Headbar = (): ReactElement => {
         onRequestClose={() => setIsPluginsModalOpen(false)}
       />
       <Input className={css.symbol} type="select" value={symbol} onChange={({ target }) => setSymbol(target.value)}>
-        {futuresExchangeSymbols.length
-          ? futuresExchangeSymbols.map(({ symbol: sym, baseAsset, quoteAsset }) => (
+        {perpetualSymbols.length
+          ? perpetualSymbols.map(({ symbol: sym, baseAsset, quoteAsset }) => (
             <option key={sym} value={sym}>
               {baseAsset}
               /
