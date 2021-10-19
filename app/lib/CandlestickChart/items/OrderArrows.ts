@@ -46,15 +46,6 @@ export default class OrderArrows implements ChartItem {
     tooltip.style('display', 'none');
 
     this.#zIndexHack = d3.select(parent).append('use').style('pointer-events', 'none');
-
-    /*
-    this.#rect = this.#wrapper.append('rect');
-
-    this.#labelContainer = this.#wrapper.append('foreignObject');
-    this.#labelWrapper = this.#labelContainer.append('xhtml:div');
-    this.#labelWrapper.property('className', 'measurer-label');
-    this.#label = this.#labelWrapper.append('xhtml:div');
-    */
   };
 
   // eslint-disable-next-line class-methods-use-this
