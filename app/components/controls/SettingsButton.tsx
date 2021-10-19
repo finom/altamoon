@@ -4,7 +4,9 @@ import { Button } from 'reactstrap';
 import { useSet, useValue } from 'use-change';
 import { PERSISTENT, ROOT } from '../../store';
 
-const SettingsButton = ({ buttonTextClassName }: { buttonTextClassName: string }): ReactElement => {
+const SettingsButton = ({
+  buttonTextClassName,
+}: { buttonTextClassName?: string }): ReactElement => {
   const theme = useValue(PERSISTENT, 'theme');
   const setIsSettingsModalOpen = useSet(ROOT, 'isSettingsModalOpen');
 
