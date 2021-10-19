@@ -83,7 +83,7 @@ export default class OrderArrows implements ChartItem {
       const y = this.#scaledY(+d.avgPrice);
       const size = ARROW_SIZE;
 
-      return `${-size / 2 + x},${y - size / 2} ${-size / 2 + x},${y + size / 2} ${x + size / 2},${y}`; // right
+      return `${-size + x},${y - size / 2} ${-size + x},${y + size / 2} ${x},${y}`; // right
       // return `${5 + x},${y} ${5 + x},${y + 10} ${x - 5},${y + 5}`; // left
       // return `${-5 + x},${y} ${5 + x},${y} ${x},${y + 10}`; // down
       // return `${-5 + x},${y} ${5 + x},${y} ${x},${y - 10}`; // up
@@ -115,7 +115,7 @@ export default class OrderArrows implements ChartItem {
             .html(`
             <p><em>${moment(d.updateTime).format('lll')}</em></p>
             <p><strong>${d.executedQty} ${d.symbol.replace('USDT', '')}</strong> (${formatMoneyNumber(+d.executedQty * +d.avgPrice)} ₮)</p>
-            <p>1 ${d.symbol.replace('USDT', '')} = ${+(+d.avgPrice).toFixed(2)} ₮</p>
+            <p>1 ${d.symbol.replace('USDT', '')} = ${+d.avgPrice} ₮</p>
           `)
             .style('background-color', d.side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)');
 
@@ -123,7 +123,7 @@ export default class OrderArrows implements ChartItem {
           const height = parseInt(this.#tooltip?.style('height') ?? '0', 10);
 
           this.#tooltipWrapper
-            ?.attr('x', x - width - ARROW_SIZE / 2)
+            ?.attr('x', x - width - ARROW_SIZE)
             .attr('y', Math.max(10, y - ARROW_SIZE / 2 - height / 2));
         })
         .on('mouseleave', (evt: MouseEvent & { target: SVGElement }) => {
