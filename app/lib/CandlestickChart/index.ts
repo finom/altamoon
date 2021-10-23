@@ -35,6 +35,7 @@ interface Params {
   pricePrecision: number;
   paddingPercents: ChartPaddingPercents;
   calculateLiquidationPrice: RootStore['trading']['calculateLiquidationPrice'];
+  calculateQuantity: RootStore['trading']['calculateQuantity'];
   getPseudoPosition: RootStore['trading']['getPseudoPosition'];
 }
 
@@ -82,7 +83,8 @@ export default class CandlestickChart {
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
     {
-      pricePrecision, alerts, paddingPercents, calculateLiquidationPrice, getPseudoPosition,
+      pricePrecision, alerts, paddingPercents, calculateLiquidationPrice,
+      calculateQuantity, getPseudoPosition,
       onUpdateDrafts, onUpdateAlerts, onClickDraftCheck, onDragLimitOrder, onCancelOrder,
     }: Params,
   ) {
@@ -118,6 +120,7 @@ export default class CandlestickChart {
       axis: this.#axes.getAxis(),
       alerts,
       calculateLiquidationPrice,
+      calculateQuantity,
       getPseudoPosition,
       onUpdateAlerts,
       onUpdateDrafts,
@@ -162,6 +165,7 @@ export default class CandlestickChart {
     currentSymbolInfo?: api.FuturesExchangeInfoSymbol | null;
     currentSymbolLeverage?: number;
     filledOrders?: api.FuturesOrder[];
+    leverageBrackets?: Record<string, api.FuturesLeverageBracket[]>;
     // not implicitly used but required for component updates
     isCurrentSymbolMarginTypeIsolated?: boolean;
     candles?: api.FuturesChartCandle[],
@@ -242,7 +246,9 @@ export default class CandlestickChart {
       this.#lines.draftLines.updateDraftLines(data);
     }
 
-    if (typeof data.position !== 'undefined') {
+    if (
+      typeof data.position !== 'undefined' || typeof data.leverageBrackets !== 'undefined'
+    ) {
       this.#lines.liquidationPriceLines.updateLiquidationLines(data);
     }
 

@@ -21,6 +21,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   const [candleChart, setCandleChart] = useState<CandlestickChart | null>(null);
 
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
+  const leverageBrackets = useValue(ACCOUNT, 'leverageBrackets');
 
   const customPriceLines = useValue(CUSTOMIZATION, 'customPriceLines');
 
@@ -52,7 +53,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
     exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
     currentSymbolAllOrders,
     // silent values
-    updateDrafts, createOrderFromDraft, limitOrder, cancelOrder,
+    updateDrafts, createOrderFromDraft, limitOrder, cancelOrder, calculateQuantity,
     calculateSizeFromString, calculateLiquidationPrice, getPseudoPosition,
   } = useMultiValue(TRADING, [
     'isCurrentSymbolMarginTypeIsolated', 'currentSymbolLeverage',
@@ -79,6 +80,10 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   useEffect(() => {
     candleChart?.update({ totalWalletBalance });
   }, [totalWalletBalance, candleChart]);
+
+  useEffect(() => {
+    candleChart?.update({ leverageBrackets });
+  }, [leverageBrackets, candleChart]);
 
   useEffect(() => {
     candleChart?.update({ candles });
@@ -248,6 +253,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
           right: chartPaddingRightPercent,
         },
         calculateLiquidationPrice,
+        calculateQuantity,
         getPseudoPosition,
         onDragLimitOrder: async (orderId: number, price: number) => {
           const order = getOpenOrders().find((orderItem) => orderId === orderItem.orderId);
@@ -271,7 +277,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
         },
       });
 
-      instance.update({ candles });
+      instance.update({ candles, leverageBrackets });
 
       setCandleChart(instance);
     }

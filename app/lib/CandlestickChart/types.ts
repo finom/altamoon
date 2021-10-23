@@ -70,4 +70,5 @@ export interface LiquidationLineSizeItem {
   price: number;
   amount: number;
   side: api.OrderSide;
+  type: 'POSITION' | 'ORDER' | 'DRAFT_ORDER' | 'PREDICTIVE_LIQUIDATION';
 }

@@ -17,6 +17,7 @@ interface Params {
   axis: ChartAxis;
   alerts: number[];
   calculateLiquidationPrice: RootStore['trading']['calculateLiquidationPrice'];
+  calculateQuantity: RootStore['trading']['calculateQuantity'];
   getPseudoPosition: RootStore['trading']['getPseudoPosition'];
   onUpdateAlerts: (d: number[]) => void;
   onUpdateDrafts: (d: DraftPrices) => void;
@@ -43,7 +44,7 @@ export default class Lines {
   public liquidationPriceLines: LiquidationPriceLines;
 
   constructor({
-    axis, alerts, calculateLiquidationPrice, getPseudoPosition,
+    axis, alerts, calculateLiquidationPrice, calculateQuantity, getPseudoPosition,
     onUpdateAlerts, onUpdateDrafts, onClickDraftCheck, onDragLimitOrder, onCancelOrder,
   }: Params, resizeData: ResizeData) {
     this.crosshairPriceLines = new CrosshairPriceLines({ axis }, resizeData);
@@ -60,6 +61,8 @@ export default class Lines {
 
     this.draftLines = new DraftPriceLines({
       axis,
+      getPseudoPosition,
+      calculateQuantity,
       onUpdateDrafts,
       onClickDraftCheck,
       onUpdateItems: (d) => {
@@ -70,6 +73,7 @@ export default class Lines {
 
         if (buyDatum?.isVisible && buyDatum.customData?.draftAmount) {
           draftSizes.push({
+            type: 'DRAFT_ORDER',
             side: 'BUY',
             amount: buyDatum.customData?.draftAmount,
             price: buyDatum.yValue ?? 0,
@@ -78,6 +82,7 @@ export default class Lines {
 
         if (sellDatum?.isVisible && sellDatum.customData?.draftAmount) {
           draftSizes.push({
+            type: 'DRAFT_ORDER',
             side: 'SELL',
             amount: sellDatum.customData?.draftAmount,
             price: sellDatum.yValue ?? 0,
@@ -97,6 +102,7 @@ export default class Lines {
         const orderSizes: LiquidationLineSizeItem[] = items
           .filter((datum) => !!datum.customData?.order)
           .map(({ customData, yValue }) => ({
+            type: 'ORDER',
             price: yValue ?? 0,
             amount: Math.abs(customData?.order?.origQty ?? 0),
             side: customData?.order?.side ?? 'BUY',

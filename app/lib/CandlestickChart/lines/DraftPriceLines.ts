@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { RootStore } from '../../..';
 import { OrderSide } from '../../../api';
 import formatMoneyNumber from '../../formatMoneyNumber';
 import {
@@ -8,6 +9,8 @@ import PriceLines from './PriceLines';
 
 interface Params {
   axis: ChartAxis;
+  getPseudoPosition: RootStore['trading']['getPseudoPosition'];
+  calculateQuantity: RootStore['trading']['calculateQuantity'];
   onUpdateDrafts: ((r: DraftPrices) => void);
   onClickDraftCheck: ((r: DraftPrices, side: OrderSide) => void);
   onUpdateItems: (d: PriceLinesDatum[]) => void;
@@ -16,12 +19,16 @@ interface Params {
 export default class DraftPriceLines extends PriceLines {
   #canCreateDraftLines = true;
 
+  #getPseudoPosition: Params['getPseudoPosition'];
+
+  #calculateQuantity: Params['calculateQuantity'];
+
   #onUpdateDrafts: Params['onUpdateDrafts'];
 
   #lastPrice = 0;
 
   constructor({
-    axis, onUpdateDrafts, onClickDraftCheck, onUpdateItems,
+    axis, getPseudoPosition, calculateQuantity, onUpdateDrafts, onClickDraftCheck, onUpdateItems,
   }: Params, resizeData: ResizeData) {
     super({
       axis,
@@ -69,6 +76,8 @@ export default class DraftPriceLines extends PriceLines {
       onUpdateItems,
     }, resizeData);
 
+    this.#getPseudoPosition = getPseudoPosition;
+    this.#calculateQuantity = calculateQuantity;
     this.#onUpdateDrafts = onUpdateDrafts;
   }
 
@@ -119,17 +128,31 @@ export default class DraftPriceLines extends PriceLines {
     if (typeof data.lastPrice !== 'undefined') this.#lastPrice = data.lastPrice;
 
     if (typeof data.buyDraftPrice !== 'undefined' && typeof data.buyDraftSize !== 'undefined') {
+      const currentSymbolPseudoPosition = this.#getPseudoPosition({ side: 'BUY' });
       this.updateItem('BUY', {
         yValue: data.buyDraftPrice ?? 0,
         title: `Buy draft (${data.buyDraftSize ? formatMoneyNumber(data.buyDraftSize) : 0} USDT)`,
-        customData: { draftAmount: data.buyDraftSize },
+        customData: {
+          draftAmount: currentSymbolPseudoPosition ? this.#calculateQuantity({
+            symbol: currentSymbolPseudoPosition.symbol,
+            size: data.buyDraftSize ?? 0,
+            price: data.buyDraftPrice ?? 0,
+          }) : 0,
+        },
       });
     }
     if (typeof data.sellDraftPrice !== 'undefined' && typeof data.sellDraftSize !== 'undefined') {
+      const currentSymbolPseudoPosition = this.#getPseudoPosition({ side: 'SELL' });
       this.updateItem('SELL', {
         yValue: data.sellDraftPrice ?? 0,
         title: `Sell draft (${data.sellDraftSize ? formatMoneyNumber(data.sellDraftSize) : 0} USDT)`,
-        customData: { draftAmount: data.sellDraftSize },
+        customData: {
+          draftAmount: currentSymbolPseudoPosition ? this.#calculateQuantity({
+            symbol: currentSymbolPseudoPosition.symbol,
+            size: data.sellDraftSize ?? 0,
+            price: data.sellDraftPrice ?? 0,
+          }) : 0,
+        },
       });
     }
 
