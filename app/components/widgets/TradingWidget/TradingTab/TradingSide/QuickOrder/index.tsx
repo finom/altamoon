@@ -33,6 +33,8 @@ const QuickOrder = ({
       <Row className={css.quickOrderWrapper}>
         {times(buttonsCount - 1).map((_, index) => (
           <ButtonCol
+            // eslint-disable-next-line react/no-array-index-key
+            key={index}
             totalWalletBalance={totalWalletBalance}
             availableBalance={availableBalance}
             price={price}
