@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { RootStore } from '../../..';
+import { RootStore } from '../../../store';
 import { OrderSide } from '../../../api';
 import formatMoneyNumber from '../../formatMoneyNumber';
 import {
