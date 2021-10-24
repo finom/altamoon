@@ -3,7 +3,7 @@ import notify from '../../lib/notify';
 import floorPriceByTickSize from './floorPriceByTickSize';
 
 export default async function limitOrder(this: Store['trading'], {
-  side, quantity, price, symbol, reduceOnly = false, postOnly = false,
+  side, quantity, price, symbol, reduceOnly = false, postOnly = false, hideDraft = false,
 }: {
   side: api.OrderSide;
   quantity: number;
@@ -11,6 +11,7 @@ export default async function limitOrder(this: Store['trading'], {
   symbol: string;
   reduceOnly?: boolean;
   postOnly?: boolean;
+  hideDraft?: boolean;
 }): Promise<api.FuturesOrder | null> {
   try {
     const result = await api.futuresLimitOrder(
@@ -25,10 +26,12 @@ export default async function limitOrder(this: Store['trading'], {
 
     notify('success', `Limit order for ${symbol} is created`);
 
-    if (side === 'BUY') {
-      this.shouldShowLimitBuyPriceLine = false;
-    } else {
-      this.shouldShowLimitSellPriceLine = false;
+    if (hideDraft) {
+      if (side === 'BUY') {
+        this.shouldShowLimitBuyPriceLine = false;
+      } else {
+        this.shouldShowLimitSellPriceLine = false;
+      }
     }
 
     return result;
