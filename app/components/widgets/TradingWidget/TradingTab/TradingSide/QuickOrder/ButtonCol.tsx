@@ -24,6 +24,7 @@ const ButtonCol = ({
   const calculateQuantity = useSilent(TRADING, 'calculateQuantity');
   const getFeeRate = useSilent(TRADING, 'getFeeRate');
   const symbol = useValue(PERSISTENT, 'symbol');
+  const buttonsCount = useValue(PERSISTENT, 'tradingWidgetPercentButtonsCount');
 
   const leverage = +useValue(TRADING, 'allSymbolsPositionRisk')[symbol]?.leverage || 1;
   const dirtyMarginInsufficientFix = 1 - (leverage * 0.002);
@@ -55,7 +56,7 @@ const ButtonCol = ({
   });
 
   return (
-    <Col xs={3}>
+    <Col xs={12 / buttonsCount}>
       <div
         ref={buttonRef as LegacyRef<HTMLDivElement>}
         data-bs-toggle="tooltip"

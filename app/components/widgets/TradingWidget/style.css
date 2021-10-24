@@ -12,3 +12,16 @@
 .maxLeverage {
   float: right;
 }
+
+.quickOrderWrapper {
+  --bs-gutter-x: 0.25rem!important;
+}
+
+.quickOrderSettingsButtonInput {
+  width: 35px;
+  height: 1.25em;
+  text-align: right;
+  padding: 0 1px;
+  border: 0;
+  margin-right: 1px;
+}

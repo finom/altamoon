@@ -16,7 +16,12 @@ import ChartSettings from './ChartSettings';
 
 import css from './style.css';
 
-const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
+interface Props {
+  title: string;
+  id: string;
+}
+
+const ChartWidget = ({ title, id }: Props): ReactElement => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [candleChart, setCandleChart] = useState<CandlestickChart | null>(null);
 

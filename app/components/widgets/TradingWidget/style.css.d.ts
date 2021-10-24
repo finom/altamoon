@@ -4,6 +4,8 @@ declare namespace StyleCssNamespace {
   export interface IStyleCss {
     maxLeverage: string;
     minLeverage: string;
+    quickOrderSettingsButtonInput: string;
+    quickOrderWrapper: string;
   }
 }
 

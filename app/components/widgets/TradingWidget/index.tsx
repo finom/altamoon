@@ -12,6 +12,7 @@ import Limit from './Limit';
 import Market from './Market';
 import StopLimit from './StopLimit';
 import StopMarket from './StopMarket';
+import TradingSettings from './TradingSettings';
 
 const Trading = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const [type, setType] = useChange(PERSISTENT, 'tradingType');
@@ -20,7 +21,18 @@ const Trading = ({ title, id }: { title: string; id: string; }): ReactElement =>
   const [reduceOnly, setReduceOnly] = useChange(PERSISTENT, 'tradingReduceOnly');
 
   return (
-    <Widget id={id} title={title} bodyRef={wideLayoutRef} shouldCheckAccount>
+    <Widget
+      id={id}
+      title={title}
+      bodyRef={wideLayoutRef}
+      shouldCheckAccount
+      settings={({ listenSettingsCancel, listenSettingsSave }) => (
+        <TradingSettings
+          listenSettingsCancel={listenSettingsCancel}
+          listenSettingsSave={listenSettingsSave}
+        />
+      )}
+    >
       <TradingOptions
         postOnly={postOnly}
         reduceOnly={reduceOnly}
