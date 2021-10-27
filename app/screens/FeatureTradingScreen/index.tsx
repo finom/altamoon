@@ -10,11 +10,12 @@ import WalletWidget from '../../components/widgets/WalletWidget';
 import ChartWidget from '../../components/widgets/ChartWidget';
 import TradingWidget from '../../components/widgets/TradingWidget';
 import PositionsAndOrdersWidget from '../../components/widgets/PositionsAndOrdersWidget';
+import MinichartsWidget from '../../components/widgets/MinichartsWidget';
 import Widget from '../../components/layout/Widget';
 import DOMElement from '../../components/layout/DOMElement';
 import convertType from '../../lib/convertType';
+import Headbar from './Headbar';
 import css from './style.css';
-import Headbar from './ Headbar';
 
 const breakpoints = {
   lg: 100, md: 0, sm: 0, xs: 0, xxs: 0,
@@ -34,37 +35,43 @@ const widgetComponents: Record<RootStore['customization']['builtInWidgets'][0]['
   chart: {
     RenderWidget: ChartWidget,
     grid: {
-      h: 13, minH: 3, minW: 2, w: 12, x: 0, y: 0,
+      h: 13, w: 12, x: 0, y: 0, minH: 3, minW: 2,
     },
   },
   trading: {
     RenderWidget: TradingWidget,
     grid: {
-      h: 13, minH: 3, minW: 2, w: 9, x: 0, y: 17,
+      h: 13, w: 9, x: 0, y: 13, minH: 3, minW: 2,
     },
   },
   positionAndOrders: {
     RenderWidget: PositionsAndOrdersWidget,
     grid: {
-      h: 8, minH: 3, minW: 2, w: 12, x: 0, y: 30,
+      h: 10, w: 6, x: 6, y: 26, minH: 3, minW: 2,
     },
   },
   lastTrades: {
     RenderWidget: LastTradesWidget,
     grid: {
-      h: 6, minH: 3, minW: 2, w: 5, x: 0, y: 38,
+      h: 6, w: 5, x: 0, y: 36, minH: 3, minW: 2,
     },
   },
   orderBook: {
     RenderWidget: OrderBookWidget,
     grid: {
-      h: 6, minH: 3, minW: 2, w: 7, x: 5, y: 38,
+      h: 6, w: 7, x: 5, y: 36, minH: 3, minW: 2,
     },
   },
   wallet: {
     RenderWidget: WalletWidget,
     grid: {
-      h: 13, minH: 3, minW: 2, w: 3, x: 9, y: 17,
+      h: 13, w: 3, x: 9, y: 13, minH: 3, minW: 2,
+    },
+  },
+  minicharts: {
+    RenderWidget: MinichartsWidget,
+    grid: {
+      h: 10, w: 6, x: 0, y: 26, minH: 3, minW: 2,
     },
   },
 };
@@ -81,6 +88,8 @@ const FeatureTradingScreen = (): ReactElement => {
   const didPluginsInitialized = useValue(CUSTOMIZATION, 'didPluginsInitialized');
   const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
     setLayout(changedLayout);
+    // console.log('changedLayout', changedLayout.map((item) => JSON.stringify(
+    // pick(item, ['h', 'w', 'x', 'y', 'minH', 'minW', 'i']))));
   }, [setLayout]);
   const cols = {
     lg: numberOfColumns,
@@ -92,7 +101,6 @@ const FeatureTradingScreen = (): ReactElement => {
 
   return (
     <div>
-
       {theme === 'dark' ? <style>{darkTheme}</style> : <style>{lightTheme}</style>}
       <Headbar />
       {didPluginsInitialized && (

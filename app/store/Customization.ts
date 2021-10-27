@@ -45,7 +45,7 @@ interface PluginInfo {
   execute?: () => void;
 }
 
-type WidgetId = 'chart' | 'trading' | 'positionAndOrders' | 'lastTrades' | 'orderBook' | 'wallet';
+type WidgetId = 'chart' | 'trading' | 'positionAndOrders' | 'lastTrades' | 'orderBook' | 'wallet' | 'minicharts';
 
 export default class App {
   public defaultPlugins: PluginInfo[] = [];
@@ -63,6 +63,7 @@ export default class App {
     { id: 'lastTrades', title: 'Last Trades' },
     { id: 'orderBook', title: 'Order Book' },
     { id: 'wallet', title: 'Wallet' },
+    { id: 'minicharts', title: 'Minicharts' },
   ];
 
   public pluginWidgets: WidgetData[] = [];
