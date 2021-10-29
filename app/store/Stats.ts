@@ -1,6 +1,6 @@
+import { throttle } from 'lodash';
 import { listenChange } from 'use-change';
 import * as api from '../api';
-import delay from '../lib/delay';
 
 const getTodayEarlyTime = () => {
   const date = new Date();
@@ -44,7 +44,6 @@ export default class Stats {
     listenChange(store.trading, 'openPositions', () => this.#calcStats());
 
     api.futuresChartSubscribe({
-
       symbol: 'BNBUSDT',
       interval: '5m',
       callback: (bnbCandles) => { this.#bnbCandles = bnbCandles; },
@@ -53,36 +52,27 @@ export default class Stats {
 
     void this.#calcStats();
 
-    void this.#incomeTicker();
+    void this.loadIncome();
   }
 
-  #incomeTicker = async (): Promise<void> => {
+  public loadIncome = throttle(async (): Promise<void> => {
     const todayEarlyTime = getTodayEarlyTime();
     const now = Date.now();
     if (this.#historyStart < todayEarlyTime) {
       this.#historyStart = todayEarlyTime;
       this.income = [];
     } else {
-      try {
-        const income = await api.futuresIncome({
-          startTime: this.#historyStart,
-          endTime: now,
-          limit: 1000,
-          recvWindow: 1000000,
-        });
+      const income = await api.futuresIncome({
+        startTime: this.#historyStart,
+        endTime: now,
+        limit: 1000,
+        recvWindow: 1000000,
+      });
 
-        this.income = this.income.concat(income);
-        this.#historyStart = now;
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error(e);
-      }
+      this.income = this.income.concat(income);
+      this.#historyStart = now;
     }
-
-    await delay(20000);
-
-    return this.#incomeTicker();
-  };
+  }, 5000);
 
   #getBNBPriceByTime = (time: number): number | null => {
     const bnbCandles = this.#bnbCandles;
