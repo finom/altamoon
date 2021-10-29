@@ -8,6 +8,7 @@ import ClipPath from './items/ClipPath';
 import GridLines from './items/GridLines';
 import Plot from './items/Plot';
 import Svg from './items/Svg';
+import customScaleSymlog from './scaleSymlog';
 
 import './chart.global.css';
 
@@ -21,6 +22,8 @@ import Measurer from './items/Measurer';
 import { RootStore } from '../../store';
 import Lines from './lines';
 import OrderArrows from './items/OrderArrows';
+
+const scaleSymlog = customScaleSymlog as typeof d3.scaleSymlog;
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
@@ -101,7 +104,7 @@ export default class CandlestickChart {
       scaledX: x,
       y: localStorage.getItem('forceChartLinearScale') === 'true'
         ? d3.scaleLinear().range([this.#height, 0])
-        : d3.scaleSymlog().range([this.#height, 0]),
+        : scaleSymlog().range([this.#height, 0]),
     };
 
     this.#scales = scales;
@@ -393,7 +396,9 @@ export default class CandlestickChart {
       ? [d3.min(candles, (d) => +d.low) as number, d3.max(candles, (d) => +d.high) as number]
       : [0, 1];
 
-    y.domain(yDomain);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    y.doSomething(yDomain); // eslint-disable-line @typescript-eslint/no-unsafe-call
 
     const paddingTopPercent = Math.min(50, Math.max(0, this.#paddingPercents.top)) || 0;
     const paddingBottomPercent = Math.min(50, Math.max(0, this.#paddingPercents.bottom)) || 0;
