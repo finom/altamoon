@@ -22,8 +22,8 @@ const Headbar = (): ReactElement => {
   const priceDirection = useValue(MARKET, 'priceDirection');
   const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
   const [isPluginsModalOpen, setIsPluginsModalOpen] = useState(false);
-  const setLayout = useSet(PERSISTENT, 'layout');
-  const resetLayout = useCallback(() => { setLayout([]); }, [setLayout]);
+  const setLayouts = useSet(PERSISTENT, 'layouts');
+  const resetLayout = useCallback(() => { setLayouts({}); }, [setLayouts]);
   const perpetualSymbols = useMemo(() => Object.values(futuresExchangeSymbols)
     .filter(({ contractType }) => contractType === 'PERPETUAL')
     .sort(((a, b) => (a.symbol > b.symbol ? 1 : -1))), [futuresExchangeSymbols]);
