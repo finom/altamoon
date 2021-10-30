@@ -25,7 +25,7 @@
     "build-api": "npx tsc ./app/api/* --declaration --esModuleInterop --skipLibCheck --outDir ./packages/biduul-binance-api/api && node scripts/copyProjectVersion",
     "publish-types": "npm publish ./packages/biduul-types/",
     "publish-api": "npm publish ./packages/biduul-binance-api/",
-    "patch": "npm version patch && npm run build:browser && npm run build-types && npm run build-api && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags"
+    "patch": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags"
   },
   "build": {
     "productName": "Biduul",
