@@ -1,4 +1,4 @@
-import { Layout } from 'react-grid-layout';
+import { Layouts } from 'react-grid-layout';
 import { listenChange } from 'use-change';
 import * as api from '../api';
 
@@ -14,7 +14,7 @@ export default class Persistent {
 
   public theme = persist<'dark' | 'light'>('theme', 'dark');
 
-  public layout = persist<Layout[]>('layout', []);
+  public layouts = persist<Layouts>('layouts', {});
 
   public tradingType = persist<api.OrderType>('tradingType', 'MARKET');
 

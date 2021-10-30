@@ -1,5 +1,7 @@
 import React, { MutableRefObject, ReactElement, useCallback } from 'react';
-import { WidthProvider, Responsive, Layout } from 'react-grid-layout';
+import {
+  WidthProvider, Responsive, Layout, Layouts,
+} from 'react-grid-layout';
 import useChange, { useValue } from 'use-change';
 
 import LastTradesWidget from '../../components/widgets/LastTradesWidget';
@@ -18,7 +20,7 @@ import Headbar from './Headbar';
 import css from './style.css';
 
 const breakpoints = {
-  lg: 100, md: 0, sm: 0, xs: 0, xxs: 0,
+  lg: 1200, xxs: 0,
 };
 
 const defaultPluginLayout = {
@@ -79,18 +81,18 @@ const widgetComponents: Record<RootStore['customization']['builtInWidgets'][0]['
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const FeatureTradingScreen = (): ReactElement => {
-  const [layout, setLayout] = useChange(PERSISTENT, 'layout');
+  const [layouts, setLayouts] = useChange(PERSISTENT, 'layouts');
   const theme = useValue(PERSISTENT, 'theme');
   const widgetsDisabled = useValue(PERSISTENT, 'widgetsDisabled');
   const numberOfColumns = useValue(PERSISTENT, 'numberOfColumns');
   const pluginWidgets = useValue(CUSTOMIZATION, 'pluginWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
   const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
   const didPluginsInitialized = useValue(CUSTOMIZATION, 'didPluginsInitialized');
-  const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
-    setLayout(changedLayout);
+  const onLayoutChange = useCallback((_changedLayout: Layout[], changedLayouts: Layouts) => {
+    setLayouts(changedLayouts);
     // console.log('changedLayout', changedLayout.map((item) => JSON.stringify(
     // pick(item, ['h', 'w', 'x', 'y', 'minH', 'minW', 'i']))));
-  }, [setLayout]);
+  }, [setLayouts]);
   const cols = {
     lg: numberOfColumns,
     md: numberOfColumns,
@@ -121,7 +123,7 @@ const FeatureTradingScreen = (): ReactElement => {
           breakpoints={breakpoints}
           cols={cols}
           rowHeight={rowHeight}
-          layouts={{ lg: layout }}
+          layouts={layouts}
           onLayoutChange={onLayoutChange}
         >
           {builtInWidgets.map(({ id, title }) => {
@@ -148,8 +150,9 @@ const FeatureTradingScreen = (): ReactElement => {
           }) => (
             <div
               key={id}
-              data-grid={layout.find(({ i }) => i === id)
-                ?? (itemLayout ? { ...defaultPluginLayout, ...itemLayout } : defaultPluginLayout)}
+              data-grid={itemLayout
+                ? { ...defaultPluginLayout, ...itemLayout }
+                : defaultPluginLayout}
             >
               <Widget
                 id={id}
