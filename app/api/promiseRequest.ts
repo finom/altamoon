@@ -1,5 +1,6 @@
 import qs from 'qs';
-import crypto from 'crypto-browserify';
+import { HmacSHA256 } from 'crypto-js';
+
 import options from './options';
 import emitError from './emitError';
 
@@ -42,8 +43,8 @@ export default async function promiseRequest<T>(
     if (!options.apiSecret) throw new Error('Invalid API credentials!');
     data.timestamp = new Date().getTime();
     query = qs.stringify(data);
-    const signature = crypto.createHmac('sha256', options.apiSecret).update(query).digest('hex'); // HMAC hash header
-    resource = `${baseURL}${url}?${query}&signature=${signature}`;
+    const signature = HmacSHA256(query, options.apiSecret);
+    resource = `${baseURL}${url}?${query}&signature=${signature.toString()}`;
   } else {
     query = qs.stringify(data);
     resource = `${baseURL}${url}?${query}`;
