@@ -75,9 +75,6 @@ export default class OrderArrows implements ChartItem {
       const size = ARROW_SIZE;
 
       return `${-size + x},${y - size / 2} ${-size + x},${y + size / 2} ${x},${y}`; // right
-      // return `${5 + x},${y} ${5 + x},${y + 10} ${x - 5},${y + 5}`; // left
-      // return `${-5 + x},${y} ${5 + x},${y} ${x},${y + 10}`; // down
-      // return `${-5 + x},${y} ${5 + x},${y} ${x},${y - 10}`; // up
     };
 
     this.#wrapper

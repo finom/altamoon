@@ -9,6 +9,13 @@ export type OrderType = 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_MARKET' | 'TAKE_PROF
 export type OrderStatus = 'NEW' | 'PARTIALLY_FILLED' | 'FILLED' | 'CANCELED' | 'REJECTED' | 'EXPIRED' | 'NEW_INSURANCE' | 'NEW_ADL';
 export type OrderExecutionType = 'NEW' | 'CANCELED' | 'CALCULATED' | 'EXPIRED' | 'TRADE';
 export type RateLimiter = 'REQUEST_WEIGHT' | 'ORDERS';
+/**
+ * Time in force (timeInForce):
+ * GTC - Good Till Cancel
+ * IOC - Immediate or Cancel
+ * FOK - Fill or Kill
+ * GTX - Good Till Crossing (Post Only)
+ */
 export type TimeInForce = 'GTC' | 'IOC' | 'FOK' | 'GTX';
 export type IncomeType = 'TRANSFER' | 'WELCOME_BONUS' | 'REALIZED_PNL' | 'FUNDING_FEE' | 'COMMISSION' | 'INSURANCE_CLEAR';
 export type WorkingType = 'MARK_PRICE' | 'CONTRACT_PRICE';
