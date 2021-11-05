@@ -264,11 +264,11 @@ svg.chart-svg .measurer-label p {
 }
 
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-/*   Order arrows
+/*   Order arrows & Mark price
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-svg.chart-svg .order-arrows-tooltip-wrapper { overflow: visible; }
+svg.chart-svg .tooltip-wrapper { overflow: visible; }
 
-svg.chart-svg .order-arrows-tooltip-wrapper > div {
+svg.chart-svg .tooltip-wrapper > div {
   border-radius: 0.25rem;
   padding: 10px;
   font-size: 1.5em;
@@ -276,4 +276,4 @@ svg.chart-svg .order-arrows-tooltip-wrapper > div {
   display: inline-block;
 }
 
-svg.chart-svg .order-arrows-tooltip-wrapper p { white-space: nowrap; margin: 0; }
+svg.chart-svg .tooltip-wrapper p { white-space: nowrap; margin: 0; }

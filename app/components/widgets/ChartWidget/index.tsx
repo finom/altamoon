@@ -7,7 +7,7 @@ import { futuresIntervals } from '../../../api';
 import useMultiValue from '../../../hooks/useMultiValue';
 import CandlestickChart from '../../../lib/CandlestickChart';
 import {
-  ACCOUNT, CUSTOMIZATION, MARKET, PERSISTENT, TRADING,
+  ACCOUNT, CUSTOMIZATION, MARKET, PERSISTENT, RootStore, TRADING,
 } from '../../../store';
 import FormSwitch from '../../controls/FormSwitch';
 
@@ -46,6 +46,10 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     'symbol', 'tradingType', 'chartPaddingTopPercent',
     'chartPaddingBottomPercent', 'chartPaddingRightPercent',
   ]);
+
+  const markPriceTicker = useValue(
+    ({ market }: RootStore) => market.allMarkPriceTickers, symbol,
+  );
 
   const getOpenOrders = useGet(TRADING, 'openOrders');
   const {
@@ -111,6 +115,10 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   useEffect(() => {
     candleChart?.update({ customPriceLines });
   }, [customPriceLines, candleChart]);
+
+  useEffect(() => {
+    candleChart?.update({ markPrice: markPriceTicker?.markPrice ?? '0' });
+  }, [customPriceLines, candleChart, markPriceTicker?.markPrice]);
 
   useEffect(() => {
     const isAllOrdersRelevant = !currentSymbolAllOrders.length

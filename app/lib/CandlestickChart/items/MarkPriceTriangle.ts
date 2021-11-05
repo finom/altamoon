@@ -1,7 +1,5 @@
 import * as d3 from 'd3';
-import {
-  ChartItem, D3Selection, ResizeData, Scales,
-} from '../types';
+import { ChartItem, D3Selection, Scales } from '../types';
 
 const ARROW_SIZE = 10;
 
@@ -10,29 +8,36 @@ interface MarkPriceDatum {
 }
 
 export default class MarkPriceTriangle implements ChartItem {
-  #scaledX: Scales['x'];
-
   #scaledY: Scales['y'];
 
-  #triangle?: D3Selection<SVGPolygonElement>;
+  #wrapper?: D3Selection<SVGGElement>;
 
-  #markPrice?: number;
+  #markPrice = '0';
+
+  #axisRight?: D3Selection<SVGGElement>;
 
   #tooltipWrapper?: D3Selection<SVGForeignObjectElement>;
 
   #tooltip?: D3Selection<HTMLDivElement>;
 
   constructor({ scales }: { scales: Scales }) {
-    this.#scaledX = scales.x;
     this.#scaledY = scales.y;
   }
 
-  public appendTo = (parent: Element, resizeData: ResizeData): void => {
-    this.#triangle = d3.select(parent).append('g').append('polygon');
+  public appendTo = (parent: Element): void => {
+    this.#wrapper = d3.select(parent).append('g');
+
+    const axisRight = d3.select(parent).select<SVGGElement>('.y.axis.right');
+
+    if (!axisRight) {
+      throw new Error('Unable to find element "g.y.axis.right"');
+    }
+
+    this.#axisRight = axisRight;
 
     const tooltipWrapper = d3.select(parent).append('foreignObject')
-      .attr('class', 'order-arrows-tooltip-wrapper');
-    const tooltip = tooltipWrapper.append('xhtml:div') as D3Selection<HTMLDivElement>;
+      .attr('class', 'tooltip-wrapper');
+    const tooltip = tooltipWrapper.append<HTMLDivElement>('xhtml:div');
 
     this.#tooltipWrapper = tooltipWrapper;
     this.#tooltip = tooltip;
@@ -46,70 +51,63 @@ export default class MarkPriceTriangle implements ChartItem {
   }
 
   public update = (data: {
-    markPrice?: number,
+    markPrice?: string,
+    scaledX?: d3.ScaleTime<number, number>,
   }): void => {
     if (typeof data.markPrice !== 'undefined') {
       this.#markPrice = data.markPrice;
+
+      this.#tooltip?.html(`<p>Mark price: ${data.markPrice}</p>`);
     }
 
     this.draw();
   };
 
   public draw = (): void => {
+    // get transform(X) value from the axis element
+    const getAxisTransformLeft = () => {
+      const matrix = Array.from(this.#axisRight?.node()?.transform.baseVal ?? [])
+        .find(({ type }) => type === 2)?.matrix;
+      return matrix?.e ?? 0;
+    };
+
     const points = (d: MarkPriceDatum): string => {
-      const x = 100;
+      const x = getAxisTransformLeft();
       const y = this.#scaledY(d.markPrice);
       const size = ARROW_SIZE;
 
       return `${-size + x},${y - size / 2} ${-size + x},${y + size / 2} ${x},${y}`; // right
     };
 
-    this.#triangle
-      ?.data(
-        [{ markPrice: this.#markPrice } as MarkPriceDatum],
-        (d) => (d as MarkPriceDatum).markPrice,
+    this.#wrapper
+      ?.selectAll('polygon')
+      .data(
+        [{ markPrice: +this.#markPrice } as MarkPriceDatum],
       )
       .join((enter) => enter
         .append('polygon')
-        .attr('fill', 'var(--bs-warning-color)')
+        .attr('fill', 'var(--bs-warning)')
         .attr('stroke-width', 1)
         .attr('points', points)
-        .attr('stroke-linejoin', 'round'),
-      /* .on('mouseenter', (evt: MouseEvent & { target: SVGElement }, d) => {
-          const x = this.#scaledX(d.updateTime);
-          const y = this.#scaledY(+d.avgPrice);
-
-          // eslint-disable-next-line no-param-reassign
-          evt.target.style.opacity = '1';
-
-          this.#zIndexHack?.attr('xlink:href', `#order_${d.orderId}`);
-
-          // TODO support different base assets
+        .attr('stroke-linejoin', 'round')
+        .on('mouseenter', (_evt, d) => {
           this.#tooltip
             ?.style('display', '')
-            .html(`
-            <p><em>${moment(d.updateTime).format('lll')}</em></p>
-            <p><strong>${d.executedQty} ${d.symbol.replace('USDT', '')}</strong>
-            (${formatMoneyNumber(+d.executedQty * +d.avgPrice)} ₮)</p>
-            <p>1 ${d.symbol.replace('USDT', '')} = ${+d.avgPrice} ₮</p>
-          `)
-            .style('background-color', d.side === 'BUY'
-            ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)');
+            .style('background-color', 'var(--bs-warning)');
 
           const width = parseInt(this.#tooltip?.style('width') ?? '0', 10);
           const height = parseInt(this.#tooltip?.style('height') ?? '0', 10);
 
+          const x = getAxisTransformLeft();
+          const y = this.#scaledY(d.markPrice);
+
           this.#tooltipWrapper
             ?.attr('x', x - width - ARROW_SIZE)
-            .attr('y', Math.max(10, y - ARROW_SIZE / 2 - height / 2));
+            .attr('y', y - height / 2);
         })
-        .on('mouseleave', (evt: MouseEvent & { target: SVGElement }) => {
-          // eslint-disable-next-line no-param-reassign
-          evt.target.style.opacity = TRIANGLE_OPACITY.toString();
-
+        .on('mouseleave', () => {
           this.#tooltip?.style('display', 'none');
-          this.#zIndexHack?.attr('xlink:href', '');
-        }) */
+        }),
       (update) => update.attr('points', points),
       (exit) => exit.remove());
   };

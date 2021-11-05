@@ -21,6 +21,7 @@ import Measurer from './items/Measurer';
 import { RootStore } from '../../store';
 import Lines from './lines';
 import OrderArrows from './items/OrderArrows';
+import MarkPriceTriangle from './items/MarkPriceTriangle';
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
@@ -67,6 +68,8 @@ export default class CandlestickChart {
   #measurer: Measurer;
 
   #orderArrows: OrderArrows;
+
+  #markPriceTriangle: MarkPriceTriangle;
 
   #pricePrecision: number;
 
@@ -115,6 +118,7 @@ export default class CandlestickChart {
     this.#measurer = new Measurer({ scales, resizeData });
     this.#plot = new Plot({ scales });
     this.#orderArrows = new OrderArrows({ scales });
+    this.#markPriceTriangle = new MarkPriceTriangle({ scales });
 
     this.#lines = new Lines({
       axis: this.#axes.getAxis(),
@@ -145,6 +149,7 @@ export default class CandlestickChart {
         this.#gridLines.update({ scaledX });
         this.#plot.update({ scaledX });
         this.#orderArrows.update({ scaledX });
+        this.#markPriceTriangle.update({ scaledX });
         this.#lines.update();
 
         this.#draw();
@@ -161,6 +166,7 @@ export default class CandlestickChart {
    */
   public update(data: {
     currentSymbolPseudoPosition?: TradingPosition | null;
+    markPrice?: string;
     totalWalletBalance?: number;
     currentSymbolInfo?: api.FuturesExchangeInfoSymbol | null;
     currentSymbolLeverage?: number;
@@ -276,6 +282,8 @@ export default class CandlestickChart {
 
     if (typeof data.customPriceLines !== 'undefined') this.#lines.customLines.update({ items: data.customPriceLines });
 
+    if (typeof data.markPrice !== 'undefined') this.#markPriceTriangle.update({ markPrice: data.markPrice });
+
     if (typeof data.paddingPercents !== 'undefined' && !isEqual(data.paddingPercents, this.#paddingPercents)) {
       this.#paddingPercents = data.paddingPercents;
 
@@ -361,6 +369,7 @@ export default class CandlestickChart {
     this.#lines.appendTo(svgContainer, resizeData);
     this.#measurer.appendTo(svgContainer, resizeData);
     this.#orderArrows.appendTo(svgContainer);
+    this.#markPriceTriangle.appendTo(svgContainer);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);
   };
@@ -393,15 +402,10 @@ export default class CandlestickChart {
       ? [d3.min(candles, (d) => +d.low) as number, d3.max(candles, (d) => +d.high) as number]
       : [0, 1];
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // y.doSomething(yDomain); // eslint-disable-line @typescript-eslint/no-unsafe-call
-
-    if (typeof y.constant === 'function') {
-      const ySymLog = y as d3.ScaleSymLog<number, number, never>;
-      if (yDomain[0] && yDomain[0] < 1) ySymLog.constant(0.1);
-      if (yDomain[0] && yDomain[0] < 0.1) ySymLog.constant(0.01);
-      if (yDomain[0] && yDomain[0] < 0.01) ySymLog.constant(0.001);
+    if ('constant' in y && yDomain[0] !== 0) {
+      if (yDomain[0] < 1) y.constant(0.1);
+      if (yDomain[0] < 0.1) y.constant(0.01);
+      if (yDomain[0] < 0.01) y.constant(0.001);
     }
 
     const paddingTopPercent = Math.min(50, Math.max(0, this.#paddingPercents.top)) || 0;

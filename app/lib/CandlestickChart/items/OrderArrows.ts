@@ -36,8 +36,8 @@ export default class OrderArrows implements ChartItem {
       .attr('class', 'order-arrows-wrapper')
       .attr('clip-path', 'url(#clipChart)');
     const tooltipWrapper = d3.select(parent).append('foreignObject')
-      .attr('class', 'order-arrows-tooltip-wrapper');
-    const tooltip = tooltipWrapper.append('xhtml:div') as D3Selection<HTMLDivElement>;
+      .attr('class', 'tooltip-wrapper');
+    const tooltip = tooltipWrapper.append<HTMLDivElement>('xhtml:div');
 
     this.#wrapper = wrapper;
     this.#tooltipWrapper = tooltipWrapper;
