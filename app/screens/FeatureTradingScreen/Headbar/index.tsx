@@ -76,7 +76,7 @@ const Headbar = (): ReactElement => {
         isOpen={isPluginsModalOpen}
         onRequestClose={() => setIsPluginsModalOpen(false)}
       />
-      <Input className={css.symbol} type="select" value={symbol} onChange={({ target }) => setSymbol(target.value)}>
+      <Input className={`${css.symbol} form-control`} type="select" value={symbol} onChange={({ target }) => setSymbol(target.value)}>
         {perpetualSymbols.length
           ? perpetualSymbols.map(({ symbol: sym, baseAsset, quoteAsset }) => (
             <option key={sym} value={sym}>
