@@ -78,7 +78,7 @@ const Positions = (): ReactElement => {
                 </span>
                 {' '}
                 &nbsp;
-                <Badge className={side === 'BUY' ? 'bg-buy' : 'bg-sell'}>
+                <Badge color={side === 'BUY' ? 'buy' : 'sell'}>
                   {leverage}
                   x
                 </Badge>
