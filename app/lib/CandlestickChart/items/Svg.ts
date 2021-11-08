@@ -9,7 +9,7 @@ export default class Svg implements ChartItem {
   public appendTo = (parent: Element, resizeData: ResizeData): SVGGElement => {
     this.#svg = d3.select(parent).append('svg').attr('class', 'chart-svg');
 
-    this.#groupSelection = this.#svg.append('g').attr('id', 'mainGroup');
+    this.#groupSelection = this.#svg.append<SVGGElement>('g').attr('id', 'mainGroup');
 
     this.resize(resizeData);
 

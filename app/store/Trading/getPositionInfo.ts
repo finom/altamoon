@@ -7,7 +7,7 @@ import getPnlPositionPercent from './getPnlPositionPercent';
 export default function getPositionInfo(
   this: Store['trading'],
   positionRisk: api.FuturesPositionRisk,
-  { side: givenSide, lastPrice }: { side?: api.OrderSide; lastPrice: number; },
+  override: { side?: api.OrderSide; lastPrice?: number; } = {},
 ): TradingPosition {
   const positionAmt = +positionRisk.positionAmt;
   const entryPrice = +positionRisk.entryPrice;
@@ -31,7 +31,9 @@ export default function getPositionInfo(
 
   const maintMarginRatio = leverageBracket?.maintMarginRatio ?? 0;
   const { totalWalletBalance } = this.store.account;
-  const side = givenSide ?? (positionAmt >= 0 ? 'BUY' : 'SELL');
+  const side = override.side ?? (positionAmt >= 0 ? 'BUY' : 'SELL');
+  const lastPrice = override.lastPrice
+    ?? +this.store.market.allSymbolsTickers[symbol]?.close ?? 0;
 
   const position: TradingPosition = {
     // if positionAmt is increased, then use it as initial value,

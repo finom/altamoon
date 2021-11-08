@@ -4,9 +4,5 @@ export default {
       id: 'biduul-phlegmatic',
       isThirdParty: false,
     },
-    {
-      id: 'biduul-minichart-grid',
-      isThirdParty: false,
-    },
   ],
 };

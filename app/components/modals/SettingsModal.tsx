@@ -54,7 +54,7 @@ const SettingsModal = (): ReactElement => {
                 name={isType<keyof RootStore['persistent']>('theme')}
                 id={isType<keyof RootStore['persistent']>('theme')}
                 innerRef={register}
-                className="mb-3"
+                className="mb-3 form-control"
                 defaultValue={existingTheme}
               >
                 <option value={isType<RootStore['persistent']['theme']>('light')}>Light</option>

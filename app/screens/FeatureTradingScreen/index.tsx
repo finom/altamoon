@@ -1,33 +1,26 @@
-import React, {
-  MutableRefObject, ReactElement, useCallback, useState,
-} from 'react';
-import { WidthProvider, Responsive, Layout } from 'react-grid-layout';
-import { Button, Input, Navbar } from 'reactstrap';
-import classNames from 'classnames';
+import React, { MutableRefObject, ReactElement, useCallback } from 'react';
+import {
+  WidthProvider, Responsive, Layout, Layouts,
+} from 'react-grid-layout';
 import useChange, { useValue } from 'use-change';
 
-import { LayoutWtf, Puzzle } from 'react-bootstrap-icons';
 import LastTradesWidget from '../../components/widgets/LastTradesWidget';
-import {
-  CUSTOMIZATION, MARKET, PERSISTENT, RootStore,
-} from '../../store';
+import { CUSTOMIZATION, PERSISTENT, RootStore } from '../../store';
 import { darkTheme, lightTheme } from '../../themes';
 import OrderBookWidget from '../../components/widgets/OrderBookWidget';
 import WalletWidget from '../../components/widgets/WalletWidget';
 import ChartWidget from '../../components/widgets/ChartWidget';
 import TradingWidget from '../../components/widgets/TradingWidget';
-import SettingsModal from '../../components/modals/SettingsModal';
-import SettingsButton from '../../components/controls/SettingsButton';
 import PositionsAndOrdersWidget from '../../components/widgets/PositionsAndOrdersWidget';
+import MinichartsWidget from '../../components/widgets/MinichartsWidget';
 import Widget from '../../components/layout/Widget';
 import DOMElement from '../../components/layout/DOMElement';
-import PluginsModal from '../../components/modals/PluginsModal';
-import WidgetsSelect from '../../components/widgets/WidgetsSelect';
 import convertType from '../../lib/convertType';
+import Headbar from './Headbar';
 import css from './style.css';
 
 const breakpoints = {
-  lg: 100, md: 0, sm: 0, xs: 0, xxs: 0,
+  lg: 1200, xxs: 0,
 };
 
 const defaultPluginLayout = {
@@ -44,37 +37,43 @@ const widgetComponents: Record<RootStore['customization']['builtInWidgets'][0]['
   chart: {
     RenderWidget: ChartWidget,
     grid: {
-      h: 13, minH: 3, minW: 2, w: 12, x: 0, y: 0,
+      h: 13, w: 12, x: 0, y: 0, minH: 3, minW: 2,
     },
   },
   trading: {
     RenderWidget: TradingWidget,
     grid: {
-      h: 13, minH: 3, minW: 2, w: 9, x: 0, y: 17,
+      h: 13, w: 9, x: 0, y: 13, minH: 3, minW: 2,
     },
   },
   positionAndOrders: {
     RenderWidget: PositionsAndOrdersWidget,
     grid: {
-      h: 8, minH: 3, minW: 2, w: 12, x: 0, y: 30,
+      h: 10, w: 6, x: 6, y: 26, minH: 3, minW: 2,
     },
   },
   lastTrades: {
     RenderWidget: LastTradesWidget,
     grid: {
-      h: 6, minH: 3, minW: 2, w: 5, x: 0, y: 38,
+      h: 6, w: 5, x: 0, y: 36, minH: 3, minW: 2,
     },
   },
   orderBook: {
     RenderWidget: OrderBookWidget,
     grid: {
-      h: 6, minH: 3, minW: 2, w: 7, x: 5, y: 38,
+      h: 6, w: 7, x: 5, y: 36, minH: 3, minW: 2,
     },
   },
   wallet: {
     RenderWidget: WalletWidget,
     grid: {
-      h: 13, minH: 3, minW: 2, w: 3, x: 9, y: 17,
+      h: 13, w: 3, x: 9, y: 13, minH: 3, minW: 2,
+    },
+  },
+  minicharts: {
+    RenderWidget: MinichartsWidget,
+    grid: {
+      h: 10, w: 6, x: 0, y: 26, minH: 3, minW: 2,
     },
   },
 };
@@ -82,20 +81,18 @@ const widgetComponents: Record<RootStore['customization']['builtInWidgets'][0]['
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const FeatureTradingScreen = (): ReactElement => {
-  const [layout, setLayout] = useChange(PERSISTENT, 'layout');
-  const [existingSymbol, setSymbol] = useChange(PERSISTENT, 'symbol');
+  const [layouts, setLayouts] = useChange(PERSISTENT, 'layouts');
   const theme = useValue(PERSISTENT, 'theme');
   const widgetsDisabled = useValue(PERSISTENT, 'widgetsDisabled');
   const numberOfColumns = useValue(PERSISTENT, 'numberOfColumns');
   const pluginWidgets = useValue(CUSTOMIZATION, 'pluginWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
   const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
   const didPluginsInitialized = useValue(CUSTOMIZATION, 'didPluginsInitialized');
-  const futuresExchangeSymbols = Object.values(useValue(MARKET, 'futuresExchangeSymbols')).sort(((a, b) => (a.symbol > b.symbol ? 1 : -1)));
-  const [isPluginsModalOpen, setIsPluginsModalOpen] = useState(false);
-  const onLayoutChange = useCallback((changedLayout: Layout[] /* , changedLayouts: Layouts */) => {
-    setLayout(changedLayout);
-  }, [setLayout]);
-  const resetLayout = useCallback(() => { setLayout([]); }, [setLayout]);
+  const onLayoutChange = useCallback((_changedLayout: Layout[], changedLayouts: Layouts) => {
+    setLayouts(changedLayouts);
+    // console.log('changedLayout', changedLayout.map((item) => JSON.stringify(
+    // pick(item, ['h', 'w', 'x', 'y', 'minH', 'minW', 'i']))));
+  }, [setLayouts]);
   const cols = {
     lg: numberOfColumns,
     md: numberOfColumns,
@@ -106,54 +103,8 @@ const FeatureTradingScreen = (): ReactElement => {
 
   return (
     <div>
-      <SettingsModal />
-      <PluginsModal
-        isOpen={isPluginsModalOpen}
-        onRequestClose={() => setIsPluginsModalOpen(false)}
-      />
       {theme === 'dark' ? <style>{darkTheme}</style> : <style>{lightTheme}</style>}
-      <Navbar
-        className={classNames({
-          'bg-dark': theme === 'dark',
-          'bg-light': theme !== 'dark',
-          [css.header]: true,
-        })}
-      >
-        <div>
-          <Input type="select" value={existingSymbol} onChange={({ target }) => setSymbol(target.value)}>
-            {futuresExchangeSymbols.length
-              ? futuresExchangeSymbols.map(({ symbol, baseAsset, quoteAsset }) => (
-                <option key={symbol} value={symbol}>
-                  {baseAsset}
-                  /
-                  {quoteAsset}
-                </option>
-              )) : <option>Loading...</option>}
-          </Input>
-        </div>
-        <div>
-          <Button
-            color={theme === 'dark' ? 'dark' : 'light'}
-            onClick={resetLayout}
-          >
-            <LayoutWtf size={16} />
-            {' '}
-            Reset Layout
-          </Button>
-          {' '}
-          <SettingsButton />
-          {' '}
-          <Button
-            color={theme === 'dark' ? 'dark' : 'light'}
-            onClick={() => setIsPluginsModalOpen(true)}
-          >
-            <Puzzle size={16} />
-            {' '}
-            Plugins
-          </Button>
-          <WidgetsSelect />
-        </div>
-      </Navbar>
+      <Headbar />
       {didPluginsInitialized && (
         <ResponsiveReactGridLayout
           key={numberOfColumns}
@@ -172,7 +123,7 @@ const FeatureTradingScreen = (): ReactElement => {
           breakpoints={breakpoints}
           cols={cols}
           rowHeight={rowHeight}
-          layouts={{ lg: layout }}
+          layouts={layouts}
           onLayoutChange={onLayoutChange}
         >
           {builtInWidgets.map(({ id, title }) => {
@@ -199,8 +150,9 @@ const FeatureTradingScreen = (): ReactElement => {
           }) => (
             <div
               key={id}
-              data-grid={layout.find(({ i }) => i === id)
-                ?? (itemLayout ? { ...defaultPluginLayout, ...itemLayout } : defaultPluginLayout)}
+              data-grid={itemLayout
+                ? { ...defaultPluginLayout, ...itemLayout }
+                : defaultPluginLayout}
             >
               <Widget
                 id={id}

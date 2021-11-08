@@ -70,7 +70,12 @@ const Orders = (): ReactElement => {
         </tr>
       </thead>
       <tbody>
-        {openOrders.map(({
+        {openOrders.sort((a, b) => {
+          if (a.symbol === b.symbol) {
+            return a.price < b.price ? 1 : -1;
+          }
+          return a.symbol > b.symbol ? 1 : -1;
+        }).map(({
           symbol, side, type, origQty, lastPrice, price,
           executedQty, stopPrice, reduceOnly, orderId,
         }) => (

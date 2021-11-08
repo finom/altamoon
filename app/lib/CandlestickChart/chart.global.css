@@ -219,13 +219,8 @@ svg.chart-svg .triggered-alert-indicator {
   animation-name: biduul-triggered-alert-indicator;
   animation-iteration-count: infinite;
   display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
   vertical-align: top;
-  margin-top: 1px;
-  margin-right: 2px;
-  background-color: var(--bs-yellow);
+  color: var(--bs-yellow);
 }
 
 @keyframes biduul-triggered-alert-indicator {
@@ -267,3 +262,18 @@ svg.chart-svg .measurer-label p {
   padding: 0;
   margin: 0;
 }
+
+/* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+/*   Order arrows & Mark price
+/* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
+svg.chart-svg .tooltip-wrapper { overflow: visible; }
+
+svg.chart-svg .tooltip-wrapper > div {
+  border-radius: 0.25rem;
+  padding: 10px;
+  font-size: 1.5em;
+  line-height: 1.3em;
+  display: inline-block;
+}
+
+svg.chart-svg .tooltip-wrapper p { white-space: nowrap; margin: 0; }

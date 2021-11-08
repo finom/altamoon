@@ -2,23 +2,31 @@ import React, {
   ReactElement, useEffect, useMemo, useRef, useState,
 } from 'react';
 import useChange, { useValue, useGet } from 'use-change';
+
 import { futuresIntervals } from '../../../api';
 import useMultiValue from '../../../hooks/useMultiValue';
 import CandlestickChart from '../../../lib/CandlestickChart';
 import {
-  ACCOUNT, CUSTOMIZATION, MARKET, PERSISTENT, TRADING,
+  ACCOUNT, CUSTOMIZATION, MARKET, PERSISTENT, RootStore, TRADING,
 } from '../../../store';
+import FormSwitch from '../../controls/FormSwitch';
 
 import Widget from '../../layout/Widget';
 import ChartSettings from './ChartSettings';
 
 import css from './style.css';
 
-const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
+interface Props {
+  title: string;
+  id: string;
+}
+
+const ChartWidget = ({ title, id }: Props): ReactElement => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [candleChart, setCandleChart] = useState<CandlestickChart | null>(null);
 
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
+  const leverageBrackets = useValue(ACCOUNT, 'leverageBrackets');
 
   const customPriceLines = useValue(CUSTOMIZATION, 'customPriceLines');
 
@@ -28,6 +36,9 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   const getSymbol = useGet(PERSISTENT, 'symbol');
   const [interval, setCandleInterval] = useChange(PERSISTENT, 'interval');
   const [symbolAlerts, setSymbolAlerts] = useChange(PERSISTENT, 'symbolAlerts');
+  const [shouldChartShowOrders, setShouldChartShowOrders] = useChange(PERSISTENT, 'shouldChartShowOrders');
+  const chartOrdersNumber = useValue(PERSISTENT, 'chartOrdersNumber');
+
   const {
     symbol, tradingType, chartPaddingTopPercent,
     chartPaddingBottomPercent, chartPaddingRightPercent,
@@ -35,6 +46,10 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
     'symbol', 'tradingType', 'chartPaddingTopPercent',
     'chartPaddingBottomPercent', 'chartPaddingRightPercent',
   ]);
+
+  const markPriceTicker = useValue(
+    ({ market }: RootStore) => market.allMarkPriceTickers, symbol,
+  );
 
   const getOpenOrders = useGet(TRADING, 'openOrders');
   const {
@@ -45,8 +60,9 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
     shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
     exactSizeLimitBuyStr, exactSizeLimitSellStr,
     exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
+    currentSymbolAllOrders,
     // silent values
-    updateDrafts, createOrderFromDraft, limitOrder, cancelOrder,
+    updateDrafts, createOrderFromDraft, limitOrder, cancelOrder, calculateQuantity,
     calculateSizeFromString, calculateLiquidationPrice, getPseudoPosition,
   } = useMultiValue(TRADING, [
     'isCurrentSymbolMarginTypeIsolated', 'currentSymbolLeverage',
@@ -56,6 +72,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
     'shouldShowStopBuyDraftPriceLine', 'shouldShowStopSellDraftPriceLine',
     'exactSizeLimitBuyStr', 'exactSizeLimitSellStr',
     'exactSizeStopLimitBuyStr', 'exactSizeStopLimitSellStr',
+    'currentSymbolAllOrders',
   ]);
 
   const position = openPositions.find((pos) => pos.symbol === symbol) ?? null;
@@ -72,6 +89,10 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   useEffect(() => {
     candleChart?.update({ totalWalletBalance });
   }, [totalWalletBalance, candleChart]);
+
+  useEffect(() => {
+    candleChart?.update({ leverageBrackets });
+  }, [leverageBrackets, candleChart]);
 
   useEffect(() => {
     candleChart?.update({ candles });
@@ -94,6 +115,23 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
   useEffect(() => {
     candleChart?.update({ customPriceLines });
   }, [customPriceLines, candleChart]);
+
+  useEffect(() => {
+    candleChart?.update({ markPrice: markPriceTicker?.markPrice ?? '0' });
+  }, [customPriceLines, candleChart, markPriceTicker?.markPrice]);
+
+  useEffect(() => {
+    const isAllOrdersRelevant = !currentSymbolAllOrders.length
+      || currentSymbolAllOrders[0].symbol === symbol;
+
+    candleChart?.update({
+      filledOrders: isAllOrdersRelevant && shouldChartShowOrders
+        ? currentSymbolAllOrders
+          .filter(({ status }) => status === 'FILLED')
+          .slice(-chartOrdersNumber)
+        : [],
+    });
+  }, [currentSymbolAllOrders, candleChart, symbol, shouldChartShowOrders, chartOrdersNumber]);
 
   useEffect(() => {
     candleChart?.update({
@@ -228,6 +266,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
           right: chartPaddingRightPercent,
         },
         calculateLiquidationPrice,
+        calculateQuantity,
         getPseudoPosition,
         onDragLimitOrder: async (orderId: number, price: number) => {
           const order = getOpenOrders().find((orderItem) => orderId === orderItem.orderId);
@@ -251,7 +290,7 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
         },
       });
 
-      instance.update({ candles });
+      instance.update({ candles, leverageBrackets });
 
       setCandleChart(instance);
     }
@@ -268,6 +307,15 @@ const ChartWidget = ({ title, id }: { title: string; id: string; }): ReactElemen
         />
       )}
     >
+      <label className={`float-end ${css.showOrders}`}>
+        <FormSwitch
+          className="d-inline-block align-middle"
+          isChecked={shouldChartShowOrders}
+          onChange={setShouldChartShowOrders}
+        />
+        {' '}
+        Show Orders
+      </label>
       <div className={`nav nav-pills ${css.intervals}`}>
         {futuresIntervals.map((intervalsItem, index) => (
           <div

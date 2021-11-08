@@ -31,6 +31,14 @@ button.close {
   line-height: 1;
 }
 
+/* temporary fix for bootswatch theme to make handle white for selects */
+select.form-control.form-select, select.form-control.form-select:focus {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 16px 12px;
+}
+
 
 /* ==== react-grid ==== */
 .react-grid-layout {
@@ -84,6 +92,7 @@ button.close {
   height: 5px;
   border-right: 2px solid rgba(0, 0, 0, 0.4);
   border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+  z-index: 20;
 }
 
 .react-resizable-hide > .react-resizable-handle {

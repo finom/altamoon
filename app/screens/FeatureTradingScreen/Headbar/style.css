@@ -1,0 +1,17 @@
+.symbol {
+    width: 150px!important;
+}
+
+.marketInfo {
+    font-size: 0.75rem;
+    margin-right: 0.9rem;
+}
+
+.marketInfo .label {
+    display: block;
+    font-size: 10px;
+}
+
+.marketInfo .text {
+    font-size: 12px;
+}

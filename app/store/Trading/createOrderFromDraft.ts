@@ -71,6 +71,7 @@ export default async function createOrderFromDraft(this: Store['trading'], {
       symbol,
       reduceOnly,
       postOnly,
+      hideDraft: true,
     });
   }
 }

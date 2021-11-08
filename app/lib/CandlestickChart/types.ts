@@ -56,7 +56,6 @@ export interface PriceLinesDatum<T = unknown> {
 
 export interface ChartAxis {
   x: d3.Axis<d3.NumberValue>;
-  yLeft: d3.Axis<d3.NumberValue>;
   yRight: d3.Axis<d3.NumberValue>;
 }
 
@@ -71,4 +70,5 @@ export interface LiquidationLineSizeItem {
   price: number;
   amount: number;
   side: api.OrderSide;
+  type: 'POSITION' | 'ORDER' | 'DRAFT_ORDER' | 'PREDICTIVE_LIQUIDATION';
 }

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2018",
-    "module": "CommonJS",
+    "module": "ESNext",
     "lib": ["dom", "esnext"],
     "declaration": true,
     "declarationMap": true,
@@ -22,7 +22,7 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "skipLibCheck": true,
-    "types": []
+    "types": ["node"]
   },
   "exclude": [
     "test",

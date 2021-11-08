@@ -11,3 +11,8 @@
 .chartContainer {
   height: calc(100% - 60px);
 }
+
+.showOrders {
+  padding: 0.5rem 0.75rem;
+  padding-right: 0;
+}

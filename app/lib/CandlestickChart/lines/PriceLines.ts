@@ -176,7 +176,7 @@ export default class PriceLines implements ChartItem {
     this.#axis.x.scale()).invert(px);
 
   public invertY = (px: number): number => convertType<{ invert:(px: number) => number }>(
-    this.#axis.yLeft.scale()).invert(px);
+    this.#axis.yRight.scale()).invert(px);
 
   public getItems(): PriceLinesDatum[] { return this.#items; }
 
@@ -192,7 +192,7 @@ export default class PriceLines implements ChartItem {
       axis: d3.Axis<d3.NumberValue>,
     ): d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown> => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      const textSelection = update.select(`.price-line-${orient}-label`) as d3.Selection<SVGTextElement, PriceLinesDatum, SVGGElement, unknown>;
+      const textSelection = update.select<SVGTextElement>(`.price-line-${orient}-label`);
       update
         .select('.price-line-horizontal-group')
         .attr('transform', (d) => `translate(0, ${String(axis.scale()(d.yValue ?? 0))})`)
@@ -224,7 +224,7 @@ export default class PriceLines implements ChartItem {
     ): d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown> => {
       if (!this.#showX) return update;
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-      const textSelection = update.select('.price-line-bottom-label') as d3.Selection<SVGTextElement, PriceLinesDatum, SVGGElement, unknown>;
+      const textSelection = update.select<SVGTextElement>('.price-line-bottom-label');
       update
         .select('.price-line-vertical-group')
         .attr('transform', (d) => `translate(${String(axis.scale()(d.xValue ?? 0))}, 0)`)
@@ -259,13 +259,13 @@ export default class PriceLines implements ChartItem {
           // --- horizontal line ---
           const wrapper = enter.append('g').attr('class', 'price-line-wrapper')
             .on('mouseover', function mouseover(_evt, datum) {
-              const titleElement = this.querySelector('.price-line-title-inner') as HTMLElement;
+              const titleElement = this.querySelector<HTMLElement>('.price-line-title-inner');
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
                 titleElement.style.display = 'inline-block';
               }
             })
             .on('mouseleave', function mouseleave(_evt, datum) {
-              const titleElement = this.querySelector('.price-line-title-inner') as HTMLElement;
+              const titleElement = this.querySelector<HTMLElement>('.price-line-title-inner');
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
                 titleElement.style.display = 'none';
               }
@@ -383,18 +383,6 @@ export default class PriceLines implements ChartItem {
             }
           }
 
-          // --- left label ---
-          const leftLabelGroup = horizontalWrapper.append('g').attr('class', 'price-line-left-group');
-          leftLabelGroup.append('path')
-            .attr('d', this.#getPriceTextBackgroundPath({
-              axis: this.#axis.yLeft,
-              orient: 'left',
-            }))
-            .attr('class', 'price-line-left-background')
-            .attr('fill', 'currentColor');
-
-          leftLabelGroup.append('text').attr('class', 'price-line-left-label');
-
           // --- right label ---
           const rightLabelGroup = horizontalWrapper.append('g')
             .attr('class', 'price-line-right-group')
@@ -425,7 +413,7 @@ export default class PriceLines implements ChartItem {
               .attr('stroke', 'currentColor')
               .attr('class', 'price-line-line');
 
-            // --- left label ---
+            // --- bottom label ---
             const bottomLabelGroup = verticalWrapper.append('g')
               .attr('class', 'price-line-bottom-group')
               .attr('transform', `translate(0, ${this.#resizeData.height})`);
@@ -444,7 +432,6 @@ export default class PriceLines implements ChartItem {
           const updateWrapper = convertType<
           d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown>
           >(wrapper);
-          updateHorizontalLineHandler(updateWrapper, 'left', this.#axis.yLeft);
           updateHorizontalLineHandler(updateWrapper, 'right', this.#axis.yRight);
           updateVerticalLineHandler(updateWrapper, this.#axis.x);
           if (this.#isTitleVisible) {
@@ -456,7 +443,6 @@ export default class PriceLines implements ChartItem {
           return wrapper;
         },
         (update) => {
-          updateHorizontalLineHandler(update, 'left', this.#axis.yLeft);
           updateHorizontalLineHandler(update, 'right', this.#axis.yRight);
           updateVerticalLineHandler(update, this.#axis.x);
           if (this.#isTitleVisible) {

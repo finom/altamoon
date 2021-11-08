@@ -20,6 +20,8 @@ import { OrderSide } from '../../api';
 import Measurer from './items/Measurer';
 import { RootStore } from '../../store';
 import Lines from './lines';
+import OrderArrows from './items/OrderArrows';
+import MarkPriceTriangle from './items/MarkPriceTriangle';
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
@@ -34,6 +36,7 @@ interface Params {
   pricePrecision: number;
   paddingPercents: ChartPaddingPercents;
   calculateLiquidationPrice: RootStore['trading']['calculateLiquidationPrice'];
+  calculateQuantity: RootStore['trading']['calculateQuantity'];
   getPseudoPosition: RootStore['trading']['getPseudoPosition'];
 }
 
@@ -53,7 +56,7 @@ export default class CandlestickChart {
   #height = 0;
 
   #margin: StyleMargin = {
-    top: 0, right: 55, bottom: 30, left: 55,
+    top: 0, right: 55, bottom: 30, left: 0,
   };
 
   #paddingPercents: ChartPaddingPercents;
@@ -63,6 +66,10 @@ export default class CandlestickChart {
   #container: HTMLElement;
 
   #measurer: Measurer;
+
+  #orderArrows: OrderArrows;
+
+  #markPriceTriangle: MarkPriceTriangle;
 
   #pricePrecision: number;
 
@@ -79,7 +86,8 @@ export default class CandlestickChart {
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
     {
-      pricePrecision, alerts, paddingPercents, calculateLiquidationPrice, getPseudoPosition,
+      pricePrecision, alerts, paddingPercents, calculateLiquidationPrice,
+      calculateQuantity, getPseudoPosition,
       onUpdateDrafts, onUpdateAlerts, onClickDraftCheck, onDragLimitOrder, onCancelOrder,
     }: Params,
   ) {
@@ -91,7 +99,7 @@ export default class CandlestickChart {
 
     const x = d3.scaleTime().range([0, this.#width]);
 
-    this.#scales = {
+    const scales = {
       x,
       scaledX: x,
       y: localStorage.getItem('forceChartLinearScale') === 'true'
@@ -99,19 +107,24 @@ export default class CandlestickChart {
         : d3.scaleSymlog().range([this.#height, 0]),
     };
 
+    this.#scales = scales;
+
     this.#pricePrecision = pricePrecision;
     this.#svg = new Svg();
-    this.#axes = new Axes({ scales: this.#scales });
+    this.#axes = new Axes({ scales });
     this.#clipPath = new ClipPath();
-    this.#gridLines = new GridLines({ scales: this.#scales });
+    this.#gridLines = new GridLines({ scales });
     this.#paddingPercents = paddingPercents;
-    this.#measurer = new Measurer({ scales: this.#scales, resizeData });
-    this.#plot = new Plot({ scales: this.#scales });
+    this.#measurer = new Measurer({ scales, resizeData });
+    this.#plot = new Plot({ scales });
+    this.#orderArrows = new OrderArrows({ scales });
+    this.#markPriceTriangle = new MarkPriceTriangle({ scales });
 
     this.#lines = new Lines({
       axis: this.#axes.getAxis(),
       alerts,
       calculateLiquidationPrice,
+      calculateQuantity,
       getPseudoPosition,
       onUpdateAlerts,
       onUpdateDrafts,
@@ -135,9 +148,14 @@ export default class CandlestickChart {
         this.#axes.update({ scaledX });
         this.#gridLines.update({ scaledX });
         this.#plot.update({ scaledX });
+        this.#orderArrows.update({ scaledX });
+        this.#markPriceTriangle.update({ scaledX });
         this.#lines.update();
 
         this.#draw();
+
+        // fixes https://trello.com/c/HqXtZ5St/150-chart-wheel-zooming-doesnt-redraw-lines-where-they-should-be
+        this.#lines.resize(this.#calcDimensions());
       }) as (selection: D3Selection<d3.BaseType>) => void,
     );
   }
@@ -148,9 +166,12 @@ export default class CandlestickChart {
    */
   public update(data: {
     currentSymbolPseudoPosition?: TradingPosition | null;
+    markPrice?: string;
     totalWalletBalance?: number;
     currentSymbolInfo?: api.FuturesExchangeInfoSymbol | null;
     currentSymbolLeverage?: number;
+    filledOrders?: api.FuturesOrder[];
+    leverageBrackets?: Record<string, api.FuturesLeverageBracket[]>;
     // not implicitly used but required for component updates
     isCurrentSymbolMarginTypeIsolated?: boolean;
     candles?: api.FuturesChartCandle[],
@@ -231,7 +252,9 @@ export default class CandlestickChart {
       this.#lines.draftLines.updateDraftLines(data);
     }
 
-    if (typeof data.position !== 'undefined') {
+    if (
+      typeof data.position !== 'undefined' || typeof data.leverageBrackets !== 'undefined'
+    ) {
       this.#lines.liquidationPriceLines.updateLiquidationLines(data);
     }
 
@@ -239,6 +262,10 @@ export default class CandlestickChart {
 
     if (typeof data.currentSymbolLeverage !== 'undefined') {
       this.#measurer.update({ currentSymbolLeverage: data.currentSymbolLeverage });
+    }
+
+    if (typeof data.filledOrders !== 'undefined') {
+      this.#orderArrows.update({ filledOrders: data.filledOrders });
     }
 
     if (typeof data.orders !== 'undefined') {
@@ -254,6 +281,8 @@ export default class CandlestickChart {
     if (typeof data.alerts !== 'undefined') this.#lines.alertLines.updateAlertLines(data.alerts);
 
     if (typeof data.customPriceLines !== 'undefined') this.#lines.customLines.update({ items: data.customPriceLines });
+
+    if (typeof data.markPrice !== 'undefined') this.#markPriceTriangle.update({ markPrice: data.markPrice });
 
     if (typeof data.paddingPercents !== 'undefined' && !isEqual(data.paddingPercents, this.#paddingPercents)) {
       this.#paddingPercents = data.paddingPercents;
@@ -288,10 +317,9 @@ export default class CandlestickChart {
     const drawData: DrawData = { candles: this.#candles, zoomTransform: this.#zoomTransform };
 
     this.#axes.draw(resizeData);
-
     this.#gridLines.draw();
-
     this.#plot.draw(drawData);
+    this.#orderArrows.draw();
 
     this.#lines.currentPriceLines.updateItem('currentPrice', {
       yValue: +(this.#candles[this.#candles.length - 1]?.close ?? 0),
@@ -340,6 +368,8 @@ export default class CandlestickChart {
     this.#clipPath.appendTo(svgContainer, resizeData);
     this.#lines.appendTo(svgContainer, resizeData);
     this.#measurer.appendTo(svgContainer, resizeData);
+    this.#orderArrows.appendTo(svgContainer);
+    this.#markPriceTriangle.appendTo(svgContainer);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);
   };
@@ -372,12 +402,19 @@ export default class CandlestickChart {
       ? [d3.min(candles, (d) => +d.low) as number, d3.max(candles, (d) => +d.high) as number]
       : [0, 1];
 
-    y.domain(yDomain);
+    if ('constant' in y && yDomain[0] !== 0) {
+      if (yDomain[0] < 1) y.constant(0.1);
+      if (yDomain[0] < 0.1) y.constant(0.01);
+      if (yDomain[0] < 0.01) y.constant(0.001);
+    }
 
     const paddingTopPercent = Math.min(50, Math.max(0, this.#paddingPercents.top)) || 0;
     const paddingBottomPercent = Math.min(50, Math.max(0, this.#paddingPercents.bottom)) || 0;
     const paddingTop = this.#height * (paddingTopPercent / 100);
     const paddingBottom = (this.#height * (paddingBottomPercent / 100));
+
+    // calc domain before calculating padding
+    y.domain(yDomain);
 
     // Padding
     const yPaddingTop = y.invert(-paddingTop) - y.invert(0);

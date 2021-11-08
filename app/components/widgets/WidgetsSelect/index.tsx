@@ -12,7 +12,7 @@ import FormSwitch from '../../controls/FormSwitch';
 
 import css from './style.css';
 
-const WidgetsSelect = (): ReactElement => {
+const WidgetsSelect = ({ buttonTextClassName }: { buttonTextClassName: string; }): ReactElement => {
   const [isWidgetListVisible, setIsWidgetListVisible] = useState(false);
   const theme = useValue(PERSISTENT, 'theme');
   const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets');
@@ -46,12 +46,13 @@ const WidgetsSelect = (): ReactElement => {
   return (
     <div className="d-inline-block position-relative" ref={ref as LegacyRef<HTMLDivElement>}>
       <Button
+        title="Widgets"
         color={theme === 'dark' ? 'dark' : 'light'}
         onClick={() => setIsWidgetListVisible((v) => !v)}
       >
         <UiChecksGrid size={16} />
         {' '}
-        Widgets
+        <span className={buttonTextClassName}>Widgets</span>
       </Button>
 
       <div

@@ -25,6 +25,7 @@ interface Props {
   bodyClassName?: string;
   settings?: ReactNode | ((settingsProps: WidgetSettingsProps) => ReactNode);
   children?: ReactNode;
+  after?: ReactNode;
   bodyRef?: Ref<HTMLElement>;
   shouldCheckAccount?: boolean;
   onSettingsCancel?: () => void;
@@ -32,7 +33,7 @@ interface Props {
 }
 
 const Widget = ({
-  id, title, canSettingsSave, noPadding, bodyClassName, settings, children,
+  id, title, canSettingsSave, noPadding, bodyClassName, settings, children, after,
   bodyRef, shouldCheckAccount, onSettingsCancel, onSettingsSave,
 }: Props): ReactElement => {
   const [isSettingsOpen, setIsSettignsOpen] = useState(false);
@@ -78,6 +79,7 @@ const Widget = ({
           className={classNames({
             [css.settings]: true,
             [css.settingsOpen]: isSettingsOpen,
+            'overflow-auto': true,
           })}
         >
           {typeof settings === 'function' ? settings({ listenSettingsSave, listenSettingsCancel }) : settings}
@@ -116,6 +118,7 @@ const Widget = ({
       >
         {!shouldCheckAccount || futuresAccount ? children : <AccountError />}
       </CardBody>
+      {after}
     </Card>
   );
 };
