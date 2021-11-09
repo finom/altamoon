@@ -1,5 +1,4 @@
 import { format } from 'd3-format';
-import { remove } from 'lodash';
 import React, { ReactElement, useCallback, useState } from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
 import { Badge, Button, Table } from 'reactstrap';
@@ -25,14 +24,9 @@ const Positions = (): ReactElement => {
   const setSymbol = useSet(PERSISTENT, 'symbol');
   const [currentAdjustMarginSymbol, setCurrentAdjustMarginSymbol] = useState<string | null>(null);
 
-  const [symbolsToClose, setSymbolsToClose] = useState<string[]>([]);
   const onCloseMarket = useCallback(async (symbol: string) => {
-    setSymbolsToClose([...symbolsToClose, symbol]);
-
     try { await closePosition(symbol); } catch {}
-
-    setSymbolsToClose(remove(symbolsToClose, symbol));
-  }, [closePosition, symbolsToClose]);
+  }, [closePosition]);
   const closeAdjustMarginModal = useCallback(() => setCurrentAdjustMarginSymbol(null), []);
 
   return (
@@ -63,7 +57,7 @@ const Positions = (): ReactElement => {
           {openPositions.map(({
             symbol, baseAsset, baseValue, liquidationPrice, entryPrice, positionAmt,
             isolatedWallet, marginType, leverage, lastPrice,
-            side, pnl, pnlBalancePercent, pnlPositionPercent,
+            side, pnl, pnlBalancePercent, pnlPositionPercent, isClosed,
           }) => (
             <tr key={symbol}>
               <td>
@@ -144,10 +138,10 @@ const Positions = (): ReactElement => {
                 <Button
                   color="link"
                   className="text-muted px-0"
-                  disabled={symbolsToClose.includes(symbol)}
+                  disabled={isClosed}
                   onClick={() => onCloseMarket(symbol)}
                 >
-                  {symbolsToClose.includes(symbol) ? 'Closing...' : 'Market'}
+                  {isClosed ? 'Closing...' : 'Market'}
                 </Button>
               </td>
             </tr>

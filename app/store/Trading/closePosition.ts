@@ -14,13 +14,16 @@ export default async function closePosition(this: Store['trading'], symbol: stri
 
     const amount = typeof amt !== 'undefined' ? amt : positionAmt;
 
+    this.openPositions = this.openPositions.map((pos) => (pos.symbol === symbol ? {
+      ...pos,
+      isClosed: true,
+    } : pos));
+
     if (amount < 0) {
       result = await api.futuresMarketOrder('BUY', symbol, -amount, { reduceOnly: true });
     } else {
       result = await api.futuresMarketOrder('SELL', symbol, amount, { reduceOnly: true });
     }
-
-    await this.loadPositions();
 
     if (Math.abs(amount) < Math.abs(positionAmt)) {
       notify('success', `Position ${symbol} is reduced by ${Math.abs(amount)}`);

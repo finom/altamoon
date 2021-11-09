@@ -5,13 +5,13 @@ import {
 } from 'reactstrap';
 import useChange from 'use-change';
 import isType from '../../lib/isType';
-import { PERSISTENT, RootStore } from '../../store';
+import { PERSISTENT, ROOT, RootStore } from '../../store';
 import Modal, { ModalHeader, ModalFooter, ModalBody } from '../layout/Modal';
 
 const fakeSecretValue = Array(50).fill('1').join('');
 
 const SettingsModal = (): ReactElement => {
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useChange<RootStore, 'isSettingsModalOpen'>('isSettingsModalOpen');
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useChange(ROOT, 'isSettingsModalOpen');
   const [existingNumberOfColumns, setNumberOfColumns] = useChange(PERSISTENT, 'numberOfColumns');
   const [existingApiKey, setApiKey] = useChange(PERSISTENT, 'binanceApiKey');
   const [existingApiSecret, setApiSecret] = useChange(PERSISTENT, 'binanceApiSecret');

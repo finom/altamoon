@@ -42,5 +42,6 @@ export default function getOrderInfo(
     updateTime: order.updateTime,
     workingType: order.workingType,
     priceProtect: order.priceProtect,
+    isCanceled: this.openOrders.some((o) => order.orderId === o.orderId && o.isCanceled),
   };
 }

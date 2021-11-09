@@ -5,9 +5,12 @@ export default async function cancelOrder(
   this: Store['trading'], symbol: string, orderId: number,
 ): Promise<api.FuturesOrder | null> {
   try {
-    const result = await api.futuresCancel(symbol, orderId);
+    this.openOrders = this.openOrders.map((order) => (order.orderId === orderId ? {
+      ...order,
+      isCanceled: true,
+    } : order));
 
-    await this.loadOrders();
+    const result = await api.futuresCancel(symbol, orderId);
 
     notify('success', `Order for ${symbol} is canceled`);
 

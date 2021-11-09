@@ -1,6 +1,6 @@
 import { format } from 'd3-format';
-import { capitalize, remove, uniq } from 'lodash';
-import React, { ReactElement, useCallback, useState } from 'react';
+import { capitalize, uniq } from 'lodash';
+import React, { ReactElement, useCallback, useMemo } from 'react';
 import { Trash } from 'react-bootstrap-icons';
 import { Badge, Button, Table } from 'reactstrap';
 import { useSet, useSilent, useValue } from 'use-change';
@@ -14,19 +14,18 @@ const Orders = (): ReactElement => {
   const allSymbolsPositionRisk = useValue(TRADING, 'allSymbolsPositionRisk');
   const cancelOrder = useSilent(TRADING, 'cancelOrder');
   const cancelAllOrders = useSilent(TRADING, 'cancelAllOrders');
-  const [idsToClose, setIdsToClose] = useState<number[]>([]);
   const setSymbol = useSet(PERSISTENT, 'symbol');
+  const isAllOrdersCanceled = useMemo(
+    () => !openOrders.length || openOrders.every(({ isCanceled }) => isCanceled),
+    [openOrders],
+  );
 
   const onCancel = useCallback(async (symbol: string, orderId: number) => {
-    setIdsToClose([...idsToClose, orderId]);
     await cancelOrder(symbol, orderId);
-    setIdsToClose(remove(idsToClose, orderId));
-  }, [cancelOrder, idsToClose]);
+  }, [cancelOrder]);
 
   const onCancelAll = useCallback(async () => {
-    setIdsToClose(openOrders.map(({ orderId }) => orderId));
     await Promise.all(uniq(openOrders.map(({ symbol }) => symbol)).map(cancelAllOrders));
-    setIdsToClose([]);
   }, [cancelAllOrders, openOrders]);
 
   return (
@@ -61,7 +60,7 @@ const Orders = (): ReactElement => {
             <Button
               color="link"
               className="text-muted px-0 py-0"
-              disabled={!openOrders.length || openOrders.length === idsToClose.length}
+              disabled={isAllOrdersCanceled}
               onClick={onCancelAll}
             >
               Cancel all
@@ -77,7 +76,7 @@ const Orders = (): ReactElement => {
           return a.symbol > b.symbol ? 1 : -1;
         }).map(({
           symbol, side, type, origQty, lastPrice, price,
-          executedQty, stopPrice, reduceOnly, orderId,
+          executedQty, stopPrice, reduceOnly, orderId, isCanceled,
         }) => (
           <tr key={orderId}>
             <td>
@@ -142,10 +141,10 @@ const Orders = (): ReactElement => {
               <Button
                 color="link"
                 className="text-muted px-0 py-0"
-                disabled={idsToClose.includes(orderId)}
+                disabled={isCanceled}
                 onClick={() => onCancel(symbol, orderId)}
               >
-                {idsToClose.includes(orderId) ? '...' : <Trash size={18} />}
+                {isCanceled ? '...' : <Trash size={18} />}
               </Button>
             </td>
           </tr>

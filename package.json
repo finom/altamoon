@@ -257,7 +257,7 @@
     "regenerator-runtime": "^0.13.9",
     "stream-browserify": "^3.0.0",
     "type-fest": "^2.5.2",
-    "use-change": "^0.2.6"
+    "use-change": "^1.0.1"
   },
   "devEngines": {
     "node": ">=10.x",

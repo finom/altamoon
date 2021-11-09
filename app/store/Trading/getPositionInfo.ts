@@ -74,6 +74,7 @@ export default function getPositionInfo(
     maintMarginRatio,
     maintMargin: maintMarginRatio * baseValue - (leverageBracket?.cum ?? 0),
     leverageBracket,
+    isClosed: this.openPositions.some((pos) => pos.symbol === symbol && pos.isClosed),
   };
 
   // TODO remove this comment if https://trello.com/c/TGyLXMDu/98-liquidation-line is resolved

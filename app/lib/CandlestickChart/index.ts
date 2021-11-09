@@ -196,6 +196,8 @@ export default class CandlestickChart {
 
     paddingPercents?: ChartPaddingPercents;
   }): void {
+    if (typeof data.alerts !== 'undefined') this.#lines.alertLines.updateAlertLines(data.alerts);
+
     if (typeof data.currentSymbolInfo !== 'undefined') {
       const pricePrecision = data.currentSymbolInfo?.pricePrecision ?? 0;
 
@@ -277,8 +279,6 @@ export default class CandlestickChart {
       this.#measurer.update({ position: data.position });
       this.#lines.positionLines.updatePositionLine(data.position);
     }
-
-    if (typeof data.alerts !== 'undefined') this.#lines.alertLines.updateAlertLines(data.alerts);
 
     if (typeof data.customPriceLines !== 'undefined') this.#lines.customLines.update({ items: data.customPriceLines });
 
