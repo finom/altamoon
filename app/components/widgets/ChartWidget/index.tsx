@@ -60,7 +60,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
     exactSizeLimitBuyStr, exactSizeLimitSellStr,
     exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
-    currentSymbolAllOrders,
+    currentSymbolAllOrders, ordersKey,
     // silent values
     updateDrafts, createOrderFromDraft, limitOrder, cancelOrder, calculateQuantity,
     calculateSizeFromString, calculateLiquidationPrice, getPseudoPosition,
@@ -72,7 +72,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     'shouldShowStopBuyDraftPriceLine', 'shouldShowStopSellDraftPriceLine',
     'exactSizeLimitBuyStr', 'exactSizeLimitSellStr',
     'exactSizeStopLimitBuyStr', 'exactSizeStopLimitSellStr',
-    'currentSymbolAllOrders',
+    'currentSymbolAllOrders', 'ordersKey',
   ]);
 
   const position = openPositions.find((pos) => pos.symbol === symbol) ?? null;
@@ -102,11 +102,12 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     candleChart?.update({ position });
   }, [position, candleChart]);
 
-  useMemo(() => { // TODO dirty fix useMemo works more robust than useEffect for some reason
+  useMemo(() => {
+    // TODO dirty fix useMemo works more robust than useEffect for some reason
     // TODO dirty fix to ignore lastPrice changes and update orders when length or leverage changed
     candleChart?.update({ orders });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orders.length, orders[0]?.leverage, orders[0]?.marginType, candleChart]);
+  }, [orders.length, ordersKey, candleChart]);
 
   useEffect(() => {
     candleChart?.update({ alerts: alerts || [] });

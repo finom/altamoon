@@ -52,6 +52,7 @@ export interface PriceLinesDatum<T = unknown> {
   isTitleVisible?: boolean | 'hover'; // non-dynamic so far
   lineStyle?: 'solid' | 'dashed' | 'dotted';
   customData?: T;
+  pointerEventsNone?: boolean;
 }
 
 export interface ChartAxis {

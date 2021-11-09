@@ -197,7 +197,8 @@ export default class PriceLines implements ChartItem {
         .select('.price-line-horizontal-group')
         .attr('transform', (d) => `translate(0, ${String(axis.scale()(d.yValue ?? 0))})`)
         .attr('color', ({ color }) => color ?? this.#color)
-        .style('visibility', ({ isVisible }) => (typeof isVisible === 'undefined' || isVisible ? '' : 'hidden'));
+        .style('visibility', ({ isVisible }) => (typeof isVisible === 'undefined' || isVisible ? '' : 'hidden'))
+        .style('pointer-events', (d) => (d.pointerEventsNone ?? this.#pointerEventsNone ? 'none' : 'auto'));
 
       update.select('.price-line-horizontal-group .price-line-line')
         .attr('stroke-dasharray', (d) => {
@@ -271,10 +272,6 @@ export default class PriceLines implements ChartItem {
               }
             })
             .on('dblclick', (evt: MouseEvent) => evt.stopPropagation());
-
-          if (this.#pointerEventsNone) {
-            wrapper.style('pointer-events', 'none');
-          }
 
           const horizontalWrapper = wrapper.append('g').attr('class', 'price-line-horizontal-group');
 

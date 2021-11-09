@@ -35,18 +35,20 @@ export default class OrderPriceLines extends PriceLines {
       ...orders
         .map((order): PriceLinesDatum => {
           const {
-            price, side, origQty, executedQty, symbol, type, orderId,
+            price, side, origQty, executedQty, symbol, type, orderId, isCanceled,
           } = order;
+          const color = side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)';
           return ({
             isDraggable: type === 'LIMIT',
             yValue: price,
             isVisible: true,
-            color: side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)',
+            color: isCanceled ? 'var(--bs-gray)' : color,
             // TODO this is a potentially wrong way to retrieve
             // asset name from symbol name because of BNB/BUSD pairs
             title: `Limit ${origQty - executedQty} ${symbol.replace('USDT', '')}`,
             id: orderId,
             customData: { order },
+            pointerEventsNone: isCanceled,
           });
         }),
       ...orders

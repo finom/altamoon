@@ -93,11 +93,11 @@ export default class Trading {
     this.store = store;
 
     listenChange(this, 'openPositions', (openPositions) => {
-      this.positionsKey = openPositions.map(({ symbol }) => symbol).join('/');
+      this.positionsKey = openPositions.filter(({ isClosed }) => !isClosed).map(({ symbol }) => symbol).join('/');
     });
 
     listenChange(this, 'openOrders', (openOrders) => {
-      this.ordersKey = openOrders.map(({ symbol }) => symbol).join('/');
+      this.ordersKey = openOrders.filter(({ isCanceled }) => !isCanceled).map(({ orderId }) => orderId).join('/');
     });
 
     listenChange(this, 'positionsKey', this.#listenLastPrices);
@@ -198,6 +198,7 @@ export default class Trading {
 
           const marginType = positionRisk?.marginType || 'isolated';
           const leverage = +positionRisk?.leverage || 1;
+
           return {
             ...order,
             marginType,
