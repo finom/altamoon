@@ -28,7 +28,10 @@ type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined
 interface Params {
   onUpdateAlerts: (d: number[]) => void;
   onUpdateDrafts: (d: DraftPrices) => void;
-  onClickDraftCheck: (d: DraftPrices, side: OrderSide) => void;
+  onClickDraftCheck: (
+    d: DraftPrices & { newClientOrderId: string; },
+    side: OrderSide,
+  ) => Promise<void>;
   onDragLimitOrder: (orderId: number, price: number) => void;
   onCancelOrder: (orderId: number) => void;
   alerts: number[];

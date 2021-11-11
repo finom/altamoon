@@ -12,6 +12,10 @@ interface Params {
 export default class OrderPriceLines extends PriceLines {
   #orders: TradingOrder[] = [];
 
+  // we neeed this to preserve line position when it was dragged
+  // but not yet removed (not yet re-created)
+  #forceOrderPrices: Record<number, number> = {};
+
   constructor({
     axis, onDragLimitOrder, onCancelOrder, onUpdateItems,
   }: Params, resizeData: ResizeData) {
@@ -21,7 +25,10 @@ export default class OrderPriceLines extends PriceLines {
       isTitleVisible: true,
       lineStyle: 'solid',
       isBackgroundFill: true,
-      onDragEnd: (d) => onDragLimitOrder(d.id as number, d.yValue ?? 0), // args ensure TS
+      onDragEnd: (d) => {
+        this.#forceOrderPrices[d.id as number] = d.yValue ?? 0;
+        onDragLimitOrder(d.id as number, d.yValue ?? 0);
+      },
       onClickClose: (d) => onCancelOrder(d.id as number),
       onUpdateItems,
     }, resizeData);
@@ -40,9 +47,10 @@ export default class OrderPriceLines extends PriceLines {
           const color = side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)';
           return ({
             isDraggable: type === 'LIMIT',
-            yValue: price,
+            yValue: this.#forceOrderPrices[orderId] ?? price,
             isVisible: true,
             color: isCanceled ? 'var(--bs-gray)' : color,
+            opacity: isCanceled ? 0.5 : 1,
             // TODO this is a potentially wrong way to retrieve
             // asset name from symbol name because of BNB/BUSD pairs
             title: `Limit ${origQty - executedQty} ${symbol.replace('USDT', '')}`,

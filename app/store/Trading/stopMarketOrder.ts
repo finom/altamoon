@@ -15,8 +15,6 @@ export default async function stopMarketOrder(this: Store['trading'], {
       side, symbol, quantity, stopPrice, { reduceOnly },
     );
 
-    await this.loadOrders();
-
     notify('success', `Stop market order for ${symbol} is created`);
 
     return result;

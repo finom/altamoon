@@ -11,8 +11,6 @@ export default async function marketOrder(this: Store['trading'], {
       side, symbol, quantity, { reduceOnly },
     );
 
-    await this.loadPositions();
-
     notify('success', `Position for ${symbol} is created`);
 
     return result;

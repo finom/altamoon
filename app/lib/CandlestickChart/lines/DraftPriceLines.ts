@@ -11,8 +11,10 @@ interface Params {
   axis: ChartAxis;
   getPseudoPosition: RootStore['trading']['getPseudoPosition'];
   calculateQuantity: RootStore['trading']['calculateQuantity'];
-  onUpdateDrafts: ((r: DraftPrices) => void);
-  onClickDraftCheck: ((r: DraftPrices, side: OrderSide) => void);
+  onUpdateDrafts: (r: DraftPrices) => void;
+  onClickDraftCheck: (
+    r: DraftPrices & { newClientOrderId: string; }, side: OrderSide,
+  ) => Promise<void>;
   onUpdateItems: (d: PriceLinesDatum[]) => void;
 }
 
@@ -66,8 +68,20 @@ export default class DraftPriceLines extends PriceLines {
       isTitleVisible: true,
       lineStyle: 'dashed',
       onDragEnd: () => onUpdateDrafts(this.getDraftPrices()),
-      onClickCheck: (datum) => {
-        onClickDraftCheck(this.getDraftPrices(), datum.id === 'SELL' || datum.id === 'STOP_SELL' ? 'SELL' : 'BUY');
+      onClickCheck: async (datum) => {
+        const { color } = datum;
+        this.updateItem(datum.id as string, { color: 'var(--bs-grey)', opacity: 0.5 });
+        try {
+          await onClickDraftCheck(
+            { ...this.getDraftPrices(), newClientOrderId: `from_draft_${Math.random()}` },
+            datum.id === 'SELL' || datum.id === 'STOP_SELL' ? 'SELL' : 'BUY',
+          );
+          this.updateItem(datum.id as string, { color, opacity: 1 });
+        } catch (e) {
+          this.updateItem(datum.id as string, { color, opacity: 1 });
+
+          throw e;
+        }
       },
       onClickClose: (datum) => {
         this.updateItem(datum.id as string, { isVisible: false });

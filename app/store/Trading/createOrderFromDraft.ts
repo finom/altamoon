@@ -3,12 +3,13 @@ import notify from '../../lib/notify';
 
 // used by Chart Widget compoment
 export default async function createOrderFromDraft(this: Store['trading'], {
-  buyDraftPrice, sellDraftPrice, stopBuyDraftPrice, stopSellDraftPrice,
+  buyDraftPrice, sellDraftPrice, stopBuyDraftPrice, stopSellDraftPrice, newClientOrderId,
 }: {
   buyDraftPrice: number | null;
   sellDraftPrice: number | null;
   stopBuyDraftPrice: number | null;
   stopSellDraftPrice: number | null;
+  newClientOrderId: string;
 }, side: api.OrderSide): Promise<void> {
   const {
     tradingType, symbol, tradingReduceOnly: reduceOnly, tradingPostOnly: postOnly,
@@ -48,6 +49,7 @@ export default async function createOrderFromDraft(this: Store['trading'], {
       symbol,
       reduceOnly,
       postOnly,
+      newClientOrderId,
     });
   } else {
     const size = this.calculateSizeFromString(symbol, side === 'BUY' ? this.exactSizeLimitBuyStr : this.exactSizeLimitSellStr);
@@ -72,6 +74,7 @@ export default async function createOrderFromDraft(this: Store['trading'], {
       reduceOnly,
       postOnly,
       hideDraft: true,
+      newClientOrderId,
     });
   }
 }

@@ -81,6 +81,11 @@ export default function eventOrderUpdate(
   // TODO support stop orders
   if (order.type === 'LIMIT') {
     if (order.status === 'NEW') {
+      // if the order is created from draft, hide draft line
+      // the ID is set by DraftPriceLines (part of the chart class) when draft check icon is clicked
+      if (order.clientOrderId.startsWith('from_draft_')) {
+        this.shouldShowLimitSellPriceLine = false;
+      }
       this.openOrders = [...this.openOrders, getOrderInfo.call(this, order)];
     }
 

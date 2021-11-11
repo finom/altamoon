@@ -109,12 +109,12 @@ export default class Account {
 
           if (event === 'ACCOUNT_UPDATE') {
             this.#store.trading.eventAccountUpdate(data.a);
-            void this.#store.trading.loadPositions();
+            // void this.#store.trading.loadPositions();
             void this.#store.stats.loadIncome();
             void this.reloadFuturesAccount();
           } else if (event === 'ORDER_TRADE_UPDATE') {
             this.#store.trading.eventOrderUpdate(data.o, updateTime);
-            void this.#store.trading.loadOrders();
+            // void this.#store.trading.loadOrders();
             void this.reloadFuturesAccount();
           } else if (event === 'ACCOUNT_CONFIG_UPDATE') {
             void this.#store.trading.loadPositions();

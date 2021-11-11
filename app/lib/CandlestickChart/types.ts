@@ -44,6 +44,7 @@ export interface PriceLinesDatum<T = unknown> {
   yValue?: number;
   title?: string;
   color?: string;
+  opacity?: number;
   id?: string | number;
   isVisible?: boolean;
   isDraggable?: boolean; // non-dynamic so far

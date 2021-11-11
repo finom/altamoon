@@ -19,9 +19,17 @@ module.exports = {
       depth: 5,
     }],
     'react-hooks/exhaustive-deps': ['error', {
-      additionalHooks: "(useDepsUpdateEffect)"
+      additionalHooks: '(useDepsUpdateEffect)',
     }],
-    'max-lines': ["error", {"max": 500, "skipComments": true}]
+    'max-lines': ['error', { max: 500, skipComments: true }],
+    'max-len': ['error', 100, 2, {
+      comments: 200,
+      ignoreUrls: true,
+      ignoreComments: false,
+      ignoreRegExpLiterals: true,
+      ignoreStrings: true,
+      ignoreTemplateLiterals: true,
+    }],
   },
   parserOptions: {
     ecmaVersion: 2020,

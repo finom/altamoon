@@ -21,7 +21,10 @@ interface Params {
   getPseudoPosition: RootStore['trading']['getPseudoPosition'];
   onUpdateAlerts: (d: number[]) => void;
   onUpdateDrafts: (d: DraftPrices) => void;
-  onClickDraftCheck: (d: DraftPrices, side: OrderSide) => void;
+  onClickDraftCheck: (
+    d: DraftPrices & { newClientOrderId: string; },
+    side: OrderSide,
+  ) => Promise<void>;
   onDragLimitOrder: (orderId: number, price: number) => void;
   onCancelOrder: (orderId: number) => void;
 }

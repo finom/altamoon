@@ -80,6 +80,13 @@ export default class Trading {
 
   public currentSymbolPseudoPosition: TradingPosition | null = null;
 
+  /**
+   * We need to store canceled order IDs because WebSocket and REST API can return different data.
+   * For example, REST request is made before order is closed, WebSocket reacts immediately,
+   * but the REST request returns outdated data
+  */
+  public canceledOrderIds: number[] = [];
+
   #store: Store;
 
   public store: Store;
@@ -103,8 +110,8 @@ export default class Trading {
     listenChange(this, 'positionsKey', this.#listenLastPrices);
     listenChange(this, 'ordersKey', this.#listenLastPrices);
 
-    listenChange(store.account, 'futuresAccount', async (futuresAccount) => {
-      if (futuresAccount) {
+    listenChange(store.account, 'futuresAccount', async (futuresAccount, previousValue) => {
+      if (futuresAccount && previousValue === null) {
         await Promise.all([
           this.loadPositions(),
           this.loadOrders(),

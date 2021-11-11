@@ -150,6 +150,7 @@ interface FuturesOrderOptions {
   type: OrderType;
   timeInForce?: TimeInForce;
   reduceOnly?: boolean;
+  newClientOrderId?: string;
 }
 
 /**
@@ -165,10 +166,11 @@ interface FuturesOrderOptions {
  * @param options.type - Order type
  * @param options.timeInForce - Time in force
  * @param options.reduceOnly - Reduce only
+ * @param options.newClientOrderId - A unique id among open orders. Automatically generated if not sent.
  * @returns New order
  */
 export async function futuresOrder({
-  side, symbol, quantity, price, stopPrice, type, timeInForce, reduceOnly,
+  side, symbol, quantity, price, stopPrice, type, timeInForce, reduceOnly, newClientOrderId,
 }: FuturesOrderOptions): Promise<FuturesOrder> {
   if ((type === 'LIMIT' || type === 'STOP') && typeof price !== 'number' && typeof price !== 'string') throw new Error(`Orders of type ${type} must have price to be a number`);
   if ((type === 'STOP' || type === 'STOP_MARKET') && typeof stopPrice !== 'number' && typeof stopPrice !== 'string') throw new Error(`Orders of type ${type} must have stopPrice to be a number`);
@@ -182,6 +184,7 @@ export async function futuresOrder({
     quantity,
     timeInForce: !timeInForce && (type === 'LIMIT' || type === 'STOP' || type === 'TAKE_PROFIT') ? 'GTX' : timeInForce,
     reduceOnly,
+    newClientOrderId,
   }, { type: 'TRADE', method: 'POST' });
 }
 
@@ -201,10 +204,20 @@ export async function futuresLimitOrder(
   symbol: string,
   quantity: number | string,
   price: number | string,
-  { reduceOnly, timeInForce }: { reduceOnly?: boolean; timeInForce?: TimeInForce } = {},
+  {
+    reduceOnly, timeInForce, newClientOrderId,
+  }: { reduceOnly?: boolean; timeInForce?: TimeInForce; newClientOrderId?: string; } = {},
 ): Promise<FuturesOrder> {
   return futuresOrder({
-    side, symbol, quantity, price, stopPrice: null, type: 'LIMIT', reduceOnly, timeInForce,
+    side,
+    symbol,
+    quantity,
+    price,
+    stopPrice: null,
+    type: 'LIMIT',
+    reduceOnly,
+    timeInForce,
+    newClientOrderId,
   });
 }
 
@@ -226,10 +239,12 @@ export async function futuresStopLimitOrder(
   quantity: number | string,
   price: number | string,
   stopPrice: number | string,
-  { reduceOnly, timeInForce }: { reduceOnly?: boolean; timeInForce?: TimeInForce } = {},
+  {
+    reduceOnly, timeInForce, newClientOrderId,
+  }: { reduceOnly?: boolean; timeInForce?: TimeInForce, newClientOrderId?: string; } = {},
 ): Promise<FuturesOrder> {
   return futuresOrder({
-    side, symbol, quantity, price, type: 'STOP', reduceOnly, timeInForce, stopPrice,
+    side, symbol, quantity, price, type: 'STOP', reduceOnly, timeInForce, stopPrice, newClientOrderId,
   });
 }
 
