@@ -40,8 +40,8 @@ const Widget = ({
   const futuresAccount = useValue(ACCOUNT, 'futuresAccount');
   const [isWideLayout, wideLayoutRef] = useWidgetSizeBreakpoint('lg');
   const evtTargetRef = useRef({ saveCount: 0, cancelCount: 0 });
-  const listenSettingsSave = useCallback((handler) => listenChange(evtTargetRef.current, 'saveCount', handler), []);
-  const listenSettingsCancel = useCallback((handler) => listenChange(evtTargetRef.current, 'cancelCount', handler), []);
+  const listenSettingsSave = useCallback((handler: () => void) => listenChange(evtTargetRef.current, 'saveCount', handler), []);
+  const listenSettingsCancel = useCallback((handler: () => void) => listenChange(evtTargetRef.current, 'cancelCount', handler), []);
 
   const toggleSettings = useCallback(() => {
     if (isSettingsOpen) {

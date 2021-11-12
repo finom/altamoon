@@ -17,7 +17,7 @@ export default function futuresSubscribe<T = unknown>(
       }
     });
 
-    ws.addEventListener('message', (event) => {
+    ws.addEventListener('message', (event: MessageEvent<string>) => {
       let tick: { data: T; stream: string; } | null = null;
 
       try {

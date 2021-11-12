@@ -14,6 +14,7 @@ module.exports = {
     '@typescript-eslint/unbound-method': 0,
     'no-restricted-syntax': ['error', 'WithStatement'],
     'no-empty': ['error', { allowEmptyCatch: true }],
+    'class-methods-use-this': 0, // allow to create class methods with no "this"
     'jsx-a11y/label-has-associated-control': [2, {
       controlComponents: ['LabeledInput'],
       depth: 5,

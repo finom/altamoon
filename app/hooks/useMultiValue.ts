@@ -31,6 +31,7 @@ function useMultiValue<STORE, KEY, SLICE = STORE>(
   storeSlice: SliceRecord<SLICE> | Selector<STORE, SLICE>,
   keys: Key<SLICE, KEY>[],
 ): unknown {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const store = useContext<STORE>(Context);
   const slice: SliceRecord<SLICE> = typeof storeSlice === 'function' ? storeSlice(store) : storeSlice;
   const [, setForceUpdateBool] = useState<boolean>(true);

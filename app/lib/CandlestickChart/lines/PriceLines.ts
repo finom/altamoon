@@ -298,6 +298,7 @@ export default class PriceLines implements ChartItem {
               .attr('fill', 'transparent');
 
             horizontalWrapperItem.call(
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
               d3.drag<Element, PriceLinesDatum>()
                 .on('start', that.#onDragStart)
                 .on('drag', that.#onDrag)

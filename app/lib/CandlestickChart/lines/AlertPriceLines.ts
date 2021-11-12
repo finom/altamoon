@@ -30,7 +30,7 @@ const bellIconStr = `<svg style="transform: scale(0.7) translate(0, -3px);" xmln
 </svg>`;
 
 export default class AlertPriceLines extends PriceLines {
-  private static readonly color = '#828282' ;
+  private static readonly color = '#828282';
 
   private static createAlertLine = (yValue: number): AlertLinesDatum => ({
     yValue,

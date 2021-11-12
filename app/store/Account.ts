@@ -99,7 +99,7 @@ export default class Account {
 
       const stream = new WebSocket(`wss://fstream.binance.com/ws/${listenKey}`);
 
-      stream.onmessage = ({ data: messageData }) => {
+      stream.onmessage = ({ data: messageData }: MessageEvent<string>) => {
         try {
           const data = JSON.parse(messageData) as api.UserDataEvent;
           const { e: event, E: updateTime } = data;
