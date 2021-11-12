@@ -107,7 +107,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     // TODO dirty fix to ignore lastPrice changes and update orders when length or leverage changed
     candleChart?.update({ orders });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orders.length, ordersKey, candleChart]);
+  }, [orders.length, ordersKey, candleChart, symbol]);
 
   useEffect(() => {
     candleChart?.update({ alerts: alerts || [] });
