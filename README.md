@@ -1,10 +1,10 @@
 /!\ Work in progress, use at your own risk /!\
 
-# Biduul
+# Altamoon
 
 > A trading interface for Binance Perpetual Futures.
 
-Biduul is a libre desktop & web app made by professional traders, designed for fast and precise trading.
+Altamoon is a libre desktop & web app made by professional traders, designed for fast and precise trading.
 Some of our main features:
 - Place orders directly on the chart and change their price by dragging them
 - See your liquidation price on the chart
@@ -16,9 +16,9 @@ Some of our main features:
 
 ## Widgets
 
-Biduul provides a user-friendly customizable interface. Widgets can be resized & moved around and some of them provide configuration options using the settings icon. (More customization will be added with time)
+Altamoon provides a user-friendly customizable interface. Widgets can be resized & moved around and some of them provide configuration options using the settings icon. (More customization will be added with time)
 
-### Trade with one button!
+### Trade with one click
 
 Instead of manually entering fixed amounts to place orders, the "Quick Order" buttons let you place orders using a preset percentage of your account with just one click. The percentage on each button can be configured in the widget's settings.
 
@@ -52,7 +52,7 @@ Like orders, alert lines can be dragged to change their price. A sound will be p
 #### Predictive liquidation line
 
 A solid red line shows your current position's liquidation price.
-Biduul also predicts your liquidation price based on your current position + draft order + open orders, letting you know were your position is going to be liquidated after all the orders are filled. It's displayed as a dashed red line and there is one for both the long and short sides.
+Altamoon also predicts your liquidation price based on your current position + draft order + open orders, letting you know were your position is going to be liquidated after all the orders are filled. It's displayed as a dashed red line and there is one for both the long and short sides.
 
 ![image](https://user-images.githubusercontent.com/1082083/140766618-6de0a645-5249-4d78-9528-1c26bc7a3883.png)
 
@@ -73,7 +73,7 @@ The wallet widget shows your balance, the global Unrealized PNL of your position
 
 ### Minicharts
 
-Candle charts for all of the futures markets. Place price alerts on a market with a right click. You can also take a look at the standalone tool called [minichart-grid](https://letiliel.github.io/minichart-grid/).
+Candle charts for all of the futures markets. Place price alerts on a market with a right click. You can also take a look at the standalone tool called [minichart-grid](https://altamoon.github.io/altamoon-minicharts).
 
 ![image](https://user-images.githubusercontent.com/1082083/140767525-889fb63e-d674-4b70-a498-7cf40485f37d.png)
 
@@ -87,4 +87,4 @@ And last but not least, the Last trades and Order book widgets.
 
 ## Plugins
 
-Biduul has a powerful plugin system. With an intuitive API and modern web development technologies, anybody who knows JavaScript can do whatever they want: create widgets, implement automated strategies, add third-party APIs. For more information take a look at [plugins documentation](http://link-to-plugins-repository).
+Altamoon has a powerful plugin system. With an intuitive API and modern web development technologies, anybody who knows JavaScript can do whatever they want: create widgets, implement automated strategies, add third-party APIs. For more information take a look at [plugins documentation](https://github.com/Altamoon/altamoon-plugins).
