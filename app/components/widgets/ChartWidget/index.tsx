@@ -315,7 +315,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
           onChange={setShouldChartShowOrders}
         />
         {' '}
-        Show Orders
+        Filled Orders
       </label>
       <div className={`nav nav-pills ${css.intervals}`}>
         {futuresIntervals.map((intervalsItem, index) => (

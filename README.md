@@ -4,12 +4,12 @@
 
 > A trading interface for Binance Perpetual Futures.
 
-Biduul is a free and open-source tool made by professional traders, designed for fast and precise trading.
+Biduul is a libre desktop & web app made by professional traders, designed for fast and precise trading.
 Some of our main features:
 - Place orders directly on the chart and change their price by dragging them
 - See your liquidation price on the chart
 - Place price alerts
-- Use single-click buttons to place orders of a preset % of your account 
+- Use single-click buttons to place orders of a preset % of your account
 - Keep an eye on all markets with the minicharts widget
 
 ![image](https://user-images.githubusercontent.com/1082083/140765511-810c7e04-5ecd-4749-b64e-07a18b3f60c3.png)
@@ -42,9 +42,9 @@ Filled orders are represented as small right-pointing triangles.
 ![image](https://user-images.githubusercontent.com/1082083/140767139-07c12d1e-ef80-4982-bdf1-1278babaa752.png)
 
 
-#### Price alerts 
+#### Price alerts
 
-To create an alert, simply right click (NB: binding likely to change in the future) on the chart at the desired price. 
+To create an alert, simply right click (NB: binding likely to change in the future) on the chart at the desired price.
 Like orders, alert lines can be dragged to change their price. A sound will be played on trigger.
 
 ![image](https://user-images.githubusercontent.com/1082083/140766447-08d4046b-14c7-439c-91f7-942a3b5c66d1.png)
