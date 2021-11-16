@@ -261,11 +261,14 @@ export async function futuresIncome(params: {
 }
 
 // Either orderId or origClientOrderId must be sent
-export async function futuresCancel(symbol: string, orderId: number): Promise<FuturesOrder> {
-  return promiseRequest('v1/order', { symbol, orderId }, { type: 'SIGNED', method: 'DELETE' });
+export async function futuresCancelOrder(
+  symbol: string,
+  { orderId, origClientOrderId } : { orderId?: number; origClientOrderId?: string; },
+): Promise<FuturesOrder> {
+  return promiseRequest('v1/order', { symbol, orderId, origClientOrderId }, { type: 'SIGNED', method: 'DELETE' });
 }
 
-export async function futuresCancelAll(symbol: string): Promise<{ msg: string; code: 200; }> {
+export async function futuresCancelAllOrders(symbol: string): Promise<{ msg: string; code: 200; }> {
   return promiseRequest('v1/allOpenOrders', { symbol }, { type: 'SIGNED', method: 'DELETE' });
 }
 

@@ -4,7 +4,7 @@ import notify from '../../lib/notify';
 export default async function cancelAllOrders(this: Store['trading'], symbol: string): Promise<void> {
   this.openOrders = this.openOrders.map((order) => {
     if (order.symbol === symbol) {
-      this.canceledOrderIds.push(order.orderId);
+      this.canceledOrderIds.push(order.clientOrderId);
       return {
         ...order,
         isCanceled: true,
@@ -14,13 +14,13 @@ export default async function cancelAllOrders(this: Store['trading'], symbol: st
   });
 
   try {
-    await api.futuresCancelAll(symbol);
+    await api.futuresCancelAllOrders(symbol);
 
     notify('success', `All orders for ${symbol} are canceled`);
   } catch {
     this.openOrders = this.openOrders.map((order) => {
       if (order.symbol === symbol) {
-        this.canceledOrderIds = this.canceledOrderIds.filter((id) => id !== order.orderId);
+        this.canceledOrderIds = this.canceledOrderIds.filter((id) => id !== order.clientOrderId);
         return {
           ...order,
           isCanceled: false,

@@ -4,8 +4,8 @@ import PriceLines from './PriceLines';
 
 interface Params {
   axis: ChartAxis;
-  onDragLimitOrder: (orderId: number, price: number) => void;
-  onCancelOrder: (orderId: number) => void;
+  onDragLimitOrder: (clientOrderId: string, price: number) => void;
+  onCancelOrder: (clientOrderId: string) => void;
   onUpdateItems: (d: PriceLinesDatum[]) => void;
 }
 
@@ -14,7 +14,7 @@ export default class OrderPriceLines extends PriceLines {
 
   // we neeed this to preserve line position when it was dragged
   // but not yet removed (not yet re-created)
-  #forceOrderPrices: Record<number, number> = {};
+  #forceOrderPrices: Record<string, number> = {};
 
   constructor({
     axis, onDragLimitOrder, onCancelOrder, onUpdateItems,
@@ -26,10 +26,10 @@ export default class OrderPriceLines extends PriceLines {
       lineStyle: 'solid',
       isBackgroundFill: true,
       onDragEnd: (d) => {
-        this.#forceOrderPrices[d.id as number] = d.yValue ?? 0;
-        onDragLimitOrder(d.id as number, d.yValue ?? 0);
+        this.#forceOrderPrices[d.id as string] = d.yValue ?? 0;
+        onDragLimitOrder(d.id as string, d.yValue ?? 0);
       },
-      onClickClose: (d) => onCancelOrder(d.id as number),
+      onClickClose: (d) => onCancelOrder(d.id as string),
       onUpdateItems,
     }, resizeData);
   }
@@ -42,31 +42,31 @@ export default class OrderPriceLines extends PriceLines {
       ...orders
         .map((order): PriceLinesDatum => {
           const {
-            price, side, origQty, executedQty, symbol, type, orderId, isCanceled,
+            price, side, origQty, executedQty, symbol, type, isCanceled, clientOrderId,
           } = order;
           const color = side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)';
           return ({
             isDraggable: type === 'LIMIT',
-            yValue: this.#forceOrderPrices[orderId] ?? price,
+            yValue: this.#forceOrderPrices[clientOrderId] ?? price,
             isVisible: true,
             color: isCanceled ? 'var(--bs-gray)' : color,
             opacity: isCanceled ? 0.5 : 1,
             // TODO this is a potentially wrong way to retrieve
             // asset name from symbol name because of BNB/BUSD pairs
             title: `Limit ${origQty - executedQty} ${symbol.replace('USDT', '')}`,
-            id: orderId,
+            id: clientOrderId,
             customData: { order },
             pointerEventsNone: isCanceled,
           });
         }),
       ...orders
         .filter(({ stopPrice }) => !!stopPrice)
-        .map(({ stopPrice, side, orderId }): PriceLinesDatum => ({
+        .map(({ stopPrice, side, clientOrderId }): PriceLinesDatum => ({
           yValue: stopPrice,
           isVisible: true,
           color: side === 'BUY' ? 'var(--biduul-stop-buy-color)' : 'var(--biduul-stop-sell-color)',
           title: 'Stop price',
-          id: orderId,
+          id: clientOrderId,
           customData: {},
         })),
     ];

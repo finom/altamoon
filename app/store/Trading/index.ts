@@ -85,7 +85,7 @@ export default class Trading {
    * For example, REST request is made before order is closed, WebSocket reacts immediately,
    * but the REST request returns outdated data
   */
-  public canceledOrderIds: number[] = [];
+  public canceledOrderIds: string[] = [];
 
   #store: Store;
 

@@ -25,8 +25,8 @@ interface Params {
     d: DraftPrices & { newClientOrderId: string; },
     side: OrderSide,
   ) => Promise<void>;
-  onDragLimitOrder: (orderId: number, price: number) => void;
-  onCancelOrder: (orderId: number) => void;
+  onDragLimitOrder: (clientOrderId: string, price: number) => void;
+  onCancelOrder: (clientOrderId: string) => void;
 }
 
 export default class Lines {

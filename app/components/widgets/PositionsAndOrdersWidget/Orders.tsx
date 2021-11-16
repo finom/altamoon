@@ -20,8 +20,8 @@ const Orders = (): ReactElement => {
     [openOrders],
   );
 
-  const onCancel = useCallback(async (symbol: string, orderId: number) => {
-    await cancelOrder(symbol, orderId);
+  const onCancel = useCallback(async (symbol: string, clientOrderId: string) => {
+    await cancelOrder(symbol, clientOrderId);
   }, [cancelOrder]);
 
   const onCancelAll = useCallback(async () => {
@@ -75,7 +75,7 @@ const Orders = (): ReactElement => {
           }
           return a.symbol > b.symbol ? 1 : -1;
         }).map(({
-          symbol, side, type, origQty, lastPrice, price,
+          symbol, side, type, origQty, lastPrice, price, clientOrderId,
           executedQty, stopPrice, reduceOnly, orderId, isCanceled,
         }) => (
           <tr key={orderId}>
@@ -143,7 +143,7 @@ const Orders = (): ReactElement => {
                 color="link"
                 className="text-muted px-0 py-0"
                 disabled={isCanceled}
-                onClick={() => onCancel(symbol, orderId)}
+                onClick={() => onCancel(symbol, clientOrderId)}
               >
                 {isCanceled ? '...' : <Trash size={18} />}
               </Button>

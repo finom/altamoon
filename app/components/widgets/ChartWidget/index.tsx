@@ -269,11 +269,12 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
         calculateLiquidationPrice,
         calculateQuantity,
         getPseudoPosition,
-        onDragLimitOrder: async (orderId: number, price: number) => {
-          const order = getOpenOrders().find((orderItem) => orderId === orderItem.orderId);
+        onDragLimitOrder: async (clientOrderId: string, price: number) => {
+          const order = getOpenOrders()
+            .find((orderItem) => clientOrderId === orderItem.clientOrderId);
           if (order) {
             if (price === order.price) return;
-            if (await cancelOrder(order.symbol, orderId)) {
+            if (await cancelOrder(order.symbol, clientOrderId)) {
               await limitOrder({
                 side: order.side,
                 quantity: order.origQty,
@@ -285,9 +286,10 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
             }
           }
         },
-        onCancelOrder: async (orderId: number) => {
-          const order = getOpenOrders().find((orderItem) => orderId === orderItem.orderId);
-          if (order) await cancelOrder(order.symbol, orderId);
+        onCancelOrder: async (clientOrderId: string) => {
+          const order = getOpenOrders()
+            .find((orderItem) => clientOrderId === orderItem.clientOrderId);
+          if (order) await cancelOrder(order.symbol, clientOrderId);
         },
       });
 
