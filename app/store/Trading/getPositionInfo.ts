@@ -7,7 +7,7 @@ import getPnlPositionPercent from './getPnlPositionPercent';
 export default function getPositionInfo(
   this: Store['trading'],
   positionRisk: api.FuturesPositionRisk,
-  override: { side?: api.OrderSide; lastPrice?: number; } = {},
+  override: { side?: api.OrderSide; lastPrice?: number; isClosed?: boolean; } = {},
 ): TradingPosition {
   const positionAmt = +positionRisk.positionAmt;
   const entryPrice = +positionRisk.entryPrice;
@@ -74,7 +74,8 @@ export default function getPositionInfo(
     maintMarginRatio,
     maintMargin: maintMarginRatio * baseValue - (leverageBracket?.cum ?? 0),
     leverageBracket,
-    isClosed: this.openPositions.some((pos) => pos.symbol === symbol && pos.isClosed),
+    isClosed: override.isClosed
+      ?? this.openPositions.some((pos) => pos.symbol === symbol && pos.isClosed),
   };
 
   // TODO remove this comment if https://trello.com/c/TGyLXMDu/98-liquidation-line is resolved
