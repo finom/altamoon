@@ -122,7 +122,6 @@ const Orders = (): ReactElement => {
               )}
             </td>
             <td>
-              {console.log(`executedQty for order ${orderId} that user sees`, executedQty)}
               {executedQty}
               {' '}
               (
