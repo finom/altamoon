@@ -18,12 +18,16 @@ td { box-shadow: none!important; } /* fixes weird table background bug caused by
   border: dashed 2px #fff;
 }
 
-.btn:disabled, .btn.disabled, fieldset:disabled .btn {
-  opacity: 0.5; /* darker than default (0.65) */
+.btn:disabled, .btn.disabled, fieldset:disabled .btn { /* buttons disabled state */
+  opacity: 0.5; /* default 0.65 */
 }
 
 .form-control, .form-control:focus { /* form fields */
   border-color: #222 !important;
+}
+
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link { /* active tab */
+  background-color: #4e4e4e;
 }
 
 /* widgets */
