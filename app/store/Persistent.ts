@@ -48,6 +48,12 @@ export default class Persistent {
 
   public tradingWidgetPercentButtonsCount = persist<number>('tradingWidgetPercentButtonsCount', 4);
 
+  public testnetBinanceApiKey = persist<string | null>('testnetBinanceApiKey', null);
+
+  public testnetBinanceApiSecret = persist<string | null>('testnetBinanceApiSecret', null);
+
+  public isTestnet = persist<boolean>('isTestnet', false);
+
   // eslint-disable-next-line no-spaced-func
   public tradingWidgetPercentButtonsLayouts = persist<Record<number, number[]>>('tradingWidgetPercentButtonsLayouts', {
     4: [10, 25, 50], // + Max

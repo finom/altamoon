@@ -31,7 +31,11 @@ export default async function promiseRequest<T>(
     'Content-type': 'application/x-www-form-urlencoded',
   };
 
-  const { method = 'GET', type, baseURL = 'https://fapi.binance.com/fapi/' } = flags;
+  const {
+    method = 'GET',
+    type,
+    baseURL = options.apiURL,
+  } = flags;
   if (type) {
     if (typeof data.recvWindow === 'undefined') data.recvWindow = options.recvWindow;
     if (!options.apiKey) throw new Error('Invalid API credentials!');

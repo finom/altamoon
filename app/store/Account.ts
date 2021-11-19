@@ -5,6 +5,7 @@ import * as api from '../api';
 import notify from '../lib/notify';
 import delay from '../lib/delay';
 import stringifyError from '../lib/stringifyError';
+import options from '../api/options';
 
 export default class Account {
   public totalWalletBalance = 0;
@@ -26,12 +27,17 @@ export default class Account {
   constructor(store: Store) {
     this.#store = store;
     const setBinanceOptions = async () => {
-      const { binanceApiKey, binanceApiSecret } = store.persistent;
-      if (binanceApiKey && binanceApiSecret) {
-        api.setOptions({
-          apiKey: binanceApiKey,
-          apiSecret: binanceApiSecret,
-        });
+      const {
+        binanceApiKey,
+        binanceApiSecret,
+        testnetBinanceApiKey,
+        testnetBinanceApiSecret,
+        isTestnet,
+      } = store.persistent;
+      const apiKey = isTestnet ? testnetBinanceApiKey : binanceApiKey;
+      const apiSecret = isTestnet ? testnetBinanceApiSecret : binanceApiSecret;
+      if (apiKey && apiSecret) {
+        api.setOptions({ apiKey, apiSecret, isTestnet });
 
         void this.#openStream();
 
@@ -51,6 +57,9 @@ export default class Account {
 
     listenChange(store.persistent, 'binanceApiKey', relaodApp);
     listenChange(store.persistent, 'binanceApiSecret', relaodApp);
+    listenChange(store.persistent, 'testnetBinanceApiKey', relaodApp);
+    listenChange(store.persistent, 'testnetBinanceApiSecret', relaodApp);
+    listenChange(store.persistent, 'isTestnet', relaodApp);
 
     void setBinanceOptions();
   }
@@ -97,7 +106,7 @@ export default class Account {
       // eslint-disable-next-line no-console
       console.info('listenKey is received, establishing a new account stream connection...');
 
-      const stream = new WebSocket(`wss://fstream.binance.com/ws/${listenKey}`);
+      const stream = new WebSocket(`${options.accountStreamURL}${listenKey}`);
 
       stream.onmessage = ({ data: messageData }: MessageEvent<string>) => {
         try {

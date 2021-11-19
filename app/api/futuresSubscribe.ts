@@ -1,10 +1,12 @@
 import emitError from './emitError';
+import options from './options';
 
 export default function futuresSubscribe<T = unknown>(
   streams: string[], callback: (ticker: T, stream: string) => void,
 ): () => void {
   const streamsStr = streams.join('/');
-  let webSocket = new WebSocket(`wss://fstream.binance.com/stream?streams=${streamsStr}`);
+  const url = options.isTestnet ? `wss://stream.binancefuture.com/?streams=${streamsStr}` : `wss://fstream.binance.com/stream?streams=${streamsStr}`;
+  let webSocket = new WebSocket(url);
 
   let isClosed = false;
 
@@ -40,7 +42,7 @@ export default function futuresSubscribe<T = unknown>(
 
     ws.addEventListener('close', () => {
       if (!isClosed) {
-        webSocket = new WebSocket(`wss://fstream.binance.com/stream?streams=${streamsStr}`);
+        webSocket = new WebSocket(url);
         addEvents(webSocket);
       }
     });

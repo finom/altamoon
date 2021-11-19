@@ -1,7 +1,8 @@
 import React, { ReactElement, useCallback } from 'react';
+import { QuestionCircleFill } from 'react-bootstrap-icons';
 import { useForm } from 'react-hook-form';
 import {
-  Button, Form, Input, Label, Row, Col,
+  Button, Form, Input, Label, Row, Col, Collapse,
 } from 'reactstrap';
 import useChange from 'use-change';
 import isType from '../../lib/isType';
@@ -15,26 +16,46 @@ const SettingsModal = (): ReactElement => {
   const [existingNumberOfColumns, setNumberOfColumns] = useChange(PERSISTENT, 'numberOfColumns');
   const [existingApiKey, setApiKey] = useChange(PERSISTENT, 'binanceApiKey');
   const [existingApiSecret, setApiSecret] = useChange(PERSISTENT, 'binanceApiSecret');
+  const [existingTestnetApiKey, setTestnetApiKey] = useChange(PERSISTENT, 'testnetBinanceApiKey');
+  const [existingTestnetApiSecret, setTestnetApiSecret] = useChange(PERSISTENT, 'testnetBinanceApiSecret');
   const [existingTheme, setTheme] = useChange(PERSISTENT, 'theme');
+  const [existingIsTestnet, setTestnet] = useChange(PERSISTENT, 'isTestnet');
   const closeModal = useCallback(() => {
     setIsSettingsModalOpen(false);
   }, [setIsSettingsModalOpen]);
   const {
-    register, handleSubmit, getValues,
-  } = useForm<Pick<RootStore['persistent'], 'numberOfColumns' | 'binanceApiKey' | 'binanceApiSecret' | 'theme'>>();
+    register, handleSubmit, getValues, watch,
+  } = useForm<Pick<RootStore['persistent'], 'numberOfColumns' | 'binanceApiKey' | 'binanceApiSecret' | 'theme' | 'isTestnet' | 'testnetBinanceApiKey' | 'testnetBinanceApiSecret'>>();
   const onSubmit = handleSubmit(useCallback(() => {
     const {
-      numberOfColumns, binanceApiKey, binanceApiSecret, theme,
+      numberOfColumns,
+      binanceApiKey,
+      binanceApiSecret,
+      theme,
+      isTestnet,
+      testnetBinanceApiKey,
+      testnetBinanceApiSecret,
     } = getValues();
     const colsNum = Math.abs(+numberOfColumns || 12);
     setNumberOfColumns(colsNum > 60 ? 60 : colsNum);
     setTheme(theme);
+    setTestnet(isTestnet);
     setApiKey(binanceApiKey);
+    setTestnetApiKey(testnetBinanceApiKey);
     if (binanceApiSecret !== fakeSecretValue) {
       setApiSecret(binanceApiSecret);
     }
+
+    if (testnetBinanceApiSecret !== fakeSecretValue) {
+      setTestnetApiSecret(testnetBinanceApiSecret);
+    }
+
     closeModal();
-  }, [closeModal, getValues, setApiKey, setApiSecret, setNumberOfColumns, setTheme]));
+  }, [
+    closeModal, getValues, setApiKey, setApiSecret, setNumberOfColumns,
+    setTestnet, setTestnetApiKey, setTestnetApiSecret, setTheme,
+  ]));
+  const { isTestnet: formIsTestnet } = watch(['isTestnet']);
 
   return (
     <Modal isOpen={isSettingsModalOpen} onRequestClose={closeModal}>
@@ -108,6 +129,58 @@ const SettingsModal = (): ReactElement => {
             placeholder="Binance API Secret"
             type="password"
           />
+          <div className="mb-1">
+            <Label
+              htmlFor={isType<keyof RootStore['persistent']>('isTestnet')}
+              className="form-label mt-3"
+            >
+              <Input
+                name={isType<keyof RootStore['persistent']>('isTestnet')}
+                id={isType<keyof RootStore['persistent']>('isTestnet')}
+                innerRef={register}
+                type="checkbox"
+                defaultChecked={existingIsTestnet}
+                className="me-1"
+              />
+              Use testnet
+            </Label>
+            {' '}
+            &nbsp;
+            <a href="https://dev.binance.vision/t/binance-testnet-environments/99/3" target="_blank" rel="noreferrer">
+              <QuestionCircleFill />
+            </a>
+          </div>
+          <Collapse isOpen={formIsTestnet}>
+            <Label
+              htmlFor={isType<keyof RootStore['persistent']>('testnetBinanceApiKey')}
+              className="form-label"
+            >
+              Binance Testnet API Key
+            </Label>
+
+            <Input
+              name={isType<keyof RootStore['persistent']>('testnetBinanceApiKey')}
+              id={isType<keyof RootStore['persistent']>('testnetBinanceApiKey')}
+              innerRef={register}
+              placeholder="Binance Testnet API Key"
+              defaultValue={existingTestnetApiKey ?? ''}
+              className="mb-3"
+            />
+            <Label
+              htmlFor={isType<keyof RootStore['persistent']>('testnetBinanceApiSecret')}
+              className="form-label"
+            >
+              Binance Testnet API Secret
+            </Label>
+            <Input
+              name={isType<keyof RootStore['persistent']>('testnetBinanceApiSecret')}
+              id={isType<keyof RootStore['persistent']>('testnetBinanceApiSecret')}
+              innerRef={register}
+              defaultValue={existingTestnetApiSecret ? fakeSecretValue : ''}
+              placeholder="Binance Testnet API Secret"
+              type="password"
+            />
+          </Collapse>
         </Form>
       </ModalBody>
       <ModalFooter>
