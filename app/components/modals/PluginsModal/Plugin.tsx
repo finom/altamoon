@@ -75,7 +75,7 @@ const Plugin = ({
         {isDefault ? (
           <FormSwitch
             className="float-end"
-            checked={isEnabled}
+            isChecked={isEnabled}
             onChange={(isChecked) => (
               isChecked ? onEnablePlugin(id) : onDisablePlugin(id, isDefault && !isThirdParty)
             )}
