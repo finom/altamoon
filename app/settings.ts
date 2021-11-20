@@ -1,7 +1,7 @@
 export default {
   defaultPlugins: [
     {
-      id: 'biduul-phlegmatic',
+      id: 'altamoon-phlegmatic',
       isThirdParty: false,
     },
   ],

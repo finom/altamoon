@@ -1,8 +1,8 @@
 {
-  "name": "biduul",
+  "name": "altamoon",
   "version": "0.0.91",
   "private": true,
-  "productName": "Biduul",
+  "productName": "Altamoon",
   "description": "Binance trading",
   "scripts": {
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
@@ -22,15 +22,15 @@
     "test": "npm run lint-pure && npx tsc --noemit",
     "upgrade": "npx npm-check-updates -u -x react-hook-form,eslint-config-airbnb-typescript --timeout 480000 && npm i --legacy-peer-deps",
     "reinstall": "rm -rf node_modules package-lock.json && npm i --legacy-peer-deps",
-    "build-types": "rm -rf ./packages/biduul-types/_tmp && npx tsc --declaration --outDir ./packages/biduul-types/_tmp --emitDeclarationOnly && cp -a ./packages/biduul-types/_tmp/app/. ./packages/biduul-types/types/ && rm -r ./packages/biduul-types/_tmp && node scripts/copyProjectVersion",
-    "build-api": "npx tsc ./app/api/* --declaration --esModuleInterop --skipLibCheck --outDir ./packages/biduul-binance-api/api && node scripts/copyProjectVersion",
-    "publish-types": "npm publish ./packages/biduul-types/",
-    "publish-api": "npm publish ./packages/biduul-binance-api/",
+    "build-types": "rm -rf ./packages/altamoon-types/_tmp && npx tsc --declaration --outDir ./packages/altamoon-types/_tmp --emitDeclarationOnly && cp -a ./packages/altamoon-types/_tmp/app/. ./packages/altamoon-types/types/ && rm -r ./packages/altamoon-types/_tmp && node scripts/copyProjectVersion",
+    "build-api": "npx tsc ./app/api/* --declaration --esModuleInterop --skipLibCheck --outDir ./packages/altamoon-binance-api/api && node scripts/copyProjectVersion",
+    "publish-types": "npm publish ./packages/altamoon-types/",
+    "publish-api": "npm publish ./packages/altamoon-binance-api/",
     "patch": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags"
   },
   "build": {
-    "productName": "Biduul",
-    "appId": "org.biduul",
+    "productName": "Altamoon",
+    "appId": "org.altamoon",
     "files": [
       "dist/",
       "node_modules/",
@@ -91,7 +91,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Letiliel/biduul.git"
+    "url": "git+https://github.com/Altamoon/altamoon.git"
   },
   "author": {
     "name": "Letiliel",
@@ -107,9 +107,9 @@
   ],
   "license": "AGPL",
   "bugs": {
-    "url": "https://github.com/Letiliel/biduul/issues"
+    "url": "https://github.com/Altamoon/altamoon/issues"
   },
-  "homepage": "https://github.com/Letiliel/biduul#readme",
+  "homepage": "https://github.com/Altamoon/altamoon#readme",
   "devDependencies": {
     "@babel/core": "^7.16.0",
     "@babel/plugin-proposal-class-properties": "^7.16.0",

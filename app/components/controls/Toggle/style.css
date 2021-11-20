@@ -54,7 +54,7 @@
 }
 .toggle input[type="checkbox"]:focus ~ label .switch,
 .toggle input[type="checkbox"]:hover ~ label .switch {
-  background-color: var(--biduul-sell-color);
+  background-color: var(--altamoon-sell-color);
 }
 .toggle input[type="checkbox"]:focus ~ label .switch::before,
 .toggle input[type="checkbox"]:hover ~ label .switch::before {
@@ -64,25 +64,25 @@
   color: #6a6a6a;
 }
 .toggle input[type="checkbox"]:checked ~ label:hover {
-  color: var(--biduul-buy-color);
+  color: var(--altamoon-buy-color);
 }
 .toggle input[type="checkbox"]:checked ~ label .switch {
-  background-color: var(--biduul-buy-color);
+  background-color: var(--altamoon-buy-color);
 }
 .toggle input[type="checkbox"]:checked ~ label .switch::before {
-  color: var(--biduul-buy-color);
+  color: var(--altamoon-buy-color);
 }
 .toggle input[type="checkbox"]:checked:focus ~ label .switch,
 .toggle input[type="checkbox"]:checked:hover ~ label .switch {
-  background-color: var(--biduul-buy-color);
+  background-color: var(--altamoon-buy-color);
 }
 .toggle input[type="checkbox"]:checked:focus ~ label .switch::before,
 .toggle input[type="checkbox"]:checked:hover ~ label .switch::before {
-  color: var(--biduul-buy-color);
+  color: var(--altamoon-buy-color);
 }
 .toggle label .switch {
   transition: background-color 0.3s cubic-bezier(0, 1, 0.5, 1);
-  background: var(--biduul-sell-color);
+  background: var(--altamoon-sell-color);
 }
 .toggle label .switch::after {
   color: rgba(255, 255, 255, 1);

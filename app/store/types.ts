@@ -58,5 +58,5 @@ export interface TradingOrder {
 }
 
 declare global {
-  interface Window { biduulPlugin: <T = Store>(plugin: Plugin<T>) => void; }
+  interface Window { altamoonPlugin: <T = Store>(plugin: Plugin<T>) => void; }
 }

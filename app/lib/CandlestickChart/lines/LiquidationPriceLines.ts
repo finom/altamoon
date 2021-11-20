@@ -82,7 +82,7 @@ export default class LiquidationPriceLines extends PriceLines {
     });
   };
 
-  // calculation code is borrowed from there https://github.com/Letiliel/biduul/blob/no-book/js/data/liquidation.js#L41
+  // calculation code is borrowed from there https://github.com/Altamoon/altamoon/blob/no-book/js/data/liquidation.js#L41
   #getLiquidationPrice = (side: 'BUY' | 'SELL'): number => {
     const pseudoPosition = this.#getPseudoPosition({ side });
     const data = this.#data;

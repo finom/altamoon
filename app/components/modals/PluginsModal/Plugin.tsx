@@ -65,7 +65,7 @@ const Plugin = ({
           <Badge
             className="bg-warning cursor-help ms-2"
             innerRef={tooltipRef({
-              title: 'The plugin is made by third-party developers but not by the Biduul team',
+              title: 'The plugin is made by third-party developers but not by the Altamoon team',
             })}
           >
             <em>Third-party</em>

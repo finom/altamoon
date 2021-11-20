@@ -12,7 +12,7 @@ export default class CrosshairPriceLines extends PriceLines {
       axis,
       items: [{ id: 'crosshair', isVisible: false }],
       showX: true,
-      color: 'var(--biduul-chart-crosshair-color)',
+      color: 'var(--altamoon-chart-crosshair-color)',
       lineStyle: 'dotted',
       pointerEventsNone: true,
     }, resizeData);

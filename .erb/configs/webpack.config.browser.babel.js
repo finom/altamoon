@@ -21,8 +21,8 @@ export default {
 
   output: {
     publicPath,
-    filename: 'biduul-browser.js',
-    library: 'biduul',
+    filename: 'altamoon-browser.js',
+    library: 'altamoon',
     libraryTarget: 'var',
     path: path.resolve(__dirname, '../../docs')
   },

@@ -44,7 +44,7 @@ export default class OrderPriceLines extends PriceLines {
           const {
             price, side, origQty, executedQty, symbol, type, isCanceled, clientOrderId,
           } = order;
-          const color = side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)';
+          const color = side === 'BUY' ? 'var(--altamoon-buy-color)' : 'var(--altamoon-sell-color)';
           return ({
             isDraggable: type === 'LIMIT',
             yValue: this.#forceOrderPrices[clientOrderId] ?? price,
@@ -64,7 +64,7 @@ export default class OrderPriceLines extends PriceLines {
         .map(({ stopPrice, side, clientOrderId }): PriceLinesDatum => ({
           yValue: stopPrice,
           isVisible: true,
-          color: side === 'BUY' ? 'var(--biduul-stop-buy-color)' : 'var(--biduul-stop-sell-color)',
+          color: side === 'BUY' ? 'var(--altamoon-stop-buy-color)' : 'var(--altamoon-stop-sell-color)',
           title: 'Stop price',
           id: clientOrderId,
           customData: {},

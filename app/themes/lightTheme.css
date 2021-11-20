@@ -1,8 +1,8 @@
 :root {
-  --biduul-sell-color: #dc3545;
-  --biduul-buy-color: var(--bs-green);
-  --biduul-stop-buy-color: var(--bs-orange);
-  --biduul-stop-buy-color: var(--bs-orange);
+  --altamoon-sell-color: #dc3545;
+  --altamoon-buy-color: var(--bs-green);
+  --altamoon-stop-buy-color: var(--bs-orange);
+  --altamoon-stop-buy-color: var(--bs-orange);
 }
 
 .react-grid-placeholder {

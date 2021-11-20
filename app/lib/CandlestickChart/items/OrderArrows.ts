@@ -82,7 +82,7 @@ export default class OrderArrows implements ChartItem {
       .data(this.#filledOrders, (d) => (d as api.FuturesOrder).orderId)
       .join((enter) => enter
         .append('polygon')
-        .attr('fill', (d) => (d.side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)'))
+        .attr('fill', (d) => (d.side === 'BUY' ? 'var(--altamoon-buy-color)' : 'var(--altamoon-sell-color)'))
         .attr('stroke-width', 1)
         .attr('id', (d) => `order_${d.orderId}`)
         .attr('points', points)
@@ -105,7 +105,7 @@ export default class OrderArrows implements ChartItem {
             <p><strong>${d.executedQty} ${d.symbol.replace('USDT', '')}</strong> (${formatMoneyNumber(+d.executedQty * +d.avgPrice)} ₮)</p>
             <p>1 ${d.symbol.replace('USDT', '')} = ${+d.avgPrice} ₮</p>
           `)
-            .style('background-color', d.side === 'BUY' ? 'var(--biduul-buy-color)' : 'var(--biduul-sell-color)');
+            .style('background-color', d.side === 'BUY' ? 'var(--altamoon-buy-color)' : 'var(--altamoon-sell-color)');
 
           const width = parseInt(this.#tooltip?.style('width') ?? '0', 10);
           const height = parseInt(this.#tooltip?.style('height') ?? '0', 10);

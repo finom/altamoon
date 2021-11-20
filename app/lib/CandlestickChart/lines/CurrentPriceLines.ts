@@ -10,7 +10,7 @@ export default class CurrentPriceLines extends PriceLines {
     super({
       axis,
       items: [{ id: 'currentPrice' }],
-      color: 'var(--biduul-chart-last-price-line-color)',
+      color: 'var(--altamoon-chart-last-price-line-color)',
       pointerEventsNone: true,
     }, resizeData);
   }

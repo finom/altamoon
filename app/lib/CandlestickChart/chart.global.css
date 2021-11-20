@@ -1,27 +1,27 @@
 :root {
 
-  --biduul-chart-background: #202020e8;
-  --biduul-chart-text-fill: #fff;
-  --biduul-chart-axis-line-stroke: rgba(255, 255, 255, 0.1);
-  --biduul-chart-gridlines-stroke: rgba(255, 255, 255, 0.05);
-  --biduul-chart-last-price-line-color: var(--bs-info);
-  --biduul-chart-crosshair-color: var(--bs-info);
+  --altamoon-chart-background: #202020e8;
+  --altamoon-chart-text-fill: #fff;
+  --altamoon-chart-axis-line-stroke: rgba(255, 255, 255, 0.1);
+  --altamoon-chart-gridlines-stroke: rgba(255, 255, 255, 0.05);
+  --altamoon-chart-last-price-line-color: var(--bs-info);
+  --altamoon-chart-crosshair-color: var(--bs-info);
 
-  --biduul-chart-up: var(--bs-green);
-  --biduul-chart-down: #e73a4a;
-  --biduul-chart-plot-up-body-fill: var(--biduul-chart-up);
-  --biduul-chart-plot-up-body-stroke: var(--biduul-chart-up);
-  --biduul-chart-plot-up-wick-stroke: var(--biduul-chart-up);
-  --biduul-chart-plot-down-body-fill: var(--biduul-chart-down);
-  --biduul-chart-plot-down-body-stroke: var(--biduul-chart-down);
-  --biduul-chart-plot-down-wick-stroke: var(--biduul-chart-down);
+  --altamoon-chart-up: var(--bs-green);
+  --altamoon-chart-down: #e73a4a;
+  --altamoon-chart-plot-up-body-fill: var(--altamoon-chart-up);
+  --altamoon-chart-plot-up-body-stroke: var(--altamoon-chart-up);
+  --altamoon-chart-plot-up-wick-stroke: var(--altamoon-chart-up);
+  --altamoon-chart-plot-down-body-fill: var(--altamoon-chart-down);
+  --altamoon-chart-plot-down-body-stroke: var(--altamoon-chart-down);
+  --altamoon-chart-plot-down-wick-stroke: var(--altamoon-chart-down);
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   SVG
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg {
   font: 10px sans-serif;
-  background: var(--biduul-chart-background);
+  background: var(--altamoon-chart-background);
   shape-rendering: crispEdges;
 }
 svg.chart-svg text {
@@ -31,16 +31,16 @@ svg.chart-svg text {
 /*   Axis
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg .axis text {
-  fill: var(--biduul-chart-text-fill);
+  fill: var(--altamoon-chart-text-fill);
 }
 svg.chart-svg .axis path, svg.chart-svg .axis line {
-  stroke: var(--biduul-chart-axis-line-stroke);
+  stroke: var(--altamoon-chart-axis-line-stroke);
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Grid
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg .gridlines line, svg.chart-svg .gridlines path {
-  stroke: var(--biduul-chart-gridlines-stroke);
+  stroke: var(--altamoon-chart-gridlines-stroke);
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Candles
@@ -49,18 +49,18 @@ svg.chart-svg .plot .wick {
   stroke-width: 1px;
 }
 svg.chart-svg .plot .up.body {
-  fill: var(--biduul-chart-plot-up-body-fill);
-  stroke: var(--biduul-chart-plot-up-body-stroke);
+  fill: var(--altamoon-chart-plot-up-body-fill);
+  stroke: var(--altamoon-chart-plot-up-body-stroke);
 }
 svg.chart-svg .plot .up.wick {
-  stroke: var(--biduul-chart-plot-up-wick-stroke);
+  stroke: var(--altamoon-chart-plot-up-wick-stroke);
 }
 svg.chart-svg .plot .down.body {
-  fill: var(--biduul-chart-plot-down-body-fill);
-  stroke: var(--biduul-chart-plot-down-body-stroke);
+  fill: var(--altamoon-chart-plot-down-body-fill);
+  stroke: var(--altamoon-chart-plot-down-body-stroke);
 }
 svg.chart-svg .plot .down.wick {
-  stroke: var(--biduul-chart-plot-down-wick-stroke);
+  stroke: var(--altamoon-chart-plot-down-wick-stroke);
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Lines
@@ -72,7 +72,7 @@ svg.chart-svg .scope-supstance .interaction path {
 /*   Price line
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg .price-line .supstance path {
-  stroke: var(--biduul-chart-last-price-line-color);
+  stroke: var(--altamoon-chart-last-price-line-color);
   stroke-dasharray: 10 6;
   visibility: hidden;
 }
@@ -216,14 +216,14 @@ svg.chart-svg .draft-labels [data-side='sell'] .line-label {
 
 svg.chart-svg .triggered-alert-indicator {
   animation-duration: 1s;
-  animation-name: biduul-triggered-alert-indicator;
+  animation-name: altamoon-triggered-alert-indicator;
   animation-iteration-count: infinite;
   display: inline-block;
   vertical-align: top;
   color: var(--bs-yellow);
 }
 
-@keyframes biduul-triggered-alert-indicator {
+@keyframes altamoon-triggered-alert-indicator {
   0%, 100% {
     opacity: 1;
   }

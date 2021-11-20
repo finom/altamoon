@@ -1,10 +1,10 @@
 :root {
-  --biduul-sell-color: #673ab7;
-  --biduul-buy-color: #008765;
-  --biduul-stop-buy-color: var(--bs-red);
-  --biduul-stop-sell-color: var(--bs-red);
+  --altamoon-sell-color: #673ab7;
+  --altamoon-buy-color: #008765;
+  --altamoon-stop-buy-color: var(--bs-red);
+  --altamoon-stop-sell-color: var(--bs-red);
 
-  --bs-success: var(--biduul-buy-color);
+  --bs-success: var(--altamoon-buy-color);
   --bs-danger: #ff4557;
   --bs-danger-rgb: 255, 69, 87;
 }
@@ -33,36 +33,36 @@ td { box-shadow: none!important; } /* fixes weird table background bug caused by
 
 /* "buy" color */
 .bg-buy {
-  background-color: var(--biduul-buy-color);
+  background-color: var(--altamoon-buy-color);
 }
 
 .table-buy {
-  --bs-table-bg: var(--biduul-buy-color);
-  border-color: var(--biduul-buy-color);
+  --bs-table-bg: var(--altamoon-buy-color);
+  border-color: var(--altamoon-buy-color);
 }
 
 .btn-success,
 .btn-success:disabled,
 .btn-success.disabled {
-  background-color: var(--biduul-buy-color);
-  border-color: var(--biduul-buy-color);
+  background-color: var(--altamoon-buy-color);
+  border-color: var(--altamoon-buy-color);
 }
 
 /* "sell" color */
 .bg-sell {
-  background-color: var(--biduul-sell-color);
+  background-color: var(--altamoon-sell-color);
 }
 
 .btn-sell,
 .btn-sell:disabled,
 .btn-sell.disabled {
-  background-color: var(--biduul-sell-color);
-  border-color: var(--biduul-sell-color);
+  background-color: var(--altamoon-sell-color);
+  border-color: var(--altamoon-sell-color);
 }
 
 .table-sell {
-  --bs-table-bg: var(--biduul-sell-color);
-  border-color: var(--biduul-sell-color);
+  --bs-table-bg: var(--altamoon-sell-color);
+  border-color: var(--altamoon-sell-color);
 }
 
 .form-control, .form-control:focus, .form-control:disabled {

@@ -1,0 +1,31 @@
+{
+	"version": "0.0.91",
+	"name": "altamoon-binance-api",
+	"description": "Browser-based Binance API functions used at Altamoon",
+	"main": "api/index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": {
+		"name": "Letiliel",
+		"email": "dev@xod.me",
+		"url": "https://github.com/Letiliel"
+	},
+	"contributors": [
+		{
+			"name": "Andrey Gubanov",
+			"email": "andrey@gubanov.eu",
+			"url": "https://opensource.gubanov.eu/"
+		}
+	],
+	"license": "AGPL-3.0-or-later",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Altamoon/altamoon.git"
+	},
+	"dependencies": {
+		"crypto-browserify": "^3.12.0",
+		"qs": "^6.10.1",
+		"localforage": "^1.10.0"
+	}
+}

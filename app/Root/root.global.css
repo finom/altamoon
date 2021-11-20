@@ -17,10 +17,10 @@ body { overflow: auto; } /* make the app scrollable */
 .o-75 { opacity: .75; }
 .o-100 { opacity: 1; }
 
-.text-buy { color: var(--biduul-buy-color)!important; }
-.text-sell { color: var(--biduul-sell-color)!important; }
-.text-stop-buy { color: var(--biduul-stop-buy-color)!important; }
-.text-stop-sell { color: var(--biduul-stop-sell-color)!important; }
+.text-buy { color: var(--altamoon-buy-color)!important; }
+.text-sell { color: var(--altamoon-sell-color)!important; }
+.text-stop-buy { color: var(--altamoon-stop-buy-color)!important; }
+.text-stop-sell { color: var(--altamoon-stop-sell-color)!important; }
 
 /* temporary fix until reactstrap is updated */
 button.close {
