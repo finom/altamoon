@@ -73,7 +73,7 @@ The wallet widget shows your balance, the global Unrealized PNL of your position
 
 ### Minicharts
 
-Candle charts for all of the futures markets. Place price alerts on a market with a right click. You can also take a look at the standalone tool called [minichart-grid](https://altamoon.github.io/altamoon-minicharts).
+Candle charts for all of the futures markets. Place price alerts on a market with a right click. You can also take a look at the standalone tool called [altamoon-minicharts](https://altamoon.github.io/altamoon-minicharts).
 
 ![image](https://user-images.githubusercontent.com/1082083/140767525-889fb63e-d674-4b70-a498-7cf40485f37d.png)
 

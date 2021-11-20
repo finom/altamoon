@@ -90,6 +90,8 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow(options);
 
+  mainWindow.setBackgroundColor('#222');
+
   // save window size and position
   mainWindow.on('close', () => {
     if (mainWindow) { // TS ensure
