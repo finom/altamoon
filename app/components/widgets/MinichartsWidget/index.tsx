@@ -1,7 +1,7 @@
 import React, {
   memo, ReactElement, useEffect, useRef,
 } from 'react';
-import minichartGrid from 'minichart-grid';
+import minichartGrid from 'altamoon-minicharts';
 import { useSet } from 'use-change';
 
 import Widget from '../../layout/Widget';
