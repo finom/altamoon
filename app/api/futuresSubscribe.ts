@@ -5,7 +5,7 @@ export default function futuresSubscribe<T = unknown>(
   streams: string[], callback: (ticker: T, stream: string) => void,
 ): () => void {
   const streamsStr = streams.join('/');
-  const url = options.isTestnet ? `wss://stream.binancefuture.com/?streams=${streamsStr}` : `wss://fstream.binance.com/stream?streams=${streamsStr}`;
+  const url = `${options.wsURL}?streams=${streamsStr}`;
   let webSocket = new WebSocket(url);
 
   let isClosed = false;

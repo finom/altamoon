@@ -7,6 +7,7 @@ import {
 import useChange from 'use-change';
 import isType from '../../lib/isType';
 import { PERSISTENT, ROOT, RootStore } from '../../store';
+import FormSwitch from '../controls/FormSwitch';
 import Modal, { ModalHeader, ModalFooter, ModalBody } from '../layout/Modal';
 
 const fakeSecretValue = Array(50).fill('1').join('');
@@ -113,6 +114,7 @@ const SettingsModal = (): ReactElement => {
             placeholder="Binance API Key"
             defaultValue={existingApiKey ?? ''}
             className="mb-3"
+            disabled={formIsTestnet}
           />
 
           <Label
@@ -127,6 +129,7 @@ const SettingsModal = (): ReactElement => {
             innerRef={register}
             defaultValue={existingApiSecret ? fakeSecretValue : ''}
             placeholder="Binance API Secret"
+            disabled={formIsTestnet}
             type="password"
           />
           <div className="mb-1">
@@ -134,15 +137,15 @@ const SettingsModal = (): ReactElement => {
               htmlFor={isType<keyof RootStore['persistent']>('isTestnet')}
               className="form-label mt-3"
             >
-              <Input
+              <FormSwitch
+                className="float-start"
                 name={isType<keyof RootStore['persistent']>('isTestnet')}
                 id={isType<keyof RootStore['persistent']>('isTestnet')}
-                innerRef={register}
-                type="checkbox"
                 defaultChecked={existingIsTestnet}
-                className="me-1"
+                innerRef={register}
               />
-              Use testnet
+
+              Test trading with Binance testnet
             </Label>
             {' '}
             &nbsp;

@@ -70,25 +70,16 @@ export default function eventOrderUpdate(
     priceProtect: false, // TODO what stream field should be used?
   };
 
+  // eslint-disable-next-line no-console
+  console.info(`Received order with status ${order.status}. orderId = ${order.orderId}; executedQty = ${order.executedQty}`);
+
   if (order.status === 'PARTIALLY_FILLED') {
-    if (this.openOrders.every(({ orderId }) => orderId !== order.orderId)) {
-      console.error('AN UNKNOWN PARTIALLY_FILLED ORDER DETECTED. SEE LOG BELOW.');
-      console.log(this.openOrders, order);
-    }
     this.openOrders = this.openOrders.map((openOrder) => {
       if (openOrder.orderId === order.orderId) {
-        console.log(`New executedQty for PARTIALLY_FILLED order ${openOrder.orderId}`, +order.executedQty);
         return { ...openOrder, ...getOrderInfo.call(this, order, openOrder) };
       }
       return openOrder;
     });
-
-    if (this.openOrders.every(({ orderId, executedQty }) => (
-      orderId === order.orderId && executedQty !== +order.executedQty
-    ))) {
-      console.error('executedQty OF RECEIVED ORDER IS DIFFERENT TO EXISTING ORDER ITEM. SEE LOG BELOW.');
-      console.log(this.openOrders, order);
-    }
   }
 
   // TODO support stop orders

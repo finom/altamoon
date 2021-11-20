@@ -1,4 +1,6 @@
-import { keyBy, throttle, uniq } from 'lodash';
+import {
+  keyBy, pick, throttle, uniq,
+} from 'lodash';
 import { listenChange } from 'use-change';
 
 import * as api from '../../api';
@@ -79,6 +81,13 @@ export default class Trading {
   public exactSizeStopLimitSellStr = '';
 
   public currentSymbolPseudoPosition: TradingPosition | null = null;
+
+  /**
+   * The object contains actual lastPrices for symbols that are currently listened.
+   * In other words prices of symbols of current open positions and orders
+   */
+
+  public listenedLastPrices: Record<string, number> = {};
 
   /**
    * We need to store canceled order IDs because WebSocket and REST API can return different data.
@@ -466,14 +475,36 @@ export default class Trading {
       ...this.openOrders.map(({ symbol }) => symbol),
     ]);
     const { totalWalletBalance } = this.#store.account;
+
+    // remove last prices of symbols that aren't used anymore
+    const newListenedLastPrices = pick(this.listenedLastPrices, symbolsToListen);
+
+    // collect initial data for listened symbols, use existing value or market value
+    for (const symbol of symbolsToListen) {
+      newListenedLastPrices[symbol] = newListenedLastPrices[symbol]
+        ?? +(this.store.market.allSymbolsTickers[symbol]?.close
+        ?? 0);
+    }
+
+    // update listenedLastPrices withnew data
+    this.listenedLastPrices = newListenedLastPrices;
+
     // create new subscription and preserve endpoint to unsubscribe
     this.#lastPriceUnsubscribe = api.futuresAggTradeStream(
       symbolsToListen,
       (ticker) => {
+        // update listenedLastPrices on every tick
+        this.listenedLastPrices = {
+          ...this.listenedLastPrices,
+          [ticker.symbol]: +ticker.price,
+        };
+
+        // update positions with new PNL, lastPrice etc
         if (this.openPositions.length) {
           this.openPositions = this.openPositions.map((position) => {
             if (position.symbol === ticker.symbol) {
               const lastPrice = +ticker.price;
+
               return {
                 ...position,
                 lastPrice,
@@ -499,20 +530,6 @@ export default class Trading {
             }
 
             return position;
-          });
-        }
-
-        if (this.openOrders.length) {
-          this.openOrders = this.openOrders.map((order) => {
-            if (order.symbol === ticker.symbol) {
-              const lastPrice = +ticker.price;
-              return {
-                ...order,
-                lastPrice,
-              };
-            }
-
-            return order;
           });
         }
       },

@@ -33,7 +33,7 @@ export default function getPositionInfo(
   const { totalWalletBalance } = this.store.account;
   const side = override.side ?? (positionAmt >= 0 ? 'BUY' : 'SELL');
   const lastPrice = override.lastPrice
-    ?? +this.store.market.allSymbolsTickers[symbol]?.close ?? 0;
+    ?? +(this.store.market.allSymbolsTickers[symbol]?.close ?? 0);
 
   const position: TradingPosition = {
     // if positionAmt is increased, then use it as initial value,

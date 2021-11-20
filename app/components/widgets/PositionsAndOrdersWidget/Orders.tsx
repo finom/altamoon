@@ -12,6 +12,7 @@ const formatPercent = format(',.1f');
 const Orders = (): ReactElement => {
   const openOrders = useValue(TRADING, 'openOrders');
   const allSymbolsPositionRisk = useValue(TRADING, 'allSymbolsPositionRisk');
+  const listenedLastPrices = useValue(TRADING, 'listenedLastPrices');
   const cancelOrder = useSilent(TRADING, 'cancelOrder');
   const cancelAllOrders = useSilent(TRADING, 'cancelAllOrders');
   const setSymbol = useSet(PERSISTENT, 'symbol');
@@ -75,7 +76,7 @@ const Orders = (): ReactElement => {
           }
           return a.symbol > b.symbol ? 1 : -1;
         }).map(({
-          symbol, side, type, origQty, lastPrice, price, clientOrderId,
+          symbol, side, type, origQty, price, clientOrderId,
           executedQty, stopPrice, reduceOnly, orderId, isCanceled,
         }) => (
           <tr key={orderId}>
@@ -109,7 +110,7 @@ const Orders = (): ReactElement => {
               )}
             </td>
             <td>
-              {formatNumber(lastPrice)}
+              {formatNumber(listenedLastPrices[symbol])}
               {' '}
               ₮
             </td>

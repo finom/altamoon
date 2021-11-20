@@ -10,7 +10,7 @@ interface Options {
 
 const options: Partial<Options> & Pick<Options, 'wsURL' | 'apiURL' | 'accountStreamURL'> = {
   get wsURL() {
-    return this.isTestnet ? 'wss://stream.binancefuture.com/' : 'wss://fstream.binance.com/stream';
+    return this.isTestnet ? 'wss://stream.binancefuture.com/stream' : 'wss://fstream.binance.com/stream';
   },
   get apiURL() {
     return this.isTestnet ? 'https://testnet.binancefuture.com/fapi/' : 'https://fapi.binance.com/fapi/';

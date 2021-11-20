@@ -18,6 +18,7 @@
     "start:renderer": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.renderer.dev.babel.js",
     "start:browser": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.browser.babel.js",
     "build:browser": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.browser.babel.js",
+    "tsc": "npx tsc --noemit",
     "test": "npm run lint-pure && npx tsc --noemit",
     "upgrade": "npx npm-check-updates -u -x react-hook-form,eslint-config-airbnb-typescript --timeout 480000 && npm i --legacy-peer-deps",
     "reinstall": "rm -rf node_modules package-lock.json && npm i --legacy-peer-deps",

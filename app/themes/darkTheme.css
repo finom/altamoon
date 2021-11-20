@@ -22,10 +22,6 @@ td { box-shadow: none!important; } /* fixes weird table background bug caused by
   opacity: 0.5; /* default 0.65 */
 }
 
-.form-control, .form-control:focus { /* form fields */
-  border-color: #222 !important;
-}
-
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link { /* active tab */
   background-color: #4e4e4e;
 }
@@ -69,10 +65,13 @@ td { box-shadow: none!important; } /* fixes weird table background bug caused by
   border-color: var(--biduul-sell-color);
 }
 
-.form-control, .form-control:focus {
-  border-color: #888;
+.form-control, .form-control:focus, .form-control:disabled {
   background: #222;
   color: #fff;
+}
+
+.form-control:disabled {
+  opacity: 0.5;
 }
 
 /* inherit placeholder style for the component label */

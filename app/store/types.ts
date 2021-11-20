@@ -38,7 +38,6 @@ export interface TradingOrder {
   avgPrice: number;
   origQty: number;
   price: number;
-  lastPrice: number;
   reduceOnly: boolean;
   side: api.OrderSide;
   positionSide: api.PositionSide;

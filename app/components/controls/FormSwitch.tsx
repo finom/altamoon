@@ -1,18 +1,28 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, Ref } from 'react';
 
 interface Props {
+  name?: string;
+  id?: string;
   className?: string;
-  isChecked: boolean;
-  onChange: (isChecked: boolean) => void;
+  isChecked?: boolean;
+  defaultChecked?: boolean;
+  innerRef?: Ref<HTMLInputElement>;
+  onChange?: (isChecked: boolean) => void;
 }
 
-const FormSwitch = ({ className, isChecked, onChange }: Props): ReactElement => (
+const FormSwitch = ({
+  name, id, className, isChecked, defaultChecked, innerRef, onChange,
+}: Props): ReactElement => (
   <div className={`form-check form-switch ${className || ''}`}>
     <input
       className="form-check-input cursor-pointer"
       type="checkbox"
+      id={id}
+      name={name}
       checked={isChecked}
-      onChange={({ target }) => onChange(target.checked)}
+      ref={innerRef}
+      defaultChecked={defaultChecked}
+      onChange={onChange ? ({ target }) => onChange(target.checked) : undefined}
     />
   </div>
 );

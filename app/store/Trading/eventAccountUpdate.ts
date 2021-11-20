@@ -6,7 +6,13 @@ export default function eventAccountUpdate(
   a: api.UserDataEventAccountUpdateData,
 ): void {
   const amtIncreasedSymbols: string[] = [];
-  a.P.forEach((pos) => {
+  const positions = a.P;
+
+  if (!positions.length) return;
+
+  // eslint-disable-next-line no-console
+  console.log(`Received ${positions.length} updated position(s) (${positions.map((pos) => pos.s).join(', ')}).`);
+  positions.forEach((pos) => {
     const prevAmt = +this.allSymbolsPositionRisk[pos.s].positionAmt;
     const newAmt = +pos.pa;
     const position: api.FuturesPositionRisk = {

@@ -8,8 +8,8 @@ export default function getOrderInfo(
     lastPrice?: number, leverage?: number, marginType?: api.FuturesPositionRisk['marginType'],
   } = {},
 ): TradingOrder {
-  const lastPrice = override.lastPrice
-    ?? +this.store.market.allSymbolsTickers[order.symbol]?.close ?? 0;
+  // const lastPrice = override.lastPrice
+  //  ?? +this.store.market.allSymbolsTickers[order.symbol]?.close ?? 0;
   const leverage = override.leverage ?? +this.allSymbolsPositionRisk[order.symbol]?.leverage ?? 1;
   const marginType = override.marginType ?? this.allSymbolsPositionRisk[order.symbol]?.marginType ?? 'cross';
   const value = +order.price * (+order.origQty - +order.executedQty);
@@ -19,7 +19,6 @@ export default function getOrderInfo(
 
   return {
     leverageBracket,
-    lastPrice,
     marginType,
     leverage,
     clientOrderId: order.clientOrderId,

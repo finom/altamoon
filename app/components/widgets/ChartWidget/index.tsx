@@ -60,7 +60,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
     exactSizeLimitBuyStr, exactSizeLimitSellStr,
     exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
-    currentSymbolAllOrders, ordersKey,
+    currentSymbolAllOrders,
     // silent values
     updateDrafts, createOrderFromDraft, limitOrder, cancelOrder, calculateQuantity,
     calculateSizeFromString, calculateLiquidationPrice, getPseudoPosition,
@@ -103,11 +103,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   }, [position, candleChart]);
 
   useMemo(() => {
-    // TODO dirty fix useMemo works more robust than useEffect for some reason
-    // TODO dirty fix to ignore lastPrice changes and update orders when length or leverage changed
     candleChart?.update({ orders });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orders.length, ordersKey, candleChart, symbol]);
+  }, [candleChart, orders]);
 
   useEffect(() => {
     candleChart?.update({ alerts: alerts || [] });
