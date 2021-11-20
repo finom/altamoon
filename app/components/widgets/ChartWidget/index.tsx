@@ -121,7 +121,6 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   useEffect(() => {
     const isAllOrdersRelevant = !currentSymbolAllOrders.length
       || currentSymbolAllOrders[0].symbol === symbol;
-
     candleChart?.update({
       filledOrders: isAllOrdersRelevant && shouldChartShowOrders
         ? currentSymbolAllOrders
