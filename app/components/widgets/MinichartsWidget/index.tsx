@@ -1,7 +1,7 @@
 import React, {
   memo, ReactElement, useEffect, useRef,
 } from 'react';
-import minichartGrid from 'altamoon-minicharts';
+import minichars from 'altamoon-minicharts';
 import { useSet } from 'use-change';
 
 import Widget from '../../layout/Widget';
@@ -15,7 +15,7 @@ const MinichartsWidget = ({ title, id }: { title: string; id: string; }): ReactE
 
   useEffect(() => {
     if (bodyRef.current && alertLogRef.current && settingsRef.current) {
-      minichartGrid(bodyRef.current, {
+      minichars(bodyRef.current, {
         settingsContainer: settingsRef.current,
         alertLogContainer: alertLogRef.current,
         onSymbolSelect: setSymbol,
