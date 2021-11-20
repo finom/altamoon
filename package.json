@@ -23,7 +23,7 @@
     "upgrade": "npx npm-check-updates -u -x react-hook-form,eslint-config-airbnb-typescript --timeout 480000 && npm i --legacy-peer-deps",
     "reinstall": "rm -rf node_modules package-lock.json && npm i --legacy-peer-deps",
     "build-types": "rm -rf ./packages/altamoon-types/_tmp && npx tsc --declaration --outDir ./packages/altamoon-types/_tmp --emitDeclarationOnly && cp -a ./packages/altamoon-types/_tmp/app/. ./packages/altamoon-types/types/ && rm -r ./packages/altamoon-types/_tmp && node scripts/copyProjectVersion",
-    "build-api": "npx tsc ./app/api/* --declaration --esModuleInterop --skipLibCheck --outDir ./packages/altamoon-binance-api/api && node scripts/copyProjectVersion",
+    "build-api": "npx tsc ./app/api/* --declaration --esModuleInterop --skipLibCheck --outDir ./packages/altamoon-binance-api/api --target ES2021 --module ES2020 --moduleResolution node && node scripts/copyProjectVersion",
     "publish-types": "npm publish ./packages/altamoon-types/",
     "publish-api": "npm publish ./packages/altamoon-binance-api/",
     "patch": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags"
