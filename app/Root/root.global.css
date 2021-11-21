@@ -5,6 +5,7 @@ body { overflow: auto; } /* make the app scrollable */
 .flex-one { flex: 1; }
 .cursor-pointer { cursor: pointer; }
 .cursor-help { cursor: help; }
+.cursor-progress { cursor: progress; }
 .nowrap { white-space: nowrap; }
 .text-ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .help-text { cursor: help; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px; }
@@ -16,6 +17,7 @@ body { overflow: auto; } /* make the app scrollable */
 .o-50 { opacity: .5; }
 .o-75 { opacity: .75; }
 .o-100 { opacity: 1; }
+.o-hover-100:hover { opacity: 1 }
 
 .text-buy { color: var(--altamoon-buy-color)!important; }
 .text-sell { color: var(--altamoon-sell-color)!important; }
@@ -39,6 +41,9 @@ select.form-control.form-select, select.form-control.form-select:focus {
   background-size: 16px 12px;
 }
 
+/* ==== Bootstrap Tooltip ==== */
+.tooltip { pointer-events: auto !important;; }
+.tooltip-inner { max-width: 500px !important; }
 
 /* ==== react-grid ==== */
 .react-grid-layout {

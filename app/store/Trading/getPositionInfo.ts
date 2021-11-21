@@ -25,8 +25,8 @@ export default function getPositionInfo(
     positionAmt,
   );
 
-  const leverageBracket = this.store.account.leverageBrackets[symbol]?.find(
-    ({ notionalCap }) => notionalCap > baseValue,
+  const leverageBracket = this.store.account.leverageBrackets[symbol]?.slice().reverse().find(
+    ({ initialLeverage: l }) => l >= leverage,
   ) ?? null;
 
   const maintMarginRatio = leverageBracket?.maintMarginRatio ?? 0;
