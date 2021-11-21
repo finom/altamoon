@@ -4,5 +4,9 @@ export default {
       id: 'altamoon-phlegmatic',
       isThirdParty: false,
     },
+    {
+      id: 'altamoon-goodnight',
+      isThirdParty: false,
+    },
   ],
 };
