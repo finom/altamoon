@@ -535,7 +535,11 @@ export default class PriceLines implements ChartItem {
   };
 
   #onDrag = (evt: { sourceEvent: MouseEvent }, datum: PriceLinesDatum): void => {
-    if (this.#draggableItemIndex === null || !datum.isDraggable) return;
+    if (
+      this.#draggableItemIndex === null
+        || !datum.isDraggable
+        || !this.#items[this.#draggableItemIndex] // fixes bug with filled orders https://trello.com/c/19LumwFG/195-chart-error-when-dragging-an-order-while-it-gets-filled
+    ) return;
 
     this.#handleDrag?.(datum, this.#items);
 
