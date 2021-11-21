@@ -20,7 +20,9 @@ export default class Persistent {
 
   public tradingPostOnly = persist<boolean>('tradingPostOnly', false);
 
-  public tradingReduceOnly = persist<boolean>('tradingReduceOnly', false);
+  public tradingBuyReduceOnly = persist<boolean>('tradingBuyReduceOnly', false);
+
+  public tradingSellReduceOnly = persist<boolean>('tradingSellReduceOnly', false);
 
   public binanceApiKey = persist<string | null>('binanceApiKey', null);
 

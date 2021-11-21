@@ -1,7 +1,7 @@
 import React, {
   memo, ReactElement, ReactNode, useCallback,
 } from 'react';
-import { useSilent, useValue } from 'use-change';
+import useChange, { useSilent, useValue } from 'use-change';
 
 import * as api from '../../../../../api';
 import { ACCOUNT, PERSISTENT, TRADING } from '../../../../../store';
@@ -10,7 +10,6 @@ import ExactSize from './ExactSize';
 
 interface Props {
   side: api.OrderSide;
-  reduceOnly: boolean;
   postOnly: boolean;
   price: number | null;
   stopPrice: number | null;
@@ -22,7 +21,7 @@ interface Props {
 }
 
 const TradingSide = ({
-  side, reduceOnly, postOnly, price, stopPrice, id, tradingType, children,
+  side, postOnly, price, stopPrice, id, tradingType, children,
   exactSizeStr, setExactSizeStr,
 }: Props): ReactElement => {
   const symbol = useValue(PERSISTENT, 'symbol');
@@ -32,6 +31,11 @@ const TradingSide = ({
   const limitOrder = useSilent(TRADING, 'limitOrder');
   const stopMarketOrder = useSilent(TRADING, 'stopMarketOrder');
   const stopLimitOrder = useSilent(TRADING, 'stopLimitOrder');
+  const [buyReduceOnly, setBuyReduceOnly] = useChange(PERSISTENT, 'tradingBuyReduceOnly');
+  const [sellReduceOnly, setSellReduceOnly] = useChange(PERSISTENT, 'tradingSellReduceOnly');
+  const reduceOnly = side === 'BUY' ? buyReduceOnly : sellReduceOnly;
+  const setReduceOnly = side === 'BUY' ? setBuyReduceOnly : setSellReduceOnly;
+
   const onOrder = useCallback((quantity: number) => {
     switch (tradingType) {
       case 'MARKET':
@@ -74,6 +78,19 @@ const TradingSide = ({
 
   return (
     <>
+      <div className="form-check form-check-inline mt-2 mb-2">
+        <label className="form-check-label" htmlFor={`reduceOnly_${side}`}>
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id={`reduceOnly_${side}`}
+            onChange={({ target }) => setReduceOnly(target.checked)}
+            checked={reduceOnly}
+          />
+          {' '}
+          Reduce-only
+        </label>
+      </div>
       {children && (
         <div className="mb-3 mt-1">
           {children}

@@ -7,16 +7,12 @@ import css from './style.css';
 
 interface Props {
   postOnly: boolean;
-  reduceOnly: boolean;
   setPostOnly: (b: boolean) => void;
-  setReduceOnly: (b: boolean) => void;
 }
 
 const Leverage = ({
   postOnly,
-  reduceOnly,
   setPostOnly,
-  setReduceOnly,
 }: Props): ReactElement => {
   const updateLeverage = useSilent(TRADING, 'updateLeverage');
   const maxLeverage = useValue(TRADING, 'currentSymbolMaxLeverage');
@@ -51,19 +47,6 @@ const Leverage = ({
         </span>
       </Col>
       <Col xs={12}>
-        <div className="form-check form-check-inline">
-          <label className="form-check-label" htmlFor="reduceOnly">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="reduceOnly"
-              onChange={({ target }) => setReduceOnly(target.checked)}
-              checked={reduceOnly}
-            />
-            {' '}
-            Reduce-only
-          </label>
-        </div>
         <div className="form-check form-check-inline">
           <label className="form-check-label" htmlFor="postOnly">
             <input

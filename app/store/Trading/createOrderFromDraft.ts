@@ -12,8 +12,9 @@ export default async function createOrderFromDraft(this: Store['trading'], {
   newClientOrderId: string;
 }, side: api.OrderSide): Promise<void> {
   const {
-    tradingType, symbol, tradingReduceOnly: reduceOnly, tradingPostOnly: postOnly,
+    tradingType, symbol, tradingBuyReduceOnly, tradingSellReduceOnly, tradingPostOnly: postOnly,
   } = this.store.persistent;
+  const reduceOnly = side === 'BUY' ? tradingBuyReduceOnly : tradingSellReduceOnly;
   const price = side === 'BUY' ? buyDraftPrice : sellDraftPrice;
   const stopPrice = side === 'BUY' ? stopBuyDraftPrice : stopSellDraftPrice;
 

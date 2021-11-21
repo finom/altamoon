@@ -8,13 +8,10 @@ import useDraftPrice from './TradingTab/useDraftPrice';
 interface Props {
   isWideLayout: boolean;
   postOnly: boolean;
-  reduceOnly: boolean;
   tradingType: 'STOP';
 }
 
-const StopLimit = ({
-  isWideLayout, postOnly, reduceOnly, tradingType,
-}: Props): ReactElement => {
+const StopLimit = ({ isWideLayout, postOnly, tradingType }: Props): ReactElement => {
   const pricePrecision = useValue(MARKET, 'currentSymbolPricePrecision');
 
   const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeStopLimitBuyStr');
@@ -61,7 +58,6 @@ const StopLimit = ({
       stopSellPrice={stopSellPrice}
       isWideLayout={isWideLayout}
       postOnly={postOnly}
-      reduceOnly={reduceOnly}
       tradingType={tradingType}
       exactSizeBuyStr={exactSizeBuyStr}
       setExactSizeBuyStr={setExactSizeBuyStr}

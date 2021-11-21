@@ -14,11 +14,15 @@ import StopLimit from './StopLimit';
 import StopMarket from './StopMarket';
 import TradingSettings from './TradingSettings';
 
-const Trading = ({ title, id }: { title: string; id: string; }): ReactElement => {
+interface Props {
+  title: string;
+  id: string;
+}
+
+const Trading = ({ title, id }: Props): ReactElement => {
   const [type, setType] = useChange(PERSISTENT, 'tradingType');
   const [isWideLayout, wideLayoutRef] = useWidgetSizeBreakpoint('lg');
   const [postOnly, setPostOnly] = useChange(PERSISTENT, 'tradingPostOnly');
-  const [reduceOnly, setReduceOnly] = useChange(PERSISTENT, 'tradingReduceOnly');
 
   return (
     <Widget
@@ -35,9 +39,7 @@ const Trading = ({ title, id }: { title: string; id: string; }): ReactElement =>
     >
       <TradingOptions
         postOnly={postOnly}
-        reduceOnly={reduceOnly}
         setPostOnly={setPostOnly}
-        setReduceOnly={setReduceOnly}
       />
       <Nav tabs className="mt-3">
         <NavItem>
@@ -58,7 +60,6 @@ const Trading = ({ title, id }: { title: string; id: string; }): ReactElement =>
           <Limit
             isWideLayout={isWideLayout}
             postOnly={postOnly}
-            reduceOnly={reduceOnly}
             tradingType="LIMIT"
           />
         </div>
@@ -66,7 +67,6 @@ const Trading = ({ title, id }: { title: string; id: string; }): ReactElement =>
           <Market
             isWideLayout={isWideLayout}
             postOnly={postOnly}
-            reduceOnly={reduceOnly}
             tradingType="MARKET"
           />
         </div>
@@ -74,7 +74,6 @@ const Trading = ({ title, id }: { title: string; id: string; }): ReactElement =>
           <StopLimit
             isWideLayout={isWideLayout}
             postOnly={postOnly}
-            reduceOnly={reduceOnly}
             tradingType="STOP"
           />
         </div>
@@ -82,7 +81,6 @@ const Trading = ({ title, id }: { title: string; id: string; }): ReactElement =>
           <StopMarket
             isWideLayout={isWideLayout}
             postOnly={postOnly}
-            reduceOnly={reduceOnly}
             tradingType="STOP_MARKET"
           />
         </div>

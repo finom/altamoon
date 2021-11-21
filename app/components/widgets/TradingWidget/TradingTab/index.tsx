@@ -9,7 +9,6 @@ import TradingSide from './TradingSide';
 interface Props {
   isWideLayout: boolean;
   postOnly: boolean;
-  reduceOnly: boolean;
   buyPrice: number | null;
   sellPrice: number | null;
   stopBuyPrice: number | null;
@@ -25,7 +24,7 @@ interface Props {
 }
 
 const TradingTab = ({
-  isWideLayout, postOnly, reduceOnly,
+  isWideLayout, postOnly,
   buyPrice, sellPrice, stopBuyPrice, stopSellPrice, id, buyNode, sellNode, tradingType,
   exactSizeBuyStr, setExactSizeBuyStr, exactSizeSellStr, setExactSizeSellStr,
 }: Props): ReactElement => {
@@ -49,7 +48,6 @@ const TradingTab = ({
           <TradingSide
             id={id}
             side="BUY"
-            reduceOnly={reduceOnly}
             postOnly={postOnly}
             price={buyPrice}
             stopPrice={stopBuyPrice}
@@ -64,7 +62,6 @@ const TradingTab = ({
           <TradingSide
             id={id}
             side="SELL"
-            reduceOnly={reduceOnly}
             postOnly={postOnly}
             price={sellPrice}
             stopPrice={stopSellPrice}
