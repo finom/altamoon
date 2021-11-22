@@ -11,7 +11,7 @@ export default function eventAccountUpdate(
   if (!positions.length) return;
 
   // eslint-disable-next-line no-console
-  console.log(`Received ${positions.length} updated position(s) (${positions.map((pos) => pos.s).join(', ')}).`);
+  console.info(`Received ${positions.length} updated position(s) (${positions.map((pos) => pos.s).join(', ')}).`);
   positions.forEach((pos) => {
     const prevAmt = +this.allSymbolsPositionRisk[pos.s].positionAmt;
     const newAmt = +pos.pa;

@@ -60,7 +60,7 @@ export function runtimeTestCandlesOrder(
       }
     }).catch((e) => {
       // eslint-disable-next-line no-console
-      console.log('candles', candles[0]?.symbol, candles[0]?.interval, candles.map((c) => c.timeISOString));
+      console.info('candles', candles[0]?.symbol, candles[0]?.interval, candles.map((c) => c.timeISOString));
       throw e;
     });
   }
@@ -71,7 +71,6 @@ export default async function futuresCandles({
 }: {
   symbol: string; interval: CandlestickChartInterval; limit: number; lastCandleFromCache?: boolean;
 }): Promise<FuturesChartCandle[]> {
-  console.log('options.isTestnet', options.isTestnet)
   const storageKey = `${options.isTestnet ? 'testnet_' : ''}${symbol}_${interval}`;
   let startDate: number | undefined;
   let calculatedLimit = limit;
