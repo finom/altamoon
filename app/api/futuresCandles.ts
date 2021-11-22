@@ -1,5 +1,6 @@
 import localForage from 'localforage';
 import promiseRequest from './promiseRequest';
+import options from './options';
 
 import { FuturesChartCandle, CandlestickChartInterval } from './types';
 
@@ -70,7 +71,8 @@ export default async function futuresCandles({
 }: {
   symbol: string; interval: CandlestickChartInterval; limit: number; lastCandleFromCache?: boolean;
 }): Promise<FuturesChartCandle[]> {
-  const storageKey = `${symbol}_${interval}`;
+  console.log('options.isTestnet', options.isTestnet)
+  const storageKey = `${options.isTestnet ? 'testnet_' : ''}${symbol}_${interval}`;
   let startDate: number | undefined;
   let calculatedLimit = limit;
   let cachedCandles: FuturesChartCandle[] = [];
@@ -190,4 +192,6 @@ export default async function futuresCandles({
   return candles;
 }
 
-(window as unknown as { clearCandles: () => void }).clearCandles = () => localForage.clear();
+(window as unknown as { clearCandlesCache: () => void }).clearCandlesCache = () => {
+  void localForage.clear();
+};

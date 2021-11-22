@@ -25,8 +25,8 @@ export class RootStore {
 
   constructor() {
     this.persistent = new Persistent();
+    this.account = new Account(this); // should be init before Market to set Binance options
     this.market = new Market(this);
-    this.account = new Account(this);
     this.trading = new Trading(this);
     this.stats = new Stats(this);
     this.customization = new Customization(this);
