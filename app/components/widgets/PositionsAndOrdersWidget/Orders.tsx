@@ -4,7 +4,8 @@ import React, { ReactElement, useCallback, useMemo } from 'react';
 import { Trash } from 'react-bootstrap-icons';
 import { Badge, Button, Table } from 'reactstrap';
 import { useSet, useSilent, useValue } from 'use-change';
-import { PERSISTENT, TRADING } from '../../../store';
+import tooltipRef from '../../../lib/tooltipRef';
+import { ACCOUNT, PERSISTENT, TRADING } from '../../../store';
 
 const formatNumber = (n: number, ignorePrecision?: boolean) => format(n < 10 && !ignorePrecision ? ',.4f' : ',.2f')(n);
 const formatPercent = format(',.1f');
@@ -16,6 +17,7 @@ const Orders = (): ReactElement => {
   const cancelOrder = useSilent(TRADING, 'cancelOrder');
   const cancelAllOrders = useSilent(TRADING, 'cancelAllOrders');
   const setSymbol = useSet(PERSISTENT, 'symbol');
+  const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
   const isAllOrdersCanceled = useMemo(
     () => !openOrders.length || openOrders.every(({ isCanceled }) => isCanceled),
     [openOrders],
@@ -41,6 +43,9 @@ const Orders = (): ReactElement => {
           </th>
           <th>
             Size
+          </th>
+          <th>
+            <span className="help-text" ref={tooltipRef({ title: 'Estimated Margin in "Isolated" mode' })}>Margin</span>
           </th>
           <th>
             Last Price
@@ -76,7 +81,7 @@ const Orders = (): ReactElement => {
           }
           return a.symbol > b.symbol ? 1 : -1;
         }).map(({
-          symbol, side, type, origQty, price, clientOrderId,
+          symbol, side, type, origQty, price, clientOrderId, leverage,
           executedQty, stopPrice, reduceOnly, orderId, isCanceled,
         }) => (
           <tr key={orderId}>
@@ -108,6 +113,17 @@ const Orders = (): ReactElement => {
                   &nbsp;₮)
                 </>
               )}
+            </td>
+            <td>
+              {formatNumber((origQty - executedQty) * (price / leverage))}
+              {' '}
+              ₮
+              {' '}
+              (
+              {formatPercent(
+                (((origQty - executedQty) * (price / leverage)) / totalWalletBalance) * 100,
+              )}
+              %)
             </td>
             <td>
               {formatNumber(listenedLastPrices[symbol])}
