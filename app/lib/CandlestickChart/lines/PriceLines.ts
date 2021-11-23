@@ -231,6 +231,7 @@ export default class PriceLines implements ChartItem {
         .select('.price-line-vertical-group')
         .attr('transform', (d) => `translate(${String(axis.scale()(d.xValue ?? 0))}, 0)`)
         .attr('color', ({ color }) => color ?? this.#color)
+        .style('pointer-events', (d) => (d.pointerEventsNone ?? this.#pointerEventsNone ? 'none' : 'auto'))
         .style('visibility', ({ isVisible }) => (typeof isVisible === 'undefined' || isVisible ? '' : 'hidden'));
 
       update.select('.price-line-vertical-group .price-line-line')
