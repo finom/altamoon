@@ -1,11 +1,13 @@
 import classNames from 'classnames';
-import React, { ReactElement } from 'react';
+import React, {
+  ReactElement, useEffect, useMemo, useRef, useState,
+} from 'react';
 import { InfoCircle } from 'react-bootstrap-icons';
 import { Col, Row } from 'reactstrap';
 import useChange, { useSilent, useValue } from 'use-change';
 import formatMoneyNumber from '../../../lib/formatMoneyNumber';
 import tooltipRef from '../../../lib/tooltipRef';
-import { TRADING } from '../../../store';
+import { ACCOUNT, PERSISTENT, TRADING } from '../../../store';
 
 import css from './style.css';
 
@@ -22,9 +24,39 @@ const Leverage = ({
   const maxLeverage = useValue(TRADING, 'currentSymbolMaxLeverage');
   const [isIsolated, setIsISolated] = useChange(TRADING, 'isCurrentSymbolMarginTypeIsolated');
   const [currentSymbolLeverage, setCurrentSymbolLeverage] = useChange(TRADING, 'currentSymbolLeverage');
-  const currentSymbolPseudoPosition = useValue(TRADING, 'currentSymbolPseudoPosition');
-  const leverageBracket = currentSymbolPseudoPosition?.leverageBracket;
+  const leverageBrackets = useValue(ACCOUNT, 'leverageBrackets');
+  const symbol = useValue(PERSISTENT, 'symbol');
+  const leverageTooltipRef = useRef<bootstrap.Tooltip & {
+    tip?: HTMLDivElement; isShown?: boolean;
+  } | null>();
+  const [isLeverageTooltipVisible, setIsLeverageTooltipVisible] = useState(false);
+  const leverageBracket = useMemo(() => leverageBrackets[symbol]?.slice().reverse().find(
+    ({ initialLeverage: l }) => l >= currentSymbolLeverage,
+  ) ?? null, [currentSymbolLeverage, leverageBrackets, symbol]);
   const notionalCap = leverageBracket?.notionalCap;
+
+  const leverageTooltipText = `
+  Maximum position at current leverage: ${formatMoneyNumber(notionalCap ?? 0)} USDT
+  <a class="text-nowrap d-block" href="https://www.binance.com/en/futures/trading-rules/perpetual/leverage-margin" target="_blank" rel="noreferrer">Check the Leverage & Margin table</a>
+  <a class="text-nowrap d-block" href="https://www.binance.com/en/futures/position/adjustment" target="_blank" rel="noreferrer"> Position Limit Enlarge</a>
+`;
+
+  useEffect(() => {
+    const tooltipInstance = leverageTooltipRef.current;
+    if (!tooltipInstance) return;
+
+    if (tooltipInstance.isShown && !isLeverageTooltipVisible) {
+      tooltipInstance.hide();
+      tooltipInstance.isShown = false;
+    } else if (!tooltipInstance.isShown && isLeverageTooltipVisible) {
+      tooltipInstance.show();
+      tooltipInstance.isShown = true;
+    }
+
+    const tipInner = tooltipInstance.tip?.querySelector<HTMLDivElement>('.tooltip-inner');
+
+    if (tipInner) tipInner.innerHTML = leverageTooltipText;
+  }, [isLeverageTooltipVisible, leverageTooltipText]);
 
   return (
     <Row>
@@ -40,12 +72,13 @@ const Leverage = ({
             tabIndex={0}
             role="button"
             className={classNames({ 'o-hover-100': true, 'o-25 pe-none': !notionalCap, 'o-50': !!notionalCap })}
-            data-bs-original-title={`
-              Maximum position at current leverage: ${formatMoneyNumber(notionalCap ?? 0)} USDT
-              <a class="text-nowrap d-block" href="https://www.binance.com/en/futures/trading-rules/perpetual/leverage-margin" target="_blank" rel="noreferrer">Check the Leverage & Margin table</a>
-              <a class="text-nowrap d-block" href="https://www.binance.com/en/futures/position/adjustment" target="_blank" rel="noreferrer"> Position Limit Enlarge</a>
-            `}
-            ref={tooltipRef({ trigger: 'focus', placement: 'bottom' })}
+            data-bs-original-title={leverageTooltipText}
+            ref={tooltipRef({
+              trigger: 'manual',
+              placement: 'top',
+            }, (instance) => { leverageTooltipRef.current = instance; })}
+            onClick={() => setIsLeverageTooltipVisible((v) => !v)}
+            onKeyDown={() => setIsLeverageTooltipVisible((v) => !v)}
           >
             <InfoCircle />
           </span>
@@ -60,8 +93,9 @@ const Leverage = ({
           max={maxLeverage}
           step={1}
           onChange={({ target }) => setCurrentSymbolLeverage(+target.value)}
-          onMouseUp={() => updateLeverage()}
+          onMouseUp={() => { void updateLeverage(); setIsLeverageTooltipVisible(false); }}
           onKeyUp={() => updateLeverage()}
+          onMouseDown={() => setIsLeverageTooltipVisible(true)}
         />
         <span className={`${css.minLeverage} text-muted`}>1x</span>
         <span className={`${css.maxLeverage} text-muted`}>

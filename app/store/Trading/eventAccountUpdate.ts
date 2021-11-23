@@ -34,12 +34,19 @@ export default function eventAccountUpdate(
 
   this.openPositions = Object.values(this.allSymbolsPositionRisk)
     .filter((position) => !!+position.positionAmt)
-    .map((position) => getPositionInfo.call(
-      this, position, {
-        lastPrice: +this.store.market.allSymbolsTickers[position.symbol]?.close,
-        // isClosed is definitely false if amount increased, otherwise use existing isClosed value
-        isClosed: amtIncreasedSymbols.includes(position.symbol) ? false : undefined,
-      },
-    ))
+    .map((position) => {
+      const tradingPosition = getPositionInfo.call(
+        this, position, {
+          lastPrice: +this.store.market.allSymbolsTickers[position.symbol]?.close,
+          // isClosed is definitely false if amount increased, otherwise use existing isClosed value
+          isClosed: amtIncreasedSymbols.includes(position.symbol) ? false : undefined,
+        },
+      );
+
+      // Websocket doesn't provide liq. price, see https://binance-docs.github.io/apidocs/futures/en/#event-balance-and-position-update
+      tradingPosition.liquidationPrice = this.calculateLiquidationPrice(tradingPosition);
+
+      return tradingPosition;
+    })
     .sort(({ symbol: symA }, { symbol: symB }) => (symA > symB ? 1 : -1));
 }

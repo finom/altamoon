@@ -25,8 +25,8 @@ export default function getPositionInfo(
     positionAmt,
   );
 
-  const leverageBracket = this.store.account.leverageBrackets[symbol]?.slice().reverse().find(
-    ({ initialLeverage: l }) => l >= leverage,
+  const leverageBracket = this.store.account.leverageBrackets[symbol]?.find(
+    ({ notionalCap }) => notionalCap > baseValue,
   ) ?? null;
 
   const maintMarginRatio = leverageBracket?.maintMarginRatio ?? 0;
@@ -77,9 +77,6 @@ export default function getPositionInfo(
     isClosed: override.isClosed
       ?? this.openPositions.some((pos) => pos.symbol === symbol && pos.isClosed),
   };
-
-  // TODO remove this comment if https://trello.com/c/TGyLXMDu/98-liquidation-line is resolved
-  // position.liquidationPrice = this.calculateLiquidationPrice(position, { side })
 
   return position;
 }
