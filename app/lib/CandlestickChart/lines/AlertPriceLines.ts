@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { ChartAxis, PriceLinesDatum, ResizeData } from '../types';
 import PriceLines from './PriceLines';
-import { alertUpUri, alertDownUri } from './alertSounds';
+import { alertUpSoundUri, alertDownSoundUri } from '../../alertSounds';
 
 interface Params {
   axis: ChartAxis;
@@ -21,8 +21,8 @@ interface AlertLinesDatum extends PriceLinesDatum {
 
 moment.relativeTimeThreshold('ss', 0);
 
-const upSound = new Audio(alertUpUri);
-const downSound = new Audio(alertDownUri);
+const upSound = new Audio(alertUpSoundUri);
+const downSound = new Audio(alertDownSoundUri);
 
 // https://icons.getbootstrap.com/icons/bell-fill/
 const bellIconStr = `<svg style="transform: scale(0.7) translate(0, -3px);" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16">

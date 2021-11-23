@@ -1,4 +1,5 @@
 import * as api from '../../api';
+import { orderFilledSoundUri } from '../../lib/alertSounds';
 import getOrderInfo from './getOrderInfo';
 
 export default function eventOrderUpdate(
@@ -95,7 +96,8 @@ export default function eventOrderUpdate(
 
     if (['CANCELED', 'EXPIRED', 'FILLED'].includes(order.status)) {
       this.openOrders = this.openOrders.filter((openOrder) => openOrder.orderId !== order.orderId);
-      // if(order.status == 'FILLED') new Audio('./assets/audio/plop.mp3').play()
     }
   }
+
+  if (order.status === 'FILLED') void new Audio(orderFilledSoundUri).play();
 }
