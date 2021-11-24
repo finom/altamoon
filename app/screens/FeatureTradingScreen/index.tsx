@@ -27,7 +27,7 @@ const defaultPluginLayout = {
   minH: 2, minW: 2, h: 4, w: 4, x: 0, y: 0,
 };
 
-const rowHeight = 30;
+const rowHeight = 10;
 
 const widgetComponents: Record<RootStore['customization']['builtInWidgets'][0]['id'], {
   RenderWidget: (({ title, id }: { title: string; id: string; }) => ReactElement)
