@@ -1,4 +1,5 @@
 import {
+  isEqual,
   keyBy, pick, throttle, uniq,
 } from 'lodash';
 import { listenChange } from 'use-change';
@@ -103,6 +104,8 @@ export default class Trading {
   #leverageChangeRequestsCount = 0; // allows to wait for leverage update ignoring account changes
 
   #lastPriceUnsubscribe?: () => void;
+
+  #activelyListenedSymbols: string[] = [];
 
   constructor(store: Store) {
     this.#store = store;
@@ -467,16 +470,22 @@ export default class Trading {
   };
 
   #listenLastPrices = (): void => {
+    const symbolsToListen = uniq([
+      ...this.openPositions.map(({ symbol }) => symbol),
+      ...this.openOrders.map(({ symbol }) => symbol),
+    ]);
+
+    // don't re-subscribe if listened symbols are the same
+    if (isEqual(this.#activelyListenedSymbols, symbolsToListen)) return;
+
+    this.#activelyListenedSymbols = symbolsToListen;
+
     // unsubscribe from previously used endpoint
     this.#lastPriceUnsubscribe?.();
 
     // if no position/orders, don't create new subscription
     if (!this.openPositions.length && !this.openOrders.length) return;
 
-    const symbolsToListen = uniq([
-      ...this.openPositions.map(({ symbol }) => symbol),
-      ...this.openOrders.map(({ symbol }) => symbol),
-    ]);
     const { totalWalletBalance } = this.#store.account;
 
     // remove last prices of symbols that aren't used anymore
@@ -485,8 +494,7 @@ export default class Trading {
     // collect initial data for listened symbols, use existing value or market value
     for (const symbol of symbolsToListen) {
       newListenedLastPrices[symbol] = newListenedLastPrices[symbol]
-        ?? +(this.store.market.allSymbolsTickers[symbol]?.close
-        ?? 0);
+        ?? +(this.store.market.allSymbolsTickers[symbol]?.close ?? 0);
     }
 
     // update listenedLastPrices withnew data
