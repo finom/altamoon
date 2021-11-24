@@ -34,6 +34,7 @@ export default class AlertPriceLines extends PriceLines {
 
   private static createAlertLine = (yValue: number): AlertLinesDatum => ({
     yValue,
+    isTitleVisible: 'hover',
     title: bellIconStr,
     isDraggable: true,
     customData: {},
@@ -50,7 +51,6 @@ export default class AlertPriceLines extends PriceLines {
       axis,
       items: alerts.map(AlertPriceLines.createAlertLine),
       isTitleVisible: true,
-
       lineStyle: 'dashed',
       onDragEnd: () => this.#triggerUpdate(),
       onAdd: () => this.#triggerUpdate(),
@@ -83,6 +83,7 @@ export default class AlertPriceLines extends PriceLines {
             msec -= ss * 1000;
 
             this.updateItem(index, {
+              isTitleVisible: true,
               title: `<span class="triggered-alert-indicator">${bellIconStr}</span> ${hh ? `${hh}h ` : ''}${mm ? `${mm}m ` : ''}${ss}s ago`,
             });
           }
