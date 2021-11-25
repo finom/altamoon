@@ -332,11 +332,13 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
           </div>
         ))}
       </div>
-      <div className={css.marketName}>
-        {futuresExchangeSymbols[symbol].baseAsset}
-        /
-        {futuresExchangeSymbols[symbol].quoteAsset}
-      </div>
+      {!!futuresExchangeSymbols[symbol] && (
+        <div className={css.marketName}>
+          {futuresExchangeSymbols[symbol].baseAsset}
+          /
+          {futuresExchangeSymbols[symbol].quoteAsset}
+        </div>
+      )}
       <div
         className={css.chartContainer}
         ref={(node) => { ref.current = node; }}
