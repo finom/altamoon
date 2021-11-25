@@ -151,7 +151,7 @@ export default class PriceLines implements ChartItem {
 
   public empty = (): void => this.update({ items: [] });
 
-  public updateItem = (key: number | string, data: PriceLinesDatum): void => {
+  public updateItem = (key: number | string, data: Partial<PriceLinesDatum>): void => {
     const item = typeof key === 'string' ? this.#items.find(({ id }) => id === key) : this.#items[key];
     if (!item) throw new Error(`Unable to find item "${key}"`);
     Object.assign(item, data);
@@ -209,6 +209,12 @@ export default class PriceLines implements ChartItem {
           return null;
         });
 
+      update.select('.price-line-title-inner').style('display', (d) => (this.#isTitleVisible === false
+          || (this.#isTitleVisible === 'hover' && !d.isHovered)
+          || d.isTitleVisible === false
+          || (d.isTitleVisible === 'hover' && !d.isHovered)
+        ? 'none' : 'inline-block'));
+
       update.style('cursor', (d) => (d.isDraggable ? 'ns-resize' : 'auto'));
 
       this.#setPriceTextAttributes({
@@ -255,7 +261,7 @@ export default class PriceLines implements ChartItem {
 
     this.#wrapper
       .selectAll('.price-line-wrapper')
-      .data(this.#items)
+      .data(this.#items, (datum) => (datum as PriceLinesDatum).id)
       .join(
         (enter) => {
           // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -264,13 +270,15 @@ export default class PriceLines implements ChartItem {
             .on('mouseover', function mouseover(_evt, datum) {
               const titleElement = this.querySelector<HTMLElement>('.price-line-title-inner');
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
-                titleElement.style.display = 'inline-block';
+                // titleElement.style.display = 'inline-block';
+                that.updateItem(datum.id, { isHovered: true });
               }
             })
             .on('mouseleave', function mouseleave(_evt, datum) {
               const titleElement = this.querySelector<HTMLElement>('.price-line-title-inner');
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
-                titleElement.style.display = 'none';
+                // titleElement.style.display = 'none';
+                that.updateItem(datum.id, { isHovered: false });
               }
             })
             .on('dblclick', (evt: MouseEvent) => evt.stopPropagation());
@@ -337,12 +345,7 @@ export default class PriceLines implements ChartItem {
               .style('pointer-events', 'none')
               .style('display', 'inline-block')
               .style('height', '100%')
-              .style('margin-right', '85px')
-              .style('display', (d) => (this.#isTitleVisible === false
-                  || this.#isTitleVisible === 'hover'
-                  || d.isTitleVisible === false
-                  || d.isTitleVisible === 'hover'
-                ? 'none' : 'inline-block'));
+              .style('margin-right', '85px');
 
             div.append('xhtml:span').attr('class', 'text').style('color', '#fff');
 
