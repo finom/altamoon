@@ -24,6 +24,7 @@ interface Props {
 const ChartWidget = ({ title, id }: Props): ReactElement => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [candleChart, setCandleChart] = useState<CandlestickChart | null>(null);
+  const futuresExchangeSymbols = useValue(MARKET, 'futuresExchangeSymbols');
 
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
   const leverageBrackets = useValue(ACCOUNT, 'leverageBrackets');
@@ -330,6 +331,11 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
             </span>
           </div>
         ))}
+      </div>
+      <div className={css.marketName}>
+        {futuresExchangeSymbols[symbol].baseAsset}
+        /
+        {futuresExchangeSymbols[symbol].quoteAsset}
       </div>
       <div
         className={css.chartContainer}

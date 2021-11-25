@@ -5,6 +5,7 @@ declare namespace StyleCssNamespace {
     chartContainer: string;
     intervalItem: string;
     intervals: string;
+    marketName: string;
     showOrders: string;
   }
 }
