@@ -55,6 +55,7 @@ export default class Plot implements ChartItem {
   };
 
   public draw = ({ candles, zoomTransform }: DrawData): void => {
+    console.log('candles', candles.length)
     if (!candles.length) return;
 
     const lastCandle = candles[candles.length - 1];
@@ -77,10 +78,16 @@ export default class Plot implements ChartItem {
       this.#pathWicksDown?.attr('d', this.#getWicks(downCandles));
     }
 
+    /*
+    this.smoozCandles = smoozCandles(
+            this.candles,
+            this.smoozCandles,
+            index
+        )
+    */
+
     // update last candle
-    // candles.slice(-2) returns [prev, last]
-    // and allows smoozCandles to use previous candle to calculate itself
-    const [, smoozLastCandle] = Plot.smoozCandles(candles.slice(-2));
+    const smoozLastCandle = Plot.smoozCandles(candles)[candles.length - 1];
 
     const upLastCandles = smoozLastCandle?.direction === 'UP' ? [smoozLastCandle] : [];
     const downLastCandles = smoozLastCandle?.direction === 'DOWN' ? [smoozLastCandle] : [];
