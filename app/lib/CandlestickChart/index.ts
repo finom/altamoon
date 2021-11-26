@@ -419,7 +419,7 @@ export default class CandlestickChart {
     const paddingTop = this.#height * (paddingTopPercent / 100);
     const paddingBottom = (this.#height * (paddingBottomPercent / 100));
 
-    // calc domain before calculating padding
+    // calc domain before and after calculating padding
     y.domain(yDomain);
 
     // Padding
