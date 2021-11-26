@@ -37,10 +37,10 @@ const Positions = (): ReactElement => {
           <tr>
             <th>Position Asset</th>
             <th>Size</th>
+            <th>Margin</th>
             <th>Last Price</th>
             <th>Entry Price</th>
             <th>Liq. Price</th>
-            <th>Margin</th>
             <th><span className="help-text" ref={tooltipRef({ title: 'Profit and Loss' })}>PNL</span></th>
             <th>
               <span className="help-text" ref={tooltipRef({ title: 'Return on Investment' })}>ROI</span>
@@ -85,22 +85,6 @@ const Positions = (): ReactElement => {
                 &nbsp;₮)
               </td>
               <td>
-                {formatNumber(lastPrice)}
-                &nbsp;₮
-              </td>
-              <td>
-                {formatNumber(entryPrice)}
-                &nbsp;₮
-              </td>
-              <td>
-                {marginType === 'isolated' ? (
-                  <>
-                    {formatNumber(liquidationPrice)}
-                    &nbsp;₮
-                  </>
-                ) : <>&mdash;</>}
-              </td>
-              <td>
                 {marginType === 'isolated'
                   ? (
                     <>
@@ -115,6 +99,22 @@ const Positions = (): ReactElement => {
                     </>
                   )
                   : <em className="text-warning">Cross</em>}
+              </td>
+              <td>
+                {formatNumber(lastPrice)}
+                &nbsp;₮
+              </td>
+              <td>
+                {formatNumber(entryPrice)}
+                &nbsp;₮
+              </td>
+              <td>
+                {marginType === 'isolated' ? (
+                  <>
+                    {formatNumber(liquidationPrice)}
+                    &nbsp;₮
+                  </>
+                ) : <>&mdash;</>}
               </td>
               <td>
                 <span className={textClassName(pnl)}>

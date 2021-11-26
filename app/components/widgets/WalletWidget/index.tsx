@@ -62,7 +62,7 @@ const WalletWidget = ({ title, id }: { title: string; id: string; }): ReactEleme
           </tr>
           <tr>
             <td className={css.labelCell}>
-              Daily PNL:
+              Today's PNL:
             </td>
             <td className={`${css.valueCell} form-control`}>
               {formatNumber(dailyPnlValue)}
