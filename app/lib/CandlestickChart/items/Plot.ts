@@ -58,6 +58,8 @@ export default class Plot implements ChartItem {
     if (!candles.length) return;
 
     const lastCandle = candles[candles.length - 1];
+    const smoozCandles = Plot.smoozCandles(candles);
+    const smoozLastCandle = smoozCandles.pop();
 
     // update all candles (except first) if zoom or last candle was changed
     if (
@@ -65,11 +67,12 @@ export default class Plot implements ChartItem {
       || lastCandle?.interval !== this.#lastCandle?.interval
       || lastCandle?.symbol !== this.#lastCandle?.symbol
       || this.#zoomTransform !== zoomTransform
+      // fixes https://trello.com/c/MOY6UwuT/208-chart-chart-not-resizing-when-price-goes-beyond-extreme
+      || smoozCandles[smoozCandles.length - 1]?.high < (smoozLastCandle?.high ?? 0)
+      || smoozCandles[smoozCandles.length - 1]?.low > (smoozLastCandle?.low ?? 0)
     ) {
-      const smoozFirstCandles = Plot.smoozCandles(candles).slice(0, -1);
-
-      const upCandles = smoozFirstCandles.filter((x) => x.direction === 'UP');
-      const downCandles = smoozFirstCandles.filter((x) => x.direction === 'DOWN');
+      const upCandles = smoozCandles.filter((x) => x.direction === 'UP');
+      const downCandles = smoozCandles.filter((x) => x.direction === 'DOWN');
 
       this.#pathBodiesUp?.attr('d', this.#getBodies(upCandles, 'UP'));
       this.#pathWicksUp?.attr('d', this.#getWicks(upCandles));
@@ -78,8 +81,6 @@ export default class Plot implements ChartItem {
     }
 
     // update last candle
-    const smoozLastCandle = Plot.smoozCandles(candles)[candles.length - 1];
-
     const upLastCandles = smoozLastCandle?.direction === 'UP' ? [smoozLastCandle] : [];
     const downLastCandles = smoozLastCandle?.direction === 'DOWN' ? [smoozLastCandle] : [];
 
@@ -131,7 +132,7 @@ export default class Plot implements ChartItem {
     const x = Math.round(this.#scaledX(candle.time)) - width / 2;
     const y = top;
 
-    return `M${x},${y} h${width}v${-height}h${-width}z `;
+    return `M${x},${y} h${width}v${-height}h${-width}z`;
   };
 
   #getWicks = (candles: api.FuturesChartCandle[]): string => {
