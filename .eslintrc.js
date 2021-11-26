@@ -6,7 +6,10 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
   ],
+  // plugins: ['eslint-plugin-tsdoc'], uncomment once https://github.com/microsoft/tsdoc/issues/19 resolved
+  // parser: '@typescript-eslint/parser', uncomment once https://github.com/microsoft/tsdoc/issues/19 resolved
   rules: {
+    // 'tsdoc/syntax': 'warn', uncomment once https://github.com/microsoft/tsdoc/issues/19 resolved
     // A temporary hack related to IDE not resolving correct package.json
     'import/no-extraneous-dependencies': 'off',
     'no-void': 'off', // allows to ignore floating promises

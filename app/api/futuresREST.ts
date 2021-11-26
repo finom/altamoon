@@ -155,7 +155,7 @@ interface FuturesOrderOptions {
 
 /**
  * New Order (TRADE)
- * @remarks Send in a new order.
+ * @remarks Send in a new order. This is the general function used internally by `futuresMarketOrder`, `futuresLimitOrder` etc.
  * @see {@link https://binance-docs.github.io/apidocs/futures/en/#new-order-trade}
  * @param options - Order options
  * @param options.side - Order side
@@ -188,6 +188,15 @@ export async function futuresOrder({
   }, { type: 'TRADE', method: 'POST' });
 }
 
+/**
+ * Create market order
+ * @param side - Order side
+ * @param symbol - Symbol
+ * @param quantity - Quantity
+ * @param options - Additional order options
+ * @param options.reduceOnly - Reduce only
+ * @returns New order
+ */
 export async function futuresMarketOrder(
   side: OrderSide,
   symbol: string,
@@ -199,6 +208,18 @@ export async function futuresMarketOrder(
   });
 }
 
+/**
+ * Create limit order
+ * @param side - Order side
+ * @param symbol - Symbol
+ * @param quantity - Quantity
+ * @param price - Price
+ * @param options - Additional order options
+ * @param options.reduceOnly - Reduce only
+ * @param options.timeInForce - Time in force
+ * @param options.newClientOrderId - A unique id among open orders. Automatically generated if not sent
+ * @returns New order
+ */
 export async function futuresLimitOrder(
   side: OrderSide,
   symbol: string,
@@ -221,6 +242,16 @@ export async function futuresLimitOrder(
   });
 }
 
+/**
+ * Create stop market order
+ * @param side - Order side
+ * @param symbol - Symbol
+ * @param quantity - Quantity
+ * @param stopPrice - Stop price
+ * @param options - Additional order options
+ * @param options.reduceOnly - Reduce only
+ * @returns New order
+ */
 export async function futuresStopMarketOrder(
   side: OrderSide,
   symbol: string,
@@ -232,7 +263,19 @@ export async function futuresStopMarketOrder(
     side, symbol, quantity, price: null, type: 'STOP_MARKET', reduceOnly, stopPrice,
   });
 }
-
+/**
+ * Create stop market order
+ * @param side - Order side
+ * @param symbol - Symbol
+ * @param quantity - Quantity
+ * @param price - Price
+ * @param stopPrice - Stop price
+ * @param options - Additional order options
+ * @param options.reduceOnly - Reduce only
+ * @param options.timeInForce - Time in force
+ * @param options.newClientOrderId - A unique id among open orders. Automatically generated if not sent
+ * @returns New order
+ */
 export async function futuresStopLimitOrder(
   side: OrderSide,
   symbol: string,
@@ -248,6 +291,18 @@ export async function futuresStopLimitOrder(
   });
 }
 
+/**
+ * Get Income History (USER_DATA)
+ * @param params - Request params
+ * @param params.symbol - Symbol
+ * @param params.incomeType - Incomr type
+ * @param params.startTime - Timestamp in ms to get funding from INCLUSIVE.
+ * @param params.endTime - Timestamp in ms to get funding until INCLUSIVE
+ * @param params.limit - Default 100; max 1000
+ * @param params.recvWindow - Specify the number of milliseconds after timestamp the request is valid for
+ * @param params.timestamp - Millisecond timestamp of when the request was created and sent
+ * @returns Income information array
+ */
 export async function futuresIncome(params: {
   symbol?: string;
   incomeType?: IncomeType;
@@ -260,7 +315,15 @@ export async function futuresIncome(params: {
   return promiseRequest('v1/income', params, { type: 'SIGNED' });
 }
 
-// Either orderId or origClientOrderId must be sent
+/**
+ * Cancel Order (TRADE)
+ * @remarks Cancel an active order. Either `orderId` or `origClientOrderId` must be sent.
+ * @param symbol - Symbol
+ * @param options - Order information
+ * @param options.orderId - Order ID
+ * @param options.origClientOrderId - Previously used newClientOrderId
+ * @returns Canceled order
+ */
 export async function futuresCancelOrder(
   symbol: string,
   { orderId, origClientOrderId } : { orderId?: number; origClientOrderId?: string; },
@@ -268,10 +331,22 @@ export async function futuresCancelOrder(
   return promiseRequest('v1/order', { symbol, orderId, origClientOrderId }, { type: 'SIGNED', method: 'DELETE' });
 }
 
+/**
+ * Cancel All Open Orders (TRADE)
+ * @param symbol - Symbol
+ * @returns Request info
+ */
 export async function futuresCancelAllOrders(symbol: string): Promise<{ msg: string; code: 200; }> {
   return promiseRequest('v1/allOpenOrders', { symbol }, { type: 'SIGNED', method: 'DELETE' });
 }
 
+/**
+ * Modify Isolated Position Margin (TRADE)
+ * @param symbol - Symbol
+ * @param amount - Amount
+ * @param type - 1: Add position margin，2: Reduce position margin
+ * @returns Request info
+ */
 export function futuresPositionMargin(
   symbol: string, amount: number, type: 1 | 2,
 ): Promise<unknown> {
