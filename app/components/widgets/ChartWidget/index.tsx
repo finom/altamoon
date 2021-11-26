@@ -332,11 +332,11 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
           </div>
         ))}
       </div>
-      {!!futuresExchangeSymbols[symbol] && (
+      {!!futuresExchangeSymbols[symbol] && candles.length && (
         <div className={css.marketName}>
-          {futuresExchangeSymbols[symbol].baseAsset}
+          {futuresExchangeSymbols[candles[0].symbol].baseAsset}
           /
-          {futuresExchangeSymbols[symbol].quoteAsset}
+          {futuresExchangeSymbols[candles[0].symbol].quoteAsset}
         </div>
       )}
       <div
