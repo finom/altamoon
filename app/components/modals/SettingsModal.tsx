@@ -38,7 +38,7 @@ const SettingsModal = (): ReactElement => {
       testnetBinanceApiSecret,
     } = getValues();
     const colsNum = Math.abs(+numberOfColumns || 12);
-    setNumberOfColumns(colsNum > 60 ? 60 : colsNum);
+    setNumberOfColumns(colsNum > 120 ? 120 : colsNum);
     setTheme(theme);
     setTestnet(isTestnet);
     setApiKey(binanceApiKey);
