@@ -82,7 +82,7 @@ export default class OrderArrows implements ChartItem {
       .data(this.#filledOrders, (d) => (d as api.FuturesOrder).orderId)
       .join((enter) => enter
         .append('polygon')
-        .attr('fill', (d) => (d.side === 'BUY' ? 'var(--altamoon-buy-color)' : 'var(--altamoon-sell-color)'))
+        .attr('class', (d) => (d.side === 'BUY' ? 'order-arrow-buy' : 'order-arrow-sell'))
         .attr('stroke-width', 1)
         .attr('id', (d) => `order_${d.orderId}`)
         .attr('points', points)
