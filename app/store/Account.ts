@@ -118,7 +118,7 @@ export default class Account {
 
           if (event === 'ACCOUNT_UPDATE') {
             this.#store.trading.eventAccountUpdate(data.a);
-            void this.#store.trading.updateCurrentSymbolAllOrders();
+            // void this.#store.trading.loadAllOrders();
             // void this.#store.trading.loadPositions();
             void this.#store.stats.loadIncome();
             void this.reloadFuturesAccount();

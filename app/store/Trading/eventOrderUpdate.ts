@@ -83,11 +83,28 @@ export default function eventOrderUpdate(
     });
   }
 
+  if (order.status === 'FILLED') {
+    void new Audio(orderFilledSoundUri).play();
+  }
+
+  if (['PARTIALLY_FILLED', 'FILLED'].includes(order.status)) {
+    if (!this.currentSymbolAllOrders.some(({ orderId }) => orderId === order.orderId)) {
+      this.currentSymbolAllOrders = [...this.currentSymbolAllOrders, order];
+    } else {
+      this.currentSymbolAllOrders = this.currentSymbolAllOrders.map((currentOrder) => {
+        if (currentOrder.orderId === order.orderId) {
+          return { ...currentOrder, ...order };
+        }
+        return currentOrder;
+      });
+    }
+  }
+
   // TODO support stop orders
   if (order.type === 'LIMIT') {
     if (order.status === 'NEW') {
       // if the order is created from draft, hide draft line
-      // the ID is set by DraftPriceLines (part of the chart class) when draft check icon is clicked
+      // the ID is set wby DraftPriceLines (part of the chart class) when draft check icon is clicked
       if (order.clientOrderId.startsWith('from_draft_')) {
         this.shouldShowLimitSellPriceLine = false;
       }
@@ -98,6 +115,4 @@ export default function eventOrderUpdate(
       this.openOrders = this.openOrders.filter((openOrder) => openOrder.orderId !== order.orderId);
     }
   }
-
-  if (order.status === 'FILLED') void new Audio(orderFilledSoundUri).play();
 }

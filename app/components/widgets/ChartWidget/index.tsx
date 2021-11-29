@@ -125,7 +125,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     candleChart?.update({
       filledOrders: isAllOrdersRelevant && shouldChartShowOrders
         ? currentSymbolAllOrders
-          .filter(({ status }) => status === 'FILLED')
+          .filter(({ status }) => ['PARTIALLY_FILLED', 'FILLED'].includes(status))
           .slice(-chartOrdersNumber)
         : [],
     });

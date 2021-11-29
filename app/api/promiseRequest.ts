@@ -38,6 +38,7 @@ export default async function promiseRequest<T>(
   } = flags;
   if (type) {
     if (typeof data.recvWindow === 'undefined') data.recvWindow = options.recvWindow;
+
     if (!options.apiKey) throw new Error('Invalid API credentials!');
     headers['X-MBX-APIKEY'] = options.apiKey;
   }

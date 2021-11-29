@@ -166,7 +166,7 @@ export default class Trading {
 
     listenChange(store.persistent, 'symbol', (symbol) => {
       this.#updateLeverage(symbol);
-      void this.updateCurrentSymbolAllOrders();
+      void this.loadAllOrders();
 
       this.shouldShowLimitSellPriceLine = false;
       this.shouldShowLimitBuyPriceLine = false;
@@ -379,7 +379,7 @@ export default class Trading {
   public loadOrders = throttle(async (): Promise<void> => {
     try {
       const { symbol } = this.#store.persistent;
-      void this.updateCurrentSymbolAllOrders();
+      void this.loadAllOrders();
       const [futuresOpenOrders, prices] = await Promise.all([
         api.futuresOpenOrders(),
         api.futuresPrices(),
@@ -448,9 +448,9 @@ export default class Trading {
   /**
    * Updates order arrows on the chart
    */
-  public updateCurrentSymbolAllOrders = throttle(async (): Promise<void> => {
+  public loadAllOrders = async (): Promise<void> => {
     this.currentSymbolAllOrders = await api.futuresAllOrders(this.#store.persistent.symbol);
-  }, 2000);
+  };
 
   #updatePseudoPosition = (): void => {
     this.currentSymbolPseudoPosition = this.getPseudoPosition();
