@@ -8,7 +8,7 @@
 
 #### Defined in
 
-[options.ts:11](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/options.ts#L11)
+[options.ts:11](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/options.ts#L11)
 
 ## Functions
 
@@ -28,4 +28,4 @@
 
 #### Defined in
 
-[options.ts:25](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/options.ts#L25)
+[options.ts:25](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/options.ts#L25)

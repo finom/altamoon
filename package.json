@@ -20,6 +20,7 @@
     "build:browser": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.browser.babel.js",
     "tsc": "npx tsc --noemit",
     "test": "npm run lint-pure && npx tsc --noemit",
+    "apidocs": "npx typedoc --out apidocs app/api/*.ts --hideBreadcrumbs --hideInPageTOC",
     "upgrade": "npx npm-check-updates -u -x chalk,react-hook-form,eslint-config-airbnb-typescript,react-router-dom --timeout 480000 && npm i --legacy-peer-deps",
     "reinstall": "rm -rf node_modules package-lock.json && npm i --legacy-peer-deps",
     "build-types": "rm -rf ./packages/altamoon-types/_tmp && npx tsc --declaration --outDir ./packages/altamoon-types/_tmp --emitDeclarationOnly && cp -a ./packages/altamoon-types/_tmp/app/. ./packages/altamoon-types/types/ && rm -r ./packages/altamoon-types/_tmp && node scripts/copyProjectVersion",

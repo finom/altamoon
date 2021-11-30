@@ -22,7 +22,7 @@
 
 #### Defined in
 
-[futuresCandles.ts:69](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresCandles.ts#L69)
+[futuresCandles.ts:69](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresCandles.ts#L69)
 
 ___
 
@@ -43,4 +43,4 @@ ___
 
 #### Defined in
 
-[futuresCandles.ts:25](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresCandles.ts#L25)
+[futuresCandles.ts:25](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresCandles.ts#L25)

@@ -12,9 +12,16 @@ Renames and re-exports [default](futuresCandles.md#default)
 
 • **futuresIntervals**: [`CandlestickChartInterval`](types.md#candlestickchartinterval)[]
 
+Array of all possible intervals.
+
+**`example`**
+import { futuresIntervals } from 'altamoon-binance-api';
+
+console.log(futuresIntervals);
+
 #### Defined in
 
-[futuresREST.ts:12](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L12)
+[futuresREST.ts:19](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L19)
 
 ## Functions
 
@@ -36,7 +43,7 @@ Account information
 
 #### Defined in
 
-[futuresREST.ts:113](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L113)
+[futuresREST.ts:120](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L120)
 
 ___
 
@@ -62,7 +69,7 @@ All Orders (USER_DATA)
 
 #### Defined in
 
-[futuresREST.ts:65](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L65)
+[futuresREST.ts:72](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L72)
 
 ___
 
@@ -86,7 +93,7 @@ Request info
 
 #### Defined in
 
-[futuresREST.ts:339](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L339)
+[futuresREST.ts:346](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L346)
 
 ___
 
@@ -115,7 +122,7 @@ Canceled order
 
 #### Defined in
 
-[futuresREST.ts:327](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L327)
+[futuresREST.ts:334](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L334)
 
 ___
 
@@ -137,7 +144,7 @@ Get order Book
 
 #### Defined in
 
-[futuresREST.ts:132](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L132)
+[futuresREST.ts:139](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L139)
 
 ___
 
@@ -155,7 +162,7 @@ Get exchange Information
 
 #### Defined in
 
-[futuresREST.ts:140](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L140)
+[futuresREST.ts:147](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L147)
 
 ___
 
@@ -180,7 +187,7 @@ Data stream key
 
 #### Defined in
 
-[futuresREST.ts:103](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L103)
+[futuresREST.ts:110](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L110)
 
 ___
 
@@ -211,7 +218,7 @@ Income information array
 
 #### Defined in
 
-[futuresREST.ts:306](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L306)
+[futuresREST.ts:313](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L313)
 
 ___
 
@@ -238,7 +245,7 @@ Change Initial Leverage (TRADE)
 
 #### Defined in
 
-[futuresREST.ts:23](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L23)
+[futuresREST.ts:30](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L30)
 
 ___
 
@@ -264,7 +271,7 @@ Brackets
 
 #### Defined in
 
-[futuresREST.ts:88](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L88)
+[futuresREST.ts:95](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L95)
 
 ___
 
@@ -295,7 +302,7 @@ New order
 
 #### Defined in
 
-[futuresREST.ts:223](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L223)
+[futuresREST.ts:230](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L230)
 
 ___
 
@@ -320,7 +327,7 @@ Change Margin Type (TRADE)
 
 #### Defined in
 
-[futuresREST.ts:35](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L35)
+[futuresREST.ts:42](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L42)
 
 ___
 
@@ -348,7 +355,7 @@ New order
 
 #### Defined in
 
-[futuresREST.ts:200](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L200)
+[futuresREST.ts:207](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L207)
 
 ___
 
@@ -375,7 +382,7 @@ Careful when accessing this with no symbol because of high weight.
 
 #### Defined in
 
-[futuresREST.ts:55](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L55)
+[futuresREST.ts:62](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L62)
 
 ___
 
@@ -403,7 +410,7 @@ New order
 
 #### Defined in
 
-[futuresREST.ts:172](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L172)
+[futuresREST.ts:179](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L179)
 
 ___
 
@@ -429,7 +436,7 @@ Request info
 
 #### Defined in
 
-[futuresREST.ts:350](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L350)
+[futuresREST.ts:357](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L357)
 
 ___
 
@@ -449,7 +456,7 @@ Position Information V2 (USER_DATA)
 
 #### Defined in
 
-[futuresREST.ts:44](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L44)
+[futuresREST.ts:51](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L51)
 
 ___
 
@@ -469,7 +476,7 @@ An object of symbols and corresponding prices
 
 #### Defined in
 
-[futuresREST.ts:74](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L74)
+[futuresREST.ts:81](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L81)
 
 ___
 
@@ -501,7 +508,7 @@ New order
 
 #### Defined in
 
-[futuresREST.ts:279](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L279)
+[futuresREST.ts:286](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L286)
 
 ___
 
@@ -530,7 +537,7 @@ New order
 
 #### Defined in
 
-[futuresREST.ts:255](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L255)
+[futuresREST.ts:262](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L262)
 
 ___
 
@@ -558,4 +565,4 @@ List of trades
 
 #### Defined in
 
-[futuresREST.ts:124](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresREST.ts#L124)
+[futuresREST.ts:131](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresREST.ts#L131)

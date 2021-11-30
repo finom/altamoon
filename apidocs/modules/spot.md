@@ -12,7 +12,7 @@
 
 #### Defined in
 
-[spot.ts:6](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/spot.ts#L6)
+[spot.ts:6](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/spot.ts#L6)
 
 ___
 
@@ -32,4 +32,4 @@ ___
 
 #### Defined in
 
-[spot.ts:26](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/spot.ts#L26)
+[spot.ts:26](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/spot.ts#L26)
