@@ -30,6 +30,8 @@ export default class Stats {
 
   public dailyBNBCommissionSpent = 0;
 
+  public totalPositionMargin = 0;
+
   #bnbCandles: api.FuturesChartCandle[] = [];
 
   #store: Store;
@@ -53,6 +55,11 @@ export default class Stats {
     void this.#calcStats();
 
     void this.loadIncome();
+
+    listenChange(store.trading, 'openPositions', (openPositions) => {
+      this.totalPositionMargin = openPositions
+        .reduce((acc, { calculatedMargin }) => acc + calculatedMargin, 0);
+    });
   }
 
   public loadIncome = throttle(async (): Promise<void> => {

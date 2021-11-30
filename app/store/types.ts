@@ -12,6 +12,7 @@ export interface TradingPosition {
   lastPrice: number;
   isolatedMargin: number;
   isolatedWallet: number;
+  calculatedMargin: number;
   symbol: string;
   baseValue: number;
   side: api.OrderSide;

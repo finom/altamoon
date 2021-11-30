@@ -36,6 +36,7 @@ const Positions = (): ReactElement => {
         <thead>
           <tr>
             <th>Position Asset</th>
+            <th>Mode</th>
             <th>Size</th>
             <th>Margin</th>
             <th>Last Price</th>
@@ -56,8 +57,8 @@ const Positions = (): ReactElement => {
         <tbody>
           {openPositions.map(({
             symbol, baseAsset, baseValue, liquidationPrice, entryPrice, positionAmt,
-            isolatedWallet, marginType, leverage, lastPrice,
-            side, pnl, pnlBalancePercent, pnlPositionPercent, isClosed,
+            marginType, leverage, lastPrice,
+            side, pnl, pnlBalancePercent, pnlPositionPercent, isClosed, calculatedMargin,
           }) => (
             <tr key={symbol}>
               <td>
@@ -77,6 +78,7 @@ const Positions = (): ReactElement => {
                   x
                 </Badge>
               </td>
+              <td>{marginType === 'cross' ? <span className="text-warning">Cross</span> : 'Isolated'}</td>
               <td>
                 {positionAmt}
                 {' '}
@@ -85,20 +87,19 @@ const Positions = (): ReactElement => {
                 &nbsp;₮)
               </td>
               <td>
-                {marginType === 'isolated'
-                  ? (
-                    <>
-                      {formatNumber(isolatedWallet, true)}
+                <>
+                  {formatNumber(calculatedMargin, true)}
                       &nbsp;₮
-                      {' '}
-                      (
-                      {formatPercent((isolatedWallet / totalWalletBalance) * 100)}
-                      %)
-                      {' '}
-                      <PencilSquare className="muted-control" onClick={() => setCurrentAdjustMarginSymbol(symbol)} />
-                    </>
-                  )
-                  : <em className="text-warning">Cross</em>}
+                  {' '}
+                  (
+                  {formatPercent((calculatedMargin / totalWalletBalance) * 100)}
+                  %)
+                  {' '}
+                  {marginType === 'isolated' && (
+                  <PencilSquare className="muted-control" onClick={() => setCurrentAdjustMarginSymbol(symbol)} />
+
+                  )}
+                </>
               </td>
               <td>
                 {formatNumber(lastPrice)}

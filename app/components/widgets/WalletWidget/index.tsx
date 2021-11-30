@@ -13,7 +13,7 @@ const formatNumber = (value: number) => format(',.2f')(truncateDecimals(value, 2
 const WalletWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
   const availableBalance = useValue(ACCOUNT, 'availableBalance');
-  const totalPositionInitialMargin = useValue(ACCOUNT, 'totalPositionInitialMargin');
+  const totalPositionMargin = useValue(STATS, 'totalPositionMargin');
   const totalOpenOrderInitialMargin = useValue(ACCOUNT, 'totalOpenOrderInitialMargin');
   const pnlValue = useValue(STATS, 'pnlValue');
   const pnlPercent = useValue(STATS, 'pnlPercent');
@@ -77,10 +77,10 @@ const WalletWidget = ({ title, id }: { title: string; id: string; }): ReactEleme
               Position margin:
             </td>
             <td className={`${css.valueCell} form-control`}>
-              {formatNumber(totalPositionInitialMargin)}
+              {formatNumber(totalPositionMargin)}
               {' '}
               (
-              {format(',.1%')(totalPositionInitialMargin / totalWalletBalance || 0)}
+              {format(',.1%')(totalPositionMargin / totalWalletBalance || 0)}
               )
             </td>
           </tr>

@@ -63,6 +63,7 @@ export default function getPositionInfo(
     liquidationPrice,
     isolatedWallet,
     isolatedMargin,
+    calculatedMargin: (positionAmt * entryPrice) / leverage,
     baseValue,
     side,
     leverage,
