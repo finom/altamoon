@@ -10,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:326](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/types.ts#L326)
+[types.ts:326](https://github.com/Altamoon/altamoon/blob/f3d1f5e/app/api/types.ts#L326)
 
 ___
 
@@ -20,4 +20,4 @@ ___
 
 #### Defined in
 
-[types.ts:325](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/types.ts#L325)
+[types.ts:325](https://github.com/Altamoon/altamoon/blob/f3d1f5e/app/api/types.ts#L325)

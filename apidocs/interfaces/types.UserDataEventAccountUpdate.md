@@ -10,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:389](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/types.ts#L389)
+[types.ts:389](https://github.com/Altamoon/altamoon/blob/f3d1f5e/app/api/types.ts#L389)
 
 ___
 
@@ -20,7 +20,7 @@ ___
 
 #### Defined in
 
-[types.ts:390](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/types.ts#L390)
+[types.ts:390](https://github.com/Altamoon/altamoon/blob/f3d1f5e/app/api/types.ts#L390)
 
 ___
 
@@ -30,7 +30,7 @@ ___
 
 #### Defined in
 
-[types.ts:391](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/types.ts#L391)
+[types.ts:391](https://github.com/Altamoon/altamoon/blob/f3d1f5e/app/api/types.ts#L391)
 
 ___
 
@@ -40,4 +40,4 @@ ___
 
 #### Defined in
 
-[types.ts:388](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/types.ts#L388)
+[types.ts:388](https://github.com/Altamoon/altamoon/blob/f3d1f5e/app/api/types.ts#L388)

@@ -31,4 +31,4 @@
 
 #### Defined in
 
-[futuresSubscribe.ts:4](https://github.com/Altamoon/altamoon/blob/2fc04da/app/api/futuresSubscribe.ts#L4)
+[futuresSubscribe.ts:4](https://github.com/Altamoon/altamoon/blob/f3d1f5e/app/api/futuresSubscribe.ts#L4)
