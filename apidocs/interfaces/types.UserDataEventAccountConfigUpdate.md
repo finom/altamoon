@@ -1,18 +1,6 @@
-[altamoon](../README.md) / [Modules](../modules.md) / [types](../modules/types.md) / UserDataEventAccountConfigUpdate
-
 # Interface: UserDataEventAccountConfigUpdate
 
 [types](../modules/types.md).UserDataEventAccountConfigUpdate
-
-## Table of contents
-
-### Properties
-
-- [E](types.UserDataEventAccountConfigUpdate.md#e)
-- [T](types.UserDataEventAccountConfigUpdate.md#t)
-- [ac](types.UserDataEventAccountConfigUpdate.md#ac)
-- [ai](types.UserDataEventAccountConfigUpdate.md#ai)
-- [e](types.UserDataEventAccountConfigUpdate.md#e)
 
 ## Properties
 
@@ -22,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:439](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L439)
+[types.ts:439](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L439)
 
 ___
 
@@ -32,7 +20,7 @@ ___
 
 #### Defined in
 
-[types.ts:440](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L440)
+[types.ts:440](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L440)
 
 ___
 
@@ -49,7 +37,7 @@ ___
 
 #### Defined in
 
-[types.ts:441](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L441)
+[types.ts:441](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L441)
 
 ___
 
@@ -65,7 +53,7 @@ ___
 
 #### Defined in
 
-[types.ts:445](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L445)
+[types.ts:445](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L445)
 
 ___
 
@@ -75,4 +63,4 @@ ___
 
 #### Defined in
 
-[types.ts:438](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L438)
+[types.ts:438](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L438)

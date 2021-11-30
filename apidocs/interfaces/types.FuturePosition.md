@@ -1,27 +1,6 @@
-[altamoon](../README.md) / [Modules](../modules.md) / [types](../modules/types.md) / FuturePosition
-
 # Interface: FuturePosition
 
 [types](../modules/types.md).FuturePosition
-
-## Table of contents
-
-### Properties
-
-- [entryPrice](types.FuturePosition.md#entryprice)
-- [initialMargin](types.FuturePosition.md#initialmargin)
-- [isolated](types.FuturePosition.md#isolated)
-- [isolatedWallet](types.FuturePosition.md#isolatedwallet)
-- [leverage](types.FuturePosition.md#leverage)
-- [maintMargin](types.FuturePosition.md#maintmargin)
-- [maxNotional](types.FuturePosition.md#maxnotional)
-- [notional](types.FuturePosition.md#notional)
-- [openOrderInitialMargin](types.FuturePosition.md#openorderinitialmargin)
-- [positionAmt](types.FuturePosition.md#positionamt)
-- [positionInitialMargin](types.FuturePosition.md#positioninitialmargin)
-- [positionSide](types.FuturePosition.md#positionside)
-- [symbol](types.FuturePosition.md#symbol)
-- [unrealizedProfit](types.FuturePosition.md#unrealizedprofit)
 
 ## Properties
 
@@ -31,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:97](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L97)
+[types.ts:97](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L97)
 
 ___
 
@@ -41,7 +20,7 @@ ___
 
 #### Defined in
 
-[types.ts:98](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L98)
+[types.ts:98](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L98)
 
 ___
 
@@ -51,7 +30,7 @@ ___
 
 #### Defined in
 
-[types.ts:99](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L99)
+[types.ts:99](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L99)
 
 ___
 
@@ -61,7 +40,7 @@ ___
 
 #### Defined in
 
-[types.ts:100](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L100)
+[types.ts:100](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L100)
 
 ___
 
@@ -71,7 +50,7 @@ ___
 
 #### Defined in
 
-[types.ts:101](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L101)
+[types.ts:101](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L101)
 
 ___
 
@@ -81,7 +60,7 @@ ___
 
 #### Defined in
 
-[types.ts:102](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L102)
+[types.ts:102](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L102)
 
 ___
 
@@ -91,7 +70,7 @@ ___
 
 #### Defined in
 
-[types.ts:103](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L103)
+[types.ts:103](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L103)
 
 ___
 
@@ -101,7 +80,7 @@ ___
 
 #### Defined in
 
-[types.ts:104](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L104)
+[types.ts:104](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L104)
 
 ___
 
@@ -111,7 +90,7 @@ ___
 
 #### Defined in
 
-[types.ts:105](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L105)
+[types.ts:105](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L105)
 
 ___
 
@@ -121,7 +100,7 @@ ___
 
 #### Defined in
 
-[types.ts:106](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L106)
+[types.ts:106](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L106)
 
 ___
 
@@ -131,7 +110,7 @@ ___
 
 #### Defined in
 
-[types.ts:107](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L107)
+[types.ts:107](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L107)
 
 ___
 
@@ -141,7 +120,7 @@ ___
 
 #### Defined in
 
-[types.ts:108](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L108)
+[types.ts:108](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L108)
 
 ___
 
@@ -151,7 +130,7 @@ ___
 
 #### Defined in
 
-[types.ts:109](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L109)
+[types.ts:109](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L109)
 
 ___
 
@@ -161,4 +140,4 @@ ___
 
 #### Defined in
 
-[types.ts:110](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L110)
+[types.ts:110](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L110)

@@ -1,13 +1,4 @@
-[altamoon](../README.md) / [Modules](../modules.md) / futuresCandles
-
 # Module: futuresCandles
-
-## Table of contents
-
-### Functions
-
-- [default](futuresCandles.md#default)
-- [runtimeTestCandlesOrder](futuresCandles.md#runtimetestcandlesorder)
 
 ## Functions
 
@@ -31,7 +22,7 @@
 
 #### Defined in
 
-[futuresCandles.ts:69](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresCandles.ts#L69)
+[futuresCandles.ts:69](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresCandles.ts#L69)
 
 ___
 
@@ -52,4 +43,4 @@ ___
 
 #### Defined in
 
-[futuresCandles.ts:25](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresCandles.ts#L25)
+[futuresCandles.ts:25](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresCandles.ts#L25)

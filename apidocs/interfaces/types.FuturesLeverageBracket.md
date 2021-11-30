@@ -1,19 +1,6 @@
-[altamoon](../README.md) / [Modules](../modules.md) / [types](../modules/types.md) / FuturesLeverageBracket
-
 # Interface: FuturesLeverageBracket
 
 [types](../modules/types.md).FuturesLeverageBracket
-
-## Table of contents
-
-### Properties
-
-- [bracket](types.FuturesLeverageBracket.md#bracket)
-- [cum](types.FuturesLeverageBracket.md#cum)
-- [initialLeverage](types.FuturesLeverageBracket.md#initialleverage)
-- [maintMarginRatio](types.FuturesLeverageBracket.md#maintmarginratio)
-- [notionalCap](types.FuturesLeverageBracket.md#notionalcap)
-- [notionalFloor](types.FuturesLeverageBracket.md#notionalfloor)
 
 ## Properties
 
@@ -23,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:73](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L73)
+[types.ts:73](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L73)
 
 ___
 
@@ -33,7 +20,7 @@ ___
 
 #### Defined in
 
-[types.ts:74](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L74)
+[types.ts:74](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L74)
 
 ___
 
@@ -43,7 +30,7 @@ ___
 
 #### Defined in
 
-[types.ts:75](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L75)
+[types.ts:75](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L75)
 
 ___
 
@@ -53,7 +40,7 @@ ___
 
 #### Defined in
 
-[types.ts:76](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L76)
+[types.ts:76](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L76)
 
 ___
 
@@ -63,7 +50,7 @@ ___
 
 #### Defined in
 
-[types.ts:77](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L77)
+[types.ts:77](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L77)
 
 ___
 
@@ -73,4 +60,4 @@ ___
 
 #### Defined in
 
-[types.ts:78](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L78)
+[types.ts:78](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L78)

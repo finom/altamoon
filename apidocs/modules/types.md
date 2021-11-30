@@ -1,10 +1,6 @@
-[altamoon](../README.md) / [Modules](../modules.md) / types
-
 # Module: types
 
-## Table of contents
-
-### Interfaces
+## Interfaces
 
 - [BalanceItem](../interfaces/types.BalanceItem.md)
 - [FutureAsset](../interfaces/types.FutureAsset.md)
@@ -35,26 +31,6 @@
 - [UserDataEventOrderUpdate](../interfaces/types.UserDataEventOrderUpdate.md)
 - [UserDataEventOrderUpdateData](../interfaces/types.UserDataEventOrderUpdateData.md)
 
-### Type aliases
-
-- [CandlestickChartInterval](types.md#candlestickchartinterval)
-- [ContractType](types.md#contracttype)
-- [FuturesExchangeInfoFilter](types.md#futuresexchangeinfofilter)
-- [IncomeType](types.md#incometype)
-- [MarginType](types.md#margintype)
-- [OrderExecutionType](types.md#orderexecutiontype)
-- [OrderSide](types.md#orderside)
-- [OrderStatus](types.md#orderstatus)
-- [OrderType](types.md#ordertype)
-- [PositionMarginType](types.md#positionmargintype)
-- [PositionSide](types.md#positionside)
-- [RateLimitInterval](types.md#ratelimitinterval)
-- [RateLimiter](types.md#ratelimiter)
-- [TimeInForce](types.md#timeinforce)
-- [UserDataEvent](types.md#userdataevent)
-- [UserDataEventAccountUpdateReason](types.md#userdataeventaccountupdatereason)
-- [WorkingType](types.md#workingtype)
-
 ## Type aliases
 
 ### CandlestickChartInterval
@@ -63,7 +39,7 @@
 
 #### Defined in
 
-[types.ts:5](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L5)
+[types.ts:5](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L5)
 
 ___
 
@@ -73,7 +49,7 @@ ___
 
 #### Defined in
 
-[types.ts:6](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L6)
+[types.ts:6](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L6)
 
 ___
 
@@ -83,7 +59,7 @@ ___
 
 #### Defined in
 
-[types.ts:211](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L211)
+[types.ts:211](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L211)
 
 ___
 
@@ -93,7 +69,7 @@ ___
 
 #### Defined in
 
-[types.ts:20](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L20)
+[types.ts:20](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L20)
 
 ___
 
@@ -103,7 +79,7 @@ ___
 
 #### Defined in
 
-[types.ts:3](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L3)
+[types.ts:3](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L3)
 
 ___
 
@@ -113,7 +89,7 @@ ___
 
 #### Defined in
 
-[types.ts:10](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L10)
+[types.ts:10](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L10)
 
 ___
 
@@ -123,7 +99,7 @@ ___
 
 #### Defined in
 
-[types.ts:2](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L2)
+[types.ts:2](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L2)
 
 ___
 
@@ -133,7 +109,7 @@ ___
 
 #### Defined in
 
-[types.ts:9](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L9)
+[types.ts:9](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L9)
 
 ___
 
@@ -143,7 +119,7 @@ ___
 
 #### Defined in
 
-[types.ts:8](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L8)
+[types.ts:8](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L8)
 
 ___
 
@@ -153,7 +129,7 @@ ___
 
 #### Defined in
 
-[types.ts:4](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L4)
+[types.ts:4](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L4)
 
 ___
 
@@ -163,7 +139,7 @@ ___
 
 #### Defined in
 
-[types.ts:1](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L1)
+[types.ts:1](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L1)
 
 ___
 
@@ -173,7 +149,7 @@ ___
 
 #### Defined in
 
-[types.ts:7](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L7)
+[types.ts:7](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L7)
 
 ___
 
@@ -183,7 +159,7 @@ ___
 
 #### Defined in
 
-[types.ts:11](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L11)
+[types.ts:11](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L11)
 
 ___
 
@@ -199,7 +175,7 @@ GTX - Good Till Crossing (Post Only)
 
 #### Defined in
 
-[types.ts:19](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L19)
+[types.ts:19](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L19)
 
 ___
 
@@ -209,7 +185,7 @@ ___
 
 #### Defined in
 
-[types.ts:450](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L450)
+[types.ts:450](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L450)
 
 ___
 
@@ -219,7 +195,7 @@ ___
 
 #### Defined in
 
-[types.ts:347](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L347)
+[types.ts:347](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L347)
 
 ___
 
@@ -229,4 +205,4 @@ ___
 
 #### Defined in
 
-[types.ts:21](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L21)
+[types.ts:21](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L21)

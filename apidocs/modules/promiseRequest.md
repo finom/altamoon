@@ -1,12 +1,4 @@
-[altamoon](../README.md) / [Modules](../modules.md) / promiseRequest
-
 # Module: promiseRequest
-
-## Table of contents
-
-### Functions
-
-- [default](promiseRequest.md#default)
 
 ## Functions
 
@@ -34,4 +26,4 @@
 
 #### Defined in
 
-[promiseRequest.ts:25](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/promiseRequest.ts#L25)
+[promiseRequest.ts:25](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/promiseRequest.ts#L25)

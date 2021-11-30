@@ -1,12 +1,4 @@
-[altamoon](../README.md) / [Modules](../modules.md) / futuresSubscribe
-
 # Module: futuresSubscribe
-
-## Table of contents
-
-### Functions
-
-- [default](futuresSubscribe.md#default)
 
 ## Functions
 
@@ -39,4 +31,4 @@
 
 #### Defined in
 
-[futuresSubscribe.ts:4](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresSubscribe.ts#L4)
+[futuresSubscribe.ts:4](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresSubscribe.ts#L4)

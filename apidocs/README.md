@@ -1,5 +1,3 @@
-altamoon / [Modules](modules.md)
-
 /!\ Work in progress, use at your own risk /!\
 
 # Altamoon

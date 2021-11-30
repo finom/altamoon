@@ -1,21 +1,6 @@
-[altamoon](../README.md) / [Modules](../modules.md) / [types](../modules/types.md) / FuturesIncome
-
 # Interface: FuturesIncome
 
 [types](../modules/types.md).FuturesIncome
-
-## Table of contents
-
-### Properties
-
-- [asset](types.FuturesIncome.md#asset)
-- [income](types.FuturesIncome.md#income)
-- [incomeType](types.FuturesIncome.md#incometype)
-- [info](types.FuturesIncome.md#info)
-- [symbol](types.FuturesIncome.md#symbol)
-- [time](types.FuturesIncome.md#time)
-- [tradeId](types.FuturesIncome.md#tradeid)
-- [tranId](types.FuturesIncome.md#tranid)
 
 ## Properties
 
@@ -25,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:286](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L286)
+[types.ts:286](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L286)
 
 ___
 
@@ -35,7 +20,7 @@ ___
 
 #### Defined in
 
-[types.ts:285](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L285)
+[types.ts:285](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L285)
 
 ___
 
@@ -45,7 +30,7 @@ ___
 
 #### Defined in
 
-[types.ts:284](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L284)
+[types.ts:284](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L284)
 
 ___
 
@@ -55,7 +40,7 @@ ___
 
 #### Defined in
 
-[types.ts:287](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L287)
+[types.ts:287](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L287)
 
 ___
 
@@ -65,7 +50,7 @@ ___
 
 #### Defined in
 
-[types.ts:283](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L283)
+[types.ts:283](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L283)
 
 ___
 
@@ -75,7 +60,7 @@ ___
 
 #### Defined in
 
-[types.ts:288](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L288)
+[types.ts:288](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L288)
 
 ___
 
@@ -85,7 +70,7 @@ ___
 
 #### Defined in
 
-[types.ts:290](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L290)
+[types.ts:290](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L290)
 
 ___
 
@@ -95,4 +80,4 @@ ___
 
 #### Defined in
 
-[types.ts:289](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L289)
+[types.ts:289](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L289)

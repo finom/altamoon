@@ -1,10 +1,6 @@
-[altamoon](README.md) / Modules
-
 # altamoon
 
-## Table of contents
-
-### Modules
+## Modules
 
 - [emitError](modules/emitError.md)
 - [futuresCandles](modules/futuresCandles.md)

@@ -1,15 +1,6 @@
-[altamoon](../README.md) / [Modules](../modules.md) / [types](../modules/types.md) / UserDataEventExpired
-
 # Interface: UserDataEventExpired
 
 [types](../modules/types.md).UserDataEventExpired
-
-## Table of contents
-
-### Properties
-
-- [E](types.UserDataEventExpired.md#e)
-- [e](types.UserDataEventExpired.md#e)
 
 ## Properties
 
@@ -19,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:326](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L326)
+[types.ts:326](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L326)
 
 ___
 
@@ -29,4 +20,4 @@ ___
 
 #### Defined in
 
-[types.ts:325](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L325)
+[types.ts:325](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L325)

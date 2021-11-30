@@ -1,21 +1,6 @@
-[altamoon](../README.md) / [Modules](../modules.md) / [types](../modules/types.md) / UserDataEventAccountUpdatePosition
-
 # Interface: UserDataEventAccountUpdatePosition
 
 [types](../modules/types.md).UserDataEventAccountUpdatePosition
-
-## Table of contents
-
-### Properties
-
-- [cr](types.UserDataEventAccountUpdatePosition.md#cr)
-- [ep](types.UserDataEventAccountUpdatePosition.md#ep)
-- [iw](types.UserDataEventAccountUpdatePosition.md#iw)
-- [mt](types.UserDataEventAccountUpdatePosition.md#mt)
-- [pa](types.UserDataEventAccountUpdatePosition.md#pa)
-- [ps](types.UserDataEventAccountUpdatePosition.md#ps)
-- [s](types.UserDataEventAccountUpdatePosition.md#s)
-- [up](types.UserDataEventAccountUpdatePosition.md#up)
 
 ## Properties
 
@@ -25,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:374](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L374)
+[types.ts:374](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L374)
 
 ___
 
@@ -35,7 +20,7 @@ ___
 
 #### Defined in
 
-[types.ts:373](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L373)
+[types.ts:373](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L373)
 
 ___
 
@@ -45,7 +30,7 @@ ___
 
 #### Defined in
 
-[types.ts:377](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L377)
+[types.ts:377](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L377)
 
 ___
 
@@ -55,7 +40,7 @@ ___
 
 #### Defined in
 
-[types.ts:376](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L376)
+[types.ts:376](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L376)
 
 ___
 
@@ -65,7 +50,7 @@ ___
 
 #### Defined in
 
-[types.ts:372](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L372)
+[types.ts:372](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L372)
 
 ___
 
@@ -75,7 +60,7 @@ ___
 
 #### Defined in
 
-[types.ts:378](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L378)
+[types.ts:378](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L378)
 
 ___
 
@@ -85,7 +70,7 @@ ___
 
 #### Defined in
 
-[types.ts:371](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L371)
+[types.ts:371](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L371)
 
 ___
 
@@ -95,4 +80,4 @@ ___
 
 #### Defined in
 
-[types.ts:375](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L375)
+[types.ts:375](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L375)

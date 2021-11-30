@@ -1,36 +1,6 @@
-[altamoon](../README.md) / [Modules](../modules.md) / [types](../modules/types.md) / FuturesOrder
-
 # Interface: FuturesOrder
 
 [types](../modules/types.md).FuturesOrder
-
-## Table of contents
-
-### Properties
-
-- [activatePrice](types.FuturesOrder.md#activateprice)
-- [avgPrice](types.FuturesOrder.md#avgprice)
-- [clientOrderId](types.FuturesOrder.md#clientorderid)
-- [closePosition](types.FuturesOrder.md#closeposition)
-- [cumQty](types.FuturesOrder.md#cumqty)
-- [cumQuote](types.FuturesOrder.md#cumquote)
-- [executedQty](types.FuturesOrder.md#executedqty)
-- [orderId](types.FuturesOrder.md#orderid)
-- [origQty](types.FuturesOrder.md#origqty)
-- [origType](types.FuturesOrder.md#origtype)
-- [positionSide](types.FuturesOrder.md#positionside)
-- [price](types.FuturesOrder.md#price)
-- [priceProtect](types.FuturesOrder.md#priceprotect)
-- [priceRate](types.FuturesOrder.md#pricerate)
-- [reduceOnly](types.FuturesOrder.md#reduceonly)
-- [side](types.FuturesOrder.md#side)
-- [status](types.FuturesOrder.md#status)
-- [stopPrice](types.FuturesOrder.md#stopprice)
-- [symbol](types.FuturesOrder.md#symbol)
-- [timeInForce](types.FuturesOrder.md#timeinforce)
-- [type](types.FuturesOrder.md#type)
-- [updateTime](types.FuturesOrder.md#updatetime)
-- [workingType](types.FuturesOrder.md#workingtype)
 
 ## Properties
 
@@ -40,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:312](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L312)
+[types.ts:312](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L312)
 
 ___
 
@@ -50,7 +20,7 @@ ___
 
 #### Defined in
 
-[types.ts:299](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L299)
+[types.ts:299](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L299)
 
 ___
 
@@ -60,7 +30,7 @@ ___
 
 #### Defined in
 
-[types.ts:294](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L294)
+[types.ts:294](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L294)
 
 ___
 
@@ -70,7 +40,7 @@ ___
 
 #### Defined in
 
-[types.ts:307](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L307)
+[types.ts:307](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L307)
 
 ___
 
@@ -80,7 +50,7 @@ ___
 
 #### Defined in
 
-[types.ts:295](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L295)
+[types.ts:295](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L295)
 
 ___
 
@@ -90,7 +60,7 @@ ___
 
 #### Defined in
 
-[types.ts:296](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L296)
+[types.ts:296](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L296)
 
 ___
 
@@ -100,7 +70,7 @@ ___
 
 #### Defined in
 
-[types.ts:297](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L297)
+[types.ts:297](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L297)
 
 ___
 
@@ -110,7 +80,7 @@ ___
 
 #### Defined in
 
-[types.ts:298](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L298)
+[types.ts:298](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L298)
 
 ___
 
@@ -120,7 +90,7 @@ ___
 
 #### Defined in
 
-[types.ts:300](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L300)
+[types.ts:300](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L300)
 
 ___
 
@@ -130,7 +100,7 @@ ___
 
 #### Defined in
 
-[types.ts:311](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L311)
+[types.ts:311](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L311)
 
 ___
 
@@ -140,7 +110,7 @@ ___
 
 #### Defined in
 
-[types.ts:304](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L304)
+[types.ts:304](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L304)
 
 ___
 
@@ -150,7 +120,7 @@ ___
 
 #### Defined in
 
-[types.ts:301](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L301)
+[types.ts:301](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L301)
 
 ___
 
@@ -160,7 +130,7 @@ ___
 
 #### Defined in
 
-[types.ts:316](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L316)
+[types.ts:316](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L316)
 
 ___
 
@@ -170,7 +140,7 @@ ___
 
 #### Defined in
 
-[types.ts:313](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L313)
+[types.ts:313](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L313)
 
 ___
 
@@ -180,7 +150,7 @@ ___
 
 #### Defined in
 
-[types.ts:302](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L302)
+[types.ts:302](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L302)
 
 ___
 
@@ -190,7 +160,7 @@ ___
 
 #### Defined in
 
-[types.ts:303](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L303)
+[types.ts:303](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L303)
 
 ___
 
@@ -200,7 +170,7 @@ ___
 
 #### Defined in
 
-[types.ts:305](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L305)
+[types.ts:305](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L305)
 
 ___
 
@@ -210,7 +180,7 @@ ___
 
 #### Defined in
 
-[types.ts:306](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L306)
+[types.ts:306](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L306)
 
 ___
 
@@ -220,7 +190,7 @@ ___
 
 #### Defined in
 
-[types.ts:308](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L308)
+[types.ts:308](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L308)
 
 ___
 
@@ -230,7 +200,7 @@ ___
 
 #### Defined in
 
-[types.ts:309](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L309)
+[types.ts:309](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L309)
 
 ___
 
@@ -240,7 +210,7 @@ ___
 
 #### Defined in
 
-[types.ts:310](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L310)
+[types.ts:310](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L310)
 
 ___
 
@@ -250,7 +220,7 @@ ___
 
 #### Defined in
 
-[types.ts:314](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L314)
+[types.ts:314](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L314)
 
 ___
 
@@ -260,4 +230,4 @@ ___
 
 #### Defined in
 
-[types.ts:315](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L315)
+[types.ts:315](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L315)

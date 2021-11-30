@@ -1,17 +1,4 @@
-[altamoon](../README.md) / [Modules](../modules.md) / futuresStreams
-
 # Module: futuresStreams
-
-## Table of contents
-
-### Functions
-
-- [futuresAggTradeStream](futuresStreams.md#futuresaggtradestream)
-- [futuresCandlesSubscribe](futuresStreams.md#futurescandlessubscribe)
-- [futuresChartSubscribe](futuresStreams.md#futureschartsubscribe)
-- [futuresMarkPriceStream](futuresStreams.md#futuresmarkpricestream)
-- [futuresMiniTickerStream](futuresStreams.md#futuresminitickerstream)
-- [futuresTickerStream](futuresStreams.md#futurestickerstream)
 
 ## Functions
 
@@ -38,7 +25,7 @@
 
 #### Defined in
 
-[futuresStreams.ts:10](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresStreams.ts#L10)
+[futuresStreams.ts:10](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresStreams.ts#L10)
 
 ___
 
@@ -65,7 +52,7 @@ ___
 
 #### Defined in
 
-[futuresStreams.ts:255](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresStreams.ts#L255)
+[futuresStreams.ts:255](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresStreams.ts#L255)
 
 ___
 
@@ -91,7 +78,7 @@ ___
 
 #### Defined in
 
-[futuresStreams.ts:309](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresStreams.ts#L309)
+[futuresStreams.ts:309](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresStreams.ts#L309)
 
 ___
 
@@ -117,7 +104,7 @@ ___
 
 #### Defined in
 
-[futuresStreams.ts:193](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresStreams.ts#L193)
+[futuresStreams.ts:193](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresStreams.ts#L193)
 
 ▸ **futuresMarkPriceStream**(`symbol`, `callback`): () => `void`
 
@@ -140,7 +127,7 @@ ___
 
 #### Defined in
 
-[futuresStreams.ts:196](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresStreams.ts#L196)
+[futuresStreams.ts:196](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresStreams.ts#L196)
 
 ___
 
@@ -166,7 +153,7 @@ ___
 
 #### Defined in
 
-[futuresStreams.ts:41](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresStreams.ts#L41)
+[futuresStreams.ts:41](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresStreams.ts#L41)
 
 ▸ **futuresMiniTickerStream**(`symbol`, `callback`): () => `void`
 
@@ -189,7 +176,7 @@ ___
 
 #### Defined in
 
-[futuresStreams.ts:44](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresStreams.ts#L44)
+[futuresStreams.ts:44](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresStreams.ts#L44)
 
 ___
 
@@ -215,7 +202,7 @@ ___
 
 #### Defined in
 
-[futuresStreams.ts:100](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresStreams.ts#L100)
+[futuresStreams.ts:100](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresStreams.ts#L100)
 
 ▸ **futuresTickerStream**(`symbol`, `callback`): () => `void`
 
@@ -238,4 +225,4 @@ ___
 
 #### Defined in
 
-[futuresStreams.ts:103](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/futuresStreams.ts#L103)
+[futuresStreams.ts:103](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/futuresStreams.ts#L103)

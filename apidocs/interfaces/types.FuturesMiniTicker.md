@@ -1,21 +1,6 @@
-[altamoon](../README.md) / [Modules](../modules.md) / [types](../modules/types.md) / FuturesMiniTicker
-
 # Interface: FuturesMiniTicker
 
 [types](../modules/types.md).FuturesMiniTicker
-
-## Table of contents
-
-### Properties
-
-- [close](types.FuturesMiniTicker.md#close)
-- [high](types.FuturesMiniTicker.md#high)
-- [low](types.FuturesMiniTicker.md#low)
-- [open](types.FuturesMiniTicker.md#open)
-- [quoteVolume](types.FuturesMiniTicker.md#quotevolume)
-- [symbol](types.FuturesMiniTicker.md#symbol)
-- [time](types.FuturesMiniTicker.md#time)
-- [volume](types.FuturesMiniTicker.md#volume)
 
 ## Properties
 
@@ -25,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:158](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L158)
+[types.ts:158](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L158)
 
 ___
 
@@ -35,7 +20,7 @@ ___
 
 #### Defined in
 
-[types.ts:160](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L160)
+[types.ts:160](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L160)
 
 ___
 
@@ -45,7 +30,7 @@ ___
 
 #### Defined in
 
-[types.ts:161](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L161)
+[types.ts:161](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L161)
 
 ___
 
@@ -55,7 +40,7 @@ ___
 
 #### Defined in
 
-[types.ts:159](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L159)
+[types.ts:159](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L159)
 
 ___
 
@@ -65,7 +50,7 @@ ___
 
 #### Defined in
 
-[types.ts:163](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L163)
+[types.ts:163](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L163)
 
 ___
 
@@ -75,7 +60,7 @@ ___
 
 #### Defined in
 
-[types.ts:157](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L157)
+[types.ts:157](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L157)
 
 ___
 
@@ -85,7 +70,7 @@ ___
 
 #### Defined in
 
-[types.ts:156](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L156)
+[types.ts:156](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L156)
 
 ___
 
@@ -95,4 +80,4 @@ ___
 
 #### Defined in
 
-[types.ts:162](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L162)
+[types.ts:162](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L162)

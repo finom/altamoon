@@ -1,18 +1,6 @@
-[altamoon](../README.md) / [Modules](../modules.md) / [types](../modules/types.md) / FuturesDepth
-
 # Interface: FuturesDepth
 
 [types](../modules/types.md).FuturesDepth
-
-## Table of contents
-
-### Properties
-
-- [E](types.FuturesDepth.md#e)
-- [T](types.FuturesDepth.md#t)
-- [asks](types.FuturesDepth.md#asks)
-- [bids](types.FuturesDepth.md#bids)
-- [lastUpdateId](types.FuturesDepth.md#lastupdateid)
 
 ## Properties
 
@@ -22,7 +10,7 @@
 
 #### Defined in
 
-[types.ts:204](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L204)
+[types.ts:204](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L204)
 
 ___
 
@@ -32,7 +20,7 @@ ___
 
 #### Defined in
 
-[types.ts:205](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L205)
+[types.ts:205](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L205)
 
 ___
 
@@ -42,7 +30,7 @@ ___
 
 #### Defined in
 
-[types.ts:206](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L206)
+[types.ts:206](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L206)
 
 ___
 
@@ -52,7 +40,7 @@ ___
 
 #### Defined in
 
-[types.ts:207](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L207)
+[types.ts:207](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L207)
 
 ___
 
@@ -62,4 +50,4 @@ ___
 
 #### Defined in
 
-[types.ts:208](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/types.ts#L208)
+[types.ts:208](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/types.ts#L208)

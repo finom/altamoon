@@ -1,16 +1,4 @@
-[altamoon](../README.md) / [Modules](../modules.md) / options
-
 # Module: options
-
-## Table of contents
-
-### Variables
-
-- [default](options.md#default)
-
-### Functions
-
-- [setOptions](options.md#setoptions)
 
 ## Variables
 
@@ -20,7 +8,7 @@
 
 #### Defined in
 
-[options.ts:11](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/options.ts#L11)
+[options.ts:11](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/options.ts#L11)
 
 ## Functions
 
@@ -40,4 +28,4 @@
 
 #### Defined in
 
-[options.ts:25](https://github.com/Altamoon/altamoon/blob/198a6cd/app/api/options.ts#L25)
+[options.ts:25](https://github.com/Altamoon/altamoon/blob/b1afd68/app/api/options.ts#L25)
