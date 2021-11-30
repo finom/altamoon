@@ -62,15 +62,20 @@ export default class Stats {
       this.#historyStart = todayEarlyTime;
       this.income = [];
     } else {
-      const income = await api.futuresIncome({
-        startTime: this.#historyStart,
-        endTime: now,
-        limit: 1000,
-        recvWindow: 1000000,
-      });
+      let incomeResponse: api.FuturesIncome[];
 
-      this.income = this.income.concat(income);
-      this.#historyStart = now;
+      do {
+        // eslint-disable-next-line no-await-in-loop
+        incomeResponse = await api.futuresIncome({
+          startTime: this.#historyStart,
+          endTime: now,
+          limit: 1000,
+          recvWindow: 1000000,
+        });
+
+        this.income = this.income.concat(incomeResponse);
+        this.#historyStart = (this.income[this.income.length - 1]?.time ?? now) + 1;
+      } while (incomeResponse.length > 999);
     }
   }, 5000);
 
