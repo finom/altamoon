@@ -1,5 +1,5 @@
 {
-	"version": "0.0.133",
+	"version": "0.0.134",
 	"name": "altamoon-binance-api",
 	"description": "Browser-based Binance API functions used at Altamoon",
 	"main": "api/index.js",
