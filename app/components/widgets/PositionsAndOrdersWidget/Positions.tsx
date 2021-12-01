@@ -78,7 +78,7 @@ const Positions = (): ReactElement => {
                   x
                 </Badge>
               </td>
-              <td>{marginType === 'cross' ? <span className="text-warning">Cross</span> : 'Isolated'}</td>
+              <td>{marginType === 'cross' ? <em className="text-warning">Cross</em> : 'Isolated'}</td>
               <td>
                 {positionAmt}
                 {' '}
@@ -87,19 +87,22 @@ const Positions = (): ReactElement => {
                 &nbsp;₮)
               </td>
               <td>
-                <>
-                  {formatNumber(calculatedMargin, true)}
+                {marginType === 'cross' ? <em className="text-warning">Cross</em>
+                  : (
+                    <>
+                      {formatNumber(calculatedMargin, true)}
                       &nbsp;₮
-                  {' '}
-                  (
-                  {formatPercent((calculatedMargin / totalWalletBalance) * 100)}
-                  %)
-                  {' '}
-                  {marginType === 'isolated' && (
-                  <PencilSquare className="muted-control" onClick={() => setCurrentAdjustMarginSymbol(symbol)} />
+                      {' '}
+                      (
+                      {formatPercent((calculatedMargin / totalWalletBalance) * 100)}
+                      %)
+                      {' '}
+                      {marginType === 'isolated' && (
+                      <PencilSquare className="muted-control" onClick={() => setCurrentAdjustMarginSymbol(symbol)} />
 
+                      )}
+                    </>
                   )}
-                </>
               </td>
               <td>
                 {formatNumber(lastPrice)}

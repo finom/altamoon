@@ -141,9 +141,12 @@ export default class Account {
         }
       };
 
-      // stream.onerror = (e) => {
-      // void reconnect(e, 'Account stream error. Reconnecting...');
-      // };
+      stream.onerror = (e) => {
+        notify('error', 'Account stream error.');
+        // eslint-disable-next-line no-console
+        console.info('Account stream error.', e);
+        // void reconnect(e, 'Account stream error. Reconnecting...');
+      };
 
       stream.onclose = async (e) => {
         // eslint-disable-next-line no-console
