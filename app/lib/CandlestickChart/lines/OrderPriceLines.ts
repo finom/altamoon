@@ -4,7 +4,6 @@ import PriceLines from './PriceLines';
 
 interface Params {
   axis: ChartAxis;
-  ordersToBeCreated: OrderToBeCreated[];
   onDragLimitOrder: (clientOrderId: string, price: number) => void;
   onCancelOrder: (clientOrderId: string) => void;
   onUpdateItems: (d: PriceLinesDatum[]) => void;

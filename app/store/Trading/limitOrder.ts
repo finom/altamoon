@@ -23,10 +23,18 @@ export default async function limitOrder(this: Store['trading'], {
   const { shouldShowLimitBuyPriceLine, shouldShowLimitSellPriceLine } = this;
 
   this.ordersToBeCreated = [...this.ordersToBeCreated, {
+    orderId: null,
     symbol,
+    type: 'LIMIT',
     clientOrderId,
     origQty: quantity,
+    executedQty: 0,
+    stopPrice: 0,
     price,
+    side,
+    reduceOnly,
+    leverage: +(this.allSymbolsPositionRisk[symbol]?.leverage ?? 1),
+    isCanceled: false,
   }];
 
   if (hideDraft) {

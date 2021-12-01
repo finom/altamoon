@@ -12,6 +12,8 @@ const formatPercent = format(',.1f');
 
 const Orders = (): ReactElement => {
   const openOrders = useValue(TRADING, 'openOrders');
+  const ordersToBeCreated = useValue(TRADING, 'ordersToBeCreated');
+
   const allSymbolsPositionRisk = useValue(TRADING, 'allSymbolsPositionRisk');
   const listenedLastPrices = useValue(TRADING, 'listenedLastPrices');
   const cancelOrder = useSilent(TRADING, 'cancelOrder');
@@ -75,16 +77,16 @@ const Orders = (): ReactElement => {
         </tr>
       </thead>
       <tbody>
-        {openOrders.sort((a, b) => {
+        {[...openOrders, ...ordersToBeCreated].sort((a, b) => {
           if (a.symbol === b.symbol) {
             return a.price < b.price ? 1 : -1;
           }
           return a.symbol > b.symbol ? 1 : -1;
         }).map(({
           symbol, side, type, origQty, price, clientOrderId, leverage,
-          executedQty, stopPrice, reduceOnly, orderId, isCanceled,
+          executedQty, stopPrice, reduceOnly, isCanceled, orderId,
         }) => (
-          <tr key={orderId} className={isCanceled ? 'o-50' : undefined}>
+          <tr key={clientOrderId} className={isCanceled || !orderId ? 'o-50' : undefined}>
             <td>
               <span
                 className="link-alike"
@@ -158,7 +160,7 @@ const Orders = (): ReactElement => {
               <Button
                 color="link"
                 className="text-muted px-0 py-0"
-                disabled={isCanceled}
+                disabled={isCanceled || !orderId}
                 onClick={() => onCancel(symbol, clientOrderId)}
               >
                 {isCanceled ? '...' : <Trash size={18} />}

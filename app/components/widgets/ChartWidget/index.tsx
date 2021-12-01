@@ -73,7 +73,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     'shouldShowStopBuyDraftPriceLine', 'shouldShowStopSellDraftPriceLine',
     'exactSizeLimitBuyStr', 'exactSizeLimitSellStr',
     'exactSizeStopLimitBuyStr', 'exactSizeStopLimitSellStr',
-    'currentSymbolAllOrders', 'ordersKey',
+    'currentSymbolAllOrders', 'ordersToBeCreated',
   ]);
 
   const position = openPositions.find((pos) => pos.symbol === symbol) ?? null;
