@@ -83,10 +83,8 @@ export default class OrderArrows implements ChartItem {
       .join((enter) => enter
         .append('polygon')
         .attr('class', (d) => (d.side === 'BUY' ? 'order-arrow-buy' : 'order-arrow-sell'))
-        .attr('stroke-width', 1)
         .attr('id', (d) => `order_${d.orderId}`)
         .attr('points', points)
-        .attr('stroke-linejoin', 'round')
         .style('opacity', TRIANGLE_OPACITY)
         .on('mouseenter', (evt: MouseEvent & { target: SVGElement }, d) => {
           const x = this.#scaledX(d.updateTime);

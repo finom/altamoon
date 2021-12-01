@@ -278,6 +278,6 @@ svg.chart-svg .tooltip-wrapper > div {
 
 svg.chart-svg .tooltip-wrapper p { white-space: nowrap; margin: 0; }
 
-.order-arrow-buy { fill: var(--altamoon-buy-color) }
-.order-arrow-sell { fill: var(--altamoon-sell-color) }
-
+svg.chart-svg .order-arrow-buy, .order-arrow-sell { stroke-width: 1; stroke-linejoin: round;}
+svg.chart-svg .order-arrow-buy { fill: var(--altamoon-buy-color);  }
+svg.chart-svg .order-arrow-sell { fill: var(--altamoon-sell-color); }
