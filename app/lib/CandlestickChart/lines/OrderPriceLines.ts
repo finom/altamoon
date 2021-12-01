@@ -1,9 +1,10 @@
-import { TradingOrder } from '../../../store/types';
+import { TradingOrder, OrderToBeCreated } from '../../../store/types';
 import { ChartAxis, PriceLinesDatum, ResizeData } from '../types';
 import PriceLines from './PriceLines';
 
 interface Params {
   axis: ChartAxis;
+  ordersToBeCreated: OrderToBeCreated[];
   onDragLimitOrder: (clientOrderId: string, price: number) => void;
   onCancelOrder: (clientOrderId: string) => void;
   onUpdateItems: (d: PriceLinesDatum[]) => void;
@@ -34,11 +35,24 @@ export default class OrderPriceLines extends PriceLines {
     }, resizeData);
   }
 
-  public updateOrderLines(givenOrders: TradingOrder[] | null): void {
+  public updateOrderLines = ({ openOrders: givenOrders, ordersToBeCreated }: {
+    openOrders: TradingOrder[] | null;
+    ordersToBeCreated: OrderToBeCreated[];
+  }): void => {
     const orders = givenOrders ?? this.#orders;
     this.#orders = orders;
 
     const items: PriceLinesDatum[] = [
+      ...ordersToBeCreated.map(({
+        symbol, clientOrderId, price, origQty,
+      }): PriceLinesDatum => ({
+        id: clientOrderId,
+        isDraggable: false,
+        yValue: price,
+        title: `Limit ${origQty} ${symbol.replace('USDT', '')}`,
+        color: 'var(--bs-gray)',
+        opacity: 0.8,
+      })),
       ...orders
         .map((order): PriceLinesDatum => {
           const {
@@ -50,7 +64,7 @@ export default class OrderPriceLines extends PriceLines {
             yValue: this.#forceOrderPrices[clientOrderId] ?? price,
             isVisible: true,
             color: isCanceled ? 'var(--bs-gray)' : color,
-            opacity: isCanceled ? 0.5 : 1,
+            opacity: isCanceled ? 0.8 : 1,
             // TODO this is a potentially wrong way to retrieve
             // asset name from symbol name because of BNB/BUSD pairs
             title: `Limit ${origQty - executedQty} ${symbol.replace('USDT', '')}`,
@@ -72,5 +86,5 @@ export default class OrderPriceLines extends PriceLines {
     ];
 
     this.update({ items });
-  }
+  };
 }

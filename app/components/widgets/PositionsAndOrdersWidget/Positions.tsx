@@ -60,7 +60,7 @@ const Positions = (): ReactElement => {
             marginType, leverage, lastPrice,
             side, pnl, pnlBalancePercent, pnlPositionPercent, isClosed, calculatedMargin,
           }) => (
-            <tr key={symbol}>
+            <tr key={symbol} className={isClosed ? 'o-50' : undefined}>
               <td>
                 <span
                   className="link-alike"

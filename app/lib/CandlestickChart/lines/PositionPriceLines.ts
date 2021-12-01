@@ -28,13 +28,10 @@ export default class PositionPriceLines extends PriceLines {
       this.updateItem('position', {
         isVisible: true,
         yValue: position.entryPrice,
-        color: position.side === 'BUY' ? '#30b332' : '#ab257c',
+        // eslint-disable-next-line no-nested-ternary
+        color: position.isClosed ? 'var(--bs-gray)' : (position.side === 'BUY' ? '#30b332' : '#ab257c'),
         title: `${position.positionAmt} ${position.baseAsset}`,
-      });
-
-      this.updateItem('liquidation', {
-        isVisible: true,
-        yValue: position.liquidationPrice,
+        opacity: position.isClosed ? 0.8 : 1,
       });
     }
   };

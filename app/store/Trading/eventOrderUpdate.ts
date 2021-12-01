@@ -103,6 +103,8 @@ export default function eventOrderUpdate(
   // TODO support stop orders
   if (order.type === 'LIMIT') {
     if (order.status === 'NEW') {
+      this.ordersToBeCreated = this.ordersToBeCreated
+        .filter(({ clientOrderId }) => clientOrderId !== order.clientOrderId);
       // if the order is created from draft, hide draft line
       // the ID is set wby DraftPriceLines (part of the chart class) when draft check icon is clicked
       if (order.clientOrderId.startsWith('from_draft_')) {

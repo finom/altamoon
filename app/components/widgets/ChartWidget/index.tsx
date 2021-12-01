@@ -61,7 +61,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
     exactSizeLimitBuyStr, exactSizeLimitSellStr,
     exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
-    currentSymbolAllOrders,
+    currentSymbolAllOrders, ordersToBeCreated,
     // silent values
     updateDrafts, createOrderFromDraft, limitOrder, cancelOrder, calculateQuantity,
     calculateSizeFromString, calculateLiquidationPrice, getPseudoPosition,
@@ -104,8 +104,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   }, [position, candleChart]);
 
   useMemo(() => {
-    candleChart?.update({ orders });
-  }, [candleChart, orders]);
+    candleChart?.update({ orders, ordersToBeCreated });
+  }, [candleChart, orders, ordersToBeCreated]);
 
   useEffect(() => {
     candleChart?.update({ alerts: alerts || [] });

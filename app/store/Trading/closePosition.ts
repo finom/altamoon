@@ -15,7 +15,7 @@ export default async function closePosition(this: Store['trading'], symbol: stri
 
   this.openPositions = this.openPositions.map((pos) => (pos.symbol === symbol ? {
     ...pos,
-    isClosed: true,
+    isClosed: amount >= positionAmt,
   } : pos));
 
   try {

@@ -15,7 +15,7 @@ import {
   ResizeData, DrawData, Scales, StyleMargin, D3Selection,
   PriceLinesDatum, ChartPaddingPercents, DraftPrices,
 } from './types';
-import { TradingOrder, TradingPosition } from '../../store/types';
+import { TradingOrder, TradingPosition, OrderToBeCreated } from '../../store/types';
 import { OrderSide } from '../../api';
 import Measurer from './items/Measurer';
 import { RootStore } from '../../store';
@@ -184,6 +184,7 @@ export default class CandlestickChart {
     orders?: TradingOrder[];
     alerts?: number[];
     customPriceLines?: PriceLinesDatum[];
+    ordersToBeCreated?: OrderToBeCreated[];
 
     buyDraftPrice?: number | null;
     sellDraftPrice?: number | null;
@@ -275,9 +276,12 @@ export default class CandlestickChart {
       this.#orderArrows.update({ filledOrders: data.filledOrders });
     }
 
-    if (typeof data.orders !== 'undefined') {
+    if (typeof data.orders !== 'undefined' && typeof data.ordersToBeCreated !== 'undefined') {
       this.#measurer.update({ orders: data.orders });
-      this.#lines.orderLines.updateOrderLines(data.orders);
+      this.#lines.orderLines.updateOrderLines({
+        openOrders: data.orders,
+        ordersToBeCreated: data.ordersToBeCreated,
+      });
     }
 
     if (typeof data.position !== 'undefined') {

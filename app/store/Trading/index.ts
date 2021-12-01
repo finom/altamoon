@@ -7,7 +7,7 @@ import { listenChange } from 'use-change';
 import * as api from '../../api';
 import delay from '../../lib/delay';
 import notify from '../../lib/notify';
-import { TradingOrder, TradingPosition } from '../types';
+import { OrderToBeCreated, TradingOrder, TradingPosition } from '../types';
 
 import calculateSizeFromString from './calculateSizeFromString';
 import calculateLiquidationPrice from './calculateLiquidationPrice';
@@ -28,6 +28,7 @@ import updateDrafts from './updateDrafts';
 import getPseudoPosition from './getPseudoPosition';
 import eventOrderUpdate from './eventOrderUpdate';
 import eventAccountUpdate from './eventAccountUpdate';
+import updateLeverage from './updateLeverage';
 
 export default class Trading {
   public openPositions: TradingPosition[] = [];
@@ -35,6 +36,8 @@ export default class Trading {
   public allSymbolsPositionRisk: Record<string, api.FuturesPositionRisk> = {};
 
   public openOrders: TradingOrder[] = [];
+
+  public ordersToBeCreated: OrderToBeCreated[] = [];
 
   // used at chart
   public currentSymbolAllOrders: api.FuturesOrder[] = [];
@@ -101,7 +104,8 @@ export default class Trading {
 
   public store: Store;
 
-  #leverageChangeRequestsCount = 0; // allows to wait for leverage update ignoring account changes
+  // allows to wait for leverage update ignoring account changes
+  public leverageChangeRequestsCount = 0;
 
   #lastPriceUnsubscribe?: () => void;
 
@@ -322,31 +326,9 @@ export default class Trading {
     ...args: Parameters<typeof getPseudoPosition>
   ): ReturnType<typeof getPseudoPosition> => getPseudoPosition.apply(this, args);
 
-  public updateLeverage = async (): Promise<void> => {
-    const { symbol } = this.#store.persistent;
-
-    this.#leverageChangeRequestsCount += 1;
-
-    try {
-      const { currentSymbolLeverage } = this;
-      const resp = await api.futuresLeverage(symbol, currentSymbolLeverage);
-
-      if (currentSymbolLeverage !== resp.leverage) {
-        this.currentSymbolLeverage = resp.leverage;
-      }
-
-      this.openPositions = this.openPositions
-        .map((item) => (item.symbol === symbol
-          ? { ...item, leverage: resp.leverage } : item));
-    } catch {
-      const currentPosition = this.allSymbolsPositionRisk[symbol];
-      if (currentPosition) {
-        this.currentSymbolLeverage = +currentPosition.leverage; // if errored, roll it back
-      }
-    }
-
-    this.#leverageChangeRequestsCount -= 1;
-  };
+  public updateLeverage = (
+    ...args: Parameters<typeof updateLeverage>
+  ): ReturnType<typeof updateLeverage> => updateLeverage.apply(this, args);
 
   public loadPositions = throttle(async (): Promise<void> => {
     try {
@@ -362,7 +344,7 @@ export default class Trading {
         ))
         .sort(({ symbol: a }, { symbol: b }) => (a > b ? 1 : -1));
 
-      if (this.#leverageChangeRequestsCount === 0) {
+      if (this.leverageChangeRequestsCount === 0) {
         this.#updateLeverage(this.#store.persistent.symbol);
       }
 

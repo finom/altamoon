@@ -58,6 +58,8 @@ export interface TradingOrder {
   isCanceled: boolean;
 }
 
+export type OrderToBeCreated = Pick<TradingOrder, 'clientOrderId' | 'price' | 'origQty' | 'symbol'>;
+
 declare global {
   interface Window { altamoonPlugin: <T = Store>(plugin: Plugin<T>) => void; }
 }

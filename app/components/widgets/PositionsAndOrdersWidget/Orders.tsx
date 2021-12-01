@@ -84,7 +84,7 @@ const Orders = (): ReactElement => {
           symbol, side, type, origQty, price, clientOrderId, leverage,
           executedQty, stopPrice, reduceOnly, orderId, isCanceled,
         }) => (
-          <tr key={orderId}>
+          <tr key={orderId} className={isCanceled ? 'o-50' : undefined}>
             <td>
               <span
                 className="link-alike"
