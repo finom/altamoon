@@ -84,7 +84,7 @@ export default class Account {
       // eslint-disable-next-line no-console
       console.error(e);
       this.futuresAccountError = `${stringifyError(e)} Retrying...`;
-      await delay(3000);
+      await delay(5_000);
       return this.reloadFuturesAccount();
     }
   }, 500);
@@ -94,7 +94,7 @@ export default class Account {
       notify('error', notifyMessage);
       // eslint-disable-next-line no-console
       console.error(errorOrEvent);
-      await delay(3000);
+      await delay(5_000);
       // eslint-disable-next-line no-console
       console.info('Reconnecting...');
       return this.#openStream();
@@ -151,7 +151,7 @@ export default class Account {
       stream.onclose = async (e) => {
         // eslint-disable-next-line no-console
         console.info('Account stream closed. Re-opening it...', e);
-        await delay(3000);
+        await delay(5_000);
         void this.#openStream();
       };
     } catch (e) {
