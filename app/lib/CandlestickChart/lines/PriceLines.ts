@@ -280,7 +280,7 @@ export default class PriceLines implements ChartItem {
                 // titleElement.style.display = 'none';
                 that.updateItem(datum.id, { isHovered: false });
               }
-            })
+            });
 
           const horizontalWrapper = wrapper.append('g').attr('class', 'price-line-horizontal-group');
 
