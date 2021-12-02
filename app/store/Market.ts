@@ -3,6 +3,7 @@ import { listenChange } from 'use-change';
 
 import * as api from '../api';
 import binanceFeatureDepthSubscribe from '../lib/binanceFeatureDepthSubscribe';
+import listenMultiChange from '../lib/listenMultiChange';
 
 const LAST_TRADES_COUNT = 30;
 
@@ -55,23 +56,10 @@ export default class Market {
     this.#listenTickers();
     this.#listenMarkPrices();
 
-    listenChange(store.persistent, 'symbol', (symbol) => {
-      this.#onSymbolChange(symbol);
-    });
-
-    this.#onSymbolChange(store.persistent.symbol);
-
-    listenChange(store.persistent, 'interval', (interval) => {
-      this.#chartUnsubscribe?.();
-
-      this.#chartUnsubscribe = api.futuresChartSubscribe({
-        symbol: store.persistent.symbol,
-        interval,
-        callback: (data) => { this.candles = data; },
-        limit: 1000,
-        firstTickFromCache: true,
-      });
-    });
+    listenChange(store.persistent, 'symbol', this.#onSymbolChange);
+    listenMultiChange(store.persistent, ['interval', 'symbol'], this.#onSymbolOrIntervalChange);
+    this.#onSymbolChange();
+    this.#onSymbolOrIntervalChange();
 
     listenChange(this, 'candles', this.#calculateLastPrice);
 
@@ -87,7 +75,21 @@ export default class Market {
     });
   }
 
-  #onSymbolChange = (symbol: string): void => {
+  #onSymbolOrIntervalChange = () => {
+    const { symbol, interval } = this.#store.persistent;
+    this.#chartUnsubscribe?.();
+
+    this.#chartUnsubscribe = api.futuresChartSubscribe({
+      symbol,
+      interval,
+      callback: (data) => { this.candles = data; },
+      limit: 1000,
+      firstTickFromCache: false,
+    });
+  };
+
+  #onSymbolChange = (): void => {
+    const { symbol } = this.#store.persistent;
     this.#aggTradeUnsubscribe?.();
     this.#aggTradeUnsubscribe = api.futuresAggTradeStream(symbol, this.#onAggTradeStreamTick);
 
@@ -104,15 +106,6 @@ export default class Market {
     this.#depthUnsubscribe = binanceFeatureDepthSubscribe(symbol, (asks, bids) => {
       this.asks = asks;
       this.bids = bids;
-    });
-
-    this.#chartUnsubscribe?.();
-    this.#chartUnsubscribe = api.futuresChartSubscribe({
-      symbol,
-      interval: this.#store.persistent.interval,
-      callback: (data) => { this.candles = data; },
-      limit: 1000,
-      firstTickFromCache: true,
     });
 
     this.currentSymbolInfo = this.futuresExchangeSymbols[this.#store.persistent.symbol] ?? null;
