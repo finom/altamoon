@@ -1,8 +1,7 @@
 import classNames from 'classnames';
 import React, {
-  ReactElement, useEffect, useMemo, useRef, useState,
+  ReactElement, useEffect, useMemo, useRef,
 } from 'react';
-import { InfoCircle } from 'react-bootstrap-icons';
 import { Col, Row } from 'reactstrap';
 import useChange, { useSilent, useValue } from 'use-change';
 import formatMoneyNumber from '../../../lib/formatMoneyNumber';
@@ -29,14 +28,13 @@ const Leverage = ({
   const leverageTooltipRef = useRef<bootstrap.Tooltip & {
     tip?: HTMLDivElement; isShown?: boolean;
   } | null>();
-  const [isLeverageTooltipVisible, setIsLeverageTooltipVisible] = useState(false);
   const leverageBracket = useMemo(() => leverageBrackets[symbol]?.slice().reverse().find(
     ({ initialLeverage: l }) => l >= currentSymbolLeverage,
   ) ?? null, [currentSymbolLeverage, leverageBrackets, symbol]);
   const notionalCap = leverageBracket?.notionalCap;
 
   const leverageTooltipText = `
-  Maximum position at current leverage: ${formatMoneyNumber(notionalCap ?? 0)} USDT
+  Maximum position at leverage ${currentSymbolLeverage}x is ${formatMoneyNumber(notionalCap ?? 0)} USDT
   <a class="text-nowrap d-block" href="https://www.binance.com/en/futures/trading-rules/perpetual/leverage-margin" target="_blank" rel="noreferrer">Check the Leverage & Margin table</a>
   <a class="text-nowrap d-block" href="https://www.binance.com/en/futures/position/adjustment" target="_blank" rel="noreferrer"> Position Limit Enlarge</a>
 `;
@@ -45,18 +43,10 @@ const Leverage = ({
     const tooltipInstance = leverageTooltipRef.current;
     if (!tooltipInstance) return;
 
-    if (tooltipInstance.isShown && !isLeverageTooltipVisible) {
-      tooltipInstance.hide();
-      tooltipInstance.isShown = false;
-    } else if (!tooltipInstance.isShown && isLeverageTooltipVisible) {
-      tooltipInstance.show();
-      tooltipInstance.isShown = true;
-    }
-
     const tipInner = tooltipInstance.tip?.querySelector<HTMLDivElement>('.tooltip-inner');
 
     if (tipInner) tipInner.innerHTML = leverageTooltipText;
-  }, [isLeverageTooltipVisible, leverageTooltipText]);
+  }, [currentSymbolLeverage, leverageTooltipText]);
 
   return (
     <Row>
@@ -66,23 +56,6 @@ const Leverage = ({
       <Col xs={6} className="nowrap text-end">
         {currentSymbolLeverage}
         x
-        {' '}
-        <span className={classNames({ 'd-inline-block': true, 'cursor-progress': !notionalCap })}>
-          <span
-            tabIndex={0}
-            role="button"
-            className={classNames({ 'o-hover-100': true, 'o-25 pe-none': !notionalCap, 'o-50': !!notionalCap })}
-            data-bs-original-title={leverageTooltipText}
-            ref={tooltipRef({
-              trigger: 'manual',
-              placement: 'top',
-            }, (instance) => { leverageTooltipRef.current = instance; })}
-            onClick={() => setIsLeverageTooltipVisible((v) => !v)}
-            onKeyDown={() => setIsLeverageTooltipVisible((v) => !v)}
-          >
-            <InfoCircle />
-          </span>
-        </span>
       </Col>
       <Col xs={12} className={classNames({ 'mb-3': true, 'o-50 cursor-progress': !leverageBracket })}>
         <input
@@ -92,10 +65,14 @@ const Leverage = ({
           min={1}
           max={maxLeverage}
           step={1}
+          ref={tooltipRef({
+            trigger: 'hover focus',
+            placement: 'top',
+          }, (instance) => { leverageTooltipRef.current = instance; })}
+          data-bs-original-title={leverageTooltipText}
           onChange={({ target }) => setCurrentSymbolLeverage(+target.value)}
-          onMouseUp={() => { void updateLeverage(); setIsLeverageTooltipVisible(false); }}
+          onMouseUp={() => { void updateLeverage(); }}
           onKeyUp={() => updateLeverage()}
-          onMouseDown={() => setIsLeverageTooltipVisible(true)}
         />
         <span className={`${css.minLeverage} text-muted`}>1x</span>
         <span className={`${css.maxLeverage} text-muted`}>
