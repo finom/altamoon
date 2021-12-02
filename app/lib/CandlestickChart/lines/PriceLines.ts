@@ -281,7 +281,6 @@ export default class PriceLines implements ChartItem {
                 that.updateItem(datum.id, { isHovered: false });
               }
             })
-            .on('dblclick', (evt: MouseEvent) => evt.stopPropagation());
 
           const horizontalWrapper = wrapper.append('g').attr('class', 'price-line-horizontal-group');
 

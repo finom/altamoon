@@ -162,7 +162,7 @@ export default class CandlestickChart {
         // fixes https://trello.com/c/G4osv4DT/201-chart-measurer-isnt-redrawn-on-timeframe-switching
         this.#measurer.resize(this.#calcDimensions());
       }) as (selection: D3Selection<d3.BaseType>) => void,
-    );
+    ).on('dblclick.zoom', null);
   }
 
   /**
