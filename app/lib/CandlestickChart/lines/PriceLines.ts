@@ -320,8 +320,10 @@ export default class PriceLines implements ChartItem {
             // provides wrong datum value, that's why the dirty hack is used
             const getDatumFromTarget = (target: HTMLElement | SVGForeignObjectElement) => {
               const foreignObject = target.closest('.price-line-title-object');
-              // eslint-disable-next-line no-underscore-dangle
-              return this.#items[convertType<{ _datumIndex: number }>(foreignObject)._datumIndex];
+              return this.#items.find(
+                // eslint-disable-next-line no-underscore-dangle
+                ({ id }) => convertType<{ _datumId: number }>(foreignObject)._datumId === id,
+              );
             };
 
             const titleGroup = horizontalWrapper.append('foreignObject')
@@ -333,7 +335,7 @@ export default class PriceLines implements ChartItem {
               .attr('height', 24)
               .style('text-align', 'right')
               .style('pointer-events', 'none')
-              .property('_datumIndex', (d) => this.#items.indexOf(d));
+              .property('_datumId', (d) => d.id);
 
             const div = titleGroup.append('xhtml:div')
               .attr('class', 'price-line-title-inner')
@@ -343,7 +345,7 @@ export default class PriceLines implements ChartItem {
               .style('pointer-events', 'auto')
               .style('display', 'inline-block')
               .style('height', '100%')
-              .style('margin-right', '85px')
+              .style('margin-right', '85px');
 
             div.append('xhtml:span').attr('class', 'text').style('color', '#fff');
 
@@ -361,7 +363,8 @@ export default class PriceLines implements ChartItem {
                 .style('pointer-events', 'auto')
                 .style('display', (d) => (d.isClosable === false ? 'none' : 'auto')) // TODO support dynamic change
                 .on('click', (evt: { target: HTMLElement }) => {
-                  this.#handleClickClose?.(getDatumFromTarget(evt.target), this.#items);
+                  const datum = getDatumFromTarget(evt.target);
+                  if (datum) this.#handleClickClose?.(datum, this.#items);
                 });
             }
 
@@ -379,7 +382,8 @@ export default class PriceLines implements ChartItem {
                 .style('pointer-events', 'auto')
                 .style('display', (d) => (d.isCheckable === false ? 'none' : 'auto')) // TODO support dynamic change
                 .on('click', (evt: { target: HTMLElement }) => {
-                  this.#handleClickCheck?.(getDatumFromTarget(evt.target), this.#items);
+                  const datum = getDatumFromTarget(evt.target);
+                  if (datum) this.#handleClickCheck?.(datum, this.#items);
                 });
             }
           }
