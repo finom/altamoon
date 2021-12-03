@@ -332,7 +332,7 @@ export default class PriceLines implements ChartItem {
               .attr('width', 260)
               .attr('height', 24)
               .style('text-align', 'right')
-              .style('visibility', 'hidden')
+              .style('pointer-events', 'none')
               .property('_datumIndex', (d) => this.#items.indexOf(d));
 
             const div = titleGroup.append('xhtml:div')
@@ -344,7 +344,6 @@ export default class PriceLines implements ChartItem {
               .style('display', 'inline-block')
               .style('height', '100%')
               .style('margin-right', '85px')
-              .style('visibility', 'visible');
 
             div.append('xhtml:span').attr('class', 'text').style('color', '#fff');
 
