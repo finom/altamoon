@@ -376,9 +376,9 @@ export default class CandlestickChart {
     this.#axes.appendTo(svgContainer, resizeData);
     this.#plot.appendTo(svgContainer);
     this.#clipPath.appendTo(svgContainer, resizeData);
+    this.#orderArrows.appendTo(svgContainer);
     this.#lines.appendTo(svgContainer, resizeData);
     this.#measurer.appendTo(svgContainer, resizeData);
-    this.#orderArrows.appendTo(svgContainer);
     this.#markPriceTriangle.appendTo(svgContainer);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);

@@ -150,7 +150,6 @@ export default class AlertPriceLines extends PriceLines {
   };
 
   #onRightClick = (evt: MouseEvent): void => {
-    evt.stopPropagation();
     evt.preventDefault();
 
     const coords = d3.pointer(evt);

@@ -194,7 +194,7 @@ export default class DraftPriceLines extends PriceLines {
     { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
   ): void => {
     super.appendTo(parent, resizeData, { wrapperCSSStyle });
-    this.eventsArea
+    this.parent
       ?.on('dblclick', this.#onDoubleClick)
       .on('mousedown', (evt: MouseEvent) => {
         if (evt.which === 2) this.#onDoubleClick(evt);
@@ -202,9 +202,6 @@ export default class DraftPriceLines extends PriceLines {
   };
 
   #onDoubleClick = (evt: MouseEvent): void => {
-    evt.stopPropagation();
-    evt.preventDefault();
-
     if (!this.#canCreateDraftLines) return;
 
     const coords = d3.pointer(evt);

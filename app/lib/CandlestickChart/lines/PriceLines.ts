@@ -32,7 +32,7 @@ interface Params {
 export default class PriceLines implements ChartItem {
   #wrapper?: D3Selection<SVGGElement>;
 
-  #parent?: D3Selection<SVGElement>;
+  protected parent?: D3Selection<SVGElement>;
 
   #items: PriceLinesDatum[];
 
@@ -102,11 +102,11 @@ export default class PriceLines implements ChartItem {
     resizeData: ResizeData,
     { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
   ): void {
-    this.#parent = convertType<D3Selection<SVGElement>>(d3.select(parent));
+    this.parent = convertType<D3Selection<SVGElement>>(d3.select(parent));
 
-    this.eventsArea = this.#parent.select('#plotMouseEventsArea');
+    this.eventsArea = this.parent.select('#plotMouseEventsArea');
 
-    this.#wrapper = this.#parent.append('g');
+    this.#wrapper = this.parent.append('g');
 
     Object.assign(this.#wrapper.node()?.style ?? {}, wrapperCSSStyle ?? {});
 
@@ -128,7 +128,7 @@ export default class PriceLines implements ChartItem {
     this.#wrapper?.selectAll('.price-line-horizontal-group .price-line-line').attr('x2', resizeData.width);
     this.#wrapper?.selectAll('.price-line-vertical-group .price-line-line').attr('y2', resizeData.height);
 
-    this.#wrapper?.selectAll('.price-line-title-object').attr('transform', `translate(${this.#resizeData.width - 330}, 0)`);
+    this.#wrapper?.selectAll('.price-line-title-object').attr('transform', `translate(${this.#resizeData.width - 190}, 0)`);
 
     this.#draw();
   };
@@ -270,14 +270,12 @@ export default class PriceLines implements ChartItem {
             .on('mouseover', function mouseover(_evt, datum) {
               const titleElement = this.querySelector<HTMLElement>('.price-line-title-inner');
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
-                // titleElement.style.display = 'inline-block';
                 that.updateItem(datum.id, { isHovered: true });
               }
             })
             .on('mouseleave', function mouseleave(_evt, datum) {
               const titleElement = this.querySelector<HTMLElement>('.price-line-title-inner');
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
-                // titleElement.style.display = 'none';
                 that.updateItem(datum.id, { isHovered: false });
               }
             });
@@ -300,9 +298,9 @@ export default class PriceLines implements ChartItem {
             horizontalWrapperItem.append('rect')
               .attr('class', 'price-line-handle')
               .attr('x', 0)
-              .attr('y', -5)
+              .attr('y', -3)
               .attr('width', that.#resizeData.width)
-              .attr('height', 10)
+              .attr('height', 5)
               .attr('fill', 'transparent');
 
             horizontalWrapperItem.call(
@@ -328,12 +326,13 @@ export default class PriceLines implements ChartItem {
 
             const titleGroup = horizontalWrapper.append('foreignObject')
               .attr('class', 'price-line-title-object')
-              .attr('transform', `translate(${this.#resizeData.width - 330}, 0)`)
+              .attr('transform', `translate(${this.#resizeData.width - 190}, 0)`)
               .attr('x', 0)
               .attr('y', -12)
-              .attr('width', 400)
+              .attr('width', 260)
               .attr('height', 24)
               .style('text-align', 'right')
+              .style('visibility', 'hidden')
               .property('_datumIndex', (d) => this.#items.indexOf(d));
 
             const div = titleGroup.append('xhtml:div')
@@ -341,10 +340,11 @@ export default class PriceLines implements ChartItem {
               .style('border', '1px solid currentColor')
               .style('border-radius', '4px')
               .style('padding', '5px 10px')
-              .style('pointer-events', 'none')
+              .style('pointer-events', 'auto')
               .style('display', 'inline-block')
               .style('height', '100%')
-              .style('margin-right', '85px');
+              .style('margin-right', '85px')
+              .style('visibility', 'visible');
 
             div.append('xhtml:span').attr('class', 'text').style('color', '#fff');
 
@@ -537,7 +537,7 @@ export default class PriceLines implements ChartItem {
     }
   };
 
-  #onDrag = (evt: { sourceEvent: MouseEvent }, datum: PriceLinesDatum): void => {
+  #onDrag = (evt: { y: number }, datum: PriceLinesDatum): void => {
     if (
       this.#draggableItemIndex === null
         || !datum.isDraggable
@@ -545,9 +545,8 @@ export default class PriceLines implements ChartItem {
     ) return;
 
     this.#handleDrag?.(datum, this.#items);
-
     this.updateItem(this.#draggableItemIndex, {
-      yValue: this.invertY(evt.sourceEvent.offsetY),
+      yValue: this.invertY(evt.y),
     });
   };
 

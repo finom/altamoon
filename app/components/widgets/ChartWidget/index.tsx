@@ -109,7 +109,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
 
   useEffect(() => {
     candleChart?.update({ alerts: alerts || [] });
-  }, [alerts, candleChart]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [alerts.join('/'), candleChart]); // update alerts when they actually changed
 
   useEffect(() => {
     candleChart?.update({ customPriceLines });
