@@ -22,6 +22,8 @@ interface ErrorResponse {
   msg: string;
 }
 
+let timeDiffPromise: Promise<number>;
+
 export default async function promiseRequest<T>(
   url: string, givenData: Data = {}, flags: Flags = {},
 ): Promise<T> {
@@ -45,8 +47,13 @@ export default async function promiseRequest<T>(
 
   let resource: string;
   if (type === 'SIGNED' || type === 'TRADE' || type === 'USER_DATA') {
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    timeDiffPromise = timeDiffPromise || promiseRequest<{ serverTime: number }>(
+      'v3/time', {}, { method: 'GET', baseURL: 'https://api.binance.com/api/' },
+    ).then(({ serverTime }) => Date.now() - serverTime);
+
     if (!options.apiSecret) throw new Error('Invalid API credentials!');
-    data.timestamp = new Date().getTime();
+    data.timestamp = Date.now() - await timeDiffPromise;
     query = qs.stringify(data);
     const signature = HmacSHA256(query, options.apiSecret);
     resource = `${baseURL}${url}?${query}&signature=${signature.toString()}`;
@@ -59,6 +66,7 @@ export default async function promiseRequest<T>(
     const responseText = await (await fetch(resource, {
       headers,
       method,
+      mode: 'cors',
     })).text();
 
     const response = JSON.parse(responseText) as T | ErrorResponse;
