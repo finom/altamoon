@@ -66,6 +66,7 @@ export default async function promiseRequest<T>(
     const responseText = await (await fetch(resource, {
       headers,
       method,
+      mode: 'cors',
     })).text();
 
     const response = JSON.parse(responseText) as T | ErrorResponse;
