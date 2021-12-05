@@ -49,7 +49,7 @@ export default async function promiseRequest<T>(
   if (type === 'SIGNED' || type === 'TRADE' || type === 'USER_DATA') {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     timeDiffPromise = timeDiffPromise || promiseRequest<{ serverTime: number }>(
-      'v3/time', {}, { method: 'GET', type: 'MARKET_DATA', baseURL: 'https://api.binance.com/api/' },
+      'v3/time', {}, { method: 'GET', baseURL: 'https://api.binance.com/api/' },
     ).then(({ serverTime }) => Date.now() - serverTime);
 
     if (!options.apiSecret) throw new Error('Invalid API credentials!');
