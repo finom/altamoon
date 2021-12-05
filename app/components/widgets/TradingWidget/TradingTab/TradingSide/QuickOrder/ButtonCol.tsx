@@ -68,7 +68,7 @@ const ButtonCol = ({
           color={side === 'BUY' ? 'success' : 'sell'}
           onClick={() => onOrder(quantity)}
         >
-          {isMax ? 'Max' : `~${percent ?? 0}%`}
+          {isMax ? 'Max' : `${percent ?? 0}%`}
         </Button>
       </div>
     </Col>
