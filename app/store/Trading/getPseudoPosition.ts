@@ -10,27 +10,14 @@ export default function getPseudoPosition(
   const {
     limitSellPrice,
     limitBuyPrice,
-    exactSizeMarketBuyStr,
-    exactSizeMarketSellStr,
-    exactSizeStopMarketBuyStr,
-    exactSizeStopMarketSellStr,
-    exactSizeLimitBuyStr,
-    exactSizeLimitSellStr,
-    exactSizeStopLimitBuyStr,
-    exactSizeStopLimitSellStr,
+    exactSizeBuyStr,
+    exactSizeSellStr,
   } = this;
 
   const lastPrice = this.store.market.currentSymbolLastPrice ?? 0;
   const limitPrice = side === 'BUY' ? limitBuyPrice : limitSellPrice;
 
-  const exactSizeStrMap: Record<Extract<api.OrderType, 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_MARKET'>, string> = {
-    MARKET: side === 'BUY' ? exactSizeMarketBuyStr : exactSizeMarketSellStr,
-    LIMIT: side === 'BUY' ? exactSizeLimitBuyStr : exactSizeLimitSellStr,
-    STOP: side === 'BUY' ? exactSizeStopMarketBuyStr : exactSizeStopMarketSellStr,
-    STOP_MARKET: side === 'BUY' ? exactSizeStopLimitBuyStr : exactSizeStopLimitSellStr,
-  };
-
-  const exactSizeStr = exactSizeStrMap[tradingType as 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_MARKET'] || '0';
+  const exactSizeStr = side === 'BUY' ? exactSizeBuyStr : exactSizeSellStr;
   const price = priceOverride ?? (tradingType.includes('MARKET') ? lastPrice : (limitPrice ?? lastPrice));
 
   const quantity = this.calculateQuantity({
