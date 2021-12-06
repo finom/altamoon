@@ -68,19 +68,9 @@ export default class Trading {
 
   public shouldShowStopSellDraftPriceLine = false;
 
-  public exactSizeMarketBuyStr = '';
+  public exactSizeBuyStr = '';
 
-  public exactSizeMarketSellStr = '';
-
-  public exactSizeStopMarketBuyStr = '';
-
-  public exactSizeStopMarketSellStr = '';
-
-  public exactSizeLimitBuyStr = '';
-
-  public exactSizeLimitSellStr = '';
-
-  public exactSizeStopLimitBuyStr = '';
+  public exactSizeSellStr = '';
 
   public exactSizeStopLimitSellStr = '';
 

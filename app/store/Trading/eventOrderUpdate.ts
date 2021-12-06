@@ -100,8 +100,7 @@ export default function eventOrderUpdate(
     }
   }
 
-  // TODO support stop orders
-  if (order.type === 'LIMIT') {
+  if (['LIMIT', 'STOP', 'STOP_MARKET'].includes(order.type)) {
     if (order.status === 'NEW') {
       this.ordersToBeCreated = this.ordersToBeCreated
         .filter(({ clientOrderId }) => clientOrderId !== order.clientOrderId);

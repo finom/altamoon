@@ -14,8 +14,8 @@ interface Props {
 const StopLimit = ({ isWideLayout, postOnly, tradingType }: Props): ReactElement => {
   const pricePrecision = useValue(MARKET, 'currentSymbolPricePrecision');
 
-  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeStopLimitBuyStr');
-  const [exactSizeSellStr, setExactSizeSellStr] = useChange(TRADING, 'exactSizeStopLimitSellStr');
+  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeBuyStr');
+  const [exactSizeSellStr, setExactSizeSellStr] = useChange(TRADING, 'exactSizeSellStr');
 
   const {
     shouldShowPriceLine: shouldShowLimitBuyPriceLine,

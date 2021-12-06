@@ -12,8 +12,8 @@ interface Props {
 const Market = ({ isWideLayout, postOnly, tradingType }: Props): ReactElement => {
   const price = useValue(MARKET, 'currentSymbolLastPrice');
 
-  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeMarketBuyStr');
-  const [exactSizeSellStr, setExactSizeSellStr] = useChange(TRADING, 'exactSizeMarketSellStr');
+  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeBuyStr');
+  const [exactSizeSellStr, setExactSizeSellStr] = useChange(TRADING, 'exactSizeSellStr');
 
   return (
     <TradingTab

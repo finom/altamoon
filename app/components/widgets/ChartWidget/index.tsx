@@ -59,8 +59,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     limitBuyPrice, limitSellPrice, stopBuyPrice, stopSellPrice,
     shouldShowLimitBuyPriceLine, shouldShowLimitSellPriceLine,
     shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
-    exactSizeLimitBuyStr, exactSizeLimitSellStr,
-    exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
+    exactSizeBuyStr, exactSizeSellStr,
     currentSymbolAllOrders, ordersToBeCreated,
     // silent values
     updateDrafts, createOrderFromDraft, limitOrder, cancelOrder, calculateQuantity,
@@ -71,8 +70,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     'limitBuyPrice', 'limitSellPrice', 'stopBuyPrice', 'stopSellPrice',
     'shouldShowLimitBuyPriceLine', 'shouldShowLimitSellPriceLine',
     'shouldShowStopBuyDraftPriceLine', 'shouldShowStopSellDraftPriceLine',
-    'exactSizeLimitBuyStr', 'exactSizeLimitSellStr',
-    'exactSizeStopLimitBuyStr', 'exactSizeStopLimitSellStr',
+    'exactSizeBuyStr', 'exactSizeSellStr',
     'currentSymbolAllOrders', 'ordersToBeCreated',
   ]);
 
@@ -157,8 +155,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
-            buyDraftSize: calculateSizeFromString(symbol, exactSizeLimitBuyStr),
-            sellDraftSize: calculateSizeFromString(symbol, exactSizeLimitSellStr),
+            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr),
+            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr),
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
 
@@ -179,8 +177,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
-            buyDraftSize: calculateSizeFromString(symbol, exactSizeStopLimitBuyStr),
-            sellDraftSize: calculateSizeFromString(symbol, exactSizeStopLimitSellStr),
+            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr),
+            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr),
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
 
@@ -241,8 +239,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     shouldShowLimitBuyPriceLine, shouldShowLimitSellPriceLine,
     shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
     stopBuyPrice, stopSellPrice, tradingType, candleChart,
-    calculateSizeFromString, exactSizeLimitBuyStr, exactSizeLimitSellStr,
-    exactSizeStopLimitBuyStr, exactSizeStopLimitSellStr,
+    calculateSizeFromString, exactSizeBuyStr, exactSizeSellStr,
     isCurrentSymbolMarginTypeIsolated, currentSymbolLeverage,
   ]);
 

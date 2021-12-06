@@ -28,7 +28,7 @@ export default async function createOrderFromDraft(this: Store['trading'], {
       return;
     }
 
-    const size = this.calculateSizeFromString(symbol, side === 'BUY' ? this.exactSizeStopLimitBuyStr : this.exactSizeStopLimitSellStr);
+    const size = this.calculateSizeFromString(symbol, side === 'BUY' ? this.exactSizeBuyStr : this.exactSizeSellStr);
 
     const quantity = this.calculateQuantity({
       symbol,
@@ -53,7 +53,7 @@ export default async function createOrderFromDraft(this: Store['trading'], {
       newClientOrderId,
     });
   } else {
-    const size = this.calculateSizeFromString(symbol, side === 'BUY' ? this.exactSizeLimitBuyStr : this.exactSizeLimitSellStr);
+    const size = this.calculateSizeFromString(symbol, side === 'BUY' ? this.exactSizeBuyStr : this.exactSizeSellStr);
 
     const quantity = this.calculateQuantity({
       symbol,

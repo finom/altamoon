@@ -30,8 +30,8 @@ const Limit = ({ isWideLayout, postOnly, tradingType }: Props): ReactElement => 
     price: sellPrice,
   } = useDraftPrice('limitSellPrice', 'shouldShowLimitSellPriceLine', { pricePrecision });
 
-  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeLimitBuyStr');
-  const [exactSizeSellStr, setExactSizeSellStr] = useChange(TRADING, 'exactSizeLimitSellStr');
+  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeBuyStr');
+  const [exactSizeSellStr, setExactSizeSellStr] = useChange(TRADING, 'exactSizeSellStr');
 
   return (
     <TradingTab
