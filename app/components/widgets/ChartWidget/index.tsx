@@ -151,8 +151,6 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
             isCurrentSymbolMarginTypeIsolated,
             currentSymbolLeverage,
 
-            canCreateDraftLines: true,
-
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
             buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr),
@@ -172,8 +170,6 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
           candleChart.update({
             isCurrentSymbolMarginTypeIsolated,
             currentSymbolLeverage,
-
-            canCreateDraftLines: true,
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
@@ -195,39 +191,35 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
             isCurrentSymbolMarginTypeIsolated,
             currentSymbolLeverage,
 
-            canCreateDraftLines: true,
-
-            buyDraftPrice: 0,
-            sellDraftPrice: 0,
-            buyDraftSize: 0,
-            sellDraftSize: 0,
+            buyDraftPrice: limitBuyPrice,
+            sellDraftPrice: limitSellPrice,
+            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr),
+            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr),
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
 
-            shouldShowBuyDraftPrice: false,
-            shouldShowSellDraftPrice: false,
+            shouldShowBuyDraftPrice: shouldShowLimitBuyPriceLine,
+            shouldShowSellDraftPrice: shouldShowLimitSellPriceLine,
             shouldShowStopBuyDraftPrice: shouldShowStopBuyDraftPriceLine,
             shouldShowStopSellDraftPrice: shouldShowStopSellDraftPriceLine,
           });
           break;
         }
 
-        default: { // MARKET
+        default: { // 'MARKET'
           candleChart.update({
             isCurrentSymbolMarginTypeIsolated,
             currentSymbolLeverage,
 
-            canCreateDraftLines: false,
-
-            buyDraftPrice: 0,
-            sellDraftPrice: 0,
-            buyDraftSize: 0,
-            sellDraftSize: 0,
+            buyDraftPrice: limitBuyPrice,
+            sellDraftPrice: limitSellPrice,
+            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr),
+            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr),
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
 
-            shouldShowBuyDraftPrice: false,
-            shouldShowSellDraftPrice: false,
+            shouldShowBuyDraftPrice: shouldShowLimitBuyPriceLine,
+            shouldShowSellDraftPrice: shouldShowLimitSellPriceLine,
             shouldShowStopBuyDraftPrice: false,
             shouldShowStopSellDraftPrice: false,
           });

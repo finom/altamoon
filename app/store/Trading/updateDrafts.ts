@@ -9,20 +9,18 @@ export default function updateDrafts(this: Store['trading'], {
   stopSellDraftPrice: number | null;
 }): void {
   const { tradingType } = this.store.persistent;
-  if (tradingType === 'LIMIT' || tradingType === 'STOP') {
-    if (typeof buyDraftPrice === 'number') {
-      this.shouldShowLimitBuyPriceLine = true;
-      this.limitBuyPrice = buyDraftPrice;
-    } else {
-      this.shouldShowLimitBuyPriceLine = false;
-    }
+  if (typeof buyDraftPrice === 'number') {
+    this.shouldShowLimitBuyPriceLine = true;
+    this.limitBuyPrice = buyDraftPrice;
+  } else {
+    this.shouldShowLimitBuyPriceLine = false;
+  }
 
-    if (typeof sellDraftPrice === 'number') {
-      this.shouldShowLimitSellPriceLine = true;
-      this.limitSellPrice = sellDraftPrice;
-    } else {
-      this.shouldShowLimitSellPriceLine = false;
-    }
+  if (typeof sellDraftPrice === 'number') {
+    this.shouldShowLimitSellPriceLine = true;
+    this.limitSellPrice = sellDraftPrice;
+  } else {
+    this.shouldShowLimitSellPriceLine = false;
   }
 
   if (tradingType === 'STOP' || tradingType === 'STOP_MARKET') {

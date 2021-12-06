@@ -198,8 +198,6 @@ export default class CandlestickChart {
     shouldShowStopBuyDraftPrice?: boolean;
     shouldShowStopSellDraftPrice?: boolean;
 
-    canCreateDraftLines?: boolean;
-
     paddingPercents?: ChartPaddingPercents;
   }): void {
     if (typeof data.alerts !== 'undefined') this.#lines.alertLines.updateAlertLines(data.alerts);
@@ -255,7 +253,6 @@ export default class CandlestickChart {
       || typeof data.stopSellDraftPrice !== 'undefined'
       || typeof data.shouldShowStopBuyDraftPrice !== 'undefined'
       || typeof data.shouldShowStopSellDraftPrice !== 'undefined'
-      || typeof data.canCreateDraftLines !== 'undefined'
     ) {
       this.#lines.draftLines.updateDraftLines(data);
     }

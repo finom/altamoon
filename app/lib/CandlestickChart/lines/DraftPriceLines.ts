@@ -19,8 +19,6 @@ interface Params {
 }
 
 export default class DraftPriceLines extends PriceLines {
-  #canCreateDraftLines = true;
-
   #getPseudoPosition: Params['getPseudoPosition'];
 
   #calculateQuantity: Params['calculateQuantity'];
@@ -123,7 +121,6 @@ export default class DraftPriceLines extends PriceLines {
   };
 
   public updateDraftLines = (data: {
-    canCreateDraftLines?: boolean;
     lastPrice?: number;
 
     buyDraftPrice?: number | null;
@@ -138,7 +135,6 @@ export default class DraftPriceLines extends PriceLines {
     shouldShowStopBuyDraftPrice?: boolean;
     shouldShowStopSellDraftPrice?: boolean;
   }): void => {
-    if (typeof data.canCreateDraftLines !== 'undefined') this.#canCreateDraftLines = data.canCreateDraftLines;
     if (typeof data.lastPrice !== 'undefined') this.#lastPrice = data.lastPrice;
 
     if (typeof data.buyDraftPrice !== 'undefined' && typeof data.buyDraftSize !== 'undefined') {
@@ -202,8 +198,6 @@ export default class DraftPriceLines extends PriceLines {
   };
 
   #onDoubleClick = (evt: MouseEvent): void => {
-    if (!this.#canCreateDraftLines) return;
-
     const coords = d3.pointer(evt);
     const yValue = this.invertY(coords[1]);
 

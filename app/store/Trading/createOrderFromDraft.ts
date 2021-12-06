@@ -18,10 +18,9 @@ export default async function createOrderFromDraft(this: Store['trading'], {
   const price = side === 'BUY' ? buyDraftPrice : sellDraftPrice;
   const stopPrice = side === 'BUY' ? stopBuyDraftPrice : stopSellDraftPrice;
 
-  if (tradingType !== 'LIMIT' && tradingType !== 'STOP') throw new Error(`Unable to create order from draft for ${tradingType} order type`);
   if (typeof price !== 'number') throw new Error('Price is not a number');
 
-  if (tradingType === 'STOP') {
+  if (tradingType === 'STOP' || tradingType === 'STOP_MARKET') {
     if (!stopPrice) {
       notify('error', 'Stop price is not given');
 
@@ -52,7 +51,7 @@ export default async function createOrderFromDraft(this: Store['trading'], {
       postOnly,
       newClientOrderId,
     });
-  } else {
+  } else { // LIMIT or MARKET
     const size = this.calculateSizeFromString(symbol, side === 'BUY' ? this.exactSizeBuyStr : this.exactSizeSellStr);
 
     const quantity = this.calculateQuantity({
