@@ -42,7 +42,7 @@ export default class Persistent {
 
   public chartPaddingBottomPercent = persist<number>('chartPaddingBottomPercent', 10);
 
-  public chartPaddingRightPercent = persist<number>('chartPaddingRightPercent', 10);
+  public chartPaddingRightPercent = persist<number>('chartPaddingRightPercent', 15);
 
   public shouldChartShowOrders = persist<boolean>('shouldChartShowOrders', true);
 
@@ -58,8 +58,8 @@ export default class Persistent {
 
   // eslint-disable-next-line no-spaced-func
   public tradingWidgetPercentButtonsLayouts = persist<Record<number, number[]>>('tradingWidgetPercentButtonsLayouts', {
-    4: [10, 25, 50], // + Max
-    6: [5, 10, 20, 33.3, 50], // + Max
+    4: [1, 2, 5], // + Max
+    6: [1, 2, 5, 10, 15], // + Max
   });
 
   constructor() {

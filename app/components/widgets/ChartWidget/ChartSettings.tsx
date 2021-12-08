@@ -61,7 +61,7 @@ const ChartSettings = ({
   return (
     <Row>
       <Col xs={6} md={3}>
-        <Label htmlFor="chartPaddingTop" className="form-label">Padding top %</Label>
+        <Label htmlFor="chartPaddingTop" className="form-label">Top margin %</Label>
         <Input
           type="number"
           id="chartPaddingTop"
@@ -70,7 +70,7 @@ const ChartSettings = ({
         />
       </Col>
       <Col xs={6} md={3}>
-        <Label htmlFor="chartPaddingBottom" className="form-label">Padding bottom %</Label>
+        <Label htmlFor="chartPaddingBottom" className="form-label">Bottom margin %</Label>
         <Input
           type="number"
           id="chartPaddingBottom"
@@ -79,7 +79,7 @@ const ChartSettings = ({
         />
       </Col>
       <Col xs={6} md={3} className="mt-2 mt-md-0">
-        <Label htmlFor="chartPaddingRight" className="form-label">Padding right %</Label>
+        <Label htmlFor="chartPaddingRight" className="form-label">Right margin %</Label>
         <Input
           type="number"
           id="chartPaddingRight"
@@ -88,7 +88,7 @@ const ChartSettings = ({
         />
       </Col>
       <Col xs={6} md={3} className="mt-2 mt-md-0">
-        <Label htmlFor="chartOrdersNumber" className="form-label">Max num of order arrows</Label>
+        <Label htmlFor="chartOrdersNumber" className="form-label">Filled orders max</Label>
         <Input
           type="number"
           id="chartOrdersNumber"
