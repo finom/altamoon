@@ -38,7 +38,7 @@ const Orders = (): ReactElement => {
       <thead>
         <tr>
           <th>
-            Order Asset
+            Order
           </th>
           <th>
             Type
