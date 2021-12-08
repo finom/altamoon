@@ -34,7 +34,7 @@ const Leverage = ({
   const notionalCap = leverageBracket?.notionalCap;
 
   const leverageTooltipText = `
-  Maximum position at leverage ${currentSymbolLeverage}x is ${formatMoneyNumber(notionalCap ?? 0)} USDT
+  Maximum position at leverage <b>${currentSymbolLeverage}x</b> is ${formatMoneyNumber(notionalCap ?? 0)} USDT
   <a class="text-nowrap d-block" href="https://www.binance.com/en/futures/trading-rules/perpetual/leverage-margin" target="_blank" rel="noreferrer">Check the Leverage & Margin table</a>
   <a class="text-nowrap d-block" href="https://www.binance.com/en/futures/position/adjustment" target="_blank" rel="noreferrer"> Position Limit Enlarge</a>
 `;

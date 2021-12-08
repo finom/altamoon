@@ -34,6 +34,7 @@ export default function getPositionInfo(
   const side = override.side ?? (positionAmt >= 0 ? 'BUY' : 'SELL');
   const lastPrice = override.lastPrice
     ?? +(this.store.market.allSymbolsTickers[symbol]?.close ?? 0);
+  const existingPosition = this.openPositions.find((pos) => pos.symbol === symbol);
 
   const position: TradingPosition = {
     // if positionAmt is increased, then use it as initial value,
@@ -58,6 +59,7 @@ export default function getPositionInfo(
       entryPrice,
       totalWalletBalance,
     }),
+    breakEvenPrice: existingPosition?.breakEvenPrice ?? null,
     entryPrice,
     positionAmt,
     liquidationPrice,
@@ -75,8 +77,7 @@ export default function getPositionInfo(
     maintMarginRatio,
     maintMargin: maintMarginRatio * baseValue - (leverageBracket?.cum ?? 0),
     leverageBracket,
-    isClosed: override.isClosed
-      ?? this.openPositions.some((pos) => pos.symbol === symbol && pos.isClosed),
+    isClosed: override.isClosed ?? existingPosition?.isClosed ?? false,
   };
 
   return position;

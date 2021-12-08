@@ -19,6 +19,7 @@ export interface TradingPosition {
   pnl: number;
   pnlPositionPercent: number;
   pnlBalancePercent: number;
+  breakEvenPrice: null | number;
   leverage: number;
   maxLeverage: number;
   marginType: api.FuturesPositionRisk['marginType'];

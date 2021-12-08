@@ -49,4 +49,6 @@ export default function eventAccountUpdate(
       return tradingPosition;
     })
     .sort(({ symbol: symA }, { symbol: symB }) => (symA > symB ? 1 : -1));
+
+  positions.forEach(({ s: symbol }) => void this.loadPositionTrades(symbol));
 }

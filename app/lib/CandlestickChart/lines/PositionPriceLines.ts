@@ -11,9 +11,11 @@ export default class PositionPriceLines extends PriceLines {
     super({
       axis,
       items: [{
-        id: 'position', isVisible: false,
-      }, {
         id: 'liquidation', isVisible: false, title: 'Pos. liquidation', isTitleVisible: 'hover', color: 'var(--bs-red)',
+      }, {
+        id: 'breakEven', isVisible: false, title: 'Break-even', isTitleVisible: 'hover', color: 'brown',
+      }, {
+        id: 'position', isVisible: false,
       }],
       isBackgroundFill: true,
       isTitleVisible: true,
@@ -24,6 +26,7 @@ export default class PositionPriceLines extends PriceLines {
     if (position === null) {
       this.updateItem('position', { isVisible: false });
       this.updateItem('liquidation', { isVisible: false });
+      this.updateItem('breakEven', { isVisible: false });
     } else {
       this.updateItem('position', {
         isVisible: true,
@@ -33,6 +36,18 @@ export default class PositionPriceLines extends PriceLines {
         title: `${position.positionAmt} ${position.baseAsset}`,
         opacity: position.isClosed ? 0.8 : 1,
       });
+
+      this.updateItem('liquidation', {
+        isVisible: true,
+        yValue: position.liquidationPrice,
+      });
+
+      if (position.breakEvenPrice) {
+        this.updateItem('breakEven', {
+          isVisible: true,
+          yValue: position.breakEvenPrice,
+        });
+      }
     }
   };
 }
