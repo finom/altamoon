@@ -86,6 +86,8 @@ export default class CandlestickChart {
 
   #lines: Lines;
 
+  #yDomain: [number, number] = [0, 0];
+
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
     {
@@ -315,7 +317,7 @@ export default class CandlestickChart {
 
   #draw = (): void => {
     this.#calcXDomain();
-    this.#calcYDomain();
+    const yDomain = this.#calcYDomain();
     const resizeData: ResizeData = {
       width: this.#width, height: this.#height, margin: this.#margin, scales: this.#scales,
     };
@@ -326,6 +328,12 @@ export default class CandlestickChart {
     this.#gridLines.draw();
     this.#plot.draw(drawData);
     this.#orderArrows.draw();
+
+    // fixes https://trello.com/c/tLjFqdCB/230-chart-order-and-alert-lines-are-not-redrawn-on-price-ath-atl
+    if (!isEqual(this.#yDomain, yDomain)) {
+      this.#lines.resize(resizeData);
+      this.#yDomain = yDomain;
+    }
 
     this.#lines.currentPriceLines.updateItem('currentPrice', {
       yValue: +(this.#candles[this.#candles.length - 1]?.close ?? 0),
@@ -399,7 +407,7 @@ export default class CandlestickChart {
     this.#scales.x.domain(xDomain as Iterable<Date | d3.NumberValue>);
   };
 
-  #calcYDomain = (): void => {
+  #calcYDomain = (): [number, number] => {
     const { y } = this.#scales;
     const xDomain = this.#scales.scaledX.domain();
     const candles = this.#candles.filter((x) => x.time >= xDomain[0].getTime()
@@ -432,5 +440,7 @@ export default class CandlestickChart {
     yDomain[0] = (yDomain[0] ?? 0) - (+yPaddingBottom.toFixed(this.#pricePrecision));
 
     y.domain(yDomain);
+
+    return yDomain;
   };
 }
