@@ -35,14 +35,14 @@ const Positions = (): ReactElement => {
       <Table className="align-middle">
         <thead>
           <tr>
-            <th>Position Asset</th>
+            <th>Position</th>
             <th>Mode</th>
             <th>Size</th>
             <th>Margin</th>
             <th>Last Price</th>
             <th>Entry Price</th>
-            <th>Liq. Price</th>
-            <th>Break-even Price</th>
+            <th>Liquidation</th>
+            <th>Break-even</th>
             <th><span className="help-text" ref={tooltipRef({ title: 'Profit and Loss' })}>PNL</span></th>
             <th>
               <span className="help-text" ref={tooltipRef({ title: 'Return on Investment' })}>ROI</span>
