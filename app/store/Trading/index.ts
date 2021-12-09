@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */ // TODO: Re-enable max-lines after minor refactor
 import {
   isEqual,
   keyBy, pick, throttle, uniq,
@@ -30,6 +29,7 @@ import getPseudoPosition from './getPseudoPosition';
 import eventOrderUpdate from './eventOrderUpdate';
 import eventAccountUpdate from './eventAccountUpdate';
 import updateLeverage from './updateLeverage';
+import loadPositionTrades from './loadPositionTrades';
 
 export default class Trading {
   public openPositions: TradingPosition[] = [];
@@ -321,46 +321,9 @@ export default class Trading {
     ...args: Parameters<typeof updateLeverage>
   ): ReturnType<typeof updateLeverage> => updateLeverage.apply(this, args);
 
-  public loadPositionTrades = async (symbol: string): Promise<void> => {
-    const position = this.openPositions.find((x) => x.symbol === symbol);
-    if (!position) return;
-    const direction = position.side === 'BUY' ? 1 : -1;
-
-    let trades = await api.futuresUserTrades(symbol);
-
-    let orderSum = 0;
-    let i = trades.length - 1;
-    for (; i >= 0; i -= 1) {
-      const trade = trades[i];
-      const orderDirection = trade.side === 'BUY' ? 1 : -1;
-      orderSum += orderDirection * +trade.qty;
-
-      if ((direction * position.positionAmt * +trade.price - orderSum * +trade.price) <= 0.01) {
-        break;
-      }
-    }
-
-    trades = trades.slice(i, trades.length);
-
-    const getBreakEven = (entryPrice: number, positionAmt: number): number => {
-      const baseValue = positionAmt * entryPrice;
-
-      let pnl = 0;
-      trades.forEach((x) => { pnl += +x.realizedPnl; });
-
-      let fees = 0;
-      trades.forEach((x) => { fees += +x.commission; });
-      fees += this.getFeeRate('taker') * Math.abs(baseValue); // position closing fee
-
-      return (entryPrice * (fees - pnl)) / baseValue + entryPrice;
-    };
-
-    this.openPositions = this.openPositions.map((pos) => (
-      pos.symbol === symbol ? {
-        ...pos, breakEvenPrice: getBreakEven(pos.entryPrice, pos.positionAmt),
-      } : pos
-    ));
-  };
+  public loadPositionTrades = (
+    ...args: Parameters<typeof loadPositionTrades>
+  ): ReturnType<typeof loadPositionTrades> => loadPositionTrades.apply(this, args);
 
   public loadPositions = throttle(async (): Promise<void> => {
     try {

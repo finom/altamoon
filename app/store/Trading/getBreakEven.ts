@@ -3,7 +3,7 @@ import * as api from '../../api';
 interface Arg {
   entryPrice: number;
   positionAmt: number;
-  trades: api.FuturesUserTrades[];
+  trades: api.FuturesUserTrade[];
 }
 export default function getBreakEven(this: Store['trading'], {
   entryPrice,

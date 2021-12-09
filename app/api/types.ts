@@ -183,7 +183,7 @@ export interface FuturesTicker {
   numberOfTrades: number; // Total number of trades
 }
 
-export interface FuturesUserTrades {
+export interface FuturesUserTrade {
   buyer: boolean;
   commission: string;
   commissionAsset: string;
@@ -198,6 +198,7 @@ export interface FuturesUserTrades {
   realizedPnl: string;
   side: OrderSide;
   symbol: string;
+  time: number;
 }
 
 export interface FuturesDepth {

@@ -2,7 +2,7 @@ import promiseRequest from './promiseRequest';
 import futuresCandles from './futuresCandles';
 import {
   FuturesLeverageResponse, FuturesPositionRisk, MarginType,
-  FuturesAccount, FuturesLeverageBracket, FuturesUserTrades, FuturesDepth, FuturesExchangeInfo,
+  FuturesAccount, FuturesLeverageBracket, FuturesUserTrade, FuturesDepth, FuturesExchangeInfo,
   IncomeType, FuturesIncome, TimeInForce, OrderType, OrderSide,
   FuturesOrder, CandlestickChartInterval,
 } from './types';
@@ -123,15 +123,39 @@ export async function futuresAccount(): Promise<FuturesAccount> {
   return promiseRequest('v2/account', {}, { type: 'SIGNED' });
 }
 
+interface UserTradesOptions {
+  symbol: string;
+  startTime?: number;
+  endTime?: number;
+  fromId?: number;
+  limit?: number;
+}
 /**
  * Account Trade List (USER_DATA)
  * @remarks Get trades for a specific account and symbol.
  * @see {@link https://binance-docs.github.io/apidocs/futures/en/#account-trade-list-user_data}
- * @param symbol - Symbol
+ * @param options - Request options
+ * @param options.symbol - Symbol
+ * @param options.startTime - Start time
+ * @param options.endTime - End time
+ * @param options.fromId - Trade id to fetch from. Default gets most recent trades.
+ * @param options.limit - Limit
  * @returns List of trades
  */
-export async function futuresUserTrades(symbol: string): Promise<FuturesUserTrades[]> {
-  return promiseRequest('v1/userTrades', { symbol }, { type: 'SIGNED' });
+export async function futuresUserTrades({
+  symbol,
+  startTime,
+  endTime,
+  fromId,
+  limit,
+}: UserTradesOptions): Promise<FuturesUserTrade[]> {
+  return promiseRequest('v1/userTrades', {
+    symbol,
+    startTime,
+    endTime,
+    fromId,
+    limit,
+  }, { type: 'SIGNED' });
 }
 
 /**
