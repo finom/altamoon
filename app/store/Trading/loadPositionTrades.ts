@@ -1,4 +1,5 @@
 import { throttle } from 'lodash';
+import localForage from 'localforage';
 import * as api from '../../api';
 
 function getBreakEvenPrice(
@@ -19,16 +20,29 @@ function getBreakEvenPrice(
   return (entryPrice * (fees - pnl)) / baseValue + entryPrice;
 }
 
-const tradesCache: Record<string, api.FuturesUserTrade[]> = {};
-
 async function loadPositionTradesOrig(this: Store['trading'], symbol: string): Promise<void> {
   const position = this.openPositions.find((x) => x.symbol === symbol);
   if (!position) return;
+
+  const cacheKey = `positionTrades_${symbol}`;
+
+  const weekAgoTime = Date.now() - 1000 * 60 * 60 * 24 * 7;
+
+  // get trades from cache
+  let trades = JSON.parse(
+    await localForage.getItem(cacheKey) ?? '[]',
+  ) as api.FuturesUserTrade[];
+
+  // reset cache if it's too old
+  if (trades.length && trades[trades.length - 1].time < weekAgoTime) {
+    await localForage.setItem(cacheKey, '[]');
+    trades = [];
+  }
+
   const direction = position.side === 'BUY' ? 1 : -1;
 
   let orderSum = 0;
   let requestedTrades: api.FuturesUserTrade[];
-  let trades: api.FuturesUserTrade[] = tradesCache[symbol] ?? [];
 
   do {
     const options: Parameters<typeof api.futuresUserTrades>[0] = { symbol, limit: 1000 };
@@ -39,15 +53,18 @@ async function loadPositionTradesOrig(this: Store['trading'], symbol: string): P
       options.fromId = trades[trades.length - 1].id;
     } else {
       // else start from today minus 7 days
-      options.startTime = Date.now() - 1000 * 60 * 60 * 24 * 7;
+      options.startTime = weekAgoTime;
     }
     // eslint-disable-next-line no-await-in-loop
     requestedTrades = await api.futuresUserTrades(options);
+
     if (hasTrades) {
-      // remove first item if fromId is used
+      // remove first item if fromId is used (the last item's id equals fromId)
       requestedTrades.shift();
     }
-    trades = [...trades, ...requestedTrades]; // append requestedTrades to trades
+
+    // append requestedTrades to trades
+    trades = [...trades, ...requestedTrades];
   } while (requestedTrades.length === 1000);
 
   let i = trades.length - 1;
@@ -64,8 +81,10 @@ async function loadPositionTradesOrig(this: Store['trading'], symbol: string): P
 
   trades = trades.slice(i, trades.length);
 
-  tradesCache[symbol] = trades;
+  // update cache with sliced items (we don't need older items)
+  await localForage.setItem(cacheKey, JSON.stringify(trades));
 
+  // update position breakEvenPrice
   this.openPositions = this.openPositions.map((pos) => (
     pos.symbol === symbol ? {
       ...pos, breakEvenPrice: getBreakEvenPrice.call(this, trades, pos.entryPrice, pos.positionAmt),
