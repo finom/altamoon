@@ -112,7 +112,7 @@ export default function eventOrderUpdate(
       this.openOrders = [...this.openOrders, getOrderInfo.call(this, order)];
     }
 
-    if (['CANCELED', 'EXPIRED', 'FILLED'].includes(order.status)) {
+    if (['CANCELED', 'EXPIRED', 'FILLED', 'REJECTED'].includes(order.status)) {
       this.openOrders = this.openOrders.filter((openOrder) => openOrder.orderId !== order.orderId);
     }
   }

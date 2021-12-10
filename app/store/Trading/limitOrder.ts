@@ -58,6 +58,10 @@ export default async function limitOrder(this: Store['trading'], {
     // eslint-disable-next-line no-console
     console.error(e);
 
+    // remove pseudo-order
+    this.ordersToBeCreated = this.ordersToBeCreated
+      .filter((o) => o.clientOrderId !== clientOrderId);
+
     if (hideDraft) {
       if (side === 'BUY') this.shouldShowLimitBuyPriceLine = shouldShowLimitBuyPriceLine;
       else this.shouldShowLimitSellPriceLine = shouldShowLimitSellPriceLine;
