@@ -7,7 +7,7 @@ import '!style-loader!css-loader!noty/lib/noty.css';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import '!style-loader!css-loader!noty/lib/themes/mint.css';
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import '!style-loader!css-loader!altamoon-minicharts/docs/style.css';
+import '!style-loader!css-loader!altamoon-minicharts/style.css';
 
 import routes from './routes';
 import ErrorBoundary from './ErrorBoundary';

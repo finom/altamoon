@@ -1,3 +1,4 @@
+// import { } from 'altamoon-minicharts'
 import convertType from '../lib/convertType';
 
 import Persistent from './Persistent';
@@ -20,6 +21,8 @@ export class RootStore {
   public readonly customization: Customization;
 
   public readonly trading: Trading;
+
+  // public readonly minicharts: Minicha
 
   public isSettingsModalOpen;
 
