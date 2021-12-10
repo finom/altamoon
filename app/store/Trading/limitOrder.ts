@@ -2,7 +2,7 @@ import * as api from '../../api';
 import notify from '../../lib/notify';
 import floorPriceByTickSize from './floorPriceByTickSize';
 
-export default async function limitOrder(this: Store['trading'], {
+export default async function limitOrder(this: altamoon.RootStore['trading'], {
   side,
   quantity,
   price,

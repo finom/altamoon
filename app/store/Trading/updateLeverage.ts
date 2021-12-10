@@ -1,6 +1,6 @@
 import * as api from '../../api';
 
-export default async function updateLeverage(this: Store['trading']): Promise<void> {
+export default async function updateLeverage(this: altamoon.RootStore['trading']): Promise<void> {
   const { symbol } = this.store.persistent;
 
   this.leverageChangeRequestsCount += 1;

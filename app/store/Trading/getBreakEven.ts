@@ -5,7 +5,7 @@ interface Arg {
   positionAmt: number;
   trades: api.FuturesUserTrade[];
 }
-export default function getBreakEven(this: Store['trading'], {
+export default function getBreakEven(this: altamoon.RootStore['trading'], {
   entryPrice,
   positionAmt,
   trades,

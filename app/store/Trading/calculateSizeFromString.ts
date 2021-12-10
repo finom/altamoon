@@ -1,4 +1,4 @@
-export default function calculateSizeFromString(this: Store['trading'], symbol: string, sizeStr: string): number {
+export default function calculateSizeFromString(this: altamoon.RootStore['trading'], symbol: string, sizeStr: string): number {
   const { totalWalletBalance } = this.store.account;
   const positionRisk = this.allSymbolsPositionRisk[symbol];
   if (!positionRisk) return 0;

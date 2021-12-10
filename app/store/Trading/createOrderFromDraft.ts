@@ -2,7 +2,7 @@ import * as api from '../../api';
 import notify from '../../lib/notify';
 
 // used by Chart Widget compoment
-export default async function createOrderFromDraft(this: Store['trading'], {
+export default async function createOrderFromDraft(this: altamoon.RootStore['trading'], {
   buyDraftPrice, sellDraftPrice, stopBuyDraftPrice, stopSellDraftPrice, newClientOrderId,
 }: {
   buyDraftPrice: number | null;

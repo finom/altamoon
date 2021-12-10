@@ -1,7 +1,7 @@
 import * as api from '../../api';
 import notify from '../../lib/notify';
 
-export default async function stopMarketOrder(this: Store['trading'], {
+export default async function stopMarketOrder(this: altamoon.RootStore['trading'], {
   side, quantity, symbol, stopPrice, reduceOnly = false,
 }: {
   side: api.OrderSide;

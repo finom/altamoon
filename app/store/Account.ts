@@ -6,6 +6,7 @@ import notify from '../lib/notify';
 import delay from '../lib/delay';
 import stringifyError from '../lib/stringifyError';
 import options from '../api/options';
+import './altamoon.d';
 
 export default class Account {
   public totalWalletBalance = 0;
@@ -22,9 +23,9 @@ export default class Account {
 
   public leverageBrackets: Record<string, api.FuturesLeverageBracket[]> = {};
 
-  #store: Store;
+  #store: altamoon.RootStore;
 
-  constructor(store: Store) {
+  constructor(store: altamoon.RootStore) {
     this.#store = store;
     const setBinanceOptions = async () => {
       const {

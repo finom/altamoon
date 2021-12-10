@@ -2,7 +2,7 @@ import { TradingOrder } from '../types';
 import * as api from '../../api';
 
 export default function getOrderInfo(
-  this: Store['trading'],
+  this: altamoon.RootStore['trading'],
   order: api.FuturesOrder,
   override: {
     lastPrice?: number, leverage?: number, marginType?: api.FuturesPositionRisk['marginType'],

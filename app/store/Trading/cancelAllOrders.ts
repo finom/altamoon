@@ -1,7 +1,7 @@
 import * as api from '../../api';
 import notify from '../../lib/notify';
 
-export default async function cancelAllOrders(this: Store['trading'], symbol: string): Promise<void> {
+export default async function cancelAllOrders(this: altamoon.RootStore['trading'], symbol: string): Promise<void> {
   this.openOrders = this.openOrders.map((order) => {
     if (order.symbol === symbol) {
       this.canceledOrderIds.push(order.clientOrderId);

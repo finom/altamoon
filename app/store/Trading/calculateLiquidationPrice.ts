@@ -6,7 +6,7 @@ type PartialPosition = Pick<TradingPosition, 'entryPrice' | 'symbol' | 'leverage
 // see https://www.binance.com/en/support/faq/b3c689c1f50a44cabb3a84e663b81d93
 // TODO support hedge mode
 export default function calculateLiquidationPrice(
-  this: Pick<Store['trading'], 'openPositions' | 'store'>,
+  this: Pick<altamoon.RootStore['trading'], 'openPositions' | 'store'>,
   totalWalletBalance: number,
   {
     symbol, entryPrice, leverageBracket, side, positionAmt, marginType, isolatedWallet, leverage,
@@ -245,7 +245,7 @@ if (process.env.NODE_ENV === 'development') {
   ];
 
   void import('expect.js').then(({ default: expect }) => {
-    const { store } = convertType<{ store: Store }>(window);
+    const { store } = convertType<{ store: altamoon.RootStore }>(window);
 
     const getBTCPosition = (): Parameters<
       typeof calculateLiquidationPrice>[1] & Partial<TradingPosition

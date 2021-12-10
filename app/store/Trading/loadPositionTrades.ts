@@ -3,7 +3,7 @@ import localForage from 'localforage';
 import * as api from '../../api';
 
 function getBreakEvenPrice(
-  this: Store['trading'],
+  this: altamoon.RootStore['trading'],
   trades: api.FuturesUserTrade[],
   entryPrice: number,
   positionAmt: number,
@@ -20,7 +20,7 @@ function getBreakEvenPrice(
   return (entryPrice * (fees - pnl)) / baseValue + entryPrice;
 }
 
-async function loadPositionTradesOrig(this: Store['trading'], symbol: string): Promise<void> {
+async function loadPositionTradesOrig(this: altamoon.RootStore['trading'], symbol: string): Promise<void> {
   const position = this.openPositions.find((x) => x.symbol === symbol);
   if (!position) return;
 

@@ -5,7 +5,7 @@ import getPnlBalancePercent from './getPnlBalancePercent';
 import getPnlPositionPercent from './getPnlPositionPercent';
 
 export default function getPositionInfo(
-  this: Store['trading'],
+  this: altamoon.RootStore['trading'],
   positionRisk: api.FuturesPositionRisk,
   override: { side?: api.OrderSide; lastPrice?: number; isClosed?: boolean; } = {},
 ): TradingPosition {

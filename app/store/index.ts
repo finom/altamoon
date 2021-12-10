@@ -1,4 +1,4 @@
-// import { } from 'altamoon-minicharts'
+// import { MinichartsStore, minichartsStore } from 'altamoon-minicharts'
 import convertType from '../lib/convertType';
 
 import Persistent from './Persistent';
@@ -8,8 +8,9 @@ import Stats from './Stats';
 import Trading from './Trading';
 import Customization from './Customization';
 import notify from '../lib/notify';
+import './altamoon.d';
 
-export class RootStore {
+export class RootStore implements altamoon.RootStore {
   public readonly persistent: Persistent;
 
   public readonly market: Market;
@@ -22,7 +23,7 @@ export class RootStore {
 
   public readonly trading: Trading;
 
-  // public readonly minicharts: Minicha
+  // public readonly minicharts: MinichartsStore = minichartsStore;
 
   public isSettingsModalOpen;
 
@@ -50,7 +51,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // allow to use it at class members
-declare global { type Store = RootStore; }
+// declare global { type Store = RootStore; }
 
 // store selectors
 export const ROOT = (root: RootStore): RootStore => root;

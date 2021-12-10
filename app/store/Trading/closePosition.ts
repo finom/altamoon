@@ -1,7 +1,7 @@
 import * as api from '../../api';
 import notify from '../../lib/notify';
 
-export default async function closePosition(this: Store['trading'], symbol: string, amt?: number): Promise<api.FuturesOrder | null> {
+export default async function closePosition(this: altamoon.RootStore['trading'], symbol: string, amt?: number): Promise<api.FuturesOrder | null> {
   const position = this.openPositions.find((pos) => pos.symbol === symbol);
 
   if (!position) {

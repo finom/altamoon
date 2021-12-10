@@ -31,6 +31,8 @@ import eventAccountUpdate from './eventAccountUpdate';
 import updateLeverage from './updateLeverage';
 import loadPositionTrades from './loadPositionTrades';
 
+import '../altamoon.d';
+
 export default class Trading {
   public openPositions: TradingPosition[] = [];
 
@@ -91,9 +93,9 @@ export default class Trading {
   */
   public canceledOrderIds: string[] = [];
 
-  #store: Store;
+  #store: altamoon.RootStore;
 
-  public store: Store;
+  public store: altamoon.RootStore;
 
   // allows to wait for leverage update ignoring account changes
   public leverageChangeRequestsCount = 0;
@@ -102,7 +104,7 @@ export default class Trading {
 
   #activelyListenedSymbols: string[] = [];
 
-  constructor(store: Store) {
+  constructor(store: altamoon.RootStore) {
     this.#store = store;
     this.store = store;
 

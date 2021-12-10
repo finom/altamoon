@@ -72,13 +72,13 @@ export default class App {
 
   public didPluginsInitialized = false;
 
-  #store: Store;
+  #store: altamoon.RootStore;
 
-  constructor(store: Store) {
+  constructor(store: altamoon.RootStore) {
     this.#store = store;
 
     // make api be available globally
-    window.altamoonPlugin = ((plugin: Plugin<Store>): void => {
+    window.altamoonPlugin = ((plugin: Plugin<altamoon.RootStore>): void => {
       plugin(this.#store);
     }) as typeof window.altamoonPlugin;
 

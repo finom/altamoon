@@ -2,7 +2,7 @@ import * as api from '../../api';
 import getPositionInfo from './getPositionInfo';
 
 export default function eventAccountUpdate(
-  this: Store['trading'],
+  this: altamoon.RootStore['trading'],
   a: api.UserDataEventAccountUpdateData,
 ): void {
   const amtIncreasedSymbols: string[] = [];

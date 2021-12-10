@@ -34,11 +34,11 @@ export default class Stats {
 
   #bnbCandles: api.FuturesChartCandle[] = [];
 
-  #store: Store;
+  #store: altamoon.RootStore;
 
   #historyStart = getTodayEarlyTime();
 
-  constructor(store: Store) {
+  constructor(store: altamoon.RootStore) {
     this.#store = store;
 
     listenChange(this, 'income', () => this.#calcStats());

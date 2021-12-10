@@ -3,7 +3,7 @@ import { TradingPosition } from '../types';
 import getPositionInfo from './getPositionInfo';
 
 export default function getPseudoPosition(
-  this: Store['trading'],
+  this: altamoon.RootStore['trading'],
   { side = 'BUY', price: priceOverride }: { side?: api.OrderSide, price?: number } = {},
 ): TradingPosition | null {
   const { tradingType, symbol } = this.store.persistent;

@@ -42,7 +42,7 @@ export default class Market {
 
   #allMarkPriceTickers: Record<string, api.FuturesMarkPriceTicker> = {};
 
-  #store: Store;
+  #store: altamoon.RootStore;
 
   #depthUnsubscribe?: () => void;
 
@@ -50,7 +50,7 @@ export default class Market {
 
   #chartUnsubscribe?: () => void;
 
-  constructor(store: Store) {
+  constructor(store: altamoon.RootStore) {
     this.#store = store;
 
     this.#listenTickers();

@@ -1,6 +1,6 @@
 // used by Chart Widget compoment
 
-export default function updateDrafts(this: Store['trading'], {
+export default function updateDrafts(this: altamoon.RootStore['trading'], {
   buyDraftPrice, sellDraftPrice, stopBuyDraftPrice, stopSellDraftPrice,
 }: {
   buyDraftPrice: number | null;

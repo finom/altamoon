@@ -2,7 +2,7 @@ import * as api from '../../api';
 import notify from '../../lib/notify';
 
 export default async function cancelOrder(
-  this: Store['trading'], symbol: string, origClientOrderId: string,
+  this: altamoon.RootStore['trading'], symbol: string, origClientOrderId: string,
 ): Promise<api.FuturesOrder | null> {
   this.openOrders = this.openOrders.map((order) => {
     if (order.clientOrderId === origClientOrderId) {

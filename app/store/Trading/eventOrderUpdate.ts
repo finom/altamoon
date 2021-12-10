@@ -3,7 +3,7 @@ import { orderFilledSoundUri } from '../../lib/alertSounds';
 import getOrderInfo from './getOrderInfo';
 
 export default function eventOrderUpdate(
-  this: Store['trading'],
+  this: altamoon.RootStore['trading'],
   o: api.UserDataEventOrderUpdateData,
   updateTime: number,
 ): void {
