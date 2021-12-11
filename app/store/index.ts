@@ -1,6 +1,8 @@
-// import { MinichartsStore, minichartsStore } from 'altamoon-minicharts'
-import convertType from '../lib/convertType';
+import { MinichartsStore, minichartsStore } from 'altamoon-minicharts';
+import { listenChange } from 'use-change';
+import { groupBy } from 'lodash';
 
+import convertType from '../lib/convertType';
 import Persistent from './Persistent';
 import Market from './Market';
 import Account from './Account';
@@ -23,7 +25,7 @@ export class RootStore implements altamoon.RootStore {
 
   public readonly trading: Trading;
 
-  // public readonly minicharts: MinichartsStore = minichartsStore;
+  public readonly minicharts: MinichartsStore = minichartsStore;
 
   public isSettingsModalOpen;
 
@@ -36,6 +38,27 @@ export class RootStore implements altamoon.RootStore {
     this.customization = new Customization(this);
     this.isSettingsModalOpen = !this.persistent.binanceApiKey;
 
+    // update minichart orders
+    listenChange(this.trading, 'openOrders', (openOrders) => {
+      for (const symbol of Object.keys(this.minicharts.orders)) {
+        this.minicharts.orders[symbol] = null;
+      }
+
+      Object.assign(this.minicharts.orders, groupBy(openOrders, 'symbol'));
+    });
+
+    // update minichart positions
+    listenChange(this.trading, 'openPositions', (openPositions) => {
+      for (const symbol of Object.keys(this.minicharts.positions)) {
+        this.minicharts.positions[symbol] = null;
+      }
+
+      for (const position of openPositions) {
+        this.minicharts.positions[position.symbol] = position;
+      }
+    });
+
+    // binance-api-error is triggered by api.promiseRequest
     window.addEventListener('binance-api-error', (evt) => {
       const { detail } = evt as CustomEvent<{ error: string | Error }>;
       notify('error', detail.error);
@@ -49,9 +72,6 @@ if (process.env.NODE_ENV === 'development') {
   // make store to be accessed ass a global variable
   convertType<{ store: RootStore }>(window).store = store;
 }
-
-// allow to use it at class members
-// declare global { type Store = RootStore; }
 
 // store selectors
 export const ROOT = (root: RootStore): RootStore => root;

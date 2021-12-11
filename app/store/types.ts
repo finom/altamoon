@@ -76,5 +76,5 @@ export interface OrderToBeCreated extends Pick<TradingOrder,
 }
 
 declare global {
-  interface Window { altamoonPlugin: <T = Store>(plugin: Plugin<T>) => void; }
+  interface Window { altamoonPlugin: <T = altamoon.RootStore>(plugin: Plugin<T>) => void; }
 }

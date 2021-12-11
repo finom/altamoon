@@ -227,7 +227,7 @@
     "webpack-merge": "^5.8.0"
   },
   "dependencies": {
-    "altamoon-minicharts": "^0.3.26",
+    "altamoon-minicharts": "^0.3.28",
     "balajs": "^1.0.10",
     "bootstrap": "^5.1.3",
     "bootswatch": "^5.1.3",
@@ -260,7 +260,7 @@
     "regenerator-runtime": "^0.13.9",
     "stream-browserify": "^3.0.0",
     "type-fest": "^2.8.0",
-    "use-change": "^1.0.3"
+    "use-change": "^1.0.4-beta.2"
   },
   "devEngines": {
     "node": ">=10.x",
