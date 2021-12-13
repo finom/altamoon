@@ -125,7 +125,7 @@ const Positions = (): ReactElement => {
                 {breakEvenPrice ? (
                   <>
                     {formatNumber(breakEvenPrice)}
-&nbsp;₮
+                    &nbsp;₮
                   </>
                 ) : '...'}
               </td>
