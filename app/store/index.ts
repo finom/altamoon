@@ -10,7 +10,6 @@ import Stats from './Stats';
 import Trading from './Trading';
 import Customization from './Customization';
 import notify from '../lib/notify';
-import './altamoon.d';
 
 export class RootStore implements altamoon.RootStore {
   public readonly persistent: Persistent;
@@ -39,23 +38,30 @@ export class RootStore implements altamoon.RootStore {
     this.isSettingsModalOpen = !this.persistent.binanceApiKey;
 
     // update minichart orders
-    listenChange(this.trading, 'openOrders', (openOrders) => {
-      for (const symbol of Object.keys(this.minicharts.orders)) {
-        this.minicharts.orders[symbol] = null;
+    listenChange(this.trading, 'openOrders', (openOrders, prevOpenOrders) => {
+      for (const { symbol } of prevOpenOrders) {
+        this.minicharts.allOrders[symbol] = null;
       }
 
-      Object.assign(this.minicharts.orders, groupBy(openOrders, 'symbol'));
+      Object.assign(this.minicharts.allOrders, groupBy(openOrders, 'symbol'));
     });
 
     // update minichart positions
-    listenChange(this.trading, 'openPositions', (openPositions) => {
-      for (const symbol of Object.keys(this.minicharts.positions)) {
-        this.minicharts.positions[symbol] = null;
+    listenChange(this.trading, 'openPositions', (openPositions, prevPositions) => {
+      for (const { symbol } of prevPositions) {
+        this.minicharts.allPositions[symbol] = null;
       }
 
       for (const position of openPositions) {
-        this.minicharts.positions[position.symbol] = position;
+        this.minicharts.allPositions[position.symbol] = position;
       }
+
+      this.minicharts.positionSymbols = openPositions.map(({ symbol }) => symbol);
+    });
+
+    // update minichart leverageBrackets (for liq. price calc.)
+    listenChange(this.account, 'leverageBrackets', (leverageBrackets) => {
+      Object.assign(this.minicharts.allLeverageBrackets, leverageBrackets);
     });
 
     // binance-api-error is triggered by api.promiseRequest

@@ -53,7 +53,7 @@ export default async function promiseRequest<T>(
     ).then(({ serverTime }) => Date.now() - serverTime);
 
     if (!options.apiSecret) throw new Error('Invalid API credentials!');
-    data.timestamp = Date.now() - await timeDiffPromise;
+    data.timestamp = Date.now(); // - await timeDiffPromise;
     query = qs.stringify(data);
     const signature = HmacSHA256(query, options.apiSecret);
     resource = `${baseURL}${url}?${query}&signature=${signature.toString()}`;
