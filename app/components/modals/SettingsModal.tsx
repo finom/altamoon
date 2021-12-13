@@ -10,8 +10,6 @@ import { PERSISTENT, ROOT, RootStore } from '../../store';
 import FormSwitch from '../controls/FormSwitch';
 import Modal, { ModalHeader, ModalFooter, ModalBody } from '../layout/Modal';
 
-const fakeSecretValue = Array(50).fill('1').join('');
-
 const SettingsModal = (): ReactElement => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useChange(ROOT, 'isSettingsModalOpen');
   const [existingNumberOfColumns, setNumberOfColumns] = useChange(PERSISTENT, 'numberOfColumns');
@@ -43,13 +41,8 @@ const SettingsModal = (): ReactElement => {
     setTestnet(isTestnet);
     setApiKey(binanceApiKey);
     setTestnetApiKey(testnetBinanceApiKey);
-    if (binanceApiSecret !== fakeSecretValue) {
-      setApiSecret(binanceApiSecret);
-    }
-
-    if (testnetBinanceApiSecret !== fakeSecretValue) {
-      setTestnetApiSecret(testnetBinanceApiSecret);
-    }
+    setApiSecret(binanceApiSecret);
+    setTestnetApiSecret(testnetBinanceApiSecret);
 
     closeModal();
   }, [
@@ -127,7 +120,7 @@ const SettingsModal = (): ReactElement => {
             name={isType<keyof RootStore['persistent']>('binanceApiSecret')}
             id={isType<keyof RootStore['persistent']>('binanceApiSecret')}
             innerRef={register}
-            defaultValue={existingApiSecret ? fakeSecretValue : ''}
+            defaultValue={existingApiSecret ?? ''}
             placeholder="Binance API Secret"
             disabled={formIsTestnet}
             type="password"
@@ -179,7 +172,7 @@ const SettingsModal = (): ReactElement => {
               name={isType<keyof RootStore['persistent']>('testnetBinanceApiSecret')}
               id={isType<keyof RootStore['persistent']>('testnetBinanceApiSecret')}
               innerRef={register}
-              defaultValue={existingTestnetApiSecret ? fakeSecretValue : ''}
+              defaultValue={existingTestnetApiSecret ?? ''}
               placeholder="Binance Testnet API Secret"
               type="password"
             />
