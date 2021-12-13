@@ -191,16 +191,34 @@ export default class DraftPriceLines extends PriceLines {
   ): void => {
     super.appendTo(parent, resizeData, { wrapperCSSStyle });
     this.parent
-      ?.on('dblclick', this.#onDoubleClick)
+      ?.on('dblclick', (evt) => this.#onDoubleClick(d3.pointer(evt)))
       .on('mousedown', (evt: MouseEvent) => {
-        if (evt.which === 2) this.#onDoubleClick(evt);
+        if (evt.which === 2) this.#onDoubleClick(d3.pointer(evt));
       });
+
+    let timeout: NodeJS.Timeout;
+    let lastTap = 0;
+    this.parent?.on('touchend', (evt: TouchEvent & { target: SVGGElement; }) => {
+      const currentTime = new Date().getTime();
+      const tapLength = currentTime - lastTap;
+      clearTimeout(timeout);
+      if (tapLength < 500 && tapLength > 0) {
+        // calculate coordinates because d3.pointer(evt) doesn't work with touch events
+        const { top, left } = evt.target.getBoundingClientRect();
+        const { clientX, clientY } = evt.changedTouches[0];
+        this.#onDoubleClick([clientX - left, clientY - top]);
+        evt.preventDefault();
+      } else {
+        timeout = setTimeout(() => {
+          clearTimeout(timeout);
+        }, 500);
+      }
+      lastTap = currentTime;
+    });
   };
 
-  #onDoubleClick = (evt: MouseEvent): void => {
-    const coords = d3.pointer(evt);
+  #onDoubleClick = (coords: [number, number]): void => {
     const yValue = this.invertY(coords[1]);
-
     const side: OrderSide = yValue < this.#lastPrice ? 'BUY' : 'SELL';
 
     this.updateItem(side, { yValue, isVisible: true });
