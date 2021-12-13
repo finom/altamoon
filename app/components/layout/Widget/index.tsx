@@ -67,6 +67,7 @@ const Widget = ({
             role="button"
             tabIndex={0}
             onClick={toggleSettings}
+            onTouchEnd={toggleSettings}
             onKeyDown={toggleSettings}
             onMouseDown={(evt) => evt.stopPropagation()}
           >
