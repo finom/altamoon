@@ -71,8 +71,9 @@ const Leverage = ({
           }, (instance) => { leverageTooltipRef.current = instance; })}
           data-bs-original-title={leverageTooltipText}
           onChange={({ target }) => setCurrentSymbolLeverage(+target.value)}
-          onMouseUp={() => { void updateLeverage(); }}
+          onMouseUp={() => updateLeverage()}
           onKeyUp={() => updateLeverage()}
+          onTouchEnd={() => updateLeverage()}
         />
         <span className={`${css.minLeverage} text-muted`}>1x</span>
         <span className={`${css.maxLeverage} text-muted`}>
