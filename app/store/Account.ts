@@ -141,6 +141,7 @@ export default class Account {
           // eslint-disable-next-line no-console
           console.info('Closing...');
           stream.close();
+          void delay(5_000).then(this.#openStream);
         }
       } catch (e) {
         notify('error', e as Error);
