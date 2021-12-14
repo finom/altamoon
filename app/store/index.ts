@@ -10,6 +10,7 @@ import Stats from './Stats';
 import Trading from './Trading';
 import Customization from './Customization';
 import notify from '../lib/notify';
+import './altamoon.d';
 
 export class RootStore implements altamoon.RootStore {
   public readonly persistent: Persistent;

@@ -258,6 +258,7 @@
     "react-use-promise": "^0.4.1",
     "reactstrap": "^9.0.1",
     "regenerator-runtime": "^0.13.9",
+    "altamoon-robust-websocket": "^1.0.1",
     "stream-browserify": "^3.0.0",
     "type-fest": "^2.8.0",
     "use-change": "^1.0.4"

@@ -31,8 +31,6 @@ import eventAccountUpdate from './eventAccountUpdate';
 import updateLeverage from './updateLeverage';
 import loadPositionTrades from './loadPositionTrades';
 
-import '../altamoon.d';
-
 export default class Trading {
   public openPositions: TradingPosition[] = [];
 

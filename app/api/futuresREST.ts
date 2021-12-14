@@ -106,11 +106,12 @@ export async function futuresLeverageBracket(
  * Start a new user data stream. The stream will close after 60 minutes unless a keepalive is sent.
  * If the account has an active listenKey, that listenKey will be returned
  * and its validity will be extended for 60 minutes.
+ * @param method - Request method (GET, POST or PUT)
  * @see {@link https://binance-docs.github.io/apidocs/futures/en/#start-user-data-stream-user_stream}
  * @returns Data stream key
  */
-export async function futuresGetDataStream(): Promise<{ listenKey: string; }> {
-  return promiseRequest('v1/listenKey', {}, { type: 'SIGNED', method: 'POST' });
+export async function futuresUserDataStream(method: 'GET' | 'POST' | 'PUT'): Promise<{ listenKey: string; }> {
+  return promiseRequest('v1/listenKey', {}, { type: 'SIGNED', method });
 }
 
 /**

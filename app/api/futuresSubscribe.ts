@@ -1,3 +1,4 @@
+import RobustWebSocket from 'altamoon-robust-websocket';
 import emitError from './emitError';
 import options from './options';
 
@@ -6,11 +7,11 @@ export default function futuresSubscribe<T = unknown>(
 ): () => void {
   const streamsStr = streams.join('/');
   const url = `${options.wsURL}?streams=${streamsStr}`;
-  let webSocket = new WebSocket(url);
+  let webSocket = new RobustWebSocket(url);
 
   let isClosed = false;
 
-  const addEvents = (ws: WebSocket) => {
+  const addEvents = (ws: RobustWebSocket) => {
     ws.addEventListener('error', (event) => {
       if (!isClosed) {
         // eslint-disable-next-line no-console

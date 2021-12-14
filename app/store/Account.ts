@@ -1,12 +1,12 @@
 import { debounce, throttle } from 'lodash';
 import { listenChange } from 'use-change';
+import RobustWebSocket from 'altamoon-robust-websocket';
 
 import * as api from '../api';
 import notify from '../lib/notify';
 import delay from '../lib/delay';
 import stringifyError from '../lib/stringifyError';
 import options from '../api/options';
-import './altamoon.d';
 
 export default class Account {
   public totalWalletBalance = 0;
@@ -90,73 +90,68 @@ export default class Account {
     }
   }, 500);
 
-  #openStream = async (): Promise<void> => {
-    const reconnect = async (errorOrEvent: Error | Event, notifyMessage: string) => {
-      notify('error', notifyMessage);
-      // eslint-disable-next-line no-console
-      console.error(errorOrEvent);
-      await delay(5_000);
-      // eslint-disable-next-line no-console
-      console.info('Reconnecting...');
-      return this.#openStream();
-    };
+  #openStream = (): void => {
+    setInterval(() => {
+      // Doing a PUT on a listenKey will extend its validity for 60 minutes.
+      // See https://binance-docs.github.io/apidocs/futures/en/#user-data-streams
+      void api.futuresUserDataStream('PUT');
+    }, 10 * 60 * 1000); // every 10 mins
 
-    try {
-      const { listenKey } = await api.futuresGetDataStream();
+    // eslint-disable-next-line no-console
+    console.info('listenKey is received, establishing a new account stream connection...');
 
-      // eslint-disable-next-line no-console
-      console.info('listenKey is received, establishing a new account stream connection...');
-
-      const stream = new WebSocket(`${options.accountStreamURL}${listenKey}`);
-
-      stream.onmessage = ({ data: messageData }: MessageEvent<string>) => {
-        try {
-          const data = JSON.parse(messageData) as api.UserDataEvent;
-          const { e: event, E: updateTime } = data;
-
-          // eslint-disable-next-line no-console
-          console.info('Received data stream message', event);
-
-          if (event === 'ACCOUNT_UPDATE') {
-            this.#store.trading.eventAccountUpdate(data.a);
-            // void this.#store.trading.loadAllOrders();
-            // void this.#store.trading.loadPositions();
-            void this.#store.stats.loadIncome();
-            void this.reloadFuturesAccount();
-          } else if (event === 'ORDER_TRADE_UPDATE') {
-            this.#store.trading.eventOrderUpdate(data.o, updateTime);
-            // void this.#store.trading.loadOrders();
-            void this.reloadFuturesAccount();
-          } else if (event === 'ACCOUNT_CONFIG_UPDATE') {
-            void this.#store.trading.loadPositions();
-            void this.#store.trading.loadOrders();
-            void this.#store.stats.loadIncome();
-            void this.reloadFuturesAccount();
-          } else if (event === 'listenKeyExpired') {
-            // eslint-disable-next-line no-console
-            console.info('Closing...');
-            stream.close();
-          }
-        } catch (e) {
-          notify('error', e as Error);
-        }
-      };
-
-      stream.onerror = (e) => {
-        notify('error', 'Account stream error.');
+    const stream = new RobustWebSocket(async function getUrl(): Promise<string> {
+      try {
+        const { listenKey } = await api.futuresUserDataStream('POST');
+        return `${options.accountStreamURL}${listenKey}`;
+      } catch (e) {
+        notify('error', 'Could not open account stream. Reconnecting...');
         // eslint-disable-next-line no-console
-        console.info('Account stream error.', e);
-        // void reconnect(e, 'Account stream error. Reconnecting...');
-      };
-
-      stream.onclose = async (e) => {
-        // eslint-disable-next-line no-console
-        console.info('Account stream closed. Re-opening it...', e);
+        console.error(e);
         await delay(5_000);
-        void this.#openStream();
-      };
-    } catch (e) {
-      void reconnect(e as Error, 'Could not open account stream. Reconnecting...');
-    }
+
+        return getUrl();
+      }
+    });
+
+    stream.addEventListener('message', ({ data: messageData }: MessageEvent<string>) => {
+      try {
+        const data = JSON.parse(messageData) as api.UserDataEvent;
+        const { e: event, E: updateTime } = data;
+
+        // eslint-disable-next-line no-console
+        console.info('Received data stream message', event);
+
+        if (event === 'ACCOUNT_UPDATE') {
+          this.#store.trading.eventAccountUpdate(data.a);
+          // void this.#store.trading.loadAllOrders();
+          // void this.#store.trading.loadPositions();
+          void this.#store.stats.loadIncome();
+          void this.reloadFuturesAccount();
+        } else if (event === 'ORDER_TRADE_UPDATE') {
+          this.#store.trading.eventOrderUpdate(data.o, updateTime);
+          // void this.#store.trading.loadOrders();
+          void this.reloadFuturesAccount();
+        } else if (event === 'ACCOUNT_CONFIG_UPDATE') {
+          void this.#store.trading.loadPositions();
+          void this.#store.trading.loadOrders();
+          void this.#store.stats.loadIncome();
+          void this.reloadFuturesAccount();
+        } else if (event === 'listenKeyExpired') {
+          // eslint-disable-next-line no-console
+          console.info('Closing...');
+          stream.close();
+        }
+      } catch (e) {
+        notify('error', e as Error);
+      }
+    });
+
+    stream.addEventListener('error', (e) => {
+      notify('error', 'Account stream error.');
+      // eslint-disable-next-line no-console
+      console.info('Account stream error.', e);
+      // void reconnect(e, 'Account stream error. Reconnecting...');
+    });
   };
 }
