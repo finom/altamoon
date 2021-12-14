@@ -1,5 +1,5 @@
 {
-	"version": "0.0.169",
+	"version": "0.0.170",
 	"name": "altamoon-binance-api",
 	"description": "Browser-based Binance API functions used at Altamoon",
 	"main": "api/index.js",
@@ -27,6 +27,6 @@
 		"crypto-js": "^4.1.1",
 		"qs": "^6.10.1",
 		"localforage": "^1.10.0",
-    "altamoon-robust-websocket": "^1.0.1"
+		"altamoon-robust-websocket": "^1.0.1"
 	}
 }
