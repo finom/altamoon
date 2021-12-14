@@ -30,9 +30,9 @@ interface Params {
 }
 
 export default class PriceLines implements ChartItem {
-  #wrapper?: D3Selection<SVGGElement>;
+  #wrapper?: D3Selection<HTMLDivElement>;
 
-  protected parent?: D3Selection<SVGElement>;
+  protected svg?: D3Selection<SVGElement>;
 
   #items: PriceLinesDatum[];
 
@@ -98,17 +98,23 @@ export default class PriceLines implements ChartItem {
   }
 
   public appendTo(
-    parent: Element,
+    element: Element,
     resizeData: ResizeData,
     { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
   ): void {
-    this.parent = convertType<D3Selection<SVGElement>>(d3.select(parent));
+    this.svg = d3.select(element.parentNode as SVGElement);
 
-    this.eventsArea = this.parent.select('#plotMouseEventsArea');
+    const parent = d3.select(element);
 
-    this.#wrapper = this.parent.append('g');
+    this.eventsArea = this.svg.select('#plotMouseEventsArea');
 
-    Object.assign(this.#wrapper.node()?.style ?? {}, wrapperCSSStyle ?? {});
+    this.#wrapper = parent.append('xhtml:div')
+      .style('width', '100%')
+      .style('height', '100%')
+      .style('position', 'absolute')
+      .style('pointer-events', 'none') as unknown as D3Selection<HTMLDivElement>;
+
+    Object.assign(this.#wrapper?.node()?.style ?? {}, wrapperCSSStyle ?? {});
 
     this.update({ items: this.#items });
 
@@ -187,10 +193,10 @@ export default class PriceLines implements ChartItem {
     const that = this;
 
     const updateHorizontalLineHandler = (
-      update: d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown>,
+      update: d3.Selection<d3.BaseType, PriceLinesDatum, HTMLDivElement, unknown>,
       orient: Orient,
       axis: d3.Axis<d3.NumberValue>,
-    ): d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown> => {
+    ): d3.Selection<d3.BaseType, PriceLinesDatum, HTMLDivElement, unknown> => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       const textSelection = update.select<SVGTextElement>(`.price-line-${orient}-label`);
       update
@@ -227,9 +233,9 @@ export default class PriceLines implements ChartItem {
     };
 
     const updateVerticalLineHandler = (
-      update: d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown>,
+      update: d3.Selection<d3.BaseType, PriceLinesDatum, HTMLDivElement, unknown>,
       axis: d3.Axis<d3.NumberValue>,
-    ): d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown> => {
+    ): d3.Selection<d3.BaseType, PriceLinesDatum, HTMLDivElement, unknown> => {
       if (!this.#showX) return update;
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       const textSelection = update.select<SVGTextElement>('.price-line-bottom-label');
@@ -266,18 +272,32 @@ export default class PriceLines implements ChartItem {
         (enter) => {
           // eslint-disable-next-line @typescript-eslint/no-this-alias
           // --- horizontal line ---
-          const wrapper = enter.append('g').attr('class', 'price-line-wrapper')
+          const wrapper = enter.append('svg')
+            .attr('class', 'price-line-individual-svg')
+            .attr('width', '100%')
+            .attr('height', '100%')
+            .style('position', 'absolute')
+            .style('top', '0')
+            .style('left', '0')
+            .append('g')
+            .attr('class', 'price-line-wrapper')
             .on('mouseover', function mouseover(_evt, datum) {
               const titleElement = this.querySelector<HTMLElement>('.price-line-title-inner');
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
                 that.updateItem(datum.id, { isHovered: true });
               }
+
+              const lineSvg = this.closest<SVGElement>('svg.price-line-individual-svg');
+              if (lineSvg) lineSvg.style.zIndex = '1';
             })
             .on('mouseleave', function mouseleave(_evt, datum) {
               const titleElement = this.querySelector<HTMLElement>('.price-line-title-inner');
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
                 that.updateItem(datum.id, { isHovered: false });
               }
+
+              const lineSvg = this.closest<SVGElement>('svg.price-line-individual-svg');
+              if (lineSvg) lineSvg.style.zIndex = '';
             });
 
           const horizontalWrapper = wrapper.append('g').attr('class', 'price-line-horizontal-group');
@@ -435,7 +455,7 @@ export default class PriceLines implements ChartItem {
 
           // --- initial update ---
           const updateWrapper = convertType<
-          d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown>
+          d3.Selection<d3.BaseType, PriceLinesDatum, HTMLDivElement, unknown>
           >(wrapper);
           updateHorizontalLineHandler(updateWrapper, 'right', this.#axis.yRight);
           updateVerticalLineHandler(updateWrapper, this.#axis.x);
@@ -507,7 +527,7 @@ export default class PriceLines implements ChartItem {
   }: {
     axis: d3.Axis<d3.NumberValue>;
     orient: Orient;
-    textSelection: d3.Selection<SVGTextElement, PriceLinesDatum, SVGGElement, unknown>;
+    textSelection: d3.Selection<SVGTextElement, PriceLinesDatum, HTMLDivElement, unknown>;
   }): void => {
     const neg = orient === 'left' || orient === 'top' ? -1 : 1;
 

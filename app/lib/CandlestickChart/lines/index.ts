@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import DraftPriceLines from './DraftPriceLines';
 import OrderPriceLines from './OrderPriceLines';
 import AlertPriceLines from './AlertPriceLines';
@@ -147,13 +148,20 @@ export default class Lines {
   }
 
   appendTo(svgContainer: SVGGElement, resizeData: ResizeData): void {
-    this.crosshairPriceLines.appendTo(svgContainer, resizeData);
-    this.currentPriceLines.appendTo(svgContainer, resizeData);
-    this.positionLines.appendTo(svgContainer, resizeData);
-    this.orderLines.appendTo(svgContainer, resizeData);
-    this.draftLines.appendTo(svgContainer, resizeData);
-    this.alertLines.appendTo(svgContainer, resizeData);
-    this.customLines.appendTo(svgContainer, resizeData);
-    this.liquidationPriceLines.appendTo(svgContainer, resizeData);
+    const foreighObject = d3.select(svgContainer)
+      .append('foreignObject')
+      .attr('width', '100%')
+      .attr('height', '100%')
+      .style('pointer-events', 'none')
+      .node() as SVGForeignObjectElement;
+
+    this.crosshairPriceLines.appendTo(foreighObject, resizeData);
+    this.currentPriceLines.appendTo(foreighObject, resizeData);
+    this.positionLines.appendTo(foreighObject, resizeData);
+    this.orderLines.appendTo(foreighObject, resizeData);
+    this.draftLines.appendTo(foreighObject, resizeData);
+    this.alertLines.appendTo(foreighObject, resizeData);
+    this.customLines.appendTo(foreighObject, resizeData);
+    this.liquidationPriceLines.appendTo(foreighObject, resizeData);
   }
 }

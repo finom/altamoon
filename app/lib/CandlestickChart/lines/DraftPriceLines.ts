@@ -190,7 +190,7 @@ export default class DraftPriceLines extends PriceLines {
     { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
   ): void => {
     super.appendTo(parent, resizeData, { wrapperCSSStyle });
-    this.parent
+    this.eventsArea
       ?.on('dblclick', (evt) => this.#onDoubleClick(d3.pointer(evt)))
       .on('mousedown', (evt: MouseEvent) => {
         if (evt.which === 2) this.#onDoubleClick(d3.pointer(evt));
@@ -198,7 +198,7 @@ export default class DraftPriceLines extends PriceLines {
 
     let timeout: NodeJS.Timeout;
     let lastTap = 0;
-    this.parent?.on('touchend', (evt: TouchEvent & { target: SVGGElement; }) => {
+    this.eventsArea?.on('touchend', (evt: TouchEvent & { target: SVGGElement; }) => {
       const currentTime = new Date().getTime();
       const tapLength = currentTime - lastTap;
       clearTimeout(timeout);
