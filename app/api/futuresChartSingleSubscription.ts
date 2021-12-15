@@ -1,16 +1,19 @@
-/* import { CandlestickChartInterval, FuturesChartCandle } from './types';
+import { CandlestickChartInterval, FuturesChartCandle } from './types';
 import { futuresExchangeInfo } from './futuresREST';
-import { futuresCandlesSubscribe } from './futuresStreams';
 import futuresCandles from './futuresCandles';
+import { futuresCandlesSubscribe } from './futuresStreams';
+import './global.d';
 
 type Callback = (symbol: string, candles: FuturesChartCandle[]) => void;
 type Unsubscribe = () => void;
 
-const callbacks = {} as Record<CandlestickChartInterval, {
-  symbol: string | null; callback: Callback
-}[]>;
-const subscriptions = {} as Record<CandlestickChartInterval, Unsubscribe>;
-const allCandles = {} as Record<CandlestickChartInterval, Record<string, FuturesChartCandle[]>>;
+// define those variables globally so they can be used by plugins
+globalThis.singleSubscriptionCallbacks = globalThis.singleSubscriptionCallbacks
+  ?? {} as typeof globalThis.singleSubscriptionCallbacks;
+globalThis.singleSubscriptionTo = globalThis.singleSubscriptionTo
+  ?? {} as typeof globalThis.singleSubscriptionTo;
+globalThis.singleSubscriptionAllCandles = globalThis.singleSubscriptionAllCandles
+  ?? {} as typeof globalThis.singleSubscriptionAllCandles;
 
 export default function futuresChartSingleSubscription({
   interval, symbol: givenSymbol = null, callback: givenCallback,
@@ -19,6 +22,10 @@ export default function futuresChartSingleSubscription({
   symbol?: string | null,
   callback: Callback,
 }): Unsubscribe {
+  const callbacks = globalThis.singleSubscriptionCallbacks;
+  const subscribedTo = globalThis.singleSubscriptionTo;
+  const allCandles = globalThis.singleSubscriptionAllCandles;
+
   const unsubscribe: Unsubscribe = () => {
     callbacks[interval] = callbacks[interval]
       .filter(({ callback }) => givenCallback !== callback);
@@ -28,18 +35,16 @@ export default function futuresChartSingleSubscription({
   callbacks[interval] = callbacks[interval] || [];
   callbacks[interval].push({ callback: givenCallback, symbol: givenSymbol });
 
-  console.log('callbacks[interval] ', callbacks[interval].length);
-
-  // retrieve all symbols
   void futuresExchangeInfo().then(({ symbols }) => {
+    // retrieve all symbols
     // if subscription exists
-    if (subscriptions[interval]) {
-      // call the callback if the subscription already made a tick
+    if (subscribedTo[interval]) {
+    // call the callback if the subscription already made a tick
       if (allCandles[interval]) {
         for (const { symbol } of symbols) {
           if (allCandles[interval]?.[symbol]) {
             if (!givenSymbol || givenSymbol === symbol) {
-              givenCallback(symbol, allCandles[interval][symbol])
+              givenCallback(symbol, allCandles[interval][symbol] as FuturesChartCandle[]);
             }
           }
         }
@@ -48,16 +53,36 @@ export default function futuresChartSingleSubscription({
       return;
     }
 
-    for (const { symbol } of symbols) {
-      void futuresCandles({
-        symbol, interval, limit: 1000,
-      }).then((candles) => {
-        allCandles[interval] = allCandles[interval] || {};
-        allCandles[interval][symbol] = candles;
-        if (!givenSymbol || givenSymbol === symbol) {
-          callbacks[interval].forEach((c) => c(symbol, allCandles[interval][symbol]));
+    subscribedTo[interval] = true;
+
+    let symbolList = symbols.map(({ symbol }) => symbol);
+
+    const loadCandles = (symbol: string) => futuresCandles({
+      symbol, interval, limit: 1000,
+    }).then((candles) => {
+      allCandles[interval] = allCandles[interval] || {};
+      allCandles[interval][symbol] = candles;
+      callbacks[interval].forEach((c) => {
+        if (!c.symbol || c.symbol === symbol) {
+          c.callback(symbol, allCandles[interval][symbol]);
         }
       });
+    });
+
+    // load candles for givenSymbol first
+    if (givenSymbol) {
+      void loadCandles(givenSymbol).then(() => {
+        // then load rest
+        symbolList = symbolList.filter((symbol) => symbol !== givenSymbol);
+        for (const symbol of symbolList) {
+          void loadCandles(symbol);
+        }
+      });
+    } else {
+      // then load rest
+      for (const symbol of symbolList) {
+        void loadCandles(symbol);
+      }
     }
 
     const subscriptionPairs = symbols.map(
@@ -66,22 +91,22 @@ export default function futuresChartSingleSubscription({
 
     futuresCandlesSubscribe(subscriptionPairs, (candle) => {
       const { symbol } = candle;
-      const candles = allCandles[interval]?.[symbol];
+      const candles = allCandles[interval]?.[symbol] as FuturesChartCandle[];
       if (!candles) return;
 
-      if (candle.time === candles[candles.length - 1].time) {
+      if (candle.time === candles[candles.length - 1]?.time) {
         Object.assign(candles[candles.length - 1], candle);
       } else {
         candles.push(candle);
       }
 
-      if (!givenSymbol || givenSymbol === symbol) {
-        callbacks[interval].forEach((c) => c(symbol, [...candles]));
-      }
+      callbacks[interval].forEach((c) => {
+        if (!c.symbol || c.symbol === symbol) {
+          c.callback(symbol, [...allCandles[interval][symbol] as FuturesChartCandle[]]);
+        }
+      });
     });
   });
 
   return unsubscribe;
 }
-*/
-export default {}

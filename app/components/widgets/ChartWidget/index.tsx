@@ -327,6 +327,12 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
           {futuresExchangeSymbols[candles[0].symbol].baseAsset}
           /
           {futuresExchangeSymbols[candles[0].symbol].quoteAsset}
+          {' '}
+          <span className="text-muted">{candles[0].interval}</span>
+          <br />
+          {(candles[0].symbol !== symbol || candles[0].interval !== interval) && (
+            <span className="text-muted text-sm">Loading...</span>
+          )}
         </div>
       )}
       <div

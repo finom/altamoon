@@ -79,12 +79,10 @@ export default class Market {
     const { symbol, interval } = this.#store.persistent;
     this.#chartUnsubscribe?.();
 
-    this.#chartUnsubscribe = api.futuresChartSubscribe({
+    this.#chartUnsubscribe = api.futuresChartSingleSubscription({
       symbol,
       interval,
-      callback: (data) => { this.candles = data; },
-      limit: 1000,
-      firstTickFromCache: false,
+      callback: (_symbol, data) => { this.candles = data; },
     });
   };
 
