@@ -167,12 +167,19 @@ export async function futuresDepth(symbol: string): Promise<FuturesDepth> {
   return promiseRequest('v1/depth', { symbol });
 }
 
+let exchangeInfoPromise: Promise<FuturesExchangeInfo>;
 /**
  * Get exchange Information
  * @remarks Current exchange trading rules and symbol information
  */
 export async function futuresExchangeInfo(): Promise<FuturesExchangeInfo> {
-  return promiseRequest('v1/exchangeInfo');
+  // eslint-disable-next-line @typescript-eslint/no-misused-promises
+  if (!exchangeInfoPromise) {
+    // make the request run only once
+    exchangeInfoPromise = promiseRequest('v1/exchangeInfo');
+  }
+
+  return exchangeInfoPromise;
 }
 
 interface FuturesOrderOptions {
