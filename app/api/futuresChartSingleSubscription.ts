@@ -2,7 +2,7 @@ import { CandlestickChartInterval, FuturesChartCandle } from './types';
 import { futuresExchangeInfo } from './futuresREST';
 import futuresCandles from './futuresCandles';
 import { futuresCandlesSubscribe } from './futuresStreams';
-import './global.d';
+import './global-types';
 
 type Callback = (symbol: string, candles: FuturesChartCandle[]) => void;
 type Unsubscribe = () => void;
@@ -44,7 +44,7 @@ export default function futuresChartSingleSubscription({
         for (const { symbol } of symbols) {
           if (allCandles[interval]?.[symbol]) {
             if (!givenSymbol || givenSymbol === symbol) {
-              givenCallback(symbol, allCandles[interval][symbol] as FuturesChartCandle[]);
+              givenCallback(symbol, allCandles[interval][symbol]);
             }
           }
         }
@@ -91,7 +91,7 @@ export default function futuresChartSingleSubscription({
 
     futuresCandlesSubscribe(subscriptionPairs, (candle) => {
       const { symbol } = candle;
-      const candles = allCandles[interval]?.[symbol] as FuturesChartCandle[];
+      const candles = allCandles[interval]?.[symbol];
       if (!candles) return;
 
       if (candle.time === candles[candles.length - 1]?.time) {
@@ -102,7 +102,7 @@ export default function futuresChartSingleSubscription({
 
       callbacks[interval].forEach((c) => {
         if (!c.symbol || c.symbol === symbol) {
-          c.callback(symbol, [...allCandles[interval][symbol] as FuturesChartCandle[]]);
+          c.callback(symbol, [...allCandles[interval][symbol]]);
         }
       });
     });
