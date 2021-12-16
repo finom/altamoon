@@ -84,6 +84,7 @@ export default class Market {
     this.#chartUnsubscribe = api.futuresChartSingleSubscription({
       symbol,
       interval,
+      isSequential: true,
       callback: (_symbol, data) => { this.candles = data; },
     });
   };

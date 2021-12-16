@@ -16,10 +16,11 @@ globalThis.singleSubscriptionAllCandles = globalThis.singleSubscriptionAllCandle
   ?? {} as typeof globalThis.singleSubscriptionAllCandles;
 
 export default function futuresChartSingleSubscription({
-  interval, symbol: givenSymbol = null, callback: givenCallback,
+  interval, symbol: givenSymbol = null, isSequential, callback: givenCallback,
 }: {
   interval: CandlestickChartInterval,
   symbol?: string | null,
+  isSequential?: boolean;
   callback: Callback,
 }): Unsubscribe {
   const callbacks = globalThis.singleSubscriptionCallbacks;
@@ -36,27 +37,6 @@ export default function futuresChartSingleSubscription({
   callbacks[interval].push({ callback: givenCallback, symbol: givenSymbol });
 
   void futuresExchangeInfo().then(({ symbols }) => {
-    // retrieve all symbols
-    // if subscription exists
-    if (subscribedTo[interval]) {
-    // call the callback if the subscription already made a tick
-      if (allCandles[interval]) {
-        for (const { symbol } of symbols) {
-          if (allCandles[interval]?.[symbol]) {
-            if (!givenSymbol || givenSymbol === symbol) {
-              givenCallback(symbol, allCandles[interval][symbol]);
-            }
-          }
-        }
-      }
-
-      return;
-    }
-
-    subscribedTo[interval] = true;
-
-    let symbolList = symbols.map(({ symbol }) => symbol);
-
     const loadCandles = (symbol: string) => futuresCandles({
       symbol, interval, limit: 1000,
     }).then((candles) => {
@@ -68,21 +48,50 @@ export default function futuresChartSingleSubscription({
         }
       });
     });
+    // retrieve all symbols
+    // if subscription exists
+    if (subscribedTo[interval]) {
+    // call the callback if the subscription already made a tick
+      if (allCandles[interval]) {
+        for (const { symbol } of symbols) {
+          if (allCandles[interval]?.[symbol]) {
+            if (!givenSymbol || givenSymbol === symbol) {
+              givenCallback(symbol, allCandles[interval][symbol]);
+            }
+          } else if (givenSymbol === symbol && isSequential) {
+            void loadCandles(givenSymbol);
+          }
+        }
+      }
+
+      return;
+    }
+
+    subscribedTo[interval] = true;
+
+    let symbolList = symbols.map(({ symbol }) => symbol);
+
+    const loadAllCandles = async () => {
+      // then load rest
+      for (const symbol of symbolList) {
+        if (isSequential) {
+          // eslint-disable-next-line no-await-in-loop
+          await loadCandles(symbol);
+        } else {
+          void loadCandles(symbol);
+        }
+      }
+    };
 
     // load candles for givenSymbol first
     if (givenSymbol) {
       void loadCandles(givenSymbol).then(() => {
         // then load rest
         symbolList = symbolList.filter((symbol) => symbol !== givenSymbol);
-        for (const symbol of symbolList) {
-          void loadCandles(symbol);
-        }
+        void loadAllCandles();
       });
     } else {
-      // then load rest
-      for (const symbol of symbolList) {
-        void loadCandles(symbol);
-      }
+      void loadAllCandles();
     }
 
     const subscriptionPairs = symbols.map(
