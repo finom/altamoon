@@ -1,4 +1,4 @@
-import { TradingOrder, OrderToBeCreated } from '../../../store/types';
+import { TradingOrder, OrderToBeCreated } from '../../../../../store/types';
 import { ChartAxis, PriceLinesDatum, ResizeData } from '../types';
 import PriceLines from './PriceLines';
 

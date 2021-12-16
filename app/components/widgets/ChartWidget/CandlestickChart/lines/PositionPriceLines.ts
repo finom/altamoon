@@ -1,4 +1,4 @@
-import { TradingPosition } from '../../../store/types';
+import { TradingPosition } from '../../../../../store/types';
 import { ChartAxis, ResizeData } from '../types';
 import PriceLines from './PriceLines';
 

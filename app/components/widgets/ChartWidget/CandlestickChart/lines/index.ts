@@ -7,11 +7,11 @@ import CustomPriceLines from './CustomPriceLines';
 import {
   ChartAxis, DraftPrices, LiquidationLineSizeItem, PriceLinesDatum, ResizeData,
 } from '../types';
-import { OrderSide } from '../../../api';
-import { RootStore } from '../../../store';
+import { OrderSide } from '../../../../../api';
+import { RootStore } from '../../../../../store';
 import CurrentPriceLines from './CurrentPriceLines';
 import LiquidationPriceLines from './LiquidationPriceLines';
-import { TradingOrder } from '../../../store/types';
+import { TradingOrder } from '../../../../../store/types';
 
 interface Params {
   axis: ChartAxis;

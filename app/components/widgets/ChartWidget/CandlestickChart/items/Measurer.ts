@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { format } from 'd3';
-import * as api from '../../../api';
-import { TradingOrder, TradingPosition } from '../../../store/types';
+import * as api from '../../../../../api';
+import { TradingOrder, TradingPosition } from '../../../../../store/types';
 import { D3Selection, ResizeData, Scales } from '../types';
 
 const nFormat = (f: string, n: number) => format(f)(n);

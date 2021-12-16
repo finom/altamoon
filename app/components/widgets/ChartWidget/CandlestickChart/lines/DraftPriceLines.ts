@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
-import { RootStore } from '../../../store';
-import { OrderSide } from '../../../api';
-import formatMoneyNumber from '../../formatMoneyNumber';
+import { RootStore } from '../../../../../store';
+import { OrderSide } from '../../../../../api';
+import formatMoneyNumber from '../../../../../lib/formatMoneyNumber';
 import {
   ChartAxis, DraftPrices, PriceLinesDatum, ResizeData,
 } from '../types';

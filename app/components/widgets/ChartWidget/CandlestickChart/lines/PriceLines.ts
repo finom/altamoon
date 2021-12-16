@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import * as d3 from 'd3';
-import { TodoAny } from '../../../types';
-import convertType from '../../convertType';
+import convertType from '../../../../../lib/convertType';
+import { TodoAny } from '../../../../../types';
 import {
   ChartAxis, ChartItem, D3Selection, PriceLinesDatum, ResizeData,
 } from '../types';

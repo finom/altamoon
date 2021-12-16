@@ -1,9 +1,9 @@
 import { pick } from 'lodash';
-import { TradingPosition } from '../../../store/types';
+import { TradingPosition } from '../../../../../store/types';
 import { ChartAxis, LiquidationLineSizeItem, ResizeData } from '../types';
 import PriceLines from './PriceLines';
-import { RootStore } from '../../../store';
-import * as api from '../../../api';
+import { RootStore } from '../../../../../store';
+import * as api from '../../../../../api';
 
 interface Params {
   axis: ChartAxis;

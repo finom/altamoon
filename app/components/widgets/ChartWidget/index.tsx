@@ -5,9 +5,9 @@ import useChange, { useValue, useGet } from 'use-change';
 
 import { futuresIntervals } from '../../../api';
 import useMultiValue from '../../../hooks/useMultiValue';
-import CandlestickChart from '../../../lib/CandlestickChart';
+import CandlestickChart from './CandlestickChart';
 import {
-  ACCOUNT, CUSTOMIZATION, MARKET, PERSISTENT, RootStore, TRADING,
+  RootStore, ACCOUNT, CUSTOMIZATION, MARKET, PERSISTENT, TRADING,
 } from '../../../store';
 import FormSwitch from '../../controls/FormSwitch';
 

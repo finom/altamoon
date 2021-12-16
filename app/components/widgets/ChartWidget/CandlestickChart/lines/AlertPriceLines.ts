@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { ChartAxis, PriceLinesDatum, ResizeData } from '../types';
 import PriceLines from './PriceLines';
-import { alertUpSoundUri, alertDownSoundUri } from '../../alertSounds';
+import { alertUpSoundUri, alertDownSoundUri } from '../../../../../lib/alertSounds';
 
 interface Params {
   axis: ChartAxis;

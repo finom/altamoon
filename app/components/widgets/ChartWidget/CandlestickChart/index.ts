@@ -2,7 +2,7 @@ import $ from 'balajs';
 import * as d3 from 'd3';
 
 import { isEqual, last } from 'lodash';
-import * as api from '../../api';
+import * as api from '../../../../api';
 import Axes from './items/Axes';
 import ClipPath from './items/ClipPath';
 import GridLines from './items/GridLines';
@@ -15,10 +15,10 @@ import {
   ResizeData, DrawData, Scales, StyleMargin, D3Selection,
   PriceLinesDatum, ChartPaddingPercents, DraftPrices,
 } from './types';
-import { TradingOrder, TradingPosition, OrderToBeCreated } from '../../store/types';
-import { OrderSide } from '../../api';
+import { TradingOrder, TradingPosition, OrderToBeCreated } from '../../../../store/types';
+import { OrderSide } from '../../../../api';
 import Measurer from './items/Measurer';
-import { RootStore } from '../../store';
+import { RootStore } from '../../../../store';
 import Lines from './lines';
 import OrderArrows from './items/OrderArrows';
 import MarkPriceTriangle from './items/MarkPriceTriangle';

@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 import moment from 'moment';
 
-import * as api from '../../../api';
-import formatMoneyNumber from '../../formatMoneyNumber';
+import * as api from '../../../../../api';
+import formatMoneyNumber from '../../../../../lib/formatMoneyNumber';
 import {
   ChartItem, Scales, D3Selection,
 } from '../types';
