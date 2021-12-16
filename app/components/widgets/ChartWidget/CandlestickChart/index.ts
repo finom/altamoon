@@ -1,5 +1,6 @@
 import $ from 'balajs';
 import * as d3 from 'd3';
+import { listenChange } from 'use-change';
 
 import { isEqual, last } from 'lodash';
 import * as api from '../../../../api';
@@ -18,7 +19,7 @@ import {
 import { TradingOrder, TradingPosition, OrderToBeCreated } from '../../../../store/types';
 import { OrderSide } from '../../../../api';
 import Measurer from './items/Measurer';
-import { RootStore } from '../../../../store';
+import store, { RootStore } from '../../../../store';
 import Lines from './lines';
 import OrderArrows from './items/OrderArrows';
 import MarkPriceTriangle from './items/MarkPriceTriangle';
@@ -165,6 +166,26 @@ export default class CandlestickChart {
         this.#measurer.resize(this.#calcDimensions());
       }) as (selection: D3Selection<d3.BaseType>) => void,
     ).on('dblclick.zoom', null);
+
+    // connect rapidly changing sources of data to the chart directly
+    listenChange(store.market, 'currentSymbolMarkPrice', (markPrice) => {
+      this.update({ markPrice });
+    });
+
+    listenChange(store.market, 'candles', (candles) => {
+      this.update({ candles });
+    });
+
+    listenChange(store.trading, 'openPositions', (openPositions) => {
+      this.update({
+        position: openPositions
+          .find((pos) => pos.symbol === store.persistent.symbol) ?? null,
+      });
+    });
+
+    listenChange(store.trading, 'openOrders', (orders) => {
+      this.update({ orders });
+    });
   }
 
   /**
@@ -173,7 +194,7 @@ export default class CandlestickChart {
    */
   public update(data: {
     currentSymbolPseudoPosition?: TradingPosition | null;
-    markPrice?: string;
+    markPrice?: number;
     totalWalletBalance?: number;
     currentSymbolInfo?: api.FuturesExchangeInfoSymbol | null;
     currentSymbolLeverage?: number;
@@ -210,6 +231,7 @@ export default class CandlestickChart {
       this.#pricePrecision = pricePrecision;
       this.#axes.update({ pricePrecision });
       this.#lines.update({ pricePrecision });
+      this.#markPriceTriangle.update({ pricePrecision });
     }
 
     if (typeof data.candles !== 'undefined') {

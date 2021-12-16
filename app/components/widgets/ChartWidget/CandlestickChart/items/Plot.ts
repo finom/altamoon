@@ -4,7 +4,7 @@ import { isEqual } from 'lodash';
 import {
   ChartItem, D3Selection, DrawData, Scales,
 } from '../types';
-import * as api from '../../../api';
+import * as api from '../../../../../api';
 
 export default class Plot implements ChartItem {
   #lastCandle?: api.FuturesChartCandle;

@@ -20,6 +20,8 @@ export default class Market {
 
   public currentSymbolPricePrecision = 0;
 
+  public currentSymbolMarkPrice = 0;
+
   public currentSymbolBaseAsset: string | null = null;
 
   public asks: [number, number][] = [];
@@ -154,7 +156,16 @@ export default class Market {
 
   #listenMarkPrices = (): void => {
     api.futuresMarkPriceStream(
-      (ticker) => Object.assign(this.#allMarkPriceTickers, keyBy(ticker, 'symbol')),
+      (ticker) => {
+        const markPriceTickersMap = keyBy(ticker, 'symbol');
+        const { symbol } = this.#store.persistent;
+
+        if (symbol in markPriceTickersMap) {
+          this.currentSymbolMarkPrice = +markPriceTickersMap[symbol].markPrice;
+        }
+
+        Object.assign(this.#allMarkPriceTickers, markPriceTickersMap);
+      },
     );
   };
 }

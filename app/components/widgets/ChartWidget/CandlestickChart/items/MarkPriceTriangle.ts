@@ -12,13 +12,15 @@ export default class MarkPriceTriangle implements ChartItem {
 
   #wrapper?: D3Selection<SVGGElement>;
 
-  #markPrice = '0';
+  #markPrice = 0;
 
   #axisRight?: D3Selection<SVGGElement>;
 
   #tooltipWrapper?: D3Selection<SVGForeignObjectElement>;
 
   #tooltip?: D3Selection<HTMLDivElement>;
+
+  #pricePrecision = 0;
 
   constructor({ scales }: { scales: Scales }) {
     this.#scaledY = scales.y;
@@ -51,15 +53,19 @@ export default class MarkPriceTriangle implements ChartItem {
   }
 
   public update = (data: {
-    markPrice?: string,
+    markPrice?: number,
     scaledX?: d3.ScaleTime<number, number>,
+    pricePrecision?: number;
   }): void => {
     if (typeof data.markPrice !== 'undefined') {
       this.#markPrice = data.markPrice;
-
-      this.#tooltip?.html(`<p>Mark price: ${data.markPrice}</p>`);
     }
 
+    if (typeof data.pricePrecision !== 'undefined') {
+      this.#pricePrecision = data.pricePrecision;
+    }
+
+    this.#tooltip?.html(`<p>Mark price: ${(data.markPrice ?? 0).toFixed(this.#pricePrecision)}</p>`);
     this.draw();
   };
 
