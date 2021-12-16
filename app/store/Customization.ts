@@ -6,7 +6,7 @@ import { Layout } from 'react-grid-layout';
 import notify from '../lib/notify';
 import settings from '../settings';
 import { Plugin } from './types';
-import { PriceLinesDatum } from '../lib/CandlestickChart/types';
+import { PriceLinesDatum } from '../components/widgets/ChartWidget/CandlestickChart/types';
 
 interface WidgetData {
   hasSettings: boolean;
