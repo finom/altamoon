@@ -45,13 +45,13 @@ const TradingSettings = ({
         <option value="6">6 buttons</option>
       </Input>
       <Row className={css.quickOrderWrapper}>
-        {times(buttonsCountTmp - 1).map((_, index) => (
+        {times(buttonsCountTmp).map((_, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <Col key={index} xs={12 / buttonsCountTmp}>
             <Button className="w-100 nowrap mb-1 px-0">
               <input
                 className={css.quickOrderSettingsButtonInput}
-                value={buttonLayout[index]}
+                value={buttonLayout[index] ?? ''}
                 onChange={({ target }) => {
                   const newLayout = [...buttonLayout];
                   newLayout[index] = target.value;
@@ -65,9 +65,6 @@ const TradingSettings = ({
             </Button>
           </Col>
         ))}
-        <Col xs={12 / buttonsCountTmp}>
-          <Button className="w-100 mb-1 px-0" disabled>Max</Button>
-        </Col>
       </Row>
     </>
   );

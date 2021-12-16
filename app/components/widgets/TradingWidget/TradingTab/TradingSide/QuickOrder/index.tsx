@@ -31,7 +31,7 @@ const QuickOrder = ({
         {capitalize(side)}
       </div>
       <Row className={css.quickOrderWrapper}>
-        {times(buttonsCount - 1).map((_, index) => (
+        {times(buttonsCount).map((_, index) => (
           <ButtonCol
             // eslint-disable-next-line react/no-array-index-key
             key={index}
@@ -43,14 +43,6 @@ const QuickOrder = ({
             onOrder={onOrder}
           />
         ))}
-        <ButtonCol
-          totalWalletBalance={totalWalletBalance}
-          availableBalance={availableBalance}
-          price={price}
-          side={side}
-          isMax
-          onOrder={onOrder}
-        />
       </Row>
     </>
   );

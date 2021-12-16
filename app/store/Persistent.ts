@@ -58,8 +58,8 @@ export default class Persistent {
 
   // eslint-disable-next-line no-spaced-func
   public tradingWidgetPercentButtonsLayouts = persist<Record<number, number[]>>('tradingWidgetPercentButtonsLayouts', {
-    4: [1, 2, 5], // + Max
-    6: [1, 2, 5, 10, 15], // + Max
+    4: [1, 2, 5, 10],
+    6: [1, 2, 5, 10, 15, 25],
   });
 
   constructor() {

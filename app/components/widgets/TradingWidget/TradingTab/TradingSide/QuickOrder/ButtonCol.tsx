@@ -13,13 +13,12 @@ interface Props {
   price: number | null;
   side: api.OrderSide;
   percent?: number;
-  isMax?: boolean;
   onOrder: (qty: number) => void;
 }
 
 const ButtonCol = ({
   totalWalletBalance, availableBalance,
-  price, side, percent, isMax, onOrder,
+  price, side, percent, onOrder,
 }: Props): ReactElement => {
   const calculateQuantity = useSilent(TRADING, 'calculateQuantity');
   const getFeeRate = useSilent(TRADING, 'getFeeRate');
@@ -28,10 +27,7 @@ const ButtonCol = ({
   const openPositions = useValue(TRADING, 'openPositions');
 
   const leverage = +useValue(TRADING, 'allSymbolsPositionRisk')[symbol]?.leverage || 1;
-  const dirtyMarginInsufficientFix = 1 - (leverage * 0.002);
-  const preciseSize = isMax
-    ? availableBalance * leverage * dirtyMarginInsufficientFix
-    : totalWalletBalance * ((percent ?? 0) / 100) * leverage;
+  const preciseSize = totalWalletBalance * ((percent ?? 0) / 100) * leverage;
 
   const quantity = useMemo(() => {
     if (typeof price !== 'number') return 0;
@@ -77,7 +73,8 @@ const ButtonCol = ({
           color={side === 'BUY' ? 'success' : 'sell'}
           onClick={() => onOrder(quantity)}
         >
-          {isMax ? 'Max' : `${percent ?? 0}%`}
+          {percent ?? 0}
+          %
         </Button>
       </div>
     </Col>
