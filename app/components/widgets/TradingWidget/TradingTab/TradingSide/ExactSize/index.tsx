@@ -40,6 +40,7 @@ const ExactSize = ({
   const getFeeRate = useSilent(TRADING, 'getFeeRate');
   const symbol = useValue(PERSISTENT, 'symbol');
   const leverage = +useValue(TRADING, 'allSymbolsPositionRisk')[symbol]?.leverage || 1;
+  const openPositions = useValue(TRADING, 'openPositions');
 
   const exactSize = useMemo(
     () => calculateSizeFromString(symbol, exactSizeStr),
@@ -59,6 +60,11 @@ const ExactSize = ({
 
   const [inputRef, setInputTitle] = useBootstrapTooltip<HTMLInputElement>(tooltipOptions);
   const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
+  const oppositeSideSize = useMemo(
+    () => openPositions
+      .reduce((a, pos) => (pos.side !== side && pos.symbol === symbol ? a + pos.baseValue : a), 0),
+    [openPositions, side, symbol],
+  );
 
   usePriceTitle({
     feeRate: getFeeRate('maker'),
@@ -86,7 +92,9 @@ const ExactSize = ({
         />
         <Button
           color={side === 'BUY' ? 'success' : 'sell'}
-          disabled={exactSize > availableBalance * leverage || exactSize <= 0}
+          disabled={
+            exactSize > availableBalance * leverage + Math.abs(oppositeSideSize) || exactSize <= 0
+          }
           onClick={() => onOrder(quantity)}
         >
           {capitalize(side)}

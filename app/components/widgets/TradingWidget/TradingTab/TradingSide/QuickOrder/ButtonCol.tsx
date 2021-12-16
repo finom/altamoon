@@ -25,6 +25,7 @@ const ButtonCol = ({
   const getFeeRate = useSilent(TRADING, 'getFeeRate');
   const symbol = useValue(PERSISTENT, 'symbol');
   const buttonsCount = useValue(PERSISTENT, 'tradingWidgetPercentButtonsCount');
+  const openPositions = useValue(TRADING, 'openPositions');
 
   const leverage = +useValue(TRADING, 'allSymbolsPositionRisk')[symbol]?.leverage || 1;
   const dirtyMarginInsufficientFix = 1 - (leverage * 0.002);
@@ -43,6 +44,12 @@ const ButtonCol = ({
   }, [calculateQuantity, preciseSize, price, symbol]);
   const [buttonRef, setButtonTitle] = useBootstrapTooltip<HTMLSpanElement>();
   const currentSymbolBaseAsset = useValue(MARKET, 'currentSymbolBaseAsset');
+
+  const oppositeSideSize = useMemo(
+    () => openPositions
+      .reduce((a, pos) => (pos.side !== side && pos.symbol === symbol ? a + pos.baseValue : a), 0),
+    [openPositions, side, symbol],
+  );
 
   usePriceTitle({
     feeRate: getFeeRate('maker'),
@@ -64,7 +71,9 @@ const ButtonCol = ({
       >
         <Button
           className="w-100 nowrap"
-          disabled={preciseSize > availableBalance * leverage || quantity <= 0}
+          disabled={
+            preciseSize > availableBalance * leverage + Math.abs(oppositeSideSize) || quantity <= 0
+          }
           color={side === 'BUY' ? 'success' : 'sell'}
           onClick={() => onOrder(quantity)}
         >
