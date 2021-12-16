@@ -74,7 +74,7 @@ export default function futuresChartSingleSubscription({
     const loadAllCandles = async () => {
       // then load rest
       for (const symbol of symbolList) {
-        if (isSequential) {
+        if (isSequential && !allCandles[interval][symbol]) {
           // eslint-disable-next-line no-await-in-loop
           await loadCandles(symbol);
           // eslint-disable-next-line no-await-in-loop

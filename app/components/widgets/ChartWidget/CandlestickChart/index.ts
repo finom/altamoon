@@ -23,6 +23,7 @@ import store, { RootStore } from '../../../../store';
 import Lines from './lines';
 import OrderArrows from './items/OrderArrows';
 import MarkPriceTriangle from './items/MarkPriceTriangle';
+import listenMultiChange from '../../../../lib/listenMultiChange';
 
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
@@ -183,8 +184,8 @@ export default class CandlestickChart {
       });
     });
 
-    listenChange(store.trading, 'openOrders', (orders) => {
-      this.update({ orders });
+    listenMultiChange(store.trading, ['openOrders', 'ordersToBeCreated'], ({ openOrders, ordersToBeCreated }) => {
+      this.update({ orders: openOrders, ordersToBeCreated });
     });
   }
 

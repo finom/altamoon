@@ -55,7 +55,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     shouldShowLimitBuyPriceLine, shouldShowLimitSellPriceLine,
     shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
     exactSizeBuyStr, exactSizeSellStr,
-    currentSymbolAllOrders, ordersToBeCreated,
+    currentSymbolAllOrders,
     // silent values
     updateDrafts, createOrderFromDraft, limitOrder, cancelOrder, calculateQuantity,
     calculateSizeFromString, calculateLiquidationPrice, getPseudoPosition,
@@ -65,7 +65,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     'shouldShowLimitBuyPriceLine', 'shouldShowLimitSellPriceLine',
     'shouldShowStopBuyDraftPriceLine', 'shouldShowStopSellDraftPriceLine',
     'exactSizeBuyStr', 'exactSizeSellStr',
-    'currentSymbolAllOrders', 'ordersToBeCreated',
+    'currentSymbolAllOrders',
   ]);
 
   const alerts = symbolAlerts[symbol];
@@ -81,10 +81,6 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   useEffect(() => {
     candleChart?.update({ leverageBrackets });
   }, [leverageBrackets, candleChart]);
-
-  useMemo(() => {
-    candleChart?.update({ ordersToBeCreated });
-  }, [candleChart, ordersToBeCreated]);
 
   useEffect(() => {
     candleChart?.update({ alerts: alerts || [] });
