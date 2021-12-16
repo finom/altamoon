@@ -3,6 +3,7 @@ import { futuresExchangeInfo } from './futuresREST';
 import futuresCandles from './futuresCandles';
 import { futuresCandlesSubscribe } from './futuresStreams';
 import './global-types';
+import { delay } from 'lodash';
 
 type Callback = (symbol: string, candles: FuturesChartCandle[]) => void;
 type Unsubscribe = () => void;
@@ -77,6 +78,8 @@ export default function futuresChartSingleSubscription({
         if (isSequential) {
           // eslint-disable-next-line no-await-in-loop
           await loadCandles(symbol);
+          // eslint-disable-next-line no-await-in-loop
+          await new Promise((r) => { setTimeout(r, 200); });
         } else {
           void loadCandles(symbol);
         }
