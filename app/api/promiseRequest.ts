@@ -3,6 +3,7 @@ import { HmacSHA256 } from 'crypto-js';
 
 import options from './options';
 import emitError from './emitError';
+import futuresSubscribe from './futuresSubscribe';
 
 interface Flags {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
@@ -22,7 +23,13 @@ interface ErrorResponse {
   msg: string;
 }
 
-let timeDiffPromise: Promise<number>;
+// create promise that waits for the first aggTrade and closes connection immediately
+const timeDiffPromise: Promise<number> = new Promise((resolve) => {
+  const close = futuresSubscribe(['btcusdt@aggTrade'], (ticker: { E: number }) => {
+    resolve(Date.now() - ticker.E);
+    close();
+  });
+});
 
 export default async function promiseRequest<T>(
   url: string, givenData: Data = {}, flags: Flags = {},
@@ -47,13 +54,8 @@ export default async function promiseRequest<T>(
 
   let resource: string;
   if (type === 'SIGNED' || type === 'TRADE' || type === 'USER_DATA') {
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
-    timeDiffPromise = timeDiffPromise || promiseRequest<{ serverTime: number }>(
-      'v3/time', {}, { method: 'GET', baseURL: 'https://api.binance.com/api/' },
-    ).then(({ serverTime }) => Date.now() - serverTime);
-
     if (!options.apiSecret) throw new Error('Invalid API credentials!');
-    data.timestamp = Date.now(); // - await timeDiffPromise;
+    data.timestamp = Date.now() - await timeDiffPromise;
     query = qs.stringify(data);
     const signature = HmacSHA256(query, options.apiSecret);
     resource = `${baseURL}${url}?${query}&signature=${signature.toString()}`;
