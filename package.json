@@ -36,7 +36,11 @@
         "branch": "main",
         "folder": "dist-dev",
         "script": "npm version patch && npm run build-types && npm run build-api && DIST_ENV=production npm run build:browser && npm run publish-types && npm run publish-api && git push && git push --tags",
-        "commit": "Automatic commit text"
+        "commit": "Automatic commit text",
+        "user": {
+          "email": "github@altamoon.io",
+          "name": "Altamoon"
+      }
     }
   },
   "build": {
