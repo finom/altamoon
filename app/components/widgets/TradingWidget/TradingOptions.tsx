@@ -97,17 +97,17 @@ const TradingOptions = ({
           </label>
         </div>
         <div className={classNames({ 'form-check float-lg-end': true, 'o-50 cursor-progress': !leverageBracket })}>
-          <label className={classNames({ 'form-check-label': true, 'pe-none': !leverageBracket })} htmlFor="isIsolated">
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="isIsolated"
-              checked={!!isIsolated}
-              onChange={({ target }) => setIsISolated(target.checked)}
-            />
-            {' '}
-            Isolated Margin
-          </label>
+          <select
+            className={classNames({
+              'form-control form-select': true,
+              'text-warning': !isIsolated,
+            })}
+            value={isIsolated ? 'isolated' : 'cross'}
+            onChange={({ target }) => setIsISolated(target.value === 'isolated')}
+          >
+            <option value="cross">Cross Margin</option>
+            <option value="isolated">Isolated Margin</option>
+          </select>
         </div>
       </Col>
     </Row>
