@@ -78,7 +78,7 @@ export default function futuresChartSingleSubscription({
           // eslint-disable-next-line no-await-in-loop
           await loadCandles(symbol);
           // eslint-disable-next-line no-await-in-loop
-          await new Promise((r) => { setTimeout(r, 200); }); // a small delay
+          await new Promise((r) => { setTimeout(r, 3000); }); // a small delay
         } else {
           void loadCandles(symbol);
         }
