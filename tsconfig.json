@@ -22,7 +22,7 @@
     "resolveJsonModule": true,
     "allowJs": true,
     "skipLibCheck": true,
-    "types": ["node", "altamoon-robust-websocket"]
+    "types": ["node"]
   },
   "exclude": [
     "test",
