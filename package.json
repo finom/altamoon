@@ -27,7 +27,9 @@
     "build-api": "npx tsc ./app/api/* --declaration --esModuleInterop --skipLibCheck --outDir ./packages/altamoon-binance-api/api --target ES2021 --module ES2020 --moduleResolution node && node scripts/copyProjectVersion",
     "publish-types": "npm publish ./packages/altamoon-types/",
     "publish-api": "npm publish ./packages/altamoon-binance-api/",
-    "patch": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags"
+    "patch:env": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags",
+    "patch": "DIST_ENV=development npm run patch:env",
+    "patch:prod": "DIST_ENV=production npm run patch:env"
   },
   "build": {
     "productName": "Altamoon",
