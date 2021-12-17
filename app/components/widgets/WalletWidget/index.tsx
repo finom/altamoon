@@ -7,16 +7,17 @@ import Widget from '../../layout/Widget';
 import TransferFunds from './TransferFunds';
 
 import css from './style.css';
+import useValueDebounced from '../../../hooks/useValueDebounced';
 
 const formatNumber = (value: number) => format(',.2f')(truncateDecimals(value, 2));
 
 const WalletWidget = ({ title, id }: { title: string; id: string; }): ReactElement => {
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
   const availableBalance = useValue(ACCOUNT, 'availableBalance');
-  const totalPositionMargin = useValue(STATS, 'totalPositionMargin');
+  const totalPositionMargin = useValueDebounced(STATS, 'totalPositionMargin');
   const totalOpenOrderInitialMargin = useValue(ACCOUNT, 'totalOpenOrderInitialMargin');
-  const pnlValue = useValue(STATS, 'pnlValue');
-  const pnlPercent = useValue(STATS, 'pnlPercent');
+  const pnlValue = useValueDebounced(STATS, 'pnlValue');
+  const pnlPercent = useValueDebounced(STATS, 'pnlPercent');
   const dailyPnlValue = useValue(STATS, 'dailyPnlValue');
   const dailyPnlPercent = useValue(STATS, 'dailyPnlPercent');
 

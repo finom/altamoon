@@ -4,6 +4,7 @@ import React, { ReactElement, useCallback, useMemo } from 'react';
 import { Trash } from 'react-bootstrap-icons';
 import { Badge, Button, Table } from 'reactstrap';
 import { useSet, useSilent, useValue } from 'use-change';
+import useValueDebounced from '../../../hooks/useValueDebounced';
 import tooltipRef from '../../../lib/tooltipRef';
 import { ACCOUNT, PERSISTENT, TRADING } from '../../../store';
 
@@ -15,7 +16,7 @@ const Orders = (): ReactElement => {
   const ordersToBeCreated = useValue(TRADING, 'ordersToBeCreated');
 
   const allSymbolsPositionRisk = useValue(TRADING, 'allSymbolsPositionRisk');
-  const listenedLastPrices = useValue(TRADING, 'listenedLastPrices');
+  const listenedLastPrices = useValueDebounced(TRADING, 'listenedLastPrices');
   const cancelOrder = useSilent(TRADING, 'cancelOrder');
   const cancelAllOrders = useSilent(TRADING, 'cancelAllOrders');
   const setSymbol = useSet(PERSISTENT, 'symbol');

@@ -13,12 +13,13 @@ import SettingsButton from '../../../components/controls/SettingsButton';
 import WidgetsSelect from '../../../components/widgets/WidgetsSelect';
 import SettingsModal from '../../../components/modals/SettingsModal';
 import PluginsModal from '../../../components/modals/PluginsModal';
+import useValueDebounced from '../../../hooks/useValueDebounced';
 
 const Headbar = (): ReactElement => {
   const [symbol, setSymbol] = useChange(PERSISTENT, 'symbol');
   const futuresExchangeSymbols = useValue(MARKET, 'futuresExchangeSymbols');
   const theme = useValue(PERSISTENT, 'theme');
-  const currentSymbolLastPrice = useValue(MARKET, 'currentSymbolLastPrice');
+  const currentSymbolLastPrice = useValueDebounced(MARKET, 'currentSymbolLastPrice', 1000);
   const priceDirection = useValue(MARKET, 'priceDirection');
   const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
   const [isPluginsModalOpen, setIsPluginsModalOpen] = useState(false);
@@ -28,10 +29,10 @@ const Headbar = (): ReactElement => {
     .filter(({ contractType }) => contractType === 'PERPETUAL')
     .sort(((a, b) => (a.symbol > b.symbol ? 1 : -1))), [futuresExchangeSymbols]);
 
-  const ticker = useValue(
+  const ticker = useValueDebounced(
     ({ market }: RootStore) => market.allSymbolsTickers, symbol,
   );
-  const markPriceTicker = useValue(
+  const markPriceTicker = useValueDebounced(
     ({ market }: RootStore) => market.allMarkPriceTickers, symbol,
   );
   const lastPrice = currentSymbolInfo && currentSymbolLastPrice

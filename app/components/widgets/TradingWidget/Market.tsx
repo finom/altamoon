@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
-import useChange, { useValue } from 'use-change';
+import useChange from 'use-change';
+import useValueDebounced from '../../../hooks/useValueDebounced';
 import { MARKET, TRADING } from '../../../store';
 import TradingTab from './TradingTab';
 
@@ -10,7 +11,7 @@ interface Props {
 }
 
 const Market = ({ isWideLayout, postOnly, tradingType }: Props): ReactElement => {
-  const price = useValue(MARKET, 'currentSymbolLastPrice');
+  const price = useValueDebounced(MARKET, 'currentSymbolLastPrice');
 
   const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeBuyStr');
   const [exactSizeSellStr, setExactSizeSellStr] = useChange(TRADING, 'exactSizeSellStr');

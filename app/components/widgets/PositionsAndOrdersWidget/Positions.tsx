@@ -3,6 +3,7 @@ import React, { ReactElement, useCallback, useState } from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
 import { Badge, Button, Table } from 'reactstrap';
 import { useSet, useSilent, useValue } from 'use-change';
+import useValueDebounced from '../../../hooks/useValueDebounced';
 import tooltipRef from '../../../lib/tooltipRef';
 import { ACCOUNT, PERSISTENT, TRADING } from '../../../store';
 import AdjustMarginModal from './AdjustMarginModal';
@@ -17,7 +18,7 @@ const textClassName = (value: number) => {
 };
 
 const Positions = (): ReactElement => {
-  const openPositions = useValue(TRADING, 'openPositions');
+  const openPositions = useValueDebounced(TRADING, 'openPositions');
   const closePosition = useSilent(TRADING, 'closePosition');
 
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');

@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React, {
+  memo,
   ReactElement, useEffect, useMemo, useRef,
 } from 'react';
 import { Col, Row } from 'reactstrap';
@@ -15,7 +16,7 @@ interface Props {
   setPostOnly: (b: boolean) => void;
 }
 
-const Leverage = ({
+const TradingOptions = ({
   postOnly,
   setPostOnly,
 }: Props): ReactElement => {
@@ -113,4 +114,4 @@ const Leverage = ({
   );
 };
 
-export default Leverage;
+export default memo(TradingOptions);

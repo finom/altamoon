@@ -1,5 +1,5 @@
 import { capitalize, times } from 'lodash';
-import React, { ReactElement } from 'react';
+import React, { memo, ReactElement } from 'react';
 import { Row } from 'reactstrap';
 import { useValue } from 'use-change';
 
@@ -48,4 +48,4 @@ const QuickOrder = ({
   );
 };
 
-export default QuickOrder;
+export default memo(QuickOrder);

@@ -7,6 +7,7 @@ import * as api from '../../../../../api';
 import { ACCOUNT, PERSISTENT, TRADING } from '../../../../../store';
 import QuickOrder from './QuickOrder';
 import ExactSize from './ExactSize';
+import useValueDebounced from '../../../../../hooks/useValueDebounced';
 
 interface Props {
   side: api.OrderSide;
@@ -26,7 +27,7 @@ const TradingSide = ({
 }: Props): ReactElement => {
   const symbol = useValue(PERSISTENT, 'symbol');
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
-  const availableBalance = useValue(ACCOUNT, 'availableBalance');
+  const availableBalance = useValueDebounced(ACCOUNT, 'availableBalance');
   const marketOrder = useSilent(TRADING, 'marketOrder');
   const limitOrder = useSilent(TRADING, 'limitOrder');
   const stopMarketOrder = useSilent(TRADING, 'stopMarketOrder');
