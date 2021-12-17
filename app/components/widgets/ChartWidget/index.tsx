@@ -128,8 +128,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
-            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr),
-            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr),
+            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr, currentSymbolLeverage),
+            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr, currentSymbolLeverage),
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
 
@@ -148,8 +148,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
-            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr),
-            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr),
+            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr, currentSymbolLeverage),
+            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr, currentSymbolLeverage),
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
 
@@ -168,8 +168,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
-            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr),
-            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr),
+            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr, currentSymbolLeverage),
+            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr, currentSymbolLeverage),
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
 
@@ -188,8 +188,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
 
             buyDraftPrice: limitBuyPrice,
             sellDraftPrice: limitSellPrice,
-            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr),
-            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr),
+            buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr, currentSymbolLeverage),
+            sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr, currentSymbolLeverage),
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
 
