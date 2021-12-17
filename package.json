@@ -27,7 +27,8 @@
     "build-api": "npx tsc ./app/api/* --declaration --esModuleInterop --skipLibCheck --outDir ./packages/altamoon-binance-api/api --target ES2021 --module ES2020 --moduleResolution node && node scripts/copyProjectVersion",
     "publish-types": "npm publish ./packages/altamoon-types/",
     "publish-api": "npm publish ./packages/altamoon-binance-api/",
-    "patch:prod": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags",
+    "patch:env": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags",
+    "patch:prod": "DIST_ENV=production npm run patch:env",
     "patch": "deploy-to-git"
   },
   "config": {
@@ -35,7 +36,7 @@
       "repository": "git@github.com:Altamoon/altamoon-web-dev.git",
       "branch": "main",
       "folder": "dist-dev",
-      "script": "npm version patch && npm run build-types && npm run build-api && DIST_ENV=production npm run build:browser && npm run publish-types && npm run publish-api && git push && git push --tags",
+      "script": "DIST_ENV=development npm run patch:env",
       "commit": "Automatic commit text",
       "user": {
         "email": "github@altamoon.io",
