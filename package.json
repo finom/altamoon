@@ -1,6 +1,6 @@
 {
   "name": "altamoon",
-  "version": "0.0.191",
+  "version": "0.0.192",
   "private": true,
   "productName": "Altamoon",
   "description": "Binance trading",
@@ -32,14 +32,14 @@
   },
   "config": {
     "deployToGit": {
-        "repository": "git@github.com:Altamoon/altamoon-web-dev.git",
-        "branch": "main",
-        "folder": "dist-dev",
-        "script": "npm version patch && npm run build-types && npm run build-api && DIST_ENV=production npm run build:browser && npm run publish-types && npm run publish-api && git push && git push --tags",
-        "commit": "Automatic commit text",
-        "user": {
-          "email": "github@altamoon.io",
-          "name": "Altamoon"
+      "repository": "git@github.com:Altamoon/altamoon-web-dev.git",
+      "branch": "main",
+      "folder": "dist-dev",
+      "script": "npm version patch && npm run build-types && npm run build-api && DIST_ENV=production npm run build:browser && npm run publish-types && npm run publish-api && git push && git push --tags",
+      "commit": "Automatic commit text",
+      "user": {
+        "email": "github@altamoon.io",
+        "name": "Altamoon"
       }
     }
   },
