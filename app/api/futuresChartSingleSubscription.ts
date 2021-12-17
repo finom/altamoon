@@ -113,7 +113,7 @@ export default function futuresChartSingleSubscription({
 
       callbacks[interval].forEach((c) => {
         if (!c.symbol || c.symbol === symbol) {
-          c.callback(symbol, [...allCandles[interval][symbol]]);
+          c.callback(symbol, allCandles[interval][symbol].slice());
         }
       });
     });
