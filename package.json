@@ -36,7 +36,7 @@
       "repository": "git@github.com:Altamoon/altamoon-web-dev.git",
       "branch": "main",
       "folder": "dist-dev",
-      "script": "DIST_ENV=development npm run patch:env",
+      "script": "rn -rf dist-dev && DIST_ENV=development npm run patch:env",
       "commit": "Automatic commit text",
       "user": {
         "email": "github@altamoon.io",
