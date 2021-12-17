@@ -30,6 +30,7 @@ type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined
 interface Params {
   onUpdateAlerts: (d: number[]) => void;
   onUpdateDrafts: (d: DraftPrices) => void;
+  onDoubleClick: () => void;
   onClickDraftCheck: (
     d: DraftPrices & { newClientOrderId: string; },
     side: OrderSide,
@@ -94,7 +95,7 @@ export default class CandlestickChart {
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
     {
       pricePrecision, alerts, paddingPercents, calculateLiquidationPrice,
-      calculateQuantity, getPseudoPosition,
+      calculateQuantity, getPseudoPosition, onDoubleClick,
       onUpdateDrafts, onUpdateAlerts, onClickDraftCheck, onDragLimitOrder, onCancelOrder,
     }: Params,
   ) {
@@ -138,6 +139,7 @@ export default class CandlestickChart {
       onClickDraftCheck,
       onDragLimitOrder,
       onCancelOrder,
+      onDoubleClick,
     }, resizeData);
 
     this.#initialRender();

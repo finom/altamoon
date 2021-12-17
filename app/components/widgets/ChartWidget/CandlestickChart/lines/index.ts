@@ -21,6 +21,7 @@ interface Params {
   getPseudoPosition: RootStore['trading']['getPseudoPosition'];
   onUpdateAlerts: (d: number[]) => void;
   onUpdateDrafts: (d: DraftPrices) => void;
+  onDoubleClick: () => void;
   onClickDraftCheck: (
     d: DraftPrices & { newClientOrderId: string; },
     side: OrderSide,
@@ -47,7 +48,7 @@ export default class Lines {
   public liquidationPriceLines: LiquidationPriceLines;
 
   constructor({
-    axis, alerts, calculateLiquidationPrice, calculateQuantity, getPseudoPosition,
+    axis, alerts, calculateLiquidationPrice, calculateQuantity, getPseudoPosition, onDoubleClick,
     onUpdateAlerts, onUpdateDrafts, onClickDraftCheck, onDragLimitOrder, onCancelOrder,
   }: Params, resizeData: ResizeData) {
     this.crosshairPriceLines = new CrosshairPriceLines({ axis }, resizeData);
@@ -67,6 +68,7 @@ export default class Lines {
       getPseudoPosition,
       calculateQuantity,
       onUpdateDrafts,
+      onDoubleClick,
       onClickDraftCheck,
       onUpdateItems: (d) => {
         const items = d as PriceLinesDatum<{ draftAmount?: number }>[];

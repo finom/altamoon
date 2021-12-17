@@ -1,7 +1,7 @@
 import React, {
   ReactElement, useEffect, useMemo, useRef, useState,
 } from 'react';
-import useChange, { useValue, useGet } from 'use-change';
+import useChange, { useValue, useGet, useSet } from 'use-change';
 
 import { futuresIntervals } from '../../../api';
 import useMultiValue from '../../../hooks/useMultiValue';
@@ -39,6 +39,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   const [symbolAlerts, setSymbolAlerts] = useChange(PERSISTENT, 'symbolAlerts');
   const [shouldChartShowOrders, setShouldChartShowOrders] = useChange(PERSISTENT, 'shouldChartShowOrders');
   const chartOrdersNumber = useValue(PERSISTENT, 'chartOrdersNumber');
+  const setTradingType = useSet(PERSISTENT, 'tradingType');
+  const getTradingType = useGet(PERSISTENT, 'tradingType');
 
   const {
     symbol, tradingType, chartPaddingTopPercent,
@@ -218,6 +220,13 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
         })),
         alerts: alerts || [],
         onUpdateDrafts: updateDrafts,
+        onDoubleClick: () => {
+          if (getTradingType() === 'MARKET') {
+            setTradingType('LIMIT');
+          } else if (getTradingType() === 'STOP_MARKET') {
+            setTradingType('STOP');
+          }
+        },
         onClickDraftCheck: createOrderFromDraft,
         draftPriceItems: [],
         pricePrecision: currentSymbolInfo?.pricePrecision ?? 0,

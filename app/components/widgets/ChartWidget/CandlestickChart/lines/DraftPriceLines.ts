@@ -12,6 +12,7 @@ interface Params {
   getPseudoPosition: RootStore['trading']['getPseudoPosition'];
   calculateQuantity: RootStore['trading']['calculateQuantity'];
   onUpdateDrafts: (r: DraftPrices) => void;
+  onDoubleClick: () => void;
   onClickDraftCheck: (
     r: DraftPrices & { newClientOrderId: string; }, side: OrderSide,
   ) => Promise<void>;
@@ -23,12 +24,15 @@ export default class DraftPriceLines extends PriceLines {
 
   #calculateQuantity: Params['calculateQuantity'];
 
-  #onUpdateDrafts: Params['onUpdateDrafts'];
+  #handleUpdateDrafts: Params['onUpdateDrafts'];
+
+  #handleDoubleClick: Params['onDoubleClick'];
 
   #lastPrice = 0;
 
   constructor({
-    axis, getPseudoPosition, calculateQuantity, onUpdateDrafts, onClickDraftCheck, onUpdateItems,
+    axis, getPseudoPosition, calculateQuantity, onUpdateDrafts,
+    onClickDraftCheck, onUpdateItems, onDoubleClick,
   }: Params, resizeData: ResizeData) {
     super({
       axis,
@@ -90,7 +94,8 @@ export default class DraftPriceLines extends PriceLines {
 
     this.#getPseudoPosition = getPseudoPosition;
     this.#calculateQuantity = calculateQuantity;
-    this.#onUpdateDrafts = onUpdateDrafts;
+    this.#handleUpdateDrafts = onUpdateDrafts;
+    this.#handleDoubleClick = onDoubleClick;
   }
 
   public getDraftPrices = (): {
@@ -222,6 +227,7 @@ export default class DraftPriceLines extends PriceLines {
     const side: OrderSide = yValue < this.#lastPrice ? 'BUY' : 'SELL';
 
     this.updateItem(side, { yValue, isVisible: true });
-    this.#onUpdateDrafts(this.getDraftPrices());
+    this.#handleUpdateDrafts(this.getDraftPrices());
+    this.#handleDoubleClick();
   };
 }
