@@ -46,3 +46,5 @@ main.js.map
 .idea
 npm-debug.log.*
 *.LICENSE.txt
+
+dist-dev

@@ -27,9 +27,17 @@
     "build-api": "npx tsc ./app/api/* --declaration --esModuleInterop --skipLibCheck --outDir ./packages/altamoon-binance-api/api --target ES2021 --module ES2020 --moduleResolution node && node scripts/copyProjectVersion",
     "publish-types": "npm publish ./packages/altamoon-types/",
     "publish-api": "npm publish ./packages/altamoon-binance-api/",
-    "patch:env": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags",
-    "patch": "DIST_ENV=development npm run patch:env",
-    "patch:prod": "DIST_ENV=production npm run patch:env"
+    "patch:prod": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags",
+    "patch": "deploy-to-git"
+  },
+  "config": {
+    "deployToGit": {
+        "repository": "git@github.com:Altamoon/altamoon-web-dev.git",
+        "branch": "main",
+        "folder": "dist-dev",
+        "script": "npm version patch && npm run build-types && npm run build-api && DIST_ENV=production npm run build:browser && npm run publish-types && npm run publish-api && git push && git push --tags",
+        "commit": "Automatic commit text"
+    }
   },
   "build": {
     "productName": "Altamoon",
@@ -180,6 +188,7 @@
     "cross-env": "^7.0.3",
     "css-loader": "^6.5.1",
     "css-minimizer-webpack-plugin": "^3.3.0",
+    "deploy-to-git": "^0.1.5",
     "detect-port": "^1.3.0",
     "electron": "^16.0.4",
     "electron-builder": "^22.14.5",
@@ -230,6 +239,7 @@
   },
   "dependencies": {
     "altamoon-minicharts": "^0.3.55",
+    "altamoon-robust-websocket": "^1.0.1",
     "balajs": "^1.0.10",
     "bootstrap": "^5.1.3",
     "bootswatch": "^5.1.3",
@@ -260,7 +270,6 @@
     "react-use-promise": "^0.4.1",
     "reactstrap": "^9.0.1",
     "regenerator-runtime": "^0.13.9",
-    "altamoon-robust-websocket": "^1.0.1",
     "stream-browserify": "^3.0.0",
     "type-fest": "^2.8.0",
     "use-change": "^1.0.4"
