@@ -56,7 +56,6 @@ export default class Persistent {
 
   public isTestnet = persist<boolean>('isTestnet', false);
 
-  // eslint-disable-next-line no-spaced-func
   public tradingWidgetPercentButtonsLayouts = persist<Record<number, number[]>>('tradingWidgetPercentButtonsLayouts', {
     4: [1, 2, 5, 10],
     6: [1, 2, 5, 10, 15, 25],

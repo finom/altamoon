@@ -1,5 +1,5 @@
 import { RouteConfig } from 'react-router-config';
-import FeatureTradingScreen from '../screens/FeatureTradingScreen';
+import FuturesTradingScreen from '../screens/FuturesTradingScreen';
 
 /*
 const Foo = (): ReactElement => (
@@ -22,7 +22,7 @@ const Bar = (): ReactElement => (
 */
 
 const routes: RouteConfig[] = [
-  { path: '/', exact: true, component: FeatureTradingScreen },
+  { path: '/', exact: true, component: FuturesTradingScreen },
 ];
 
 export default routes;

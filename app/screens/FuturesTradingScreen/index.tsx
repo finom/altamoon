@@ -80,7 +80,7 @@ const widgetComponents: Record<RootStore['customization']['builtInWidgets'][0]['
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
-const FeatureTradingScreen = (): ReactElement => {
+const FuturesTradingScreen = (): ReactElement => {
   const [layouts, setLayouts] = useChange(PERSISTENT, 'layouts');
   const theme = useValue(PERSISTENT, 'theme');
   const widgetsDisabled = useValue(PERSISTENT, 'widgetsDisabled');
@@ -181,4 +181,4 @@ const FeatureTradingScreen = (): ReactElement => {
   );
 };
 
-export default FeatureTradingScreen;
+export default FuturesTradingScreen;
