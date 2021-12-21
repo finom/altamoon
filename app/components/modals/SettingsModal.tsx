@@ -12,7 +12,6 @@ import Modal, { ModalHeader, ModalFooter, ModalBody } from '../layout/Modal';
 
 const SettingsModal = (): ReactElement => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useChange(ROOT, 'isSettingsModalOpen');
-  const [existingNumberOfColumns, setNumberOfColumns] = useChange(PERSISTENT, 'numberOfColumns');
   const [existingApiKey, setApiKey] = useChange(PERSISTENT, 'binanceApiKey');
   const [existingApiSecret, setApiSecret] = useChange(PERSISTENT, 'binanceApiSecret');
   const [existingTestnetApiKey, setTestnetApiKey] = useChange(PERSISTENT, 'testnetBinanceApiKey');
@@ -24,10 +23,9 @@ const SettingsModal = (): ReactElement => {
   }, [setIsSettingsModalOpen]);
   const {
     register, handleSubmit, getValues, watch,
-  } = useForm<Pick<RootStore['persistent'], 'numberOfColumns' | 'binanceApiKey' | 'binanceApiSecret' | 'theme' | 'isTestnet' | 'testnetBinanceApiKey' | 'testnetBinanceApiSecret'>>();
+  } = useForm<Pick<RootStore['persistent'], 'binanceApiKey' | 'binanceApiSecret' | 'theme' | 'isTestnet' | 'testnetBinanceApiKey' | 'testnetBinanceApiSecret'>>();
   const onSubmit = handleSubmit(useCallback(() => {
     const {
-      numberOfColumns,
       binanceApiKey,
       binanceApiSecret,
       theme,
@@ -35,8 +33,6 @@ const SettingsModal = (): ReactElement => {
       testnetBinanceApiKey,
       testnetBinanceApiSecret,
     } = getValues();
-    const colsNum = Math.abs(+numberOfColumns || 120);
-    setNumberOfColumns(colsNum > 120 ? 120 : colsNum);
     setTheme(theme);
     setTestnet(isTestnet);
     setApiKey(binanceApiKey);
@@ -46,7 +42,7 @@ const SettingsModal = (): ReactElement => {
 
     closeModal();
   }, [
-    closeModal, getValues, setApiKey, setApiSecret, setNumberOfColumns,
+    closeModal, getValues, setApiKey, setApiSecret,
     setTestnet, setTestnetApiKey, setTestnetApiSecret, setTheme,
   ]));
   const { isTestnet: formIsTestnet } = watch(['isTestnet']);
@@ -57,7 +53,7 @@ const SettingsModal = (): ReactElement => {
       <ModalBody>
         <Form id="settings" onSubmit={onSubmit}>
           <Row>
-            <Col xs={6}>
+            <Col xs={12}>
               <Label
                 htmlFor={isType<keyof RootStore['persistent']>('theme')}
                 className="form-label"
@@ -75,23 +71,6 @@ const SettingsModal = (): ReactElement => {
                 <option value={isType<RootStore['persistent']['theme']>('light')}>Light</option>
                 <option value={isType<RootStore['persistent']['theme']>('dark')}>Dark</option>
               </Input>
-            </Col>
-            <Col xs={6}>
-              <Label
-                htmlFor={isType<keyof RootStore['persistent']>('binanceApiKey')}
-                className="form-label"
-              >
-                Number of columns
-              </Label>
-              <Input
-                name={isType<keyof RootStore['persistent']>('numberOfColumns')}
-                id={isType<keyof RootStore['persistent']>('numberOfColumns')}
-                type="number"
-                innerRef={register}
-                placeholder="Number of columns"
-                defaultValue={existingNumberOfColumns}
-                className="mb-3"
-              />
             </Col>
           </Row>
           <Label
@@ -153,7 +132,6 @@ const SettingsModal = (): ReactElement => {
             >
               Binance Testnet API Key
             </Label>
-
             <Input
               name={isType<keyof RootStore['persistent']>('testnetBinanceApiKey')}
               id={isType<keyof RootStore['persistent']>('testnetBinanceApiKey')}

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { memo, ReactElement } from 'react';
 import Widget from '../../layout/Widget';
 import Positions from './Positions';
 import Orders from './Orders';
@@ -10,4 +10,4 @@ const PositionsAndOrdersWidget = ({ title, id }: { title: string; id: string; })
   </Widget>
 );
 
-export default PositionsAndOrdersWidget;
+export default memo(PositionsAndOrdersWidget);

@@ -1,4 +1,5 @@
 import React, {
+  memo,
   ReactElement, useEffect, useMemo, useRef, useState,
 } from 'react';
 import useChange, { useValue, useGet, useSet } from 'use-change';
@@ -318,4 +319,4 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   );
 };
 
-export default ChartWidget;
+export default memo(ChartWidget);

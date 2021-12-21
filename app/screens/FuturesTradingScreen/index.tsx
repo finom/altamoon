@@ -1,9 +1,10 @@
-import React, { MutableRefObject, ReactElement, useCallback } from 'react';
-import {
-  WidthProvider, Responsive, Layout, Layouts,
-} from 'react-grid-layout';
+import React, {
+  MutableRefObject, ReactElement, useCallback, useMemo,
+} from 'react';
+import { WidthProvider, Responsive, Layout } from 'react-grid-layout';
 import useChange, { useValue } from 'use-change';
 
+import { keyBy, pick } from 'lodash';
 import LastTradesWidget from '../../components/widgets/LastTradesWidget';
 import { CUSTOMIZATION, PERSISTENT, RootStore } from '../../store';
 import { darkTheme, lightTheme } from '../../themes';
@@ -19,80 +20,58 @@ import convertType from '../../lib/convertType';
 import Headbar from './Headbar';
 import css from './style.css';
 
-const breakpoints = {
-  lg: 1200, xxs: 0,
-};
-
+const breakpoints = { xxs: 0 };
+const defaultLayoutPartial = { minH: 5, minW: 10 };
 const defaultPluginLayout = {
-  minH: 2, minW: 2, h: 4, w: 4, x: 0, y: 0,
+  h: 40, w: 40, x: 0, y: 0, ...defaultLayoutPartial,
 };
+const rowHeight = 10;
 
-const rowHeight = 30;
-
-const widgetComponents: Record<RootStore['customization']['builtInWidgets'][0]['id'], {
-  RenderWidget: (({ title, id }: { title: string; id: string; }) => ReactElement)
-  | ReturnType<typeof React.memo>,
-  grid: Record<string, number>
-}> = {
-  chart: {
-    RenderWidget: ChartWidget,
-    grid: {
-      h: 13, w: 12, x: 0, y: 0, minH: 3, minW: 2,
-    },
-  },
-  trading: {
-    RenderWidget: TradingWidget,
-    grid: {
-      h: 13, w: 9, x: 0, y: 13, minH: 3, minW: 2,
-    },
-  },
-  positionAndOrders: {
-    RenderWidget: PositionsAndOrdersWidget,
-    grid: {
-      h: 10, w: 6, x: 6, y: 26, minH: 3, minW: 2,
-    },
-  },
-  lastTrades: {
-    RenderWidget: LastTradesWidget,
-    grid: {
-      h: 6, w: 5, x: 0, y: 36, minH: 3, minW: 2,
-    },
-  },
-  orderBook: {
-    RenderWidget: OrderBookWidget,
-    grid: {
-      h: 6, w: 7, x: 5, y: 36, minH: 3, minW: 2,
-    },
-  },
-  wallet: {
-    RenderWidget: WalletWidget,
-    grid: {
-      h: 13, w: 3, x: 9, y: 13, minH: 3, minW: 2,
-    },
-  },
-  minicharts: {
-    RenderWidget: MinichartsWidget,
-    grid: {
-      h: 10, w: 6, x: 0, y: 26, minH: 3, minW: 2,
-    },
-  },
+const widgetComponents: Record<RootStore['customization']['builtInWidgets'][0]['id'], ReturnType<typeof React.memo>> = {
+  chart: ChartWidget,
+  trading: TradingWidget,
+  positionAndOrders: PositionsAndOrdersWidget,
+  lastTrades: LastTradesWidget,
+  orderBook: OrderBookWidget,
+  wallet: WalletWidget,
+  minicharts: MinichartsWidget,
 };
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 const FuturesTradingScreen = (): ReactElement => {
-  const [layouts, setLayouts] = useChange(PERSISTENT, 'layouts');
+  const [widgetLayouts, setWidgetLayouts] = useChange(PERSISTENT, 'widgetLayouts');
+  const enabledLayout = widgetLayouts.find(({ isEnabled }) => isEnabled);
+
+  const gridLayout = useMemo(() => {
+    if (!enabledLayout) return [];
+
+    return Object.entries(enabledLayout.individualLayouts).map(([i, l]) => ({
+      ...l, i, ...defaultLayoutPartial,
+    }));
+  }, [enabledLayout]);
+  const individualLayouts = enabledLayout?.individualLayouts;
+  const layouts = useMemo(() => ({ xxs: gridLayout }), [gridLayout]);
   const theme = useValue(PERSISTENT, 'theme');
   const widgetsDisabled = useValue(PERSISTENT, 'widgetsDisabled');
-  const numberOfColumns = useValue(PERSISTENT, 'numberOfColumns');
+  const numberOfColumns = useValue(PERSISTENT, 'widgetsNumberOfColumns');
   const pluginWidgets = useValue(CUSTOMIZATION, 'pluginWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
   const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
   const didPluginsInitialized = useValue(CUSTOMIZATION, 'didPluginsInitialized');
-  const onLayoutChange = useCallback((_changedLayout: Layout[], changedLayouts: Layouts) => {
-    setLayouts(changedLayouts);
-    // console.log('changedLayout', changedLayout.map((item) => JSON.stringify(
-    // pick(item, ['h', 'w', 'x', 'y', 'minH', 'minW', 'i']))));
-  }, [setLayouts]);
+  const onLayoutChange = useCallback((changedLayout: Layout[]) => {
+    console.log('changedLayout');
+    setWidgetLayouts((v) => v.map((layout) => {
+      if (!layout.isEnabled) return layout;
+
+      return {
+        ...layout,
+        individualLayouts: {
+          ...layout.individualLayouts,
+          ...keyBy(changedLayout.map((l) => pick(l, ['x', 'y', 'w', 'h', 'i'])), 'i'),
+        },
+      };
+    }));
+  }, [setWidgetLayouts]);
   const cols = {
     lg: numberOfColumns,
     md: numberOfColumns,
@@ -127,9 +106,9 @@ const FuturesTradingScreen = (): ReactElement => {
           onLayoutChange={onLayoutChange}
         >
           {builtInWidgets.map(({ id, title }) => {
-            const { grid, RenderWidget } = widgetComponents[id];
+            const RenderWidget = widgetComponents[id];
             return (
-              <div key={id} data-grid={grid}>
+              <div key={id} data-grid={individualLayouts[id]}>
                 <RenderWidget id={id} title={title} />
               </div>
             );
@@ -150,9 +129,11 @@ const FuturesTradingScreen = (): ReactElement => {
           }) => (
             <div
               key={id}
-              data-grid={itemLayout
-                ? { ...defaultPluginLayout, ...itemLayout }
-                : defaultPluginLayout}
+              data-grid={
+                individualLayouts[id]
+                ?? (itemLayout ? { ...defaultPluginLayout, ...itemLayout } : null)
+                ?? defaultPluginLayout
+}
             >
               <Widget
                 id={id}

@@ -3,7 +3,7 @@ import React, {
   ReactElement, useCallback, useMemo, useState,
 } from 'react';
 import { Button, Input, Navbar } from 'reactstrap';
-import useChange, { useSet, useValue } from 'use-change';
+import useChange, { useSet, useSilent, useValue } from 'use-change';
 import { LayoutWtf, Puzzle } from 'react-bootstrap-icons';
 
 import formatMoneyNumber from '../../../lib/formatMoneyNumber';
@@ -14,6 +14,7 @@ import WidgetsSelect from '../../../components/widgets/WidgetsSelect';
 import SettingsModal from '../../../components/modals/SettingsModal';
 import PluginsModal from '../../../components/modals/PluginsModal';
 import useValueDebounced from '../../../hooks/useValueDebounced';
+import Layouts from './Layouts';
 
 const Headbar = (): ReactElement => {
   const [symbol, setSymbol] = useChange(PERSISTENT, 'symbol');
@@ -23,8 +24,6 @@ const Headbar = (): ReactElement => {
   const priceDirection = useValue(MARKET, 'priceDirection');
   const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
   const [isPluginsModalOpen, setIsPluginsModalOpen] = useState(false);
-  const setLayouts = useSet(PERSISTENT, 'layouts');
-  const resetLayout = useCallback(() => { setLayouts({}); }, [setLayouts]);
   const perpetualSymbols = useMemo(() => Object.values(futuresExchangeSymbols)
     .filter(({ contractType }) => contractType === 'PERPETUAL')
     .sort(((a, b) => (a.symbol > b.symbol ? 1 : -1))), [futuresExchangeSymbols]);
@@ -138,17 +137,7 @@ const Headbar = (): ReactElement => {
         <span className={`${css.label} text-muted`}>24h vol (USDT)</span>
         <span className={css.text}>{ticker ? formatMoneyNumber(+ticker.quoteVolume) : '...'}</span>
       </div>
-
-      <Button
-        className="ms-auto"
-        color={theme === 'dark' ? 'dark' : 'light'}
-        title="Reset Layout"
-        onClick={resetLayout}
-      >
-        <LayoutWtf size={16} />
-        {' '}
-        <span className="d-none d-xxl-inline-block">Reset Layout</span>
-      </Button>
+      <Layouts />
       {' '}
       <SettingsButton buttonTextClassName="d-none d-xxl-inline-block" />
       {' '}

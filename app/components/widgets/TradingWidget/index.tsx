@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { memo, ReactElement } from 'react';
 import {
   Nav, NavItem, NavLink, TabContent,
 } from 'reactstrap';
@@ -89,4 +89,4 @@ const Trading = ({ title, id }: Props): ReactElement => {
   );
 };
 
-export default Trading;
+export default memo(Trading);

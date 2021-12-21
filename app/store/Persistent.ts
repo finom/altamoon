@@ -1,11 +1,35 @@
-import { Layouts } from 'react-grid-layout';
 import { listenChange } from 'use-change';
 import * as api from '../api';
+import { AltamoonLayout } from './types';
 
 function persist<T>(key: keyof Persistent, defaultValue: T): T {
   const storageValue = localStorage.getItem(key);
   return storageValue ? JSON.parse(storageValue) as T : defaultValue;
 }
+
+export const defaultLayouts = {
+  chart: {
+    w: 120, h: 24, x: 0, y: 0, i: 'chart',
+  },
+  trading: {
+    w: 26, h: 35, x: 0, y: 24, i: 'trading',
+  },
+  positionAndOrders: {
+    w: 47, h: 17, x: 26, y: 42, i: 'positionAndOrders',
+  },
+  lastTrades: {
+    w: 21, h: 21, x: 99, y: 24, i: 'lastTrades',
+  },
+  orderBook: {
+    w: 47, h: 18, x: 26, y: 24, i: 'orderBook',
+  },
+  wallet: {
+    w: 26, h: 21, x: 73, y: 24, i: 'wallet',
+  },
+  minicharts: {
+    w: 47, h: 14, x: 73, y: 45, i: 'minicharts',
+  },
+};
 
 export default class Persistent {
   public symbol = persist<string>('symbol', 'BTCUSDT');
@@ -13,8 +37,6 @@ export default class Persistent {
   public interval = persist<api.CandlestickChartInterval>('interval', '1d');
 
   public theme = persist<'dark' | 'light'>('theme', 'dark');
-
-  public layouts = persist<Layouts>('layouts', {});
 
   public tradingType = persist<api.OrderType>('tradingType', 'MARKET');
 
@@ -36,7 +58,7 @@ export default class Persistent {
 
   public widgetsDisabled = persist<string[]>('widgetsDisabled', []);
 
-  public numberOfColumns = persist<number>('numberOfColumns', 12);
+  public widgetsNumberOfColumns = persist<number>('widgetsNumberOfColumns', 120);
 
   public chartPaddingTopPercent = persist<number>('chartPaddingTopPercent', 10);
 
@@ -61,6 +83,13 @@ export default class Persistent {
     6: [1, 2, 5, 10, 15, 25],
   });
 
+  public widgetLayouts = persist<AltamoonLayout[]>('widgetLayouts', [{
+    id: 'DEFAULT',
+    isEnabled: true,
+    name: 'Default',
+    individualLayouts: defaultLayouts,
+  }]);
+
   constructor() {
     Object.getOwnPropertyNames(this).forEach((key) => {
       listenChange(this, key as keyof Persistent, (value: unknown) => {
@@ -68,4 +97,43 @@ export default class Persistent {
       });
     });
   }
+
+  public resetLayout = () => {
+    this.widgetLayouts = this.widgetLayouts.map(
+      (layout) => (layout.isEnabled ? { ...layout, individualLayouts: defaultLayouts } : layout),
+    );
+  };
+
+  public deleteLayout = (id: string) => {
+    if (id === 'DEFAULT') return;
+    const enabledLayout = this.widgetLayouts.find(({ isEnabled }) => isEnabled);
+
+    let widgetLayouts = this.widgetLayouts.filter((layout) => layout.id !== id);
+
+    if (enabledLayout?.id === id) {
+      widgetLayouts = this.widgetLayouts
+        .map((layout) => (layout.id === 'DEFAULT' ? { ...layout, isEnabled: true } : layout));
+    }
+
+    this.widgetLayouts = widgetLayouts;
+  };
+
+  public addLayout = (name: string) => {
+    const enabledLayout = this.widgetLayouts.find(({ isEnabled }) => isEnabled);
+
+    this.widgetLayouts = [
+      ...this.widgetLayouts.map((layout) => ({ ...layout, isEnabled: false })),
+      {
+        name,
+        id: new Date().toISOString(),
+        isEnabled: true,
+        individualLayouts: enabledLayout?.individualLayouts ?? defaultLayouts,
+      },
+    ];
+  };
+
+  public enableLayout = (id: string) => {
+    this.widgetLayouts = this.widgetLayouts
+      .map((layout) => ({ ...layout, isEnabled: layout.id === id }));
+  };
 }

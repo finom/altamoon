@@ -1,3 +1,5 @@
+import { Layout } from 'react-grid-layout';
+
 import * as api from '../api';
 
 export type Api = typeof api; // used at plugins
@@ -57,6 +59,13 @@ export interface TradingOrder {
   marginType: api.FuturesPositionRisk['marginType'];
   leverage: number;
   isCanceled: boolean;
+}
+
+export interface AltamoonLayout {
+  id: string;
+  isEnabled: boolean;
+  name: string;
+  individualLayouts: Record<string, Pick<Layout, 'x' | 'y' | 'w' | 'h' | 'i'>>,
 }
 
 export interface OrderToBeCreated extends Pick<TradingOrder,
