@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-element-interactions */
 import React, { ReactElement, useState } from 'react';
 import {
   Dropdown, DropdownItem, DropdownMenu, DropdownToggle,
@@ -34,32 +35,51 @@ const Layouts = (): ReactElement => {
           <span className="d-none d-xxl-inline-block">Layouts</span>
         </DropdownToggle>
         <DropdownMenu>
-          {widgetLayouts.map(({ id, name }) => (
-            <DropdownItem key={id} onClick={() => enableLayout(id)}>
-              {name}
+          <DropdownItem text>
+            <span className="cursor-pointer" onClick={() => setIsNewLayoutModalOpen(true)} onKeyDown={() => setIsNewLayoutModalOpen(true)}>
+              <PlusLg />
               {' '}
+              Add new
+            </span>
+
+          </DropdownItem>
+          <DropdownItem divider />
+          {widgetLayouts.map(({ id, name, isEnabled }) => (
+            <DropdownItem text key={id} className="text-nowrap">
               {id !== 'DEFAULT' && (
                 <Trash
-                  className="float-end mt-1"
+                  className="float-end mt-2 muted-control"
                   onClick={(evt) => {
                     evt.stopPropagation();
                     deleteLayout(id);
                   }}
                 />
               )}
+              <div className="form-check pe-4">
+                <label className="form-check-label" onKeyDown={() => enableLayout(id)} onClick={() => enableLayout(id)}>
+                  <input
+                    className="form-check-input"
+                    type="radio"
+                    name="layout_radio"
+                    value={id}
+                    checked={isEnabled}
+                  />
+                  {name}
+                </label>
+
+              </div>
+
             </DropdownItem>
           ))}
           <DropdownItem divider />
-          <DropdownItem onClick={resetLayout}>
-            <ArrowCounterclockwise />
-            {' '}
-            Reset current layout
+          <DropdownItem text>
+            <span className="cursor-pointer" role="button" tabIndex={0} onKeyDown={resetLayout} onClick={resetLayout}>
+              <ArrowCounterclockwise />
+              {' '}
+              Reset current
+            </span>
           </DropdownItem>
-          <DropdownItem onClick={() => setIsNewLayoutModalOpen(true)}>
-            <PlusLg />
-            {' '}
-            Add new
-          </DropdownItem>
+
         </DropdownMenu>
       </Dropdown>
     </div>

@@ -59,7 +59,6 @@ const FuturesTradingScreen = (): ReactElement => {
   const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
   const didPluginsInitialized = useValue(CUSTOMIZATION, 'didPluginsInitialized');
   const onLayoutChange = useCallback((changedLayout: Layout[]) => {
-    console.log('changedLayout');
     setWidgetLayouts((v) => v.map((layout) => {
       if (!layout.isEnabled) return layout;
 
