@@ -185,7 +185,10 @@ export default class CandlestickChart {
     });
 
     listenMultiChange(store.trading, ['openOrders', 'ordersToBeCreated'], ({ openOrders, ordersToBeCreated }) => {
-      this.update({ orders: openOrders, ordersToBeCreated });
+      this.update({
+        orders: openOrders.filter((pos) => pos.symbol === store.persistent.symbol),
+        ordersToBeCreated,
+      });
     });
   }
 
