@@ -108,7 +108,7 @@ const FuturesTradingScreen = (): ReactElement => {
           {builtInWidgets.map(({ id, title }) => {
             const RenderWidget = widgetComponents[id];
             return (
-              <div key={id} data-grid={individualLayouts[id]}>
+              <div key={id} data-grid={individualLayouts?.[id]}>
                 <RenderWidget id={id} title={title} />
               </div>
             );
