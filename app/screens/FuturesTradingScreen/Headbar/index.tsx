@@ -1,10 +1,8 @@
 import classNames from 'classnames';
-import React, {
-  ReactElement, useCallback, useMemo, useState,
-} from 'react';
+import React, { ReactElement, useMemo, useState } from 'react';
 import { Button, Input, Navbar } from 'reactstrap';
-import useChange, { useSet, useSilent, useValue } from 'use-change';
-import { LayoutWtf, Puzzle } from 'react-bootstrap-icons';
+import useChange, { useValue } from 'use-change';
+import { Puzzle } from 'react-bootstrap-icons';
 
 import formatMoneyNumber from '../../../lib/formatMoneyNumber';
 import { RootStore, PERSISTENT, MARKET } from '../../../store';

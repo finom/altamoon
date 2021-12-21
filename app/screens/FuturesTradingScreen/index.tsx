@@ -130,7 +130,7 @@ const FuturesTradingScreen = (): ReactElement => {
             <div
               key={id}
               data-grid={
-                individualLayouts[id]
+                individualLayouts?.[id]
                 ?? (itemLayout ? { ...defaultPluginLayout, ...itemLayout } : null)
                 ?? defaultPluginLayout
 }
