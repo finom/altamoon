@@ -6,3 +6,12 @@ export * from './futuresREST';
 export * from './futuresStreams';
 export * from './spot';
 export * from './types';
+/*
+import Worker from "./work.worker";
+
+const worker = new Worker();
+
+worker.postMessage({ a: 1 });
+
+worker.addEventListener("message", function (event) { console.log(event.data) });
+*/

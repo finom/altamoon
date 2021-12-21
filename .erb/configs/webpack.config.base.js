@@ -18,6 +18,10 @@ export default {
           },
         },
       },
+      {
+        test: /\.worker\.ts$/,
+        use: { loader: "worker-loader" },
+      },
     ],
   },
 

@@ -63,6 +63,7 @@ const Layouts = (): ReactElement => {
                     name="layout_radio"
                     value={id}
                     checked={isEnabled}
+                    onChange={() => {}}
                   />
                   {name}
                 </label>
