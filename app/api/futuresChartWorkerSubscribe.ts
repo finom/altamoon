@@ -9,6 +9,8 @@ declare global {
   namespace globalThis {
     // eslint-disable-next-line no-var, vars-on-top
     var chartWorkers: Record<CandlestickChartInterval, Worker>;
+    // eslint-disable-next-line vars-on-top, no-var
+    var altamoonFuturesChartWorkerSubscription: typeof futuresChartWorkerSubscription;
   }
 }
 
@@ -80,3 +82,8 @@ export default function futuresChartWorkerSubscription({
 
   return () => unsubscribe();
 }
+
+// workers don't work well when minicharts are used as part of Altamoon
+// the widget is going to use the global altamoonFuturesChartWorkerSubscription
+// but the standalone version is going to import the function as usually
+window.altamoonFuturesChartWorkerSubscription = futuresChartWorkerSubscription;

@@ -83,10 +83,13 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
 
       for (let i = 0; i < subscriptionEntries.length; i += 1) {
         const [subscriptionId, { delay, symbols, lastMessageBackTime }] = subscriptionEntries[i];
-        // eslint-disable-next-line no-continue
-        if (!symbols.includes(symbol)) continue;
-
-        if ((delay && lastMessageBackTime + delay < now) || delay === 0) {
+        if (
+          symbols.includes(symbol)
+          && (
+            (delay && lastMessageBackTime + delay < now)
+            || delay === 0
+          )
+        ) {
           tick(subscriptionId, symbol);
         }
       }
