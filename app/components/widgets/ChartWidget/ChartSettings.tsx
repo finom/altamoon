@@ -24,6 +24,9 @@ const ChartSettings = ({
   const [chartOrdersNumber, setChartOrdersNumber] = useChange(PERSISTENT, 'chartOrdersNumber');
   const [chartOrdersNumberStr, setChartOrdersNumberStr] = useState(String(chartOrdersNumber));
 
+  const [chartUpdateFrequency, setChartUpdateFrequency] = useChange(PERSISTENT, 'chartUpdateFrequency');
+  const [chartUpdateFrequencyStr, setChartUpdateFrequencyStr] = useState(String(chartUpdateFrequency));
+
   useEffect(() => listenSettingsSave(() => {
     setChartPaddingTopPercent(
       Number.isNaN(+paddingTopStr) ? chartPaddingTopPercent : +paddingTopStr,
@@ -40,12 +43,16 @@ const ChartSettings = ({
     setChartOrdersNumber(
       Number.isNaN(+chartOrdersNumberStr) ? chartOrdersNumber : +chartOrdersNumberStr,
     );
+
+    setChartUpdateFrequency(
+      Number.isNaN(+chartUpdateFrequencyStr) ? chartUpdateFrequency : +chartUpdateFrequencyStr,
+    );
   }), [
-    chartOrdersNumber, chartOrdersNumberStr, chartPaddingBottomPercent,
-    chartPaddingRightPercent, chartPaddingTopPercent, listenSettingsSave,
-    paddingBottomStr, paddingRightStr, paddingTopStr,
-    setChartOrdersNumber, setChartPaddingBottomPercent,
-    setChartPaddingRightPercent, setChartPaddingTopPercent,
+    chartOrdersNumber, chartOrdersNumberStr, chartPaddingBottomPercent, chartPaddingRightPercent,
+    chartPaddingTopPercent, chartUpdateFrequency, chartUpdateFrequencyStr, listenSettingsSave,
+    paddingBottomStr, paddingRightStr, paddingTopStr, setChartOrdersNumber,
+    setChartPaddingBottomPercent,
+    setChartPaddingRightPercent, setChartPaddingTopPercent, setChartUpdateFrequency
   ]);
 
   useEffect(() => listenSettingsCancel(() => {
@@ -53,12 +60,14 @@ const ChartSettings = ({
     setPaddingBottomStr(String(chartPaddingBottomPercent));
     setPaddingRightStr(String(chartPaddingRightPercent));
     setChartOrdersNumberStr(String(chartOrdersNumber));
+    setChartUpdateFrequencyStr(String(chartUpdateFrequency));
   }), [
     chartOrdersNumber, chartPaddingBottomPercent, chartPaddingRightPercent,
-    chartPaddingTopPercent, listenSettingsCancel,
+    chartPaddingTopPercent, chartUpdateFrequency, listenSettingsCancel
   ]);
 
   return (
+    <>
     <Row>
       <Col xs={6} md={3}>
         <Label htmlFor="chartPaddingTop" className="form-label">Top margin %</Label>
@@ -97,6 +106,18 @@ const ChartSettings = ({
         />
       </Col>
     </Row>
+    <Row>
+      <Col xs={6} md={3}>
+        <Label htmlFor="chartUpdateFrequency" className="form-label">Update frequency (ms)</Label>
+        <Input
+          type="number"
+          id="chartUpdateFrequency"
+          value={chartUpdateFrequencyStr}
+          onChange={({ target }) => setChartUpdateFrequencyStr(target.value)}
+        />
+      </Col>
+    </Row>
+    </>
   );
 };
 

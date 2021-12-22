@@ -29,12 +29,9 @@ export default function futuresChartWorkerSubscribe({
   let unsubscribe = () => {}; // no-op by default
   // load all symbols
   void futuresExchangeInfo().then((info) => {
-    // BNTUSDT is an unknown symbol, TODO remove this filter once futuresExchangeInfo doesn't return it
-    const allSymbols = info.symbols.map(({ symbol }) => symbol).filter((symbol) => symbol !== 'BNTUSDT');
+    const allSymbols = info.symbols.filter(({ contractType }) => contractType === 'PERPETUAL').map(({ symbol }) => symbol);
     // if 'PERPETUAL' is given instead of symbol list then convert it to the list of PERPETUAL symbols
-    const workerSymbols = symbols === 'PERPETUAL'
-      ? info.symbols.filter(({ symbol }) => symbol !== 'BNTUSDT').filter(({ contractType }) => contractType === 'PERPETUAL').map(({ symbol }) => symbol)
-      : symbols;
+    const workerSymbols = symbols === 'PERPETUAL' ? allSymbols : symbols;
     let worker: Worker;
 
     // if no worker for given interval is created yet then create thw worker

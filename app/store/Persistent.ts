@@ -70,6 +70,8 @@ export default class Persistent {
 
   public chartOrdersNumber = persist<number>('chartOrdersNumber', 1000);
 
+  public chartUpdateFrequency = persist<number>('chartUpdateFrequency', 50);
+
   public tradingWidgetPercentButtonsCount = persist<number>('tradingWidgetPercentButtonsCount', 4);
 
   public testnetBinanceApiKey = persist<string | null>('testnetBinanceApiKey', null);

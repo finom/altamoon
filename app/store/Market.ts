@@ -59,9 +59,9 @@ export default class Market {
     this.#listenMarkPrices();
 
     listenChange(store.persistent, 'symbol', this.#onSymbolChange);
-    listenMultiChange(store.persistent, ['interval', 'symbol'], this.#onSymbolOrIntervalChange);
+    listenMultiChange(store.persistent, ['interval', 'symbol', 'chartUpdateFrequency'], this.#chartResubscribe);
     this.#onSymbolChange();
-    this.#onSymbolOrIntervalChange();
+    this.#chartResubscribe();
 
     listenChange(this, 'candles', this.#calculateLastPrice);
 
@@ -77,14 +77,14 @@ export default class Market {
     });
   }
 
-  #onSymbolOrIntervalChange = () => {
-    const { symbol, interval } = this.#store.persistent;
+  #chartResubscribe = () => {
+    const { symbol, interval, chartUpdateFrequency } = this.#store.persistent;
     this.#chartUnsubscribe?.();
 
     this.#chartUnsubscribe = api.futuresChartWorkerSubscribe({
       symbols: [symbol],
       interval,
-      frequency: 0,
+      frequency: chartUpdateFrequency,
       callback: (_symbol, data) => { this.candles = data; },
     });
   };
