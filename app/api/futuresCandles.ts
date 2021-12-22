@@ -191,6 +191,8 @@ export default async function futuresCandles({
   return candles;
 }
 
-(window as unknown as { clearCandlesCache: () => void }).clearCandlesCache = () => {
-  void localForage.clear();
-};
+if (typeof window !== 'undefined') {
+  (window as unknown as { clearCandlesCache: () => void }).clearCandlesCache = () => {
+    void localForage.clear();
+  };
+}

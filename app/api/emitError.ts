@@ -1,5 +1,7 @@
 export default function emitError(error: Error | string): void {
-  window.dispatchEvent(new CustomEvent('binance-api-error', {
-    detail: { error },
-  }));
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('binance-api-error', {
+      detail: { error },
+    }));
+  }
 }
