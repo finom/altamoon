@@ -84,7 +84,7 @@ export default class Market {
     this.#chartUnsubscribe = api.futuresChartWorkerSubscribe({
       symbols: [symbol],
       interval,
-      delay: 0,
+      frequency: 0,
       callback: (_symbol, data) => { this.candles = data; },
     });
   };

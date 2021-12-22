@@ -10,20 +10,20 @@ declare global {
     // eslint-disable-next-line no-var, vars-on-top
     var chartWorkers: Record<CandlestickChartInterval, Worker>;
     // eslint-disable-next-line vars-on-top, no-var
-    var altamoonFuturesChartWorkerSubscription: typeof futuresChartWorkerSubscription;
+    var altamoonFuturesChartWorkerSubscribe: typeof futuresChartWorkerSubscribe;
   }
 }
 
 // store workers globally to re-use them at plugins
 globalThis.chartWorkers = globalThis.chartWorkers ?? {} as typeof globalThis.chartWorkers;
 
-export default function futuresChartWorkerSubscription({
-  interval, symbols, callback, delay,
+export default function futuresChartWorkerSubscribe({
+  interval, symbols, callback, frequency,
 }: {
   interval: CandlestickChartInterval;
   symbols: string[] | 'PERPETUAL';
   callback: (symbol: string, candles: FuturesChartCandle[]) => void;
-  delay: number;
+  frequency: number;
 }): (() => void) {
   // the function should return unsubscribe handler
   let unsubscribe = () => {}; // no-op by default
@@ -33,7 +33,7 @@ export default function futuresChartWorkerSubscription({
     const allSymbols = info.symbols.map(({ symbol }) => symbol).filter((symbol) => symbol !== 'BNTUSDT');
     // if 'PERPETUAL' is given instead of symbol list then convert it to the list of PERPETUAL symbols
     const workerSymbols = symbols === 'PERPETUAL'
-      ? info.symbols.filter(({ contractType }) => contractType === 'PERPETUAL').map(({ symbol }) => symbol)
+      ? info.symbols.filter(({ symbol }) => symbol !== 'BNTUSDT').filter(({ contractType }) => contractType === 'PERPETUAL').map(({ symbol }) => symbol)
       : symbols;
     let worker: Worker;
 
@@ -53,7 +53,7 @@ export default function futuresChartWorkerSubscription({
 
     // start subscription
     const subscribeMessage: SubscribeMessage = {
-      type: 'SUBSCRIBE', symbols: workerSymbols, delay, subscriptionId,
+      type: 'SUBSCRIBE', symbols: workerSymbols, frequency, subscriptionId,
     };
     worker.postMessage(subscribeMessage);
 
@@ -86,4 +86,4 @@ export default function futuresChartWorkerSubscription({
 // workers don't work well when minicharts are used as part of Altamoon
 // the widget is going to use the global altamoonFuturesChartWorkerSubscription
 // but the standalone version is going to import the function as usually
-window.altamoonFuturesChartWorkerSubscription = futuresChartWorkerSubscription;
+window.altamoonFuturesChartWorkerSubscribe = futuresChartWorkerSubscribe;

@@ -16,7 +16,7 @@ export interface CandlesMessageBack {
 export interface SubscribeMessage {
   type: 'SUBSCRIBE';
   symbols: string[];
-  delay: number;
+  frequency: number;
   subscriptionId: string;
 }
 
@@ -37,7 +37,7 @@ let interval: CandlestickChartInterval;
 const allIntervalCandles: Record<string, FuturesChartCandle[]> = {};
 
 const subscriptions: Record<string, {
-  delay: number; symbols: string[]; lastMessageBackTime: number;
+  frequency: number; symbols: string[]; lastMessageBackTime: number;
 }> = {};
 
 const getBuffer = (symbol: string) => {
@@ -82,12 +82,14 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
       const subscriptionEntries = Object.entries(subscriptions);
 
       for (let i = 0; i < subscriptionEntries.length; i += 1) {
-        const [subscriptionId, { delay, symbols, lastMessageBackTime }] = subscriptionEntries[i];
+        const [subscriptionId, {
+          frequency, symbols, lastMessageBackTime,
+        }] = subscriptionEntries[i];
         if (
           symbols.includes(symbol)
           && (
-            (delay && lastMessageBackTime + delay < now)
-            || delay === 0
+            (frequency && lastMessageBackTime + frequency < now)
+            || frequency === 0
           )
         ) {
           tick(subscriptionId, symbol);
@@ -107,10 +109,10 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
       }
     }
   } else if (data.type === 'SUBSCRIBE') {
-    const { symbols, subscriptionId, delay } = data;
+    const { symbols, subscriptionId, frequency } = data;
 
     subscriptions[subscriptionId] = {
-      delay,
+      frequency,
       lastMessageBackTime: Date.now(),
       symbols,
     };
