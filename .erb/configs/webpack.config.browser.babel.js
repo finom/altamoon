@@ -24,6 +24,7 @@ export default {
     filename: 'altamoon-browser.js',
     library: 'altamoon',
     libraryTarget: 'var',
+    publicPath: '/',
     path: path.resolve(__dirname, process.env.DIST_ENV === 'production' ? '../../docs' : '../../dist-dev')
   },
 
