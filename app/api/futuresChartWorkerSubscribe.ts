@@ -29,7 +29,10 @@ export default function futuresChartWorkerSubscribe({
   let unsubscribe = () => {}; // no-op by default
   // load all symbols
   void futuresExchangeInfo().then((info) => {
-    const allSymbols = info.symbols.filter(({ contractType }) => contractType === 'PERPETUAL').map(({ symbol }) => symbol);
+    const allSymbols = info.symbols
+      .filter(({ contractType }) => contractType === 'PERPETUAL')
+      .map(({ symbol }) => symbol)
+      .filter((symbol) => symbol !== 'BNTUSDT'); // API returns Invalid symbol for this symbol; TODO: remove when API returns valid symbols
     // if 'PERPETUAL' is given instead of symbol list then convert it to the list of PERPETUAL symbols
     const workerSymbols = symbols === 'PERPETUAL' ? allSymbols : symbols;
     let worker: Worker;
@@ -57,13 +60,37 @@ export default function futuresChartWorkerSubscribe({
     const handler = ({ data }: MessageEvent<CandlesMessageBack>) => {
       // ignore other subscriptions
       if (data.subscriptionId !== subscriptionId) return;
-      // decode JSON from buffer
-      const decoder = new TextDecoder('utf-8');
-      const array = new Uint8Array(data.candlesArrayBuffer);
-      callback(
-        data.symbol,
-        JSON.parse(decoder.decode(array)) as FuturesChartCandle[],
-      );
+      // decode candles from buffer
+      const float64 = new Float64Array(data.candlesArrayBuffer);
+      const candles: FuturesChartCandle[] = [];
+      const FIELDS_LENGTH = 11; // 11 is number of candle fields
+
+      for (let i = 0; i < float64.length / FIELDS_LENGTH; i += 1) {
+        const time = float64[0 + i * FIELDS_LENGTH];
+        const closeTime = float64[6 + i * FIELDS_LENGTH];
+        const open = float64[1 + i * FIELDS_LENGTH];
+        const close = float64[4 + i * FIELDS_LENGTH];
+        candles.push({
+          symbol: data.symbol,
+          interval,
+          direction: +open <= +close ? 'UP' : 'DOWN',
+          timeISOString: new Date(time).toISOString(),
+          closeTimeISOString: new Date(closeTime).toISOString(),
+          time: float64[0 + i * FIELDS_LENGTH],
+          open: float64[1 + i * FIELDS_LENGTH],
+          high: float64[2 + i * FIELDS_LENGTH],
+          low: float64[3 + i * FIELDS_LENGTH],
+          close: float64[4 + i * FIELDS_LENGTH],
+          volume: float64[5 + i * FIELDS_LENGTH],
+          closeTime: float64[6 + i * FIELDS_LENGTH],
+          quoteVolume: float64[7 + i * FIELDS_LENGTH],
+          trades: float64[8 + i * FIELDS_LENGTH],
+          takerBuyBaseVolume: float64[9 + i * FIELDS_LENGTH],
+          takerBuyQuoteVolume: float64[10 + i * FIELDS_LENGTH],
+        });
+      }
+
+      callback(data.symbol, candles);
     };
 
     worker.addEventListener('message', handler);
