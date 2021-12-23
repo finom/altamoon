@@ -27,7 +27,7 @@ export default function futuresChartWorkerSubscribe({
   frequency: number;
 }): (() => void) {
   // the function should return unsubscribe handler
-  let unsubscribe = () => {}; // no-op by default
+  let unsubscribe: () => void;
   // load all symbols
   void futuresExchangeInfo().then((info) => {
     const allSymbols = info.symbols
@@ -108,7 +108,13 @@ export default function futuresChartWorkerSubscribe({
     };
   });
 
-  return () => unsubscribe();
+  return function tryUnsubscribe() {
+    if (typeof unsubscribe === 'function') {
+      unsubscribe();
+    } else {
+      setTimeout(tryUnsubscribe, 500);
+    }
+  };
 }
 
 // workers don't work well when minicharts are used as part of Altamoon
