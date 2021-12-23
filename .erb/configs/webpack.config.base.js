@@ -20,7 +20,7 @@ export default {
       },
       {
         test: /\.worker\.ts$/,
-        use: { loader: "worker-loader" },
+        use: { loader: 'worker-loader', options: { inline: 'no-fallback' } }
       },
     ],
   },

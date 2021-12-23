@@ -16,7 +16,7 @@
     "start": "node -r @babel/register .erb/scripts/CheckPortInUse.js && cross-env npm run start:renderer",
     "start:main": "cross-env NODE_ENV=development electron -r ./.erb/scripts/BabelRegister ./src/main.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.renderer.dev.babel.js",
-    "start:browser": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.browser.babel.js",
+    "start:browser": "cross-env NODE_ENV=development webpack serve --config ./.erb/configs/webpack.config.browser.babel.js --stats-children",
     "build:browser": "cross-env NODE_ENV=production webpack --config ./.erb/configs/webpack.config.browser.babel.js",
     "tsc": "npx tsc --noemit",
     "test": "npm run lint-pure && npx tsc --noemit",

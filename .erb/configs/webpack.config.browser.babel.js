@@ -44,6 +44,10 @@ export default {
         ],
       },
       {
+        test: /\.worker\.ts$/,
+        use: [{ loader: 'worker-loader' }, { loader: require.resolve('babel-loader') }]
+      },
+      {
         test: /\.global\.css$/,
         use: [
           {
