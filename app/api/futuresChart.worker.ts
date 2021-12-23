@@ -3,14 +3,16 @@ import 'regenerator-runtime';
 import { CandlestickChartInterval, FuturesChartCandle } from './types';
 import futuresCandles from './futuresCandles';
 import { futuresCandlesSubscribe } from './futuresStreams';
+import { setOptions } from './options';
 
 // eslint-disable-next-line no-restricted-globals
 const ctx = self as unknown as Worker;
 
 export interface CandlesMessageBack {
   symbol: string;
-  candlesArrayBuffer: ArrayBuffer;
+  candlesArray: Float64Array;
   subscriptionId: string;
+  interval: CandlestickChartInterval;
 }
 
 export interface SubscribeMessage {
@@ -29,6 +31,7 @@ export interface InitMessage {
   type: 'INIT';
   allSymbols: string[]
   interval: CandlestickChartInterval;
+  isTestnet?: boolean;
 }
 
 let allSymbols: string[];
@@ -40,7 +43,7 @@ const subscriptions: Record<string, {
   frequency: number; symbols: string[]; lastMessageBackTime: number;
 }> = {};
 
-const getBuffer = (symbol: string) => {
+const getTypedArray = (symbol: string) => {
   const candles = allIntervalCandles[symbol];
   const FIELDS_LENGTH = 11; // 11 is number of candle fields
   const float64 = new Float64Array(FIELDS_LENGTH * candles.length);
@@ -64,17 +67,17 @@ const getBuffer = (symbol: string) => {
     float64[10 + FIELDS_LENGTH * i] = takerBuyQuoteVolume;
   }
 
-  return float64.buffer;
+  return float64;
 };
 
 const tick = (subscriptionId: string, symbol: string) => {
   subscriptions[subscriptionId].lastMessageBackTime = Date.now();
-  const candlesArrayBuffer = getBuffer(symbol);
+  const candlesArray = getTypedArray(symbol);
   const messgeBack: CandlesMessageBack = {
-    subscriptionId, symbol, candlesArrayBuffer,
+    subscriptionId, symbol, candlesArray, interval,
   };
 
-  ctx.postMessage(messgeBack, [candlesArrayBuffer]);
+  ctx.postMessage(messgeBack, [candlesArray.buffer]);
 };
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -83,6 +86,8 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
     // initialise by starting WS subscription
     allSymbols = data.allSymbols;
     interval = data.interval;
+
+    setOptions({ isTestnet: data.isTestnet });
 
     const subscriptionPairs = allSymbols.map(
       (symbol) => [symbol, interval] as [string, CandlestickChartInterval],

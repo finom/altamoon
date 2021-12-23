@@ -3,6 +3,7 @@ import Worker, {
 } from './futuresChart.worker';
 import { CandlestickChartInterval, FuturesChartCandle } from './types';
 import { futuresExchangeInfo } from './futuresREST';
+import options from './options';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -31,8 +32,8 @@ export default function futuresChartWorkerSubscribe({
   void futuresExchangeInfo().then((info) => {
     const allSymbols = info.symbols
       .filter(({ contractType }) => contractType === 'PERPETUAL')
-      .map(({ symbol }) => symbol)
-      .filter((symbol) => symbol !== 'BNTUSDT'); // API returns Invalid symbol for this symbol; TODO: remove when API returns valid symbols
+      .map(({ symbol }) => symbol);
+
     // if 'PERPETUAL' is given instead of symbol list then convert it to the list of PERPETUAL symbols
     const workerSymbols = symbols === 'PERPETUAL' ? allSymbols : symbols;
     let worker: Worker;
@@ -40,7 +41,9 @@ export default function futuresChartWorkerSubscribe({
     // if no worker for given interval is created yet then create thw worker
     if (!globalThis.chartWorkers[interval]) {
       worker = new Worker();
-      const initMessage: InitMessage = { type: 'INIT', allSymbols, interval };
+      const initMessage: InitMessage = {
+        type: 'INIT', allSymbols, interval, isTestnet: options.isTestnet,
+      };
       worker.postMessage(initMessage);
       globalThis.chartWorkers[interval] = worker;
     } else {
@@ -61,7 +64,7 @@ export default function futuresChartWorkerSubscribe({
       // ignore other subscriptions
       if (data.subscriptionId !== subscriptionId) return;
       // decode candles from buffer
-      const float64 = new Float64Array(data.candlesArrayBuffer);
+      const float64 = data.candlesArray;
       const candles: FuturesChartCandle[] = [];
       const FIELDS_LENGTH = 11; // 11 is number of candle fields
 
