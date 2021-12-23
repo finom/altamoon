@@ -20,7 +20,7 @@ export default {
       },
       {
         test: /\.worker\.ts$/,
-        use: { loader: 'worker-loader', options: { inline: 'no-fallback' } }
+        use: { loader: 'worker-loader' }
       },
     ],
   },
@@ -28,6 +28,7 @@ export default {
   output: {
     path: path.join(__dirname, '../../src'),
     // https://github.com/webpack/webpack/issues/1114
+    publicPath: '/',
     libraryTarget: 'commonjs2',
   },
 
