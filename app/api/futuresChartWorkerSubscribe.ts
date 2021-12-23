@@ -70,6 +70,7 @@ export default function futuresChartWorkerSubscribe({
         const closeTime = float64[6 + i * FIELDS_LENGTH];
         const open = float64[1 + i * FIELDS_LENGTH];
         const close = float64[4 + i * FIELDS_LENGTH];
+
         candles.push({
           symbol: data.symbol,
           interval,
