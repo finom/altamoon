@@ -44,6 +44,7 @@ const Positions = (): ReactElement => {
             <th>Entry Price</th>
             <th>Liquidation</th>
             <th>Break-even</th>
+            <th><span className="help-text" ref={tooltipRef({ title: 'Realized Profit and Loss' })}>Realized PNL</span></th>
             <th><span className="help-text" ref={tooltipRef({ title: 'Profit and Loss' })}>PNL</span></th>
             <th>
               <span className="help-text" ref={tooltipRef({ title: 'Return on Investment' })}>ROI</span>
@@ -59,7 +60,7 @@ const Positions = (): ReactElement => {
         <tbody>
           {openPositions.map(({
             symbol, baseAsset, baseValue, liquidationPrice, entryPrice, positionAmt,
-            marginType, leverage, lastPrice, breakEvenPrice,
+            marginType, leverage, lastPrice, breakEvenPrice, realizedPnl,
             side, pnl, pnlBalancePercent, pnlPositionPercent, isClosed, calculatedMargin,
           }) => (
             <tr key={symbol} className={isClosed ? 'o-50' : undefined}>
@@ -129,6 +130,12 @@ const Positions = (): ReactElement => {
                     &nbsp;₮
                   </>
                 ) : '...'}
+              </td>
+              <td>
+                <span className={textClassName(realizedPnl ?? 0)}>
+                  {typeof realizedPnl === 'number' ? formatNumber(realizedPnl, true) : '...'}
+                  &nbsp;₮
+                </span>
               </td>
               <td>
                 <span className={textClassName(pnl)}>

@@ -20,6 +20,15 @@ function getBreakEvenPrice(
   return (entryPrice * (fees - pnl)) / baseValue + entryPrice;
 }
 
+function getRealizedPnl(
+  trades: api.FuturesUserTrade[],
+): number {
+  let pnl = 0;
+  trades.forEach((x) => { pnl += +x.realizedPnl; });
+
+  return pnl;
+}
+
 async function loadPositionTradesOrig(this: altamoon.RootStore['trading'], symbol: string): Promise<void> {
   const position = this.openPositions.find((x) => x.symbol === symbol);
   if (!position) return;
@@ -87,7 +96,9 @@ async function loadPositionTradesOrig(this: altamoon.RootStore['trading'], symbo
   // update position breakEvenPrice
   this.openPositions = this.openPositions.map((pos) => (
     pos.symbol === symbol ? {
-      ...pos, breakEvenPrice: getBreakEvenPrice.call(this, trades, pos.entryPrice, pos.positionAmt),
+      ...pos,
+      breakEvenPrice: getBreakEvenPrice.call(this, trades, pos.entryPrice, pos.positionAmt),
+      realizedPnl: getRealizedPnl(trades),
     } : pos
   ));
 }

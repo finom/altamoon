@@ -60,6 +60,7 @@ export default function getPositionInfo(
       totalWalletBalance,
     }),
     breakEvenPrice: existingPosition?.breakEvenPrice ?? null,
+    realizedPnl: existingPosition?.realizedPnl ?? null,
     entryPrice,
     positionAmt,
     liquidationPrice,

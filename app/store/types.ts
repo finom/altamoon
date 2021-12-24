@@ -21,6 +21,7 @@ export interface TradingPosition {
   pnl: number;
   pnlPositionPercent: number;
   pnlBalancePercent: number;
+  realizedPnl: null | number;
   breakEvenPrice: null | number;
   leverage: number;
   maxLeverage: number;
