@@ -2,8 +2,9 @@ import React, {
   ReactNode, ReactElement, useCallback, useState,
 } from 'react';
 import { Row, Col } from 'reactstrap';
+import { Toggle } from 'altamoon-components';
+
 import * as api from '../../../../api';
-import Toggle from '../../../controls/Toggle';
 import TradingSide from './TradingSide';
 
 interface Props {
@@ -29,17 +30,17 @@ const TradingTab = ({
   exactSizeBuyStr, setExactSizeBuyStr, exactSizeSellStr, setExactSizeSellStr,
 }: Props): ReactElement => {
   const [compactModeSide, setCompactModeSide] = useState<api.OrderSide>('BUY');
-  const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'BUY' : 'SELL'), []);
+  const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'SELL' : 'BUY'), []);
 
   return (
     <>
       {!isWideLayout && (
         <Toggle
           id={`${id}_marketBuySellSwitch`}
-          checkedLabel="Buy/Long"
-          uncheckedLabel="Sell/Short"
+          uncheckedLabel="Buy/Long"
+          checkedLabel="Sell/Short"
           className="my-3"
-          isChecked={compactModeSide === 'BUY'}
+          isChecked={compactModeSide !== 'BUY'}
           onChange={switchSide}
         />
       )}
