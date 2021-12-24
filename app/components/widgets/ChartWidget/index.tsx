@@ -3,8 +3,8 @@ import React, {
   ReactElement, useEffect, useMemo, useRef, useState,
 } from 'react';
 import useChange, { useValue, useGet, useSet } from 'use-change';
+import { Intervals } from 'altamoon-components'
 
-import { futuresIntervals } from '../../../api';
 import useMultiValue from '../../../hooks/useMultiValue';
 import CandlestickChart from './CandlestickChart';
 import {
@@ -295,20 +295,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
         Filled Orders
       </label>
       <div className={`nav nav-pills ${css.intervals}`}>
-        {futuresIntervals.map((intervalsItem, index) => (
-          <div
-            role="button"
-            tabIndex={index}
-            className={`nav-item cursor-pointer ${css.intervalItem}`}
-            key={intervalsItem}
-            onClick={() => { setCandleInterval(intervalsItem); }}
-            onKeyDown={() => { setCandleInterval(intervalsItem); }}
-          >
-            <span className={`nav-link ${interval === intervalsItem ? 'active' : ''}`}>
-              {intervalsItem}
-            </span>
-          </div>
-        ))}
+        <Intervals value={interval} onChange={setCandleInterval} />
       </div>
       <ChartInfo />
       <div
