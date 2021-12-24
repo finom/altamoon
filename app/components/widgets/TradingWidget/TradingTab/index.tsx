@@ -1,13 +1,11 @@
-import React, {
-  ReactNode, ReactElement, useCallback, useState,
-} from 'react';
+import React, { ReactNode, ReactElement, useCallback } from 'react';
 import { Row, Col } from 'reactstrap';
 import { Toggle } from 'altamoon-components';
+import useChange from 'use-change';
 
 import * as api from '../../../../api';
 import TradingSide from './TradingSide';
-import useChange from 'use-change';
-import { PERSISTENT, TRADING } from '../../../../store';
+import { PERSISTENT } from '../../../../store';
 
 interface Props {
   isWideLayout: boolean;
@@ -32,7 +30,7 @@ const TradingTab = ({
   exactSizeBuyStr, setExactSizeBuyStr, exactSizeSellStr, setExactSizeSellStr,
 }: Props): ReactElement => {
   const [compactModeSide, setCompactModeSide] = useChange(PERSISTENT, 'compactModeSide');
-  const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'SELL' : 'BUY'), []);
+  const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'SELL' : 'BUY'), [setCompactModeSide]);
 
   return (
     <>

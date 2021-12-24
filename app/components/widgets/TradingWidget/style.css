@@ -25,3 +25,7 @@
   border: 0;
   margin-right: 1px;
 }
+
+.marketTabHighlight {
+  background-color: #e12637 !important;
+}

@@ -12,6 +12,7 @@ import PercentSelector from './PercentSelector';
 
 interface Props {
   side: api.OrderSide;
+  tradingType: api.OrderType;
   totalWalletBalance: number;
   availableBalance: number;
   price: number | null;
@@ -27,6 +28,7 @@ const tooltipOptions = {
 
 const ExactSize = ({
   side,
+  tradingType,
   totalWalletBalance,
   availableBalance,
   price,
@@ -97,6 +99,8 @@ const ExactSize = ({
           }
           onClick={() => onOrder(quantity)}
         >
+          {tradingType.toLowerCase().split('_').map(capitalize).join(' ')}
+          {' '}
           {capitalize(side)}
         </Button>
       </div>

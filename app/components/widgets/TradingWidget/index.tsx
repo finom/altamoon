@@ -13,6 +13,7 @@ import Market from './Market';
 import StopLimit from './StopLimit';
 import StopMarket from './StopMarket';
 import TradingSettings from './TradingSettings';
+import css from './style.css';
 
 interface Props {
   title: string;
@@ -46,7 +47,13 @@ const Trading = ({ title, id }: Props): ReactElement => {
           <NavLink active={type === 'LIMIT'} onClick={() => setType('LIMIT')} className="cursor-pointer px-3 py-1">Limit</NavLink>
         </NavItem>
         <NavItem>
-          <NavLink active={type === 'MARKET'} onClick={() => setType('MARKET')} className="cursor-pointer px-3 py-1">Market</NavLink>
+          <NavLink
+            active={type === 'MARKET'}
+            onClick={() => setType('MARKET')}
+            className={`cursor-pointer px-3 py-1 ${type === 'MARKET' ? css.marketTabHighlight : ''}`}
+          >
+            Market
+          </NavLink>
         </NavItem>
         <NavItem>
           <NavLink active={type === 'STOP'} onClick={() => setType('STOP')} className="cursor-pointer px-3 py-1">Stop Limit</NavLink>

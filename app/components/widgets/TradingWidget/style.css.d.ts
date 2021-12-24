@@ -2,6 +2,7 @@
 // Please do not change this file!
 declare namespace StyleCssNamespace {
   export interface IStyleCss {
+    marketTabHighlight: string;
     maxLeverage: string;
     minLeverage: string;
     quickOrderSettingsButtonInput: string;

@@ -101,6 +101,7 @@ const TradingSide = ({
         <ExactSize
           id={id}
           side={side}
+          tradingType={tradingType}
           totalWalletBalance={totalWalletBalance}
           availableBalance={availableBalance}
           price={price}
@@ -115,6 +116,7 @@ const TradingSide = ({
           availableBalance={availableBalance}
           price={price}
           side={side}
+          tradingType={tradingType}
           onOrder={onOrder}
         />
       </div>
