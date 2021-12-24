@@ -6,6 +6,8 @@ import { Toggle } from 'altamoon-components';
 
 import * as api from '../../../../api';
 import TradingSide from './TradingSide';
+import useChange from 'use-change';
+import { PERSISTENT, TRADING } from '../../../../store';
 
 interface Props {
   isWideLayout: boolean;
@@ -29,7 +31,7 @@ const TradingTab = ({
   buyPrice, sellPrice, stopBuyPrice, stopSellPrice, id, buyNode, sellNode, tradingType,
   exactSizeBuyStr, setExactSizeBuyStr, exactSizeSellStr, setExactSizeSellStr,
 }: Props): ReactElement => {
-  const [compactModeSide, setCompactModeSide] = useState<api.OrderSide>('BUY');
+  const [compactModeSide, setCompactModeSide] = useChange(PERSISTENT, 'compactModeSide');
   const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'SELL' : 'BUY'), []);
 
   return (

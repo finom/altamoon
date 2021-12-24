@@ -92,6 +92,8 @@ export default class Persistent {
     individualLayouts: defaultLayouts,
   }]);
 
+  public compactModeSide = persist<api.OrderSide>('compactModeSide', 'BUY');
+
   constructor() {
     Object.getOwnPropertyNames(this).forEach((key) => {
       listenChange(this, key as keyof Persistent, (value: unknown) => {
