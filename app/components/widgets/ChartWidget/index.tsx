@@ -3,7 +3,7 @@ import React, {
   ReactElement, useEffect, useMemo, useRef, useState,
 } from 'react';
 import useChange, { useValue, useGet, useSet } from 'use-change';
-import { Intervals } from 'altamoon-components'
+import { Intervals } from 'altamoon-components';
 
 import useMultiValue from '../../../hooks/useMultiValue';
 import CandlestickChart from './CandlestickChart';
