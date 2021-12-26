@@ -15,6 +15,6 @@ export default {
     {
       id: 'altamoon-whale-calculator',
       isThirdParty: false,
-    }
+    },
   ],
 };

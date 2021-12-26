@@ -1,4 +1,8 @@
+import * as d3 from 'd3';
+
 import * as api from '../../../../api';
+
+export { PriceLinesDatum } from '../../../../store/types';
 
 export type D3Selection<T extends d3.BaseType, C extends d3.BaseType = null>
   = d3.Selection<T, unknown, C, unknown>;
@@ -37,24 +41,6 @@ export interface LineData {
   text: string;
   value: string;
   color: string;
-}
-
-export interface PriceLinesDatum<T = unknown> {
-  xValue?: Date;
-  yValue?: number;
-  title?: string;
-  color?: string;
-  opacity?: number;
-  id: string | number;
-  isVisible?: boolean;
-  isDraggable?: boolean; // non-dynamic so far
-  isCheckable?: boolean; // non-dynamic so far
-  isClosable?: boolean; // non-dynamic so far
-  isTitleVisible?: boolean | 'hover';
-  isHovered?: boolean;
-  lineStyle?: 'solid' | 'dashed' | 'dotted';
-  customData?: T;
-  pointerEventsNone?: boolean;
 }
 
 export interface ChartAxis {

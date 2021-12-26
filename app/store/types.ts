@@ -88,3 +88,21 @@ export interface OrderToBeCreated extends Pick<TradingOrder,
 declare global {
   interface Window { altamoonPlugin: <T = altamoon.RootStore>(plugin: Plugin<T>) => void; }
 }
+
+export interface PriceLinesDatum<T = unknown> {
+  xValue?: Date;
+  yValue?: number;
+  title?: string;
+  color?: string;
+  opacity?: number;
+  id: string | number;
+  isVisible?: boolean;
+  isDraggable?: boolean; // non-dynamic so far
+  isCheckable?: boolean; // non-dynamic so far
+  isClosable?: boolean; // non-dynamic so far
+  isTitleVisible?: boolean | 'hover';
+  isHovered?: boolean;
+  lineStyle?: 'solid' | 'dashed' | 'dotted';
+  customData?: T;
+  pointerEventsNone?: boolean;
+}
