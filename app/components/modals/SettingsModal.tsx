@@ -1,6 +1,5 @@
-import React, { ReactElement, useCallback } from 'react';
+import React, { ReactElement, useCallback, useState } from 'react';
 import { QuestionCircleFill } from 'react-bootstrap-icons';
-import { useForm } from 'react-hook-form';
 import {
   Button, Form, Input, Label, Row, Col, Collapse,
 } from 'reactstrap';
@@ -12,40 +11,38 @@ import Modal, { ModalHeader, ModalFooter, ModalBody } from '../layout/Modal';
 
 const SettingsModal = (): ReactElement => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useChange(ROOT, 'isSettingsModalOpen');
-  const [existingApiKey, setApiKey] = useChange(PERSISTENT, 'binanceApiKey');
-  const [existingApiSecret, setApiSecret] = useChange(PERSISTENT, 'binanceApiSecret');
-  const [existingTestnetApiKey, setTestnetApiKey] = useChange(PERSISTENT, 'testnetBinanceApiKey');
-  const [existingTestnetApiSecret, setTestnetApiSecret] = useChange(PERSISTENT, 'testnetBinanceApiSecret');
-  const [existingTheme, setTheme] = useChange(PERSISTENT, 'theme');
-  const [existingIsTestnet, setTestnet] = useChange(PERSISTENT, 'isTestnet');
+  const [existingApiKey, setExistingApiKey] = useChange(PERSISTENT, 'binanceApiKey');
+  const [existingApiSecret, setExistingApiSecret] = useChange(PERSISTENT, 'binanceApiSecret');
+  const [existingTestnetApiKey, setExistingTestnetApiKey] = useChange(PERSISTENT, 'testnetBinanceApiKey');
+  const [existingTestnetApiSecret, setExistingTestnetApiSecret] = useChange(PERSISTENT, 'testnetBinanceApiSecret');
+  const [existingTheme, setExistingTheme] = useChange(PERSISTENT, 'theme');
+  const [existingIsTestnet, setExistingIsTestnet] = useChange(PERSISTENT, 'isTestnet');
   const closeModal = useCallback(() => {
     setIsSettingsModalOpen(false);
   }, [setIsSettingsModalOpen]);
-  const {
-    register, handleSubmit, getValues, watch,
-  } = useForm<Pick<RootStore['persistent'], 'binanceApiKey' | 'binanceApiSecret' | 'theme' | 'isTestnet' | 'testnetBinanceApiKey' | 'testnetBinanceApiSecret'>>();
-  const onSubmit = handleSubmit(useCallback(() => {
-    const {
-      binanceApiKey,
-      binanceApiSecret,
-      theme,
-      isTestnet,
-      testnetBinanceApiKey,
-      testnetBinanceApiSecret,
-    } = getValues();
-    setTheme(theme);
-    setTestnet(isTestnet);
-    setApiKey(binanceApiKey);
-    setTestnetApiKey(testnetBinanceApiKey);
-    setApiSecret(binanceApiSecret);
-    setTestnetApiSecret(testnetBinanceApiSecret);
+
+  const [binanceApiKey, setBinanceApiKey] = useState(existingApiKey ?? '');
+  const [binanceApiSecret, setBinanceApiSecret] = useState(existingApiSecret ?? '');
+  const [theme, setTheme] = useState(existingTheme);
+  const [isTestnet, setIsTestnet] = useState(existingIsTestnet);
+  const [testnetBinanceApiKey, setTestnetBinanceApiKey] = useState(existingTestnetApiKey ?? '');
+  const [testnetBinanceApiSecret, setTestnetBinanceApiSecret] = useState(existingTestnetApiSecret ?? '');
+
+  const onSubmit = useCallback(() => {
+    setExistingTheme(theme);
+    setExistingIsTestnet(isTestnet);
+    setExistingApiKey(binanceApiKey);
+    setExistingTestnetApiKey(testnetBinanceApiKey);
+    setExistingApiSecret(binanceApiSecret);
+    setExistingTestnetApiSecret(testnetBinanceApiSecret);
 
     closeModal();
   }, [
-    closeModal, getValues, setApiKey, setApiSecret,
-    setTestnet, setTestnetApiKey, setTestnetApiSecret, setTheme,
-  ]));
-  const { isTestnet: formIsTestnet } = watch(['isTestnet']);
+    binanceApiKey, binanceApiSecret, closeModal, isTestnet, setExistingApiKey,
+    setExistingApiSecret, setExistingIsTestnet, setExistingTestnetApiKey,
+    setExistingTestnetApiSecret, setExistingTheme, testnetBinanceApiKey,
+    testnetBinanceApiSecret, theme,
+  ]);
 
   return (
     <Modal isOpen={isSettingsModalOpen} onRequestClose={closeModal}>
@@ -64,9 +61,9 @@ const SettingsModal = (): ReactElement => {
                 type="select"
                 name={isType<keyof RootStore['persistent']>('theme')}
                 id={isType<keyof RootStore['persistent']>('theme')}
-                innerRef={register}
+                value={theme}
+                onChange={({ target }) => setTheme(target.value as typeof theme)}
                 className="mb-3 form-control"
-                defaultValue={existingTheme}
               >
                 <option value={isType<RootStore['persistent']['theme']>('light')}>Light</option>
                 <option value={isType<RootStore['persistent']['theme']>('dark')}>Dark</option>
@@ -82,11 +79,11 @@ const SettingsModal = (): ReactElement => {
           <Input
             name={isType<keyof RootStore['persistent']>('binanceApiKey')}
             id={isType<keyof RootStore['persistent']>('binanceApiKey')}
-            innerRef={register}
             placeholder="Binance API Key"
-            defaultValue={existingApiKey ?? ''}
+            value={binanceApiKey}
+            onChange={({ target }) => setBinanceApiKey(target.value)}
             className="mb-3"
-            disabled={formIsTestnet}
+            disabled={isTestnet}
           />
 
           <Label
@@ -98,10 +95,10 @@ const SettingsModal = (): ReactElement => {
           <Input
             name={isType<keyof RootStore['persistent']>('binanceApiSecret')}
             id={isType<keyof RootStore['persistent']>('binanceApiSecret')}
-            innerRef={register}
-            defaultValue={existingApiSecret ?? ''}
+            value={binanceApiSecret}
+            onChange={({ target }) => setBinanceApiSecret(target.value)}
             placeholder="Binance API Secret"
-            disabled={formIsTestnet}
+            disabled={isTestnet}
             type="password"
           />
           <div className="mb-1">
@@ -113,8 +110,8 @@ const SettingsModal = (): ReactElement => {
                 className="float-start"
                 name={isType<keyof RootStore['persistent']>('isTestnet')}
                 id={isType<keyof RootStore['persistent']>('isTestnet')}
-                defaultChecked={existingIsTestnet}
-                innerRef={register}
+                isChecked={isTestnet}
+                onChange={setIsTestnet}
               />
 
               Test trading with Binance testnet
@@ -125,7 +122,7 @@ const SettingsModal = (): ReactElement => {
               <QuestionCircleFill />
             </a>
           </div>
-          <Collapse isOpen={formIsTestnet}>
+          <Collapse isOpen={isTestnet}>
             <Label
               htmlFor={isType<keyof RootStore['persistent']>('testnetBinanceApiKey')}
               className="form-label"
@@ -135,9 +132,9 @@ const SettingsModal = (): ReactElement => {
             <Input
               name={isType<keyof RootStore['persistent']>('testnetBinanceApiKey')}
               id={isType<keyof RootStore['persistent']>('testnetBinanceApiKey')}
-              innerRef={register}
               placeholder="Binance Testnet API Key"
-              defaultValue={existingTestnetApiKey ?? ''}
+              value={testnetBinanceApiKey}
+              onChange={({ target }) => setTestnetBinanceApiKey(target.value)}
               className="mb-3"
             />
             <Label
@@ -149,8 +146,8 @@ const SettingsModal = (): ReactElement => {
             <Input
               name={isType<keyof RootStore['persistent']>('testnetBinanceApiSecret')}
               id={isType<keyof RootStore['persistent']>('testnetBinanceApiSecret')}
-              innerRef={register}
-              defaultValue={existingTestnetApiSecret ?? ''}
+              value={testnetBinanceApiSecret}
+              onChange={({ target }) => setTestnetBinanceApiSecret(target.value)}
               placeholder="Binance Testnet API Secret"
               type="password"
             />
