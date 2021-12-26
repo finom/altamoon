@@ -24,9 +24,10 @@
 		"url": "git+https://github.com/Altamoon/altamoon.git"
 	},
 	"dependencies": {
+		"altamoon-robust-websocket": "^1.0.1",
 		"crypto-js": "^4.1.1",
-		"qs": "^6.10.1",
+		"expect.js": "^0.3.1",
 		"localforage": "^1.10.0",
-		"altamoon-robust-websocket": "^1.0.1"
+		"qs": "^6.10.1"
 	}
 }
