@@ -114,7 +114,8 @@ const checkAlerts = (subscriptionId: string, symbol: string, lastPrice: number) 
 
   for (let i = 0; i < alerts.length; i += 1) {
     const { price, symbol: alertSymbol } = alerts[i];
-    if (alertSymbol !== symbol) return;
+    // eslint-disable-next-line no-continue
+    if (alertSymbol !== symbol) continue;
     let alertMessage: AlertMessageBack | null = null;
     if (lastPrice >= price && prevPrice < price) {
       alertMessage = {
