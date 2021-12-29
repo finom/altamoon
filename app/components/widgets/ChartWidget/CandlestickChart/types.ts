@@ -61,3 +61,8 @@ export interface LiquidationLineSizeItem {
   side: api.OrderSide;
   type: 'POSITION' | 'ORDER' | 'DRAFT_ORDER' | 'PREDICTIVE_LIQUIDATION';
 }
+
+export interface AlertItem {
+  price: number;
+  triggeredTimeISO: string | null;
+}

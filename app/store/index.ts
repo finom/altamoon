@@ -88,5 +88,6 @@ export const ACCOUNT = ({ account }: RootStore): Account => account;
 export const TRADING = ({ trading }: RootStore): Trading => trading;
 export const STATS = ({ stats }: RootStore): Stats => stats;
 export const CUSTOMIZATION = ({ customization }: RootStore): Customization => customization;
+export const MINICHARTS = ({ minicharts }: RootStore): MinichartsStore => minicharts;
 
 export default store;

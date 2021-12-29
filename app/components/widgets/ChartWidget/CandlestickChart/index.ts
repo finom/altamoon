@@ -14,7 +14,7 @@ import './chart.global.css';
 
 import {
   ResizeData, DrawData, Scales, StyleMargin, D3Selection,
-  PriceLinesDatum, ChartPaddingPercents, DraftPrices,
+  PriceLinesDatum, ChartPaddingPercents, DraftPrices, AlertItem,
 } from './types';
 import { TradingOrder, TradingPosition, OrderToBeCreated } from '../../../../store/types';
 import { OrderSide } from '../../../../api';
@@ -28,7 +28,7 @@ import listenMultiChange from '../../../../lib/listenMultiChange';
 type ZooomTranslateBy = () => d3.Selection<d3.BaseType, unknown, null, undefined>;
 
 interface Params {
-  onUpdateAlerts: (d: number[]) => void;
+  onUpdateAlerts: (d: AlertItem[]) => void;
   onUpdateDrafts: (d: DraftPrices) => void;
   onDoubleClick: () => void;
   onClickDraftCheck: (
@@ -37,7 +37,6 @@ interface Params {
   ) => Promise<void>;
   onDragLimitOrder: (clientOrderId: string, price: number) => void;
   onCancelOrder: (clientOrderId: string) => void;
-  alerts: number[];
   draftPriceItems: PriceLinesDatum[];
   pricePrecision: number;
   paddingPercents: ChartPaddingPercents;
@@ -94,7 +93,7 @@ export default class CandlestickChart {
   constructor(
     container: string | Node | HTMLElement | HTMLElement[] | Node[],
     {
-      pricePrecision, alerts, paddingPercents, calculateLiquidationPrice,
+      pricePrecision, paddingPercents, calculateLiquidationPrice,
       calculateQuantity, getPseudoPosition, onDoubleClick,
       onUpdateDrafts, onUpdateAlerts, onClickDraftCheck, onDragLimitOrder, onCancelOrder,
     }: Params,
@@ -130,7 +129,6 @@ export default class CandlestickChart {
 
     this.#lines = new Lines({
       axis: this.#axes.getAxis(),
-      alerts,
       calculateLiquidationPrice,
       calculateQuantity,
       getPseudoPosition,
@@ -211,7 +209,7 @@ export default class CandlestickChart {
     candles?: api.FuturesChartCandle[],
     position?: TradingPosition | null;
     orders?: TradingOrder[];
-    alerts?: number[];
+    alerts?: AlertItem[];
     customPriceLines?: PriceLinesDatum[];
     ordersToBeCreated?: OrderToBeCreated[];
 
@@ -254,12 +252,6 @@ export default class CandlestickChart {
 
       if (lastPrice) {
         this.#lines.draftLines.updateDraftLines({ lastPrice });
-
-        if (isNewSymbol) {
-          this.#lines.alertLines.update({ lastPrice });
-        }
-
-        this.#lines.alertLines.checkAlerts(lastPrice);
       }
 
       this.#draw();

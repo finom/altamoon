@@ -8,7 +8,7 @@ import { Intervals } from 'altamoon-components';
 import useMultiValue from '../../../hooks/useMultiValue';
 import CandlestickChart from './CandlestickChart';
 import {
-  ACCOUNT, CUSTOMIZATION, MARKET, PERSISTENT, TRADING,
+  ACCOUNT, CUSTOMIZATION, MARKET, MINICHARTS, PERSISTENT, TRADING,
 } from '../../../store';
 import FormSwitch from '../../controls/FormSwitch';
 
@@ -17,6 +17,7 @@ import ChartSettings from './ChartSettings';
 
 import css from './style.css';
 import ChartInfo from './ChartInfo';
+import { AlertItem } from './CandlestickChart/types';
 
 interface Props {
   title: string;
@@ -37,7 +38,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
 
   const getSymbol = useGet(PERSISTENT, 'symbol');
   const [interval, setCandleInterval] = useChange(PERSISTENT, 'interval');
-  const [symbolAlerts, setSymbolAlerts] = useChange(PERSISTENT, 'symbolAlerts');
+  const [symbolAlerts, setSymbolAlerts] = useChange(MINICHARTS, 'symbolAlerts');
   const [shouldChartShowOrders, setShouldChartShowOrders] = useChange(PERSISTENT, 'shouldChartShowOrders');
   const chartOrdersNumber = useValue(PERSISTENT, 'chartOrdersNumber');
   const setTradingType = useSet(PERSISTENT, 'tradingType');
@@ -86,9 +87,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   }, [leverageBrackets, candleChart]);
 
   useEffect(() => {
-    candleChart?.update({ alerts: alerts || [] });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [alerts && alerts.join('/'), candleChart]); // update alerts when they actually changed
+    candleChart?.update({ alerts });
+  }, [alerts, candleChart]);
 
   useEffect(() => {
     candleChart?.update({ customPriceLines });
@@ -215,11 +215,10 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   useEffect(() => {
     if (ref.current && !candleChart) {
       const instance = new CandlestickChart(ref.current, {
-        onUpdateAlerts: (d: number[]) => setSymbolAlerts((v) => ({
+        onUpdateAlerts: (d: AlertItem[]) => setSymbolAlerts((v) => ({
           ...v,
           [`${getSymbol()}`]: d,
         })),
-        alerts: alerts || [],
         onUpdateDrafts: updateDrafts,
         onDoubleClick: () => {
           if (getTradingType() === 'MARKET') {
@@ -268,6 +267,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
         orders: getOpenOrders(),
         position: getOpenPositions().find((pos) => pos.symbol === symbol) ?? null,
         leverageBrackets,
+        alerts: alerts || [],
       });
 
       setCandleChart(instance);

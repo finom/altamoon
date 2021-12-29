@@ -5,6 +5,7 @@ import PositionPriceLines from './PositionPriceLines';
 import CrosshairPriceLines from './CrosshairPriceLines';
 import CustomPriceLines from './CustomPriceLines';
 import {
+  AlertItem,
   ChartAxis, DraftPrices, LiquidationLineSizeItem, PriceLinesDatum, ResizeData,
 } from '../types';
 import { OrderSide } from '../../../../../api';
@@ -15,11 +16,10 @@ import { TradingOrder } from '../../../../../store/types';
 
 interface Params {
   axis: ChartAxis;
-  alerts: number[];
   calculateLiquidationPrice: RootStore['trading']['calculateLiquidationPrice'];
   calculateQuantity: RootStore['trading']['calculateQuantity'];
   getPseudoPosition: RootStore['trading']['getPseudoPosition'];
-  onUpdateAlerts: (d: number[]) => void;
+  onUpdateAlerts: (d: AlertItem[]) => void;
   onUpdateDrafts: (d: DraftPrices) => void;
   onDoubleClick: () => void;
   onClickDraftCheck: (
@@ -48,7 +48,7 @@ export default class Lines {
   public liquidationPriceLines: LiquidationPriceLines;
 
   constructor({
-    axis, alerts, calculateLiquidationPrice, calculateQuantity, getPseudoPosition, onDoubleClick,
+    axis, calculateLiquidationPrice, calculateQuantity, getPseudoPosition, onDoubleClick,
     onUpdateAlerts, onUpdateDrafts, onClickDraftCheck, onDragLimitOrder, onCancelOrder,
   }: Params, resizeData: ResizeData) {
     this.crosshairPriceLines = new CrosshairPriceLines({ axis }, resizeData);
@@ -57,7 +57,6 @@ export default class Lines {
 
     this.alertLines = new AlertPriceLines({
       axis,
-      alerts,
       onUpdateAlerts,
     }, resizeData);
 
