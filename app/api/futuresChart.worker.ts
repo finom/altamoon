@@ -63,7 +63,7 @@ const allIntervalCandles: Record<string, FuturesChartCandle[]> = {};
 const subscriptions: Record<string, {
   frequency: number;
   symbols: string[];
-  lastMessageBackTime: number;
+  lastMessageBackTimes: Record<string, number>;
   alerts: Alert[];
   lastPrices: Record<string, number>;
 }> = {};
@@ -96,7 +96,7 @@ const getTypedArray = (symbol: string) => {
 };
 
 const tick = (subscriptionId: string, symbol: string) => {
-  subscriptions[subscriptionId].lastMessageBackTime = Date.now();
+  subscriptions[subscriptionId].lastMessageBackTimes[symbol] = Date.now();
   const candlesArray = getTypedArray(symbol);
   const messgeBack: CandlesMessageBack = {
     type: 'CANDLES', subscriptionId, symbol, candlesArray, interval,
@@ -174,7 +174,7 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
 
       for (let i = 0; i < subscriptionEntries.length; i += 1) {
         const [subscriptionId, {
-          frequency, symbols, lastMessageBackTime,
+          frequency, symbols, lastMessageBackTimes,
         }] = subscriptionEntries[i];
 
         checkAlerts(subscriptionId, symbol, candle.close);
@@ -182,7 +182,8 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
         if (
           symbols.includes(symbol)
           && (
-            (frequency && lastMessageBackTime + frequency < now)
+            !lastMessageBackTimes[symbol]
+            || (frequency && lastMessageBackTimes[symbol] + frequency < now)
             || frequency === 0
           )
         ) {
@@ -207,7 +208,7 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
 
     subscriptions[subscriptionId] = {
       frequency,
-      lastMessageBackTime: Date.now(),
+      lastMessageBackTimes: {},
       symbols,
       alerts: [],
       lastPrices: {},
