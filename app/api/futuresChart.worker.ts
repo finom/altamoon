@@ -109,6 +109,7 @@ const checkAlerts = (subscriptionId: string, symbol: string, lastPrice: number) 
   const prevPrice = subscriptions[subscriptionId].lastPrices[symbol];
   const { alerts } = subscriptions[subscriptionId];
   const newAlerts: Alert[] = [];
+  subscriptions[subscriptionId].lastPrices[symbol] = lastPrice;
   if (!prevPrice || !alerts?.length) return;
 
   for (let i = 0; i < alerts.length; i += 1) {
