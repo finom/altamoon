@@ -27,7 +27,7 @@ export interface AlertMessageBack {
   symbol: string;
   price: number;
   lastPrice: number;
-  direction: 'UP' | 'DOWN';
+  direction: 'PRICE_UP' | 'PRICE_DOWN';
 }
 
 export interface SubscribeMessage {
@@ -123,7 +123,7 @@ const checkAlerts = (subscriptionId: string, symbol: string, lastPrice: number) 
         symbol,
         price,
         lastPrice,
-        direction: 'UP',
+        direction: 'PRICE_UP',
       };
     } else if (lastPrice <= price && prevPrice > price) {
       alertMessage = {
@@ -132,7 +132,7 @@ const checkAlerts = (subscriptionId: string, symbol: string, lastPrice: number) 
         symbol,
         price,
         lastPrice,
-        direction: 'DOWN',
+        direction: 'PRICE_DOWN',
       };
     } else {
       newAlerts.push(alerts[i]);
