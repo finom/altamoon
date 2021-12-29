@@ -8,11 +8,26 @@ import { setOptions } from './options';
 // eslint-disable-next-line no-restricted-globals
 const ctx = self as unknown as Worker;
 
+export interface Alert {
+  symbol: string;
+  price: number;
+}
+
 export interface CandlesMessageBack {
+  type: 'CANDLES';
+  subscriptionId: string;
   symbol: string;
   candlesArray: Float64Array;
-  subscriptionId: string;
   interval: CandlestickChartInterval;
+}
+
+export interface AlertMessageBack {
+  type: 'ALERT';
+  subscriptionId: string;
+  symbol: string;
+  price: number;
+  lastPrice: number;
+  direction: 'UP' | 'DOWN';
 }
 
 export interface SubscribeMessage {
@@ -25,6 +40,12 @@ export interface SubscribeMessage {
 export interface UnsubscribeMessage {
   type: 'UNSUBSCRIBE';
   subscriptionId: string;
+}
+
+export interface SetAlertsMessage {
+  type: 'SET_ALERTS';
+  subscriptionId: string;
+  alerts: Alert[];
 }
 
 export interface InitMessage {
@@ -40,7 +61,11 @@ let interval: CandlestickChartInterval;
 const allIntervalCandles: Record<string, FuturesChartCandle[]> = {};
 
 const subscriptions: Record<string, {
-  frequency: number; symbols: string[]; lastMessageBackTime: number;
+  frequency: number;
+  symbols: string[];
+  lastMessageBackTime: number;
+  alerts: Alert[];
+  lastPrices: Record<string, number>;
 }> = {};
 
 const getTypedArray = (symbol: string) => {
@@ -74,14 +99,53 @@ const tick = (subscriptionId: string, symbol: string) => {
   subscriptions[subscriptionId].lastMessageBackTime = Date.now();
   const candlesArray = getTypedArray(symbol);
   const messgeBack: CandlesMessageBack = {
-    subscriptionId, symbol, candlesArray, interval,
+    type: 'CANDLES', subscriptionId, symbol, candlesArray, interval,
   };
 
   ctx.postMessage(messgeBack, [candlesArray.buffer]);
 };
 
+const checkAlerts = (subscriptionId: string, symbol: string, lastPrice: number) => {
+  const prevPrice = subscriptions[subscriptionId].lastPrices[symbol];
+  const { alerts } = subscriptions[subscriptionId];
+  const newAlerts: Alert[] = [];
+  if (!prevPrice || !alerts?.length) return;
+
+  for (let i = 0; i < alerts.length; i += 1) {
+    const { price } = alerts[i];
+    let alertMessage: AlertMessageBack | null = null;
+    if (lastPrice >= price && prevPrice < price) {
+      alertMessage = {
+        type: 'ALERT',
+        subscriptionId,
+        symbol,
+        price,
+        lastPrice,
+        direction: 'UP',
+      };
+    } else if (lastPrice <= price && prevPrice > price) {
+      alertMessage = {
+        type: 'ALERT',
+        subscriptionId,
+        symbol,
+        price,
+        lastPrice,
+        direction: 'DOWN',
+      };
+    } else {
+      newAlerts.push(alerts[i]);
+    }
+
+    subscriptions[subscriptionId].alerts = newAlerts;
+
+    if (alertMessage) {
+      ctx.postMessage(alertMessage);
+    }
+  }
+};
+
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage | InitMessage | UnsubscribeMessage>) => {
+ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage | InitMessage | UnsubscribeMessage | SetAlertsMessage>) => {
   if (data.type === 'INIT') {
     // initialise by starting WS subscription
     allSymbols = data.allSymbols;
@@ -110,6 +174,9 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
         const [subscriptionId, {
           frequency, symbols, lastMessageBackTime,
         }] = subscriptionEntries[i];
+
+        checkAlerts(subscriptionId, symbol, candle.close);
+
         if (
           symbols.includes(symbol)
           && (
@@ -140,6 +207,8 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
       frequency,
       lastMessageBackTime: Date.now(),
       symbols,
+      alerts: [],
+      lastPrices: {},
     };
 
     // collect requested symbols with no delay
@@ -157,6 +226,9 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
     }
   } else if (data.type === 'UNSUBSCRIBE') {
     delete subscriptions[data.subscriptionId];
+  } else if (data.type === 'SET_ALERTS') {
+    const { subscriptionId } = data;
+    subscriptions[subscriptionId].alerts = data.alerts;
   }
 });
 

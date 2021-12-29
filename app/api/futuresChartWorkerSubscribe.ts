@@ -1,8 +1,9 @@
 import Worker, {
-  CandlesMessageBack, InitMessage, SubscribeMessage, UnsubscribeMessage,
+  Alert,
+  AlertMessageBack,
+  CandlesMessageBack, InitMessage, SetAlertsMessage, SubscribeMessage, UnsubscribeMessage,
 } from './futuresChart.worker';
-import { CandlestickChartInterval, FuturesChartCandle } from './types';
-import { futuresExchangeInfo } from './futuresREST';
+import { CandlestickChartInterval, FuturesChartCandle, FuturesExchangeInfo } from './types';
 import options from './options';
 
 declare global {
@@ -19,51 +20,52 @@ declare global {
 globalThis.chartWorkers = globalThis.chartWorkers ?? {} as typeof globalThis.chartWorkers;
 
 export default function futuresChartWorkerSubscribe({
-  interval, symbols, callback, frequency,
+  interval, symbols, callback, frequency, alertCallback, exchangeInfo,
 }: {
   interval: CandlestickChartInterval;
   symbols: string[] | 'PERPETUAL';
   callback: (symbol: string, candles: FuturesChartCandle[]) => void;
   frequency: number;
-}): (() => void) {
-  // the function should return unsubscribe handler
-  let unsubscribe: () => void;
+  alertCallback?: (message: AlertMessageBack) => void;
+  exchangeInfo: FuturesExchangeInfo,
+}): { unsubscribe: () => void, setAlerts: (d: Alert[]) => void } {
+  // subscriptionId is used to make worker identify current subscription
+  const subscriptionId = new Date().toISOString();
+
   // load all symbols
-  void futuresExchangeInfo().then((info) => {
-    const allSymbols = info.symbols
-      .filter(({ contractType }) => contractType === 'PERPETUAL')
-      .map(({ symbol }) => symbol);
+  const allSymbols = exchangeInfo.symbols
+    .filter(({ contractType }) => contractType === 'PERPETUAL')
+    .map(({ symbol }) => symbol);
 
-    // if 'PERPETUAL' is given instead of symbol list then convert it to the list of PERPETUAL symbols
-    const workerSymbols = symbols === 'PERPETUAL' ? allSymbols : symbols;
-    let worker: Worker;
+  // if 'PERPETUAL' is given instead of symbol list then convert it to the list of PERPETUAL symbols
+  const workerSymbols = symbols === 'PERPETUAL' ? allSymbols : symbols;
+  let worker: Worker;
 
-    // if no worker for given interval is created yet then create thw worker
-    if (!globalThis.chartWorkers[interval]) {
-      worker = new Worker();
-      const initMessage: InitMessage = {
-        type: 'INIT', allSymbols, interval, isTestnet: options.isTestnet,
-      };
-      worker.postMessage(initMessage);
-      globalThis.chartWorkers[interval] = worker;
-    } else {
-      // else re-use previously created worker
-      worker = globalThis.chartWorkers[interval];
-    }
-
-    // subscriptionId is used to make worker identify current subscription
-    const subscriptionId = new Date().toISOString();
-
-    // start subscription
-    const subscribeMessage: SubscribeMessage = {
-      type: 'SUBSCRIBE', symbols: workerSymbols, frequency, subscriptionId,
+  // if no worker for given interval is created yet then create thw worker
+  if (!globalThis.chartWorkers[interval]) {
+    worker = new Worker();
+    const initMessage: InitMessage = {
+      type: 'INIT', allSymbols, interval, isTestnet: options.isTestnet,
     };
-    worker.postMessage(subscribeMessage);
+    worker.postMessage(initMessage);
+    globalThis.chartWorkers[interval] = worker;
+  } else {
+    // else re-use previously created worker
+    worker = globalThis.chartWorkers[interval];
+  }
 
-    const handler = ({ data }: MessageEvent<CandlesMessageBack>) => {
-      // ignore other subscriptions
-      if (data.subscriptionId !== subscriptionId) return;
-      // decode candles from buffer
+  // start subscription
+  const subscribeMessage: SubscribeMessage = {
+    type: 'SUBSCRIBE', symbols: workerSymbols, frequency, subscriptionId,
+  };
+  worker.postMessage(subscribeMessage);
+
+  const handler = ({ data }: MessageEvent<CandlesMessageBack | AlertMessageBack>) => {
+    // ignore other subscriptions
+    if (data.subscriptionId !== subscriptionId) return;
+    // decode candles from buffer
+
+    if (data.type === 'CANDLES') {
       const float64 = data.candlesArray;
       const candles: FuturesChartCandle[] = [];
       const FIELDS_LENGTH = 11; // 11 is number of candle fields
@@ -95,25 +97,30 @@ export default function futuresChartWorkerSubscribe({
       }
 
       callback(data.symbol, candles);
-    };
+    } else if (data.type === 'ALERT') {
+      alertCallback?.(data);
+    }
+  };
 
-    worker.addEventListener('message', handler);
+  worker.addEventListener('message', handler);
 
-    unsubscribe = () => {
+  return {
+    unsubscribe: () => {
       const unsubscribeMessage: UnsubscribeMessage = {
         type: 'UNSUBSCRIBE', subscriptionId,
       };
       worker.postMessage(unsubscribeMessage);
       worker.removeEventListener('message', handler);
-    };
-  });
+    },
+    setAlerts: (alerts: Alert[]) => {
+      const setAlertsMessage: SetAlertsMessage = {
+        type: 'SET_ALERTS',
+        alerts,
+        subscriptionId,
+      };
 
-  return function tryUnsubscribe() {
-    if (typeof unsubscribe === 'function') {
-      unsubscribe();
-    } else {
-      setTimeout(tryUnsubscribe, 500);
-    }
+      worker.postMessage(setAlertsMessage);
+    },
   };
 }
 
