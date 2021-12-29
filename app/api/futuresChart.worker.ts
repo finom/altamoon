@@ -113,7 +113,8 @@ const checkAlerts = (subscriptionId: string, symbol: string, lastPrice: number) 
   if (!prevPrice || !alerts?.length) return;
 
   for (let i = 0; i < alerts.length; i += 1) {
-    const { price } = alerts[i];
+    const { price, symbol: alertSymbol } = alerts[i];
+    if (alertSymbol !== symbol) return;
     let alertMessage: AlertMessageBack | null = null;
     if (lastPrice >= price && prevPrice < price) {
       alertMessage = {
