@@ -7,12 +7,12 @@ export default function getPseudoPosition(
   { side = 'BUY', price: priceOverride }: { side?: api.OrderSide, price?: number } = {},
 ): TradingPosition | null {
   const { tradingType, symbol } = this.store.persistent;
+  const { limitSellPrice, limitBuyPrice } = this;
+
   const {
-    limitSellPrice,
-    limitBuyPrice,
-    exactSizeBuyStr,
-    exactSizeSellStr,
-  } = this;
+    tradingExactSizeBuyStr: exactSizeBuyStr,
+    tradingExactSizeSellStr: exactSizeSellStr,
+  } = this.store.persistent;
 
   const lastPrice = this.store.market.currentSymbolLastPrice ?? 0;
   const limitPrice = side === 'BUY' ? limitBuyPrice : limitSellPrice;

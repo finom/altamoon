@@ -1,5 +1,4 @@
 import * as d3 from 'd3';
-import moment from 'moment';
 
 import { ChartAxis, PriceLinesDatum, ResizeData } from '../types';
 import PriceLines from './PriceLines';
@@ -18,8 +17,6 @@ interface CustomData {
 interface AlertLinesDatum extends PriceLinesDatum {
   customData: CustomData;
 }
-
-moment.relativeTimeThreshold('ss', 0);
 
 const upSound = new Audio(alertUpSoundUri);
 const downSound = new Audio(alertDownSoundUri);

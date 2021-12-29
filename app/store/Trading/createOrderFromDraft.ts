@@ -17,6 +17,9 @@ export default async function createOrderFromDraft(this: altamoon.RootStore['tra
   const reduceOnly = side === 'BUY' ? tradingBuyReduceOnly : tradingSellReduceOnly;
   const price = side === 'BUY' ? buyDraftPrice : sellDraftPrice;
   const stopPrice = side === 'BUY' ? stopBuyDraftPrice : stopSellDraftPrice;
+  const exactSizeStr = side === 'BUY'
+    ? this.store.persistent.tradingExactSizeBuyStr
+    : this.store.persistent.tradingExactSizeSellStr;
 
   if (typeof price !== 'number') throw new Error('Price is not a number');
 
@@ -27,7 +30,7 @@ export default async function createOrderFromDraft(this: altamoon.RootStore['tra
       return;
     }
 
-    const size = this.calculateSizeFromString(symbol, side === 'BUY' ? this.exactSizeBuyStr : this.exactSizeSellStr);
+    const size = this.calculateSizeFromString(symbol, exactSizeStr);
 
     const quantity = this.calculateQuantity({
       symbol,
@@ -52,7 +55,7 @@ export default async function createOrderFromDraft(this: altamoon.RootStore['tra
       newClientOrderId,
     });
   } else { // LIMIT or MARKET
-    const size = this.calculateSizeFromString(symbol, side === 'BUY' ? this.exactSizeBuyStr : this.exactSizeSellStr);
+    const size = this.calculateSizeFromString(symbol, exactSizeStr);
 
     const quantity = this.calculateQuantity({
       symbol,

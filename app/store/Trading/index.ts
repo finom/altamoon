@@ -70,10 +70,6 @@ export default class Trading {
 
   public shouldShowStopSellDraftPriceLine = false;
 
-  public exactSizeBuyStr = '';
-
-  public exactSizeSellStr = '';
-
   public exactSizeStopLimitSellStr = '';
 
   public currentSymbolPseudoPosition: TradingPosition | null = null;

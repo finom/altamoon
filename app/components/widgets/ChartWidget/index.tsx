@@ -46,9 +46,11 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   const {
     symbol, tradingType, chartPaddingTopPercent,
     chartPaddingBottomPercent, chartPaddingRightPercent,
+    tradingExactSizeBuyStr: exactSizeBuyStr, tradingExactSizeSellStr: exactSizeSellStr,
   } = useMultiValue(PERSISTENT, [
     'symbol', 'tradingType', 'chartPaddingTopPercent',
     'chartPaddingBottomPercent', 'chartPaddingRightPercent',
+    'tradingExactSizeBuyStr', 'tradingExactSizeSellStr',
   ]);
   const getOpenOrders = useGet(TRADING, 'openOrders');
   const getOpenPositions = useGet(TRADING, 'openPositions');
@@ -57,7 +59,6 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     limitBuyPrice, limitSellPrice, stopBuyPrice, stopSellPrice,
     shouldShowLimitBuyPriceLine, shouldShowLimitSellPriceLine,
     shouldShowStopBuyDraftPriceLine, shouldShowStopSellDraftPriceLine,
-    exactSizeBuyStr, exactSizeSellStr,
     currentSymbolAllOrders,
     // silent values
     updateDrafts, createOrderFromDraft, limitOrder, cancelOrder, calculateQuantity,
@@ -67,7 +68,6 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     'limitBuyPrice', 'limitSellPrice', 'stopBuyPrice', 'stopSellPrice',
     'shouldShowLimitBuyPriceLine', 'shouldShowLimitSellPriceLine',
     'shouldShowStopBuyDraftPriceLine', 'shouldShowStopSellDraftPriceLine',
-    'exactSizeBuyStr', 'exactSizeSellStr',
     'currentSymbolAllOrders',
   ]);
 

@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import useChange, { useValue } from 'use-change';
-import { MARKET, TRADING } from '../../../store';
+import { MARKET, PERSISTENT } from '../../../store';
 import TradingTab from './TradingTab';
 import TradingPriceInput from '../../controls/TradingPriceInput';
 import useDraftPrice from './TradingTab/useDraftPrice';
@@ -30,8 +30,8 @@ const Limit = ({ isWideLayout, postOnly, tradingType }: Props): ReactElement => 
     price: sellPrice,
   } = useDraftPrice('limitSellPrice', 'shouldShowLimitSellPriceLine', { pricePrecision });
 
-  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(TRADING, 'exactSizeBuyStr');
-  const [exactSizeSellStr, setExactSizeSellStr] = useChange(TRADING, 'exactSizeSellStr');
+  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(PERSISTENT, 'tradingExactSizeBuyStr');
+  const [exactSizeSellStr, setExactSizeSellStr] = useChange(PERSISTENT, 'tradingExactSizeSellStr');
 
   return (
     <TradingTab

@@ -46,6 +46,10 @@ export default class Persistent {
 
   public tradingSellReduceOnly = persist<boolean>('tradingSellReduceOnly', false);
 
+  public tradingExactSizeBuyStr = persist<string>('tradingExactSizeBuyStr', '');
+
+  public tradingExactSizeSellStr = persist<string>('tradingExactSizeSellStr', '');
+
   public binanceApiKey = persist<string | null>('binanceApiKey', null);
 
   public binanceApiSecret = persist<string | null>('binanceApiSecret', null);
