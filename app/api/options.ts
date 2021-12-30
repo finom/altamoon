@@ -9,6 +9,7 @@ interface Options {
 }
 
 const options: Partial<Options> & Pick<Options, 'wsURL' | 'apiURL' | 'accountStreamURL'> = {
+  recvWindow: 20000,
   get wsURL() {
     return this.isTestnet ? 'wss://stream.binancefuture.com/stream' : 'wss://fstream.binance.com/stream';
   },
