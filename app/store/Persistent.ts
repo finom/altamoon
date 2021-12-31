@@ -126,8 +126,9 @@ export default class Persistent {
     this.widgetLayouts = widgetLayouts;
   };
 
-  public addLayout = (name: string) => {
-    const enabledLayout = this.widgetLayouts.find(({ isEnabled }) => isEnabled);
+  public addLayout = (name: string, uploadedLayout?: AltamoonLayout['individualLayouts']) => {
+    const individualLayouts = uploadedLayout
+      ?? this.widgetLayouts.find(({ isEnabled }) => isEnabled)?.individualLayouts;
 
     this.widgetLayouts = [
       ...this.widgetLayouts.map((layout) => ({ ...layout, isEnabled: false })),
@@ -135,7 +136,7 @@ export default class Persistent {
         name,
         id: new Date().toISOString(),
         isEnabled: true,
-        individualLayouts: enabledLayout?.individualLayouts ?? defaultLayouts,
+        individualLayouts: individualLayouts ?? defaultLayouts,
       },
     ];
   };

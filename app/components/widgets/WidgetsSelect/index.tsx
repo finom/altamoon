@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { keyBy } from 'lodash';
 import React, {
-  LegacyRef, ReactElement, useEffect, useRef, useState,
+  LegacyRef, ReactElement, useRef, useState,
 } from 'react';
 import { UiChecksGrid } from 'react-bootstrap-icons';
 
@@ -9,6 +9,7 @@ import { Button } from 'reactstrap';
 import useChange, { useValue } from 'use-change';
 import { CUSTOMIZATION, PERSISTENT } from '../../../store';
 import FormSwitch from '../../controls/FormSwitch';
+import useClickOutside from '../../../hooks/useClickOutside';
 
 import css from './style.css';
 
@@ -30,18 +31,7 @@ const WidgetsSelect = ({ buttonTextClassName }: { buttonTextClassName: string; }
     }
   };
 
-  // listen click outside
-  useEffect(() => {
-    const handler = ({ target }: MouseEvent) => {
-      if (!ref.current?.contains(target as Node)) {
-        setIsWidgetListVisible(false);
-      }
-    };
-
-    document.addEventListener('click', handler);
-
-    return () => document.removeEventListener('click', handler);
-  });
+  useClickOutside(ref, () => setIsWidgetListVisible(false));
 
   return (
     <div className="d-inline-block position-relative" ref={ref as LegacyRef<HTMLDivElement>}>
