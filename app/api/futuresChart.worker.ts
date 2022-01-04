@@ -14,7 +14,7 @@ export interface Alert {
 }
 
 export interface CandlesMessageBack {
-  type: 'CANDLES';
+  type: 'ALL_CANDLES' | 'NEW_CANDLE' | 'EXTEND_LAST_CANDLE';
   subscriptionId: string;
   symbol: string;
   candlesArray: Float64Array;
@@ -68,8 +68,7 @@ const subscriptions: Record<string, {
   lastPrices: Record<string, number>;
 }> = {};
 
-const getTypedArray = (symbol: string) => {
-  const candles = allIntervalCandles[symbol];
+const getTypedArray = (candles: FuturesChartCandle[]) => {
   const FIELDS_LENGTH = 11; // 11 is number of candle fields
   const float64 = new Float64Array(FIELDS_LENGTH * candles.length);
 
@@ -95,21 +94,36 @@ const getTypedArray = (symbol: string) => {
   return float64;
 };
 
-const tick = (subscriptionId: string, symbol: string) => {
+const tick = (type: CandlesMessageBack['type'], subscriptionId: string, symbol: string) => {
   subscriptions[subscriptionId].lastMessageBackTimes[symbol] = Date.now();
-  const candlesArray = getTypedArray(symbol);
-  const messgeBack: CandlesMessageBack = {
-    type: 'CANDLES', subscriptionId, symbol, candlesArray, interval,
-  };
+  let messageBack: CandlesMessageBack;
+  if (type === 'ALL_CANDLES') {
+    const candlesArray = getTypedArray(allIntervalCandles[symbol]);
+    messageBack = {
+      type, subscriptionId, symbol, candlesArray, interval,
+    };
+  } else if (type === 'EXTEND_LAST_CANDLE' || type === 'NEW_CANDLE') {
+    const candlesArray = getTypedArray([
+      allIntervalCandles[symbol][allIntervalCandles[symbol].length - 1],
+    ]);
+    messageBack = {
+      type, subscriptionId, symbol, candlesArray, interval,
+    };
+  } else {
+    throw new Error(`Unsupported message type ${type as string}`);
+  }
 
-  ctx.postMessage(messgeBack, [candlesArray.buffer]);
+  ctx.postMessage(messageBack, [messageBack.candlesArray.buffer]);
 };
 
+let alerts: Alert[];
+
+const lastPrices: Record<string, number> = {};
+
 const checkAlerts = (subscriptionId: string, symbol: string, lastPrice: number) => {
-  const prevPrice = subscriptions[subscriptionId].lastPrices[symbol];
-  const { alerts } = subscriptions[subscriptionId];
+  const prevPrice = lastPrices[symbol];
   const newAlerts: Alert[] = [];
-  subscriptions[subscriptionId].lastPrices[symbol] = lastPrice;
+  lastPrices[symbol] = lastPrice;
   if (!prevPrice || !alerts?.length) return;
 
   for (let i = 0; i < alerts.length; i += 1) {
@@ -165,11 +179,14 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
       const candles = allIntervalCandles[symbol];
       if (!candles) return;
       const now = Date.now();
+      let type: CandlesMessageBack['type'];
 
       if (candle.time === candles[candles.length - 1]?.time) {
         Object.assign(candles[candles.length - 1], candle);
+        type = 'EXTEND_LAST_CANDLE';
       } else {
         candles.push(candle);
+        type = 'NEW_CANDLE';
       }
       const subscriptionEntries = Object.entries(subscriptions);
 
@@ -188,7 +205,7 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
             || frequency === 0
           )
         ) {
-          tick(subscriptionId, symbol);
+          tick(type, subscriptionId, symbol);
         }
       }
     });
@@ -196,6 +213,7 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
     // start collecting data
     for (let i = 0; i < allSymbols.length; i += 1) {
       const symbol = allSymbols[i];
+
       if (!allIntervalCandles[symbol]) {
         allIntervalCandles[symbol] = await futuresCandles({
           symbol, interval, limit: 1000, lastCandleFromCache: true,
@@ -220,19 +238,22 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
       const symbol = symbols[i];
       if (!allIntervalCandles[symbol]) {
         void futuresCandles({
-          symbol, interval, limit: 1000, lastCandleFromCache: true,
+          symbol, interval, limit: 1000, lastCandleFromCache: false,
         }).then((candles) => {
           allIntervalCandles[symbol] = candles;
+          // if not unsubscribed while request passed
+          if (subscriptions[data.subscriptionId]) {
+            tick('ALL_CANDLES', subscriptionId, symbol);
+          }
         });
       } else {
-        tick(subscriptionId, symbol);
+        tick('ALL_CANDLES', subscriptionId, symbol);
       }
     }
   } else if (data.type === 'UNSUBSCRIBE') {
     delete subscriptions[data.subscriptionId];
   } else if (data.type === 'SET_ALERTS') {
-    const { subscriptionId } = data;
-    subscriptions[subscriptionId].alerts = data.alerts;
+    alerts = data.alerts;
   }
 });
 
