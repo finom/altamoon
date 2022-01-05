@@ -50,6 +50,7 @@ export default {
           loader: 'worker-loader',
           options: {
             filename: "[name].[contenthash].worker.js",
+            chunkFilename: "[id].[contenthash].worker.js",
           },
         }, {
           loader: require.resolve('babel-loader')
