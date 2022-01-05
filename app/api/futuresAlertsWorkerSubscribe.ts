@@ -31,7 +31,7 @@ export default function futuresAlertsWorkerSubscribe({
   let worker: Worker;
 
   // if no worker is created yet then create it
-  if (!globalThis.alertWorker) {
+  if (!globalThis.alertsWorker) {
     worker = new Worker();
     const initMessage: InitMessage = {
       type: 'INIT', allSymbols, isTestnet: options.isTestnet,
