@@ -8,26 +8,12 @@ import { setOptions } from './options';
 // eslint-disable-next-line no-restricted-globals
 const ctx = self as unknown as Worker;
 
-export interface Alert {
-  symbol: string;
-  price: number;
-}
-
 export interface CandlesMessageBack {
   type: 'ALL_CANDLES' | 'NEW_CANDLE' | 'EXTEND_LAST_CANDLE';
   subscriptionId: string;
   symbol: string;
   candlesArray: Float64Array;
   interval: CandlestickChartInterval;
-}
-
-export interface AlertMessageBack {
-  type: 'ALERT';
-  subscriptionId: string;
-  symbol: string;
-  price: number;
-  lastPrice: number;
-  direction: 'PRICE_UP' | 'PRICE_DOWN';
 }
 
 export interface SubscribeMessage {
@@ -40,12 +26,6 @@ export interface SubscribeMessage {
 export interface UnsubscribeMessage {
   type: 'UNSUBSCRIBE';
   subscriptionId: string;
-}
-
-export interface SetAlertsMessage {
-  type: 'SET_ALERTS';
-  subscriptionId: string;
-  alerts: Alert[];
 }
 
 export interface InitMessage {
@@ -64,7 +44,6 @@ const subscriptions: Record<string, {
   frequency: number;
   symbols: string[];
   lastMessageBackTimes: Record<string, number>;
-  alerts: Alert[];
   lastPrices: Record<string, number>;
 }> = {};
 
@@ -116,53 +95,8 @@ const tick = (type: CandlesMessageBack['type'], subscriptionId: string, symbol: 
   ctx.postMessage(messageBack, [messageBack.candlesArray.buffer]);
 };
 
-let alerts: Alert[];
-
-const lastPrices: Record<string, number> = {};
-
-const checkAlerts = (subscriptionId: string, symbol: string, lastPrice: number) => {
-  const prevPrice = lastPrices[symbol];
-  const newAlerts: Alert[] = [];
-  lastPrices[symbol] = lastPrice;
-  if (!prevPrice || !alerts?.length) return;
-
-  for (let i = 0; i < alerts.length; i += 1) {
-    const { price, symbol: alertSymbol } = alerts[i];
-    // eslint-disable-next-line no-continue
-    if (alertSymbol !== symbol) continue;
-    let alertMessage: AlertMessageBack | null = null;
-    if (lastPrice >= price && prevPrice < price) {
-      alertMessage = {
-        type: 'ALERT',
-        subscriptionId,
-        symbol,
-        price,
-        lastPrice,
-        direction: 'PRICE_UP',
-      };
-    } else if (lastPrice <= price && prevPrice > price) {
-      alertMessage = {
-        type: 'ALERT',
-        subscriptionId,
-        symbol,
-        price,
-        lastPrice,
-        direction: 'PRICE_DOWN',
-      };
-    } else {
-      newAlerts.push(alerts[i]);
-    }
-
-    subscriptions[subscriptionId].alerts = newAlerts;
-
-    if (alertMessage) {
-      ctx.postMessage(alertMessage);
-    }
-  }
-};
-
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage | InitMessage | UnsubscribeMessage | SetAlertsMessage>) => {
+ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage | InitMessage | UnsubscribeMessage>) => {
   if (data.type === 'INIT') {
     // initialise by starting WS subscription
     allSymbols = data.allSymbols;
@@ -194,8 +128,6 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
         const [subscriptionId, {
           frequency, symbols, lastMessageBackTimes,
         }] = subscriptionEntries[i];
-
-        checkAlerts(subscriptionId, symbol, candle.close);
 
         if (
           symbols.includes(symbol)
@@ -229,7 +161,6 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
       frequency,
       lastMessageBackTimes: {},
       symbols,
-      alerts: [],
       lastPrices: {},
     };
 
@@ -252,8 +183,6 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
     }
   } else if (data.type === 'UNSUBSCRIBE') {
     delete subscriptions[data.subscriptionId];
-  } else if (data.type === 'SET_ALERTS') {
-    alerts = data.alerts;
   }
 });
 

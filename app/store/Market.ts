@@ -81,7 +81,7 @@ export default class Market {
     const { symbol, interval, chartUpdateFrequency } = this.#store.persistent;
     this.#chartUnsubscribe?.();
 
-    const { unsubscribe } = api.futuresChartWorkerSubscribe({
+    const unsubscribe = api.futuresChartWorkerSubscribe({
       symbols: [symbol],
       interval,
       frequency: chartUpdateFrequency,

@@ -1,7 +1,5 @@
 import Worker, {
-  Alert,
-  AlertMessageBack,
-  CandlesMessageBack, InitMessage, SetAlertsMessage, SubscribeMessage, UnsubscribeMessage,
+  CandlesMessageBack, InitMessage, SubscribeMessage, UnsubscribeMessage,
 } from './futuresChart.worker';
 import { CandlestickChartInterval, FuturesChartCandle, FuturesExchangeInfo } from './types';
 import options from './options';
@@ -56,15 +54,14 @@ const typedArrayToCandles = (
 const allCandles: Record<`${CandlestickChartInterval}${string}`, FuturesChartCandle[]> = {};
 
 export default function futuresChartWorkerSubscribe({
-  interval, symbols, callback, frequency, alertCallback, exchangeInfo,
+  interval, symbols, callback, frequency, exchangeInfo,
 }: {
   interval: CandlestickChartInterval;
   symbols: string[] | 'PERPETUAL';
   callback: (symbol: string, candles: FuturesChartCandle[]) => void;
   frequency: number;
-  alertCallback?: (message: AlertMessageBack) => void;
   exchangeInfo: FuturesExchangeInfo,
-}): { unsubscribe: () => void, setAlerts: (d: Alert[]) => void } {
+}): () => void {
   // subscriptionId is used to make worker identify current subscription
   const subscriptionId = new Date().toISOString();
 
@@ -96,7 +93,7 @@ export default function futuresChartWorkerSubscribe({
   };
   worker.postMessage(subscribeMessage);
 
-  const handler = ({ data }: MessageEvent<CandlesMessageBack | AlertMessageBack>) => {
+  const handler = ({ data }: MessageEvent<CandlesMessageBack>) => {
     // ignore other subscriptions
     if (data.subscriptionId !== subscriptionId) return;
     if (data.type === 'ALL_CANDLES') {
@@ -114,30 +111,17 @@ export default function futuresChartWorkerSubscribe({
       Object.assign(candles[candles.length - 1], lastCandle);
       allCandles[`${interval}${data.symbol}`] = candles;
       callback(data.symbol, candles);
-    } else if (data.type === 'ALERT') {
-      alertCallback?.(data);
     }
   };
 
   worker.addEventListener('message', handler);
 
-  return {
-    unsubscribe: () => {
-      const unsubscribeMessage: UnsubscribeMessage = {
-        type: 'UNSUBSCRIBE', subscriptionId,
-      };
-      worker.postMessage(unsubscribeMessage);
-      worker.removeEventListener('message', handler);
-    },
-    setAlerts: (alerts: Alert[]) => {
-      const setAlertsMessage: SetAlertsMessage = {
-        type: 'SET_ALERTS',
-        alerts,
-        subscriptionId,
-      };
-
-      worker.postMessage(setAlertsMessage);
-    },
+  return () => {
+    const unsubscribeMessage: UnsubscribeMessage = {
+      type: 'UNSUBSCRIBE', subscriptionId,
+    };
+    worker.postMessage(unsubscribeMessage);
+    worker.removeEventListener('message', handler);
   };
 }
 

@@ -23,6 +23,8 @@ export default function futuresAlertsWorkerSubscribe({
   callback: (message: AlertMessageBack) => void;
   exchangeInfo: FuturesExchangeInfo,
 }): (d: Alert[]) => void {
+
+  console.log('subscribe')
   // load all symbols
   const allSymbols = exchangeInfo.symbols
     .filter(({ contractType }) => contractType === 'PERPETUAL')

@@ -20,7 +20,13 @@ export default {
       },
       {
         test: /\.worker\.ts$/,
-        use: { loader: 'worker-loader', options: {} }
+        use: {
+          loader: 'worker-loader',
+            options: {
+            filename: "[name].[contenthash].worker.js",
+            chunkFilename: "[id].[contenthash].worker.js",
+          },
+        }
       },
     ],
   },
