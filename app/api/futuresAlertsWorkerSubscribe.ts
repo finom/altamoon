@@ -15,7 +15,7 @@ declare global {
 }
 
 // store workers globally to re-use them at plugins
-globalThis.alertsWorker = globalThis.alertsWorker ?? {} as typeof globalThis.alertsWorker;
+globalThis.alertsWorker = globalThis.alertsWorker ?? undefined as typeof globalThis.alertsWorker;
 
 export default function futuresAlertsWorkerSubscribe({
   callback, exchangeInfo,
