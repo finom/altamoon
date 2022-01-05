@@ -20,7 +20,6 @@ globalThis.alertsWorker = globalThis.alertsWorker ?? {} as typeof globalThis.ale
 export default function futuresAlertsWorkerSubscribe({
   callback, exchangeInfo,
 }: {
-  symbols: string[] | 'PERPETUAL';
   callback: (message: AlertMessageBack) => void;
   exchangeInfo: FuturesExchangeInfo,
 }): (d: Alert[]) => void {
