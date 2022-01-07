@@ -135,6 +135,7 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
             !lastMessageBackTimes[symbol]
             || (frequency && lastMessageBackTimes[symbol] + frequency < now)
             || frequency === 0
+            || type === 'NEW_CANDLE'
           )
         ) {
           tick(type, subscriptionId, symbol);
