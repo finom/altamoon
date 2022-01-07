@@ -74,7 +74,7 @@ const getTypedArray = (candles: FuturesChartCandle[]) => {
 };
 
 const tick = (type: CandlesMessageBack['type'], subscriptionId: string, symbol: string) => {
-  subscriptions[subscriptionId].lastMessageBackTimes[symbol] = Date.now();
+  if (type !== 'ALL_CANDLES') subscriptions[subscriptionId].lastMessageBackTimes[symbol] = Date.now();
   let messageBack: CandlesMessageBack;
   if (type === 'ALL_CANDLES') {
     const candlesArray = getTypedArray(allIntervalCandles[symbol]);

@@ -29,10 +29,10 @@ interface Params {
   onClickCheck?: Handler;
 }
 
-export default class PriceLines implements ChartItem {
-  #wrapper?: D3Selection<SVGGElement>;
+export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
+  #wrapper?: D3Selection<HTMLDivElement>;
 
-  protected parent?: D3Selection<SVGElement>;
+  protected parent?: D3Selection<SVGForeignObjectElement>;
 
   #items: PriceLinesDatum[];
 
@@ -98,15 +98,22 @@ export default class PriceLines implements ChartItem {
   }
 
   public appendTo(
-    parent: Element,
+    parent: SVGForeignObjectElement,
+    eventsArea: SVGRectElement,
     resizeData: ResizeData,
     { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
   ): void {
-    this.parent = convertType<D3Selection<SVGElement>>(d3.select(parent));
+    this.parent = d3.select(parent);
 
-    this.eventsArea = this.parent.select('#plotMouseEventsArea');
+    this.eventsArea = d3.select(eventsArea); // this.parent.select('#plotMouseEventsArea');
 
-    this.#wrapper = this.parent.append('g');
+    this.#wrapper = this.parent.append<HTMLDivElement>('xhtml:div')
+      .style('width', '100%')
+      .style('height', '100%')
+      .style('pointer-events', 'none')
+      .style('position', 'absolute')
+      .style('left', '0')
+      .style('top', '0');
 
     Object.assign(this.#wrapper.node()?.style ?? {}, wrapperCSSStyle ?? {});
 
@@ -266,18 +273,29 @@ export default class PriceLines implements ChartItem {
         (enter) => {
           // eslint-disable-next-line @typescript-eslint/no-this-alias
           // --- horizontal line ---
-          const wrapper = enter.append('g').attr('class', 'price-line-wrapper')
+          const wrapper = enter.append('svg')
+            .attr('class', 'price-line-wrapper')
+            .attr('width', '100%')
+            .attr('height', '100%')
+            .style('position', 'absolute')
+            .style('top', '0')
+            .style('left', '0')
+            .style('pointer-events', 'none')
             .on('mouseover', function mouseover(_evt, datum) {
               const titleElement = this.querySelector<HTMLElement>('.price-line-title-inner');
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
                 that.updateItem(datum.id, { isHovered: true });
               }
+
+              this.style.zIndex = '1';
             })
             .on('mouseleave', function mouseleave(_evt, datum) {
               const titleElement = this.querySelector<HTMLElement>('.price-line-title-inner');
               if ((that.#isTitleVisible === 'hover' || datum.isTitleVisible === 'hover') && titleElement) {
                 that.updateItem(datum.id, { isHovered: false });
               }
+
+              this.style.zIndex = '';
             });
 
           const horizontalWrapper = wrapper.append('g').attr('class', 'price-line-horizontal-group');
@@ -448,8 +466,11 @@ export default class PriceLines implements ChartItem {
           return wrapper;
         },
         (update) => {
-          updateHorizontalLineHandler(update, 'right', this.#axis.yRight);
-          updateVerticalLineHandler(update, this.#axis.x);
+          const updateWrapper = convertType<
+          d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown>
+          >(update);
+          updateHorizontalLineHandler(updateWrapper, 'right', this.#axis.yRight);
+          updateVerticalLineHandler(updateWrapper, this.#axis.x);
           if (this.#isTitleVisible) {
             update.select('.price-line-title-object .text').html(({ title }) => title ?? '');
             update.select('.price-line-title-object .price-line-title-inner')

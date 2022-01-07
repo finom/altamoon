@@ -31,11 +31,12 @@ export default class CrosshairPriceLines extends PriceLines {
   };
 
   public appendTo = (
-    parent: Element,
+    parent: SVGForeignObjectElement,
+    eventsArea: SVGRectElement,
     resizeData: ResizeData,
     { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
   ): void => {
-    super.appendTo(parent, resizeData, { wrapperCSSStyle });
+    super.appendTo(parent, eventsArea, resizeData, { wrapperCSSStyle });
     this.eventsArea?.on('mousemove', this.#onMouseMove)
       .on('mouseleave', this.#onMouseLeave);
   };

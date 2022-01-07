@@ -190,11 +190,12 @@ export default class DraftPriceLines extends PriceLines {
   };
 
   public appendTo = (
-    parent: Element,
+    parent: SVGForeignObjectElement,
+    eventsArea: SVGRectElement,
     resizeData: ResizeData,
     { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
   ): void => {
-    super.appendTo(parent, resizeData, { wrapperCSSStyle });
+    super.appendTo(parent, eventsArea, resizeData, { wrapperCSSStyle });
     this.eventsArea
       ?.on('dblclick', (evt) => this.#onDoubleClick(d3.pointer(evt)))
       .on('mousedown', (evt: MouseEvent) => {

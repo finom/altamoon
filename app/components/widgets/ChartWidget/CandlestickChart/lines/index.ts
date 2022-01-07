@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import DraftPriceLines from './DraftPriceLines';
 import OrderPriceLines from './OrderPriceLines';
 import AlertPriceLines from './AlertPriceLines';
@@ -148,13 +149,20 @@ export default class Lines {
   }
 
   appendTo(svgContainer: SVGGElement, resizeData: ResizeData): void {
-    this.crosshairPriceLines.appendTo(svgContainer, resizeData);
-    this.currentPriceLines.appendTo(svgContainer, resizeData);
-    this.positionLines.appendTo(svgContainer, resizeData);
-    this.orderLines.appendTo(svgContainer, resizeData);
-    this.draftLines.appendTo(svgContainer, resizeData);
-    this.alertLines.appendTo(svgContainer, resizeData);
-    this.customLines.appendTo(svgContainer, resizeData);
-    this.liquidationPriceLines.appendTo(svgContainer, resizeData);
+    const container = d3.select(svgContainer).append('foreignObject')
+      .attr('height', '100%')
+      .attr('width', '100%')
+      .style('pointer-events', 'none')
+      .node() as SVGForeignObjectElement;
+
+    const eventsArea = d3.select(svgContainer).select<SVGRectElement>('#plotMouseEventsArea').node() as SVGRectElement;
+    this.crosshairPriceLines.appendTo(container, eventsArea, resizeData);
+    this.currentPriceLines.appendTo(container, eventsArea, resizeData);
+    this.positionLines.appendTo(container, eventsArea, resizeData);
+    this.orderLines.appendTo(container, eventsArea, resizeData);
+    this.draftLines.appendTo(container, eventsArea, resizeData);
+    this.alertLines.appendTo(container, eventsArea, resizeData);
+    this.customLines.appendTo(container, eventsArea, resizeData);
+    this.liquidationPriceLines.appendTo(container, eventsArea, resizeData);
   }
 }

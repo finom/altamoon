@@ -100,12 +100,13 @@ export default class AlertPriceLines extends PriceLines {
   };
 
   public appendTo = (
-    parent: Element,
+    parent: SVGForeignObjectElement,
+    eventsArea: SVGRectElement,
     resizeData: ResizeData,
     { wrapperCSSStyle }: { wrapperCSSStyle?: Partial<CSSStyleDeclaration> } = {},
   ): void => {
-    super.appendTo(parent, resizeData, { wrapperCSSStyle });
-    this.parent?.on('contextmenu', this.#onRightClick);
+    super.appendTo(parent, eventsArea, resizeData, { wrapperCSSStyle });
+    d3.select(eventsArea).on('contextmenu', this.#onRightClick);
   };
 
   public getItems(): AlertLinesDatum[] {
