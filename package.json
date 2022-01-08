@@ -28,14 +28,14 @@
     "publish-types": "npm publish ./packages/altamoon-types/",
     "publish-api": "npm publish ./packages/altamoon-binance-api/",
     "patch:env": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags",
-    "patch:prod": "npm run build:browser && git commit -am 'chore: Build browser version' && git push",
-    "patch": "rm -rf dist-dev && deploy-to-git --repository git@github.com:Altamoon/altamoon-web-dev.git"
+    "patch": "rm -rf dist-dev && deploy-to-git --repository git@github.com:Altamoon/altamoon-web-dev.git --folder dist-dev",
+    "patch:prod": "rm -rf dist-dev && deploy-to-git --repository git@github.com:Altamoon/altamoon-web-prod.git --folder dist-prod"
   },
   "config": {
     "deployToGit": {
       "_repository": "git@github.com:Altamoon/altamoon-web-dev.git",
       "branch": "main",
-      "folder": "dist-dev",
+      "_folder": "dist-dev",
       "script": "DIST_ENV=development npm run patch:env",
       "commit": "Automatic commit text",
       "user": {
