@@ -29,11 +29,11 @@
     "publish-api": "npm publish ./packages/altamoon-binance-api/",
     "patch:env": "npm version patch && npm run build-types && npm run build-api && npm run build:browser && git commit -am 'chore: Build types, API and browser version' && npm run publish-types && npm run publish-api && git push && git push --tags",
     "patch:prod": "npm run build:browser && git commit -am 'chore: Build browser version' && git push",
-    "patch": "rm -rf dist-dev && deploy-to-git"
+    "patch": "rm -rf dist-dev && deploy-to-git --repository git@github.com:Altamoon/altamoon-web-dev.git"
   },
   "config": {
     "deployToGit": {
-      "repository": "git@github.com:Altamoon/altamoon-web-dev.git",
+      "_repository": "git@github.com:Altamoon/altamoon-web-dev.git",
       "branch": "main",
       "folder": "dist-dev",
       "script": "DIST_ENV=development npm run patch:env",
@@ -193,7 +193,7 @@
     "cross-env": "^7.0.3",
     "css-loader": "^6.5.1",
     "css-minimizer-webpack-plugin": "^3.3.1",
-    "deploy-to-git": "^0.1.11",
+    "deploy-to-git": "^0.4.1",
     "detect-port": "^1.3.0",
     "electron": "^16.0.6",
     "electron-builder": "^22.14.5",
@@ -245,14 +245,14 @@
   },
   "dependencies": {
     "altamoon-components": "^0.0.9",
-    "altamoon-minicharts": "^0.3.78",
+    "altamoon-minicharts": "^0.3.79",
     "altamoon-robust-websocket": "^1.0.3",
     "balajs": "^1.0.10",
     "bootstrap": "^5.1.3",
     "bootswatch": "^5.1.3",
     "classnames": "^2.3.1",
     "crypto-js": "^4.1.1",
-    "d3": "^7.2.1",
+    "d3": "^7.3.0",
     "d3-scale": "^4.0.2",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.4",
