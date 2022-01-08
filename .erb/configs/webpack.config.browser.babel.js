@@ -25,7 +25,7 @@ export default {
     library: 'altamoon',
     libraryTarget: 'var',
     publicPath: '/',
-    path: path.resolve(__dirname, process.env.DIST_ENV === 'production' ? '../../docs' : '../../dist-dev')
+    path: path.resolve(__dirname, process.env.DIST_ENV === 'production' ? '../../dist-prod' : '../../dist-dev')
   },
 
   module: {
