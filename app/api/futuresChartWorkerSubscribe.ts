@@ -91,7 +91,6 @@ export default function futuresChartWorkerSubscribe({
   const subscribeMessage: SubscribeMessage = {
     type: 'SUBSCRIBE', symbols: workerSymbols, frequency, subscriptionId,
   };
-  worker.postMessage(subscribeMessage);
 
   const handler = ({ data }: MessageEvent<CandlesMessageBack>) => {
     // ignore other subscriptions
@@ -102,12 +101,14 @@ export default function futuresChartWorkerSubscribe({
       callback(data.symbol, candles);
     } if (data.type === 'NEW_CANDLE') {
       const [newCandle] = typedArrayToCandles(data.candlesArray, data.symbol, interval);
-      const candles = allCandles[`${interval}${data.symbol}`].concat(newCandle);
+      const candles = allCandles[`${interval}${data.symbol}`]?.concat(newCandle);
+      if (!candles) return;
       allCandles[`${interval}${data.symbol}`] = candles;
       callback(data.symbol, candles);
     } if (data.type === 'EXTEND_LAST_CANDLE') {
       const [lastCandle] = typedArrayToCandles(data.candlesArray, data.symbol, interval);
-      const candles = allCandles[`${interval}${data.symbol}`].slice();
+      const candles = allCandles[`${interval}${data.symbol}`]?.slice();
+      if (!candles) return;
       Object.assign(candles[candles.length - 1], lastCandle);
       allCandles[`${interval}${data.symbol}`] = candles;
       callback(data.symbol, candles);
@@ -115,6 +116,8 @@ export default function futuresChartWorkerSubscribe({
   };
 
   worker.addEventListener('message', handler);
+
+  worker.postMessage(subscribeMessage);
 
   return () => {
     const unsubscribeMessage: UnsubscribeMessage = {
