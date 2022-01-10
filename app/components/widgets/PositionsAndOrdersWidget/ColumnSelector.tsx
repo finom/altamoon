@@ -30,7 +30,7 @@ const ColumnSelector = ({
       <DropdownMenu>
         {columns.map(({ id, display }) => (
           <DropdownItem text key={id}>
-            <label className='text-nowrap'>
+            <label className="text-nowrap">
               <FormSwitch
                 name={`column_selector_switch_${selectorId}_${id}`}
                 id={`column_selector_switch_${selectorId}_${id}`}
@@ -46,7 +46,7 @@ const ColumnSelector = ({
                 key={String(!hiddenColumnIds.includes(id))}
               />
               {' '}
-             {display}
+              {display}
             </label>
           </DropdownItem>
         ))}
