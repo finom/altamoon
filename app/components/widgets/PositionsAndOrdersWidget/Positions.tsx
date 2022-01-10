@@ -1,12 +1,15 @@
 import { format } from 'd3-format';
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, {
+  ReactElement, useCallback, useMemo, useState,
+} from 'react';
 import { PencilSquare } from 'react-bootstrap-icons';
 import { Badge, Button, Table } from 'reactstrap';
-import { useSet, useSilent, useValue } from 'use-change';
+import useChange, { useSet, useSilent, useValue } from 'use-change';
 import useValueDebounced from '../../../hooks/useValueDebounced';
 import tooltipRef from '../../../lib/tooltipRef';
 import { ACCOUNT, PERSISTENT, TRADING } from '../../../store';
 import AdjustMarginModal from './AdjustMarginModal';
+import ColumnSelector, { ColumnSelectorItem } from './ColumnSelector';
 
 const formatNumber = (n: number, ignorePrecision?: boolean) => format(n < 10 && !ignorePrecision ? ',.4f' : ',.2f')(n);
 const formatPercent = format(',.1f');
@@ -23,6 +26,7 @@ const Positions = (): ReactElement => {
 
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
   const setSymbol = useSet(PERSISTENT, 'symbol');
+  const [hiddenPositionColumns, setHiddenPositionColumns] = useChange(PERSISTENT, 'hiddenPositionColumns');
   const [currentAdjustMarginSymbol, setCurrentAdjustMarginSymbol] = useState<string | null>(null);
 
   const onCloseMarket = useCallback(async (symbol: string) => {
@@ -30,31 +34,72 @@ const Positions = (): ReactElement => {
   }, [closePosition]);
   const closeAdjustMarginModal = useCallback(() => setCurrentAdjustMarginSymbol(null), []);
 
+  const columns = useMemo<readonly ColumnSelectorItem[]>(() => [{
+    id: 'symbol',
+    display: 'Position',
+  }, {
+    id: 'mode',
+    display: 'Mode',
+  }, {
+    id: 'size',
+    display: 'Size',
+  }, {
+    id: 'margin',
+    display: 'Margin',
+  }, {
+    id: 'last_price',
+    display: 'Last Price',
+  }, {
+    id: 'entry_price',
+    display: 'Entry Price',
+  }, {
+    id: 'liquidation_price',
+    display: 'Liquidation',
+  }, {
+    id: 'break_even_price',
+    display: 'Break-even',
+  }, {
+    id: 'realized_pnl',
+    display: 'Realized PNL',
+    title: 'Realized Profit and Loss',
+  }, {
+    id: 'pnl',
+    display: 'PNL',
+    title: 'Profit and Loss',
+  }, {
+    id: 'roi',
+    display: 'ROI',
+    title: 'Return on Investment',
+  }, {
+    id: 'row',
+    display: 'ROW',
+    title: 'Return on Wallet',
+  }], []);
+
   return (
     <>
       <AdjustMarginModal symbol={currentAdjustMarginSymbol} onClose={closeAdjustMarginModal} />
       <Table className="align-middle">
         <thead>
           <tr>
-            <th>Position</th>
-            <th>Mode</th>
-            <th>Size</th>
-            <th>Margin</th>
-            <th>Last Price</th>
-            <th>Entry Price</th>
-            <th>Liquidation</th>
-            <th>Break-even</th>
-            <th><span className="help-text" ref={tooltipRef({ title: 'Realized Profit and Loss' })}>Realized PNL</span></th>
-            <th><span className="help-text" ref={tooltipRef({ title: 'Profit and Loss' })}>PNL</span></th>
-            <th>
-              <span className="help-text" ref={tooltipRef({ title: 'Return on Investment' })}>ROI</span>
-            </th>
-            <th>
-              <span className="help-text" ref={tooltipRef({ title: 'Return on Wallet' })}>ROW</span>
-            </th>
+            {columns.map(({ id, display, title }) => (
+              !hiddenPositionColumns.includes(id) ? (
+                <th key={id} ref={title ? tooltipRef({ title }) : undefined}>
+                  {display}
+                </th>
+              ) : null
+            ))}
             <th style={{ width: '100px' }}>
               Close
             </th>
+            <td className="p-0">
+              <ColumnSelector
+                id="order_column_selector"
+                columns={columns}
+                hiddenColumnIds={hiddenPositionColumns}
+                setHiddenColumnIds={setHiddenPositionColumns}
+              />
+            </td>
           </tr>
         </thead>
         <tbody>
@@ -64,6 +109,7 @@ const Positions = (): ReactElement => {
             side, pnl, pnlBalancePercent, pnlPositionPercent, isClosed, calculatedMargin,
           }) => (
             <tr key={symbol} className={isClosed ? 'o-50' : undefined}>
+              {!hiddenPositionColumns.includes('symbol') && (
               <td>
                 <span
                   className="link-alike"
@@ -81,7 +127,9 @@ const Positions = (): ReactElement => {
                   x
                 </Badge>
               </td>
-              <td>{marginType === 'cross' ? <em className="text-warning">Cross</em> : 'Isolated'}</td>
+              )}
+              {!hiddenPositionColumns.includes('mode') && (<td>{marginType === 'cross' ? <em className="text-warning">Cross</em> : 'Isolated'}</td>)}
+              {!hiddenPositionColumns.includes('size') && (
               <td>
                 {positionAmt}
                 {' '}
@@ -89,6 +137,8 @@ const Positions = (): ReactElement => {
                 {formatNumber(baseValue, true)}
                 &nbsp;₮)
               </td>
+              )}
+              {!hiddenPositionColumns.includes('margin') && (
               <td>
                 {marginType === 'cross' ? <em className="text-warning">Cross</em>
                   : (
@@ -107,14 +157,20 @@ const Positions = (): ReactElement => {
                     </>
                   )}
               </td>
+              )}
+              {!hiddenPositionColumns.includes('last_price') && (
               <td>
                 {formatNumber(lastPrice)}
                 &nbsp;₮
               </td>
+              )}
+              {!hiddenPositionColumns.includes('entry_price') && (
               <td>
                 {formatNumber(entryPrice)}
                 &nbsp;₮
               </td>
+              )}
+              {!hiddenPositionColumns.includes('liquidation_price') && (
               <td>
                 {marginType === 'isolated' ? (
                   <>
@@ -123,6 +179,8 @@ const Positions = (): ReactElement => {
                   </>
                 ) : <>&mdash;</>}
               </td>
+              )}
+              {!hiddenPositionColumns.includes('break_even_price') && (
               <td>
                 {breakEvenPrice ? (
                   <>
@@ -131,30 +189,39 @@ const Positions = (): ReactElement => {
                   </>
                 ) : '...'}
               </td>
+              )}
+              {!hiddenPositionColumns.includes('realized_pnl') && (
               <td>
                 <span className={textClassName(realizedPnl ?? 0)}>
                   {typeof realizedPnl === 'number' ? formatNumber(realizedPnl, true) : '...'}
                   &nbsp;₮
                 </span>
               </td>
+              )}
+              {!hiddenPositionColumns.includes('pnl') && (
               <td>
                 <span className={textClassName(pnl)}>
                   {formatNumber(pnl, true)}
                   &nbsp;₮
                 </span>
               </td>
+              )}
+              {!hiddenPositionColumns.includes('roi') && (
               <td>
                 <span className={textClassName(pnlPositionPercent)}>
                   {formatPercent(pnlPositionPercent)}
                   %
                 </span>
               </td>
+              )}
+              {!hiddenPositionColumns.includes('row') && (
               <td>
                 <span className={textClassName(pnlBalancePercent)}>
                   {formatPercent(pnlBalancePercent)}
                   %
                 </span>
               </td>
+              )}
               <td>
                 <Button
                   color="link"
@@ -165,6 +232,7 @@ const Positions = (): ReactElement => {
                   {isClosed ? 'Closing...' : 'Market'}
                 </Button>
               </td>
+              <td />
             </tr>
           ))}
         </tbody>

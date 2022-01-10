@@ -98,6 +98,10 @@ export default class Persistent {
 
   public compactModeSide = persist<api.OrderSide>('compactModeSide', 'BUY');
 
+  public hiddenPositionColumns = persist<string[]>('hiddenPositionColumns', []);
+
+  public hiddenOrderColumns = persist<string[]>('hiddenOrderColumns', []);
+
   constructor() {
     Object.getOwnPropertyNames(this).forEach((key) => {
       listenChange(this, key as keyof Persistent, (value: unknown) => {
