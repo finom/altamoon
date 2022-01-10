@@ -76,6 +76,8 @@ export default class Persistent {
 
   public chartUpdateFrequency = persist<number>('chartUpdateFrequency', 50);
 
+  public chartShouldShowBidAskLines = persist<boolean>('chartShouldShowBidAskLines', false);
+
   public tradingWidgetPercentButtonsCount = persist<number>('tradingWidgetPercentButtonsCount', 4);
 
   public testnetBinanceApiKey = persist<string | null>('testnetBinanceApiKey', null);

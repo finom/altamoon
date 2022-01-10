@@ -7,6 +7,7 @@ import {
 import useChange from 'use-change';
 
 import { PERSISTENT } from '../../../store';
+import FormSwitch from '../../controls/FormSwitch';
 import { WidgetSettingsProps } from '../../layout/Widget';
 
 const ChartSettings = ({
@@ -29,6 +30,11 @@ const ChartSettings = ({
     chartUpdateFrequencyStr, setChartUpdateFrequencyStr,
   ] = useState(String(chartUpdateFrequency));
 
+  const [chartShouldShowBidAskLines, setChartShouldShowBidAskLines] = useChange(PERSISTENT, 'chartShouldShowBidAskLines');
+  const [
+    chartShouldShowBidAskLinesValue, setChartShouldShowBidAskLinesValue,
+  ] = useState(chartShouldShowBidAskLines);
+
   useEffect(() => listenSettingsSave(() => {
     setChartPaddingTopPercent(
       Number.isNaN(+paddingTopStr) ? chartPaddingTopPercent : +paddingTopStr,
@@ -49,12 +55,14 @@ const ChartSettings = ({
     setChartUpdateFrequency(
       Number.isNaN(+chartUpdateFrequencyStr) ? chartUpdateFrequency : +chartUpdateFrequencyStr,
     );
+
+    setChartShouldShowBidAskLines(chartShouldShowBidAskLinesValue);
   }), [
     chartOrdersNumber, chartOrdersNumberStr, chartPaddingBottomPercent, chartPaddingRightPercent,
-    chartPaddingTopPercent, chartUpdateFrequency, chartUpdateFrequencyStr, listenSettingsSave,
-    paddingBottomStr, paddingRightStr, paddingTopStr, setChartOrdersNumber,
-    setChartPaddingBottomPercent,
-    setChartPaddingRightPercent, setChartPaddingTopPercent, setChartUpdateFrequency,
+    chartPaddingTopPercent, chartShouldShowBidAskLinesValue, chartUpdateFrequency,
+    chartUpdateFrequencyStr, listenSettingsSave, paddingBottomStr, paddingRightStr,
+    paddingTopStr, setChartOrdersNumber, setChartPaddingBottomPercent, setChartPaddingRightPercent,
+    setChartPaddingTopPercent, setChartShouldShowBidAskLines, setChartUpdateFrequency,
   ]);
 
   useEffect(() => listenSettingsCancel(() => {
@@ -63,9 +71,10 @@ const ChartSettings = ({
     setPaddingRightStr(String(chartPaddingRightPercent));
     setChartOrdersNumberStr(String(chartOrdersNumber));
     setChartUpdateFrequencyStr(String(chartUpdateFrequency));
+    setChartShouldShowBidAskLinesValue(chartShouldShowBidAskLines);
   }), [
     chartOrdersNumber, chartPaddingBottomPercent, chartPaddingRightPercent,
-    chartPaddingTopPercent, chartUpdateFrequency, listenSettingsCancel,
+    chartPaddingTopPercent, chartShouldShowBidAskLines, chartUpdateFrequency, listenSettingsCancel,
   ]);
 
   return (
@@ -108,7 +117,7 @@ const ChartSettings = ({
           />
         </Col>
       </Row>
-      <Row>
+      <Row className="mt-3">
         <Col xs={6} md={3}>
           <Label htmlFor="chartUpdateFrequency" className="form-label">Update frequency (ms)</Label>
           <Input
@@ -117,6 +126,18 @@ const ChartSettings = ({
             value={chartUpdateFrequencyStr}
             onChange={({ target }) => setChartUpdateFrequencyStr(target.value)}
           />
+        </Col>
+        <Col xs={6} md={3} className="pt-3">
+          <Label className="form-label mt-4">
+            <FormSwitch
+              id="chartShouldShowBidAskLines"
+              className="d-inline-block align-middle"
+              onChange={setChartShouldShowBidAskLinesValue}
+              isChecked={chartShouldShowBidAskLinesValue}
+            />
+            {' '}
+            Show bid/ask lines
+          </Label>
         </Col>
       </Row>
     </>

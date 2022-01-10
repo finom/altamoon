@@ -2,7 +2,6 @@ import { keyBy } from 'lodash';
 import { listenChange } from 'use-change';
 
 import * as api from '../api';
-import binanceFeatureDepthSubscribe from '../lib/binanceFeatureDepthSubscribe';
 import listenMultiChange from '../lib/listenMultiChange';
 
 const LAST_TRADES_COUNT = 30;
@@ -107,7 +106,7 @@ export default class Market {
     this.priceDirection = 'NEUTRAL';
 
     this.#depthUnsubscribe?.();
-    this.#depthUnsubscribe = binanceFeatureDepthSubscribe(symbol, (asks, bids) => {
+    this.#depthUnsubscribe = api.futuresDepthSubscribe(symbol, (asks, bids) => {
       this.asks = asks;
       this.bids = bids;
     });

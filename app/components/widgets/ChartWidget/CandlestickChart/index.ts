@@ -225,6 +225,10 @@ export default class CandlestickChart {
     shouldShowStopBuyDraftPrice?: boolean;
     shouldShowStopSellDraftPrice?: boolean;
 
+    shouldShowBidAskLines?: boolean;
+    bids?: [number, number][];
+    asks?: [number, number][];
+
     paddingPercents?: ChartPaddingPercents;
   }): void {
     if (typeof data.alerts !== 'undefined') this.#lines.alertLines.updateAlertLines(data.alerts);
@@ -262,6 +266,10 @@ export default class CandlestickChart {
       } else if (isNewCandle) {
         this.#translateBy(0);
       }
+    }
+
+    if (typeof data.shouldShowBidAskLines !== 'undefined' || typeof data.bids !== 'undefined' || typeof data.asks !== 'undefined') {
+      this.#lines.currentPriceLines.updateCurrentPrices(data);
     }
 
     if (
@@ -355,8 +363,8 @@ export default class CandlestickChart {
       this.#yDomain = yDomain;
     }
 
-    this.#lines.currentPriceLines.updateItem('currentPrice', {
-      yValue: +(this.#candles[this.#candles.length - 1]?.close ?? 0),
+    this.#lines.currentPriceLines.updateCurrentPrices({
+      lastPrice: +(this.#candles[this.#candles.length - 1]?.close ?? 0),
     });
 
     if (!this.#hasInitialScroll && this.#candles.length) {

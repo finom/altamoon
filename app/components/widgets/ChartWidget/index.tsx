@@ -35,6 +35,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
 
   const getCandles = useGet(MARKET, 'candles');
   const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
+  const bids = useValue(MARKET, 'bids');
+  const asks = useValue(MARKET, 'asks');
 
   const getSymbol = useGet(PERSISTENT, 'symbol');
   const [interval, setCandleInterval] = useChange(PERSISTENT, 'interval');
@@ -43,6 +45,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   const chartOrdersNumber = useValue(PERSISTENT, 'chartOrdersNumber');
   const setTradingType = useSet(PERSISTENT, 'tradingType');
   const getTradingType = useGet(PERSISTENT, 'tradingType');
+  const shouldShowBidAskLines = useValue(PERSISTENT, 'chartShouldShowBidAskLines');
 
   const {
     symbol, tradingType, chartPaddingTopPercent,
@@ -73,6 +76,10 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   ]);
 
   const alerts = symbolAlerts[symbol];
+
+  useEffect(() => {
+    candleChart?.update({ shouldShowBidAskLines, bids, asks });
+  }, [currentSymbolInfo, candleChart, shouldShowBidAskLines, bids, asks]);
 
   useEffect(() => {
     candleChart?.update({ currentSymbolInfo });
