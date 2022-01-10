@@ -121,6 +121,7 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
         candles.push(candle);
         type = 'NEW_CANDLE';
       }
+
       const subscriptionEntries = Object.entries(subscriptions);
 
       for (let i = 0; i < subscriptionEntries.length; i += 1) {

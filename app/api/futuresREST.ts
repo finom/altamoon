@@ -1,13 +1,10 @@
 import promiseRequest from './promiseRequest';
-import futuresCandles from './futuresCandles';
 import {
   FuturesLeverageResponse, FuturesPositionRisk, MarginType,
   FuturesAccount, FuturesLeverageBracket, FuturesUserTrade, FuturesDepth, FuturesExchangeInfo,
   IncomeType, FuturesIncome, TimeInForce, OrderType, OrderSide,
-  FuturesOrder, CandlestickChartInterval,
+  FuturesOrder, CandlestickChartInterval, FuturesChartCandle,
 } from './types';
-
-export { futuresCandles };
 
 /**
  * Array of all possible intervals.
@@ -392,4 +389,40 @@ export function futuresPositionMargin(
   symbol: string, amount: number, type: 1 | 2,
 ): Promise<unknown> {
   return promiseRequest('v1/positionMargin', { symbol, amount, type }, { method: 'POST', type: 'SIGNED' });
+}
+
+export async function futuresKLines(options: {
+  symbol: string;
+  interval: CandlestickChartInterval;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+}) {
+  const klines = await promiseRequest<(string | number)[][]>('v1/klines', options);
+
+  return klines.map(([
+    time, open, high, low, close, volume, closeTime, quoteVolume,
+    trades, takerBuyBaseVolume, takerBuyQuoteVolume,
+  ]) => {
+    const candle: FuturesChartCandle = {
+      symbol: options.symbol,
+      interval: options.interval,
+      time: time as number,
+      closeTime: closeTime as number,
+      open: +open,
+      high: +high,
+      low: +low,
+      close: +close,
+      volume: +volume,
+      quoteVolume: +quoteVolume,
+      takerBuyBaseVolume: +takerBuyBaseVolume,
+      takerBuyQuoteVolume: +takerBuyQuoteVolume,
+      trades: trades as number,
+      direction: +open <= +close ? 'UP' : 'DOWN',
+      closeTimeISOString: new Date(closeTime as number).toISOString(),
+      timeISOString: new Date(time as number).toISOString(),
+    };
+
+    return candle;
+  });
 }

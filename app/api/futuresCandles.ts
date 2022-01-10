@@ -1,24 +1,9 @@
 import localForage from 'localforage';
-import promiseRequest from './promiseRequest';
 import options from './options';
+import { futuresKLines } from './futuresREST';
 
 import { FuturesChartCandle, CandlestickChartInterval } from './types';
-
-const intervalStrToMs = (interval: Exclude<CandlestickChartInterval, '1M'>) => {
-  const num = +interval.replace(/(\d+)\S/, '$1');
-  const sym = interval.replace(/\d+(\S)/, '$1') as 'm' | 'h' | 'd' | 'w';
-  const m = 1000 * 60;
-  const h = m * 60;
-  const d = h * 24;
-  const w = d * 7;
-
-  return {
-    m: m * num,
-    h: h * num,
-    d: d * num,
-    w: w * num,
-  }[sym];
-};
+import intervalStrToMs from './intervalStrToMs';
 
 // the test can be moved to a separate script later
 // TODO remove "export" once the function is used (it's added to fix TS errors)
@@ -136,34 +121,8 @@ export default async function futuresCandles({
     }
   }
 
-  const klines = calculatedLimit === 0 ? [] : await promiseRequest<(string | number)[][]>('v1/klines', {
-    symbol, interval, limit: calculatedLimit, startDate,
-  });
-
-  const requestedCandles = klines.map(([
-    time, open, high, low, close, volume, closeTime, quoteVolume,
-    trades, takerBuyBaseVolume, takerBuyQuoteVolume,
-  ]) => {
-    const candle: FuturesChartCandle = {
-      symbol,
-      interval,
-      time: time as number,
-      closeTime: closeTime as number,
-      open: +open,
-      high: +high,
-      low: +low,
-      close: +close,
-      volume: +volume,
-      quoteVolume: +quoteVolume,
-      takerBuyBaseVolume: +takerBuyBaseVolume,
-      takerBuyQuoteVolume: +takerBuyQuoteVolume,
-      trades: trades as number,
-      direction: +open <= +close ? 'UP' : 'DOWN',
-      closeTimeISOString: new Date(closeTime as number).toISOString(),
-      timeISOString: new Date(time as number).toISOString(),
-    };
-
-    return candle;
+  const requestedCandles = calculatedLimit === 0 ? [] : await futuresKLines({
+    symbol, interval, limit: calculatedLimit, startTime: startDate,
   });
 
   if (requestedCandles.length && requestedCandles.length < calculatedLimit) {
