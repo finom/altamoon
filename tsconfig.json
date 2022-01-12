@@ -24,6 +24,11 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
   "exclude": [
     "test",
     "release",
