@@ -1,5 +1,5 @@
 {
-	"version": "0.0.330",
+	"version": "0.0.331",
 	"name": "altamoon-types",
 	"description": "TypeScript definitions for Altamoon plugin development",
 	"main": "types/index.js",
