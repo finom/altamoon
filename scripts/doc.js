@@ -1,37 +1,28 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-const { TSDocParser } = require('@microsoft/tsdoc');
-const glob = require('glob')
-const fs = require('fs/promises');
-const path = require('path');
-const extract = require('extract-comments');
+const TypeDoc = require("typedoc");
 
-async function isApiInternal() {
-  const tsdocParser = new TSDocParser();
+async function main() {
+    const app = new TypeDoc.Application();
 
-  const file = await fs.readFile(path.resolve(__dirname, '../app/api/futuresREST.ts'), { encoding: 'utf-8' });
+    // If you want TypeDoc to load tsconfig.json / typedoc.json files
+    app.options.addReader(new TypeDoc.TSConfigReader());
+    app.options.addReader(new TypeDoc.TypeDocReader());
 
-  const docComment = `/*${extract(file)[0].raw}*/`;
+    app.bootstrap({
+        // typedoc options here
+        entryPoints: ["app/api/index.ts"],
+    });
 
-  // console.log(docComment)
+    const project = app.convert();
 
-  // Analyze the input doc comment
-  const parserContext = tsdocParser.parseString(docComment);
+    if (project) {
+        // Project may not have converted correctly
+        const outputDir = "__docs";
 
-  // Check for any syntax errors
-  if (parserContext.log.messages.length > 0) {
-    throw new Error(`Syntax error: ${parserContext.log.messages[0].text}`);
-  }
-
-  // Since "@internal" is a standardized tag and a "modifier", it is automatically
-  // added to the modifierTagSet:
-  // console.dir(parserContext.docComment);
+        // Rendered docs
+        await app.generateDocs(project, outputDir);
+        // Alternatively generate JSON output
+        await app.generateJson(project, outputDir + "/documentation.json");
+    }
 }
 
-// Prints "false" because the two "@internal" usages in our example are embedded
-// in other constructs, and thus should not be interpreted as tags.
-void isApiInternal();
+main().catch(console.error);
