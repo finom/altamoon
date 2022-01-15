@@ -391,6 +391,15 @@ export function futuresPositionMargin(
   return promiseRequest('v1/positionMargin', { symbol, amount, type }, { method: 'POST', type: 'SIGNED' });
 }
 
+/**
+ *
+ * @param options - Request options
+ * @param options.symbol - Symbol
+ * @param options.interval - Interval
+ * @param options.symbol - Start time
+ * @param options.symbol - End time
+ * @returns Candles
+ */
 export async function futuresKLines(options: {
   symbol: string;
   interval: CandlestickChartInterval;

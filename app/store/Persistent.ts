@@ -78,6 +78,12 @@ export default class Persistent {
 
   public chartShouldShowBidAskLines = persist<boolean>('chartShouldShowBidAskLines', false);
 
+  public chartShouldShowEma = persist<[boolean, boolean, boolean, boolean]>('chartShouldShowEma', [false, false, false, false]);
+
+  public chartEmaNumbers = persist<[number, number, number, number]>('chartEmaNumbers', [5, 10, 50, 100]);
+
+  public chartEmaColors = persist<[string, string, string, string]>('chartEmaColors', ['#ff0000', '#00ff00', '#0000ff', '#ffff00']);
+
   public tradingWidgetPercentButtonsCount = persist<number>('tradingWidgetPercentButtonsCount', 4);
 
   public testnetBinanceApiKey = persist<string | null>('testnetBinanceApiKey', null);

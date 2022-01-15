@@ -51,10 +51,12 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     symbol, tradingType, chartPaddingTopPercent,
     chartPaddingBottomPercent, chartPaddingRightPercent,
     tradingExactSizeBuyStr: exactSizeBuyStr, tradingExactSizeSellStr: exactSizeSellStr,
+    chartShouldShowEma, chartEmaNumbers, chartEmaColors,
   } = useMultiValue(PERSISTENT, [
     'symbol', 'tradingType', 'chartPaddingTopPercent',
     'chartPaddingBottomPercent', 'chartPaddingRightPercent',
     'tradingExactSizeBuyStr', 'tradingExactSizeSellStr',
+    'chartShouldShowEma', 'chartEmaNumbers', 'chartEmaColors',
   ]);
   const getOpenOrders = useGet(TRADING, 'openOrders');
   const getOpenPositions = useGet(TRADING, 'openPositions');
@@ -78,8 +80,15 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   const alerts = symbolAlerts[symbol];
 
   useEffect(() => {
-    candleChart?.update({ shouldShowBidAskLines, bids, asks });
-  }, [currentSymbolInfo, candleChart, shouldShowBidAskLines, bids, asks]);
+    candleChart?.update({
+      shouldShowEma: chartShouldShowEma,
+      emaNumbers: chartEmaNumbers,
+      emaColors: chartEmaColors,
+    });
+  }, [
+    currentSymbolInfo, candleChart, shouldShowBidAskLines, bids, asks,
+    chartShouldShowEma, chartEmaNumbers, chartEmaColors,
+  ]);
 
   useEffect(() => {
     candleChart?.update({ currentSymbolInfo });

@@ -40,6 +40,16 @@ const getTimeDiffPromise: () => Promise<number> = () => {
   return promise;
 };
 
+/**
+ * Calls a custom API request
+ * @param url - URL
+ * @param data - Data
+ * @param flags - Request options
+ * @param flags.method - HTTP method
+ * @param flags.type - Request type "TRADE" | "SIGNED" | "MARKET_DATA" | "USER_DATA" | "USER_STREAM"
+ * @param flags.baseURL - Base URL
+ * @returns Request result
+ */
 export default async function promiseRequest<T>(
   url: string, givenData: Data = {}, flags: Flags = {},
 ): Promise<T> {

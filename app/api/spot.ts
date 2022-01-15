@@ -23,6 +23,14 @@ interface TransferOptions {
   isFromSpotToFutures: boolean;
 }
 
+/**
+ * TODO
+ * @param options - Request options
+ * @param options.asset - Asset name
+ * @param options.amount - Amount
+ * @param options.isFromSpotToFutures - If set to true transfer from spot to futures and vice versa if set to false
+ * @returns Transaction info
+ */
 export async function transfer({
   asset, amount, isFromSpotToFutures,
 }: TransferOptions): Promise<{ tranId: number; }> {

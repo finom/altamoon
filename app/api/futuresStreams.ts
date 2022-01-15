@@ -7,6 +7,12 @@ import {
 
 const isArrayUnique = (array: unknown[]) => new Set(array).size === array.length;
 
+/**
+ * TODO
+ * @param symbols - A symbol or an array of symbols
+ * @param callback - Stream callback
+ * @returns
+ */
 export function futuresAggTradeStream(
   givenSymbols: string | string[], callback: (ticker: FuturesAggTradeStreamTicker) => void,
 ): () => void {
@@ -38,6 +44,11 @@ export function futuresAggTradeStream(
 }
 
 type MiniTickerCallback<T> = (ticker: T) => void;
+
+/**
+ * TODO
+ * @param callback - Stream callback
+ */
 export function futuresMiniTickerStream(
   callback: MiniTickerCallback<FuturesMiniTicker[]>
 ): () => void;
@@ -97,6 +108,11 @@ export function futuresMiniTickerStream(
 }
 
 type TickerCallback<T> = (ticker: T) => void;
+
+/**
+ * TODO
+ * @param callback - Stream callback
+ */
 export function futuresTickerStream(
   callback: TickerCallback<FuturesTicker[]>
 ): () => void;
@@ -190,6 +206,10 @@ export function futuresTickerStream(
 }
 
 type MarkPriceCallback<T> = (ticker: T) => void;
+/**
+ * TODO
+ * @param callback - Stream callback
+ */
 export function futuresMarkPriceStream(
   callback: MarkPriceCallback<FuturesMarkPriceTicker[]>
 ): () => void;
@@ -252,6 +272,11 @@ export function futuresMarkPriceStream(
   );
 }
 
+/**
+ * TODO
+ * @param symbolIntervalPairs - An array of [symbol, interval] tuples
+ * @param callback - Stream callback
+ */
 export function futuresCandlesSubscribe(
   symbolIntervalPairs: [string, CandlestickChartInterval][],
   callback: (candle: FuturesChartCandle) => void,
@@ -306,6 +331,15 @@ interface FuturesChartSubscribeOptions {
   firstTickFromCache?: boolean;
 }
 
+/**
+ * Loads candles and subscribes to candle updates for a given symbol and an interval. Received results are cached.
+ * @param options - Subscription options
+ * @param options.symbol - Symbol
+ * @param options.interval - Interval
+ * @param options.callback - Ticker callback
+ * @param options.limit - Number of requested candles
+ * @param options.firstTickFromCache - Does the last candle need to be loaded from cache
+ */
 export function futuresChartSubscribe({
   symbol,
   interval,

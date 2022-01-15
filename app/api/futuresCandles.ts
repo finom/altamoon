@@ -51,6 +51,15 @@ export function runtimeTestCandlesOrder(
   }
 }
 
+/**
+ * Get chart candles. Results are cached.
+ * @param options - Function options
+ * @param options.symbol - Symbol
+ * @param options.interval - Interval
+ * @param options.limit - Limit
+ * @param options.lastCandleFromCache - Load last candle from cache
+ * @returns
+ */
 export default async function futuresCandles({
   symbol, interval, limit, lastCandleFromCache,
 }: {

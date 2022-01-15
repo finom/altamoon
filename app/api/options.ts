@@ -23,6 +23,14 @@ const options: Partial<Options> & Pick<Options, 'wsURL' | 'apiURL' | 'accountStr
 
 export default options;
 
+/**
+ *
+ * @param options - Global options
+ * @param options.apiKey - API key
+ * @param options.apiSecret - API secret
+ * @param options.isTestnet - Use testnet
+ * @param options.recvWindow - Time window
+ */
 export function setOptions(opts: Partial<Options>): void {
   Object.assign(options, opts);
 }

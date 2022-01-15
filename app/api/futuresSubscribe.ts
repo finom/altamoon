@@ -2,6 +2,11 @@ import RobustWebSocket from 'altamoon-robust-websocket';
 import emitError from './emitError';
 import options from './options';
 
+/**
+ * Creates subscription using Binance Futures API
+ * @param streams - List of subscriptions
+ * @param callback
+ */
 export default function futuresSubscribe<T = unknown>(
   streams: string[], callback: (ticker: T, stream: string) => void,
 ): () => void {

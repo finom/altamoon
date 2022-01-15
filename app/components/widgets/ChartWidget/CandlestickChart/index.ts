@@ -9,6 +9,7 @@ import ClipPath from './items/ClipPath';
 import GridLines from './items/GridLines';
 import Plot from './items/Plot';
 import Svg from './items/Svg';
+import Ema from './items/Ema';
 
 import './chart.global.css';
 
@@ -55,6 +56,8 @@ export default class CandlestickChart {
   #gridLines: GridLines;
 
   #plot: Plot;
+
+  #ema: Ema;
 
   #width = 0;
 
@@ -124,6 +127,7 @@ export default class CandlestickChart {
     this.#paddingPercents = paddingPercents;
     this.#measurer = new Measurer({ scales, resizeData });
     this.#plot = new Plot({ scales });
+    this.#ema = new Ema({ scales });
     this.#orderArrows = new OrderArrows({ scales });
     this.#markPriceTriangle = new MarkPriceTriangle({ scales });
 
@@ -157,6 +161,7 @@ export default class CandlestickChart {
         this.#plot.update({ scaledX });
         this.#orderArrows.update({ scaledX });
         this.#markPriceTriangle.update({ scaledX });
+        this.#ema.update({ scaledX });
         this.#lines.update();
 
         this.#draw();
@@ -228,6 +233,10 @@ export default class CandlestickChart {
     shouldShowBidAskLines?: boolean;
     bids?: [number, number][];
     asks?: [number, number][];
+
+    shouldShowEma?: [boolean, boolean, boolean, boolean];
+    emaNumbers?: [number, number, number, number];
+    emaColors?: [string, string, string, string];
 
     paddingPercents?: ChartPaddingPercents;
   }): void {
@@ -330,6 +339,11 @@ export default class CandlestickChart {
 
       this.#draw();
     }
+
+    if (typeof data.emaNumbers !== 'undefined' || typeof data.shouldShowEma !== 'undefined' || typeof data.emaColors !== 'undefined') {
+      this.#ema.update(data);
+      this.#draw();
+    }
   }
 
   /**
@@ -356,6 +370,7 @@ export default class CandlestickChart {
     this.#gridLines.draw();
     this.#plot.draw(drawData);
     this.#orderArrows.draw();
+    this.#ema.draw(drawData);
 
     // fixes https://trello.com/c/tLjFqdCB/230-chart-order-and-alert-lines-are-not-redrawn-on-price-ath-atl
     if (!isEqual(this.#yDomain, yDomain)) {
@@ -391,6 +406,7 @@ export default class CandlestickChart {
     this.#gridLines.resize(resizeData);
     this.#lines.resize(resizeData);
     this.#measurer.resize(resizeData);
+    this.#ema.resize();
 
     if (this.#candles.length) {
       this.#draw();
@@ -413,6 +429,7 @@ export default class CandlestickChart {
     this.#lines.appendTo(svgContainer, resizeData);
     this.#measurer.appendTo(svgContainer, resizeData);
     this.#markPriceTriangle.appendTo(svgContainer);
+    this.#ema.appendTo(svgContainer);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);
   };
