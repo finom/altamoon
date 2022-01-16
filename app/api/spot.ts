@@ -24,7 +24,7 @@ interface TransferOptions {
 }
 
 /**
- * TODO
+ * Futures Transfer for Sub-account
  * @param options - Request options
  * @param options.asset - Asset name
  * @param options.amount - Amount

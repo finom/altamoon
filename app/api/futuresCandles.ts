@@ -58,7 +58,7 @@ export function runtimeTestCandlesOrder(
  * @param options.interval - Interval
  * @param options.limit - Limit
  * @param options.lastCandleFromCache - Load last candle from cache
- * @returns
+ * @returns Candles
  */
 export default async function futuresCandles({
   symbol, interval, limit, lastCandleFromCache,

@@ -32,6 +32,11 @@ interface DepthUpdateTicker {
   u: number;
 }
 
+/**
+ * Subscribe to depth
+ * @param symbol - Symbol
+ * @param callback - Callback that receives asks and bids (arrays of [price, amount] touples)
+ */
 export default function futuresDepthSubscribe(
   symbol: string,
   callback: (asks: [number, number][], bids: [number, number][]) => void,

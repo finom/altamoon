@@ -5,7 +5,7 @@ import options from './options';
 /**
  * Creates subscription using Binance Futures API
  * @param streams - List of subscriptions
- * @param callback
+ * @param callback - Callback
  */
 export default function futuresSubscribe<T = unknown>(
   streams: string[], callback: (ticker: T, stream: string) => void,

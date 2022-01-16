@@ -151,8 +151,7 @@ const Positions = (): ReactElement => {
                       %)
                       {' '}
                       {marginType === 'isolated' && (
-                      <PencilSquare className="muted-control" onClick={() => setCurrentAdjustMarginSymbol(symbol)} />
-
+                        <PencilSquare className="muted-control" onClick={() => setCurrentAdjustMarginSymbol(symbol)} />
                       )}
                     </>
                   )}

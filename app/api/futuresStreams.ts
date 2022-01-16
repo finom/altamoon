@@ -8,7 +8,7 @@ import {
 const isArrayUnique = (array: unknown[]) => new Set(array).size === array.length;
 
 /**
- * TODO
+ * The Aggregate Trade Streams push market trade information that is aggregated for a single taker order every 100 milliseconds.
  * @param symbols - A symbol or an array of symbols
  * @param callback - Stream callback
  * @returns
@@ -46,7 +46,7 @@ export function futuresAggTradeStream(
 type MiniTickerCallback<T> = (ticker: T) => void;
 
 /**
- * TODO
+ * 24hr rolling window mini-ticker statistics for a single symbol or for all symbols.
  * @param callback - Stream callback
  */
 export function futuresMiniTickerStream(
@@ -110,7 +110,7 @@ export function futuresMiniTickerStream(
 type TickerCallback<T> = (ticker: T) => void;
 
 /**
- * TODO
+ * 24hr rollwing window ticker statistics for a single symbol or all symbols.
  * @param callback - Stream callback
  */
 export function futuresTickerStream(
@@ -207,7 +207,7 @@ export function futuresTickerStream(
 
 type MarkPriceCallback<T> = (ticker: T) => void;
 /**
- * TODO
+ * Mark price and funding rate for a single symbol or all symbols pushed every every second.
  * @param callback - Stream callback
  */
 export function futuresMarkPriceStream(
@@ -273,7 +273,7 @@ export function futuresMarkPriceStream(
 }
 
 /**
- * TODO
+ * The Kline/Candlestick Stream push updates to the current klines/candlestick every 250 milliseconds (if existing).
  * @param symbolIntervalPairs - An array of [symbol, interval] tuples
  * @param callback - Stream callback
  */

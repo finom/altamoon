@@ -7754,7 +7754,7 @@
 			"sources": [
 				{
 					"fileName": "futuresStreams.ts",
-					"line": 10,
+					"line": 16,
 					"character": 16
 				}
 			],
@@ -7765,6 +7765,10 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "The Aggregate Trade Streams push market trade information that is aggregated for a single taker order every 100 milliseconds.",
+						"returns": "\n"
+					},
 					"parameters": [
 						{
 							"id": 187,
@@ -7795,6 +7799,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Stream callback"
+							},
 							"type": {
 								"type": "reflection",
 								"declaration": {
@@ -7845,7 +7852,7 @@
 							"sources": [
 								{
 									"fileName": "futuresStreams.ts",
-									"line": 12,
+									"line": 18,
 									"character": 3
 								}
 							],
@@ -7856,6 +7863,10 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "The Aggregate Trade Streams push market trade information that is aggregated for a single taker order every 100 milliseconds.",
+										"returns": "\n"
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "void"
@@ -8362,7 +8373,7 @@
 			"sources": [
 				{
 					"fileName": "futuresCandles.ts",
-					"line": 54,
+					"line": 63,
 					"character": 30
 				}
 			],
@@ -8373,13 +8384,21 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "Get chart candles. Results are cached.",
+						"returns": "Candles\n"
+					},
 					"parameters": [
 						{
 							"id": 58,
-							"name": "__namedParameters",
+							"name": "options",
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Function options"
+							},
+							"originalName": "__namedParameters",
 							"type": {
 								"type": "reflection",
 								"declaration": {
@@ -8395,10 +8414,13 @@
 											"kind": 1024,
 											"kindString": "Property",
 											"flags": {},
+											"comment": {
+												"shortText": "Interval"
+											},
 											"sources": [
 												{
 													"fileName": "futuresCandles.ts",
-													"line": 57,
+													"line": 66,
 													"character": 18
 												}
 											],
@@ -8416,10 +8438,13 @@
 											"flags": {
 												"isOptional": true
 											},
+											"comment": {
+												"shortText": "Load last candle from cache"
+											},
 											"sources": [
 												{
 													"fileName": "futuresCandles.ts",
-													"line": 57,
+													"line": 66,
 													"character": 69
 												}
 											],
@@ -8434,10 +8459,13 @@
 											"kind": 1024,
 											"kindString": "Property",
 											"flags": {},
+											"comment": {
+												"shortText": "Limit"
+											},
 											"sources": [
 												{
 													"fileName": "futuresCandles.ts",
-													"line": 57,
+													"line": 66,
 													"character": 54
 												}
 											],
@@ -8452,10 +8480,13 @@
 											"kind": 1024,
 											"kindString": "Property",
 											"flags": {},
+											"comment": {
+												"shortText": "Symbol"
+											},
 											"sources": [
 												{
 													"fileName": "futuresCandles.ts",
-													"line": 57,
+													"line": 66,
 													"character": 2
 												}
 											],
@@ -8507,7 +8538,7 @@
 			"sources": [
 				{
 					"fileName": "futuresStreams.ts",
-					"line": 255,
+					"line": 280,
 					"character": 16
 				}
 			],
@@ -8518,6 +8549,9 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "The Kline/Candlestick Stream push updates to the current klines/candlestick every 250 milliseconds (if existing)."
+					},
 					"parameters": [
 						{
 							"id": 226,
@@ -8525,6 +8559,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "An array of [symbol, interval] tuples"
+							},
 							"type": {
 								"type": "array",
 								"elementType": {
@@ -8549,6 +8586,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Stream callback\n"
+							},
 							"type": {
 								"type": "reflection",
 								"declaration": {
@@ -8599,7 +8639,7 @@
 							"sources": [
 								{
 									"fileName": "futuresStreams.ts",
-									"line": 258,
+									"line": 283,
 									"character": 3
 								}
 							],
@@ -8610,6 +8650,9 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "The Kline/Candlestick Stream push updates to the current klines/candlestick every 250 milliseconds (if existing)."
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "void"
@@ -8630,7 +8673,7 @@
 			"sources": [
 				{
 					"fileName": "futuresStreams.ts",
-					"line": 309,
+					"line": 343,
 					"character": 16
 				}
 			],
@@ -8641,13 +8684,20 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "Loads candles and subscribes to candle updates for a given symbol and an interval. Received results are cached."
+					},
 					"parameters": [
 						{
 							"id": 235,
-							"name": "__namedParameters",
+							"name": "options",
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Subscription options"
+							},
+							"originalName": "__namedParameters",
 							"type": {
 								"type": "reference",
 								"name": "FuturesChartSubscribeOptions"
@@ -8665,7 +8715,7 @@
 							"sources": [
 								{
 									"fileName": "futuresStreams.ts",
-									"line": 315,
+									"line": 349,
 									"character": 34
 								}
 							],
@@ -8676,6 +8726,9 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Loads candles and subscribes to candle updates for a given symbol and an interval. Received results are cached."
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "void"
@@ -8983,7 +9036,7 @@
 			"sources": [
 				{
 					"fileName": "futuresDepthSubscribe.ts",
-					"line": 35,
+					"line": 40,
 					"character": 24
 				}
 			],
@@ -8994,6 +9047,9 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "Subscribe to depth"
+					},
 					"parameters": [
 						{
 							"id": 48,
@@ -9001,6 +9057,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Symbol"
+							},
 							"type": {
 								"type": "intrinsic",
 								"name": "string"
@@ -9012,6 +9071,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Callback that receives asks and bids (arrays of [price, amount] touples)\n"
+							},
 							"type": {
 								"type": "reflection",
 								"declaration": {
@@ -9096,7 +9158,7 @@
 							"sources": [
 								{
 									"fileName": "futuresDepthSubscribe.ts",
-									"line": 38,
+									"line": 43,
 									"character": 3
 								}
 							],
@@ -9107,6 +9169,9 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Subscribe to depth"
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "void"
@@ -9412,7 +9477,7 @@
 			"sources": [
 				{
 					"fileName": "futuresREST.ts",
-					"line": 394,
+					"line": 403,
 					"character": 22
 				}
 			],
@@ -9423,6 +9488,9 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"returns": "Candles\n"
+					},
 					"parameters": [
 						{
 							"id": 177,
@@ -9430,6 +9498,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Request options"
+							},
 							"type": {
 								"type": "reflection",
 								"declaration": {
@@ -9450,7 +9521,7 @@
 											"sources": [
 												{
 													"fileName": "futuresREST.ts",
-													"line": 398,
+													"line": 407,
 													"character": 2
 												}
 											],
@@ -9465,10 +9536,13 @@
 											"kind": 1024,
 											"kindString": "Property",
 											"flags": {},
+											"comment": {
+												"shortText": "Interval"
+											},
 											"sources": [
 												{
 													"fileName": "futuresREST.ts",
-													"line": 396,
+													"line": 405,
 													"character": 2
 												}
 											],
@@ -9489,7 +9563,7 @@
 											"sources": [
 												{
 													"fileName": "futuresREST.ts",
-													"line": 399,
+													"line": 408,
 													"character": 2
 												}
 											],
@@ -9509,7 +9583,7 @@
 											"sources": [
 												{
 													"fileName": "futuresREST.ts",
-													"line": 397,
+													"line": 406,
 													"character": 2
 												}
 											],
@@ -9524,10 +9598,13 @@
 											"kind": 1024,
 											"kindString": "Property",
 											"flags": {},
+											"comment": {
+												"shortText": "Symbol"
+											},
 											"sources": [
 												{
 													"fileName": "futuresREST.ts",
-													"line": 395,
+													"line": 404,
 													"character": 2
 												}
 											],
@@ -10079,7 +10156,7 @@
 			"sources": [
 				{
 					"fileName": "futuresStreams.ts",
-					"line": 193,
+					"line": 213,
 					"character": 16
 				}
 			],
@@ -10090,6 +10167,9 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "Mark price and funding rate for a single symbol or all symbols pushed every every second."
+					},
 					"parameters": [
 						{
 							"id": 216,
@@ -10097,6 +10177,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Stream callback\n"
+							},
 							"type": {
 								"type": "reference",
 								"typeArguments": [
@@ -10124,7 +10207,7 @@
 							"sources": [
 								{
 									"fileName": "futuresStreams.ts",
-									"line": 195,
+									"line": 215,
 									"character": 3
 								}
 							],
@@ -10135,6 +10218,9 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Mark price and funding rate for a single symbol or all symbols pushed every every second."
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "void"
@@ -10192,7 +10278,7 @@
 							"sources": [
 								{
 									"fileName": "futuresStreams.ts",
-									"line": 199,
+									"line": 219,
 									"character": 3
 								}
 							],
@@ -10371,7 +10457,7 @@
 			"sources": [
 				{
 					"fileName": "futuresStreams.ts",
-					"line": 41,
+					"line": 52,
 					"character": 16
 				}
 			],
@@ -10382,6 +10468,9 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "24hr rolling window mini-ticker statistics for a single symbol or for all symbols."
+					},
 					"parameters": [
 						{
 							"id": 196,
@@ -10389,6 +10478,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Stream callback\n"
+							},
 							"type": {
 								"type": "reference",
 								"typeArguments": [
@@ -10416,7 +10508,7 @@
 							"sources": [
 								{
 									"fileName": "futuresStreams.ts",
-									"line": 43,
+									"line": 54,
 									"character": 3
 								}
 							],
@@ -10427,6 +10519,9 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "24hr rolling window mini-ticker statistics for a single symbol or for all symbols."
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "void"
@@ -10484,7 +10579,7 @@
 							"sources": [
 								{
 									"fileName": "futuresStreams.ts",
-									"line": 47,
+									"line": 58,
 									"character": 3
 								}
 							],
@@ -11255,7 +11350,7 @@
 			"sources": [
 				{
 					"fileName": "futuresSubscribe.ts",
-					"line": 5,
+					"line": 10,
 					"character": 24
 				}
 			],
@@ -11266,6 +11361,9 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "Creates subscription using Binance Futures API"
+					},
 					"typeParameter": [
 						{
 							"id": 6,
@@ -11286,6 +11384,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "List of subscriptions"
+							},
 							"type": {
 								"type": "array",
 								"elementType": {
@@ -11300,6 +11401,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Callback\n"
+							},
 							"type": {
 								"type": "reflection",
 								"declaration": {
@@ -11361,7 +11465,7 @@
 							"sources": [
 								{
 									"fileName": "futuresSubscribe.ts",
-									"line": 7,
+									"line": 12,
 									"character": 3
 								}
 							],
@@ -11372,6 +11476,9 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "Creates subscription using Binance Futures API"
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "void"
@@ -11392,7 +11499,7 @@
 			"sources": [
 				{
 					"fileName": "futuresStreams.ts",
-					"line": 100,
+					"line": 116,
 					"character": 16
 				}
 			],
@@ -11403,6 +11510,9 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "24hr rollwing window ticker statistics for a single symbol or all symbols."
+					},
 					"parameters": [
 						{
 							"id": 206,
@@ -11410,6 +11520,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Stream callback\n"
+							},
 							"type": {
 								"type": "reference",
 								"typeArguments": [
@@ -11437,7 +11550,7 @@
 							"sources": [
 								{
 									"fileName": "futuresStreams.ts",
-									"line": 102,
+									"line": 118,
 									"character": 3
 								}
 							],
@@ -11448,6 +11561,9 @@
 									"kind": 4096,
 									"kindString": "Call signature",
 									"flags": {},
+									"comment": {
+										"shortText": "24hr rollwing window ticker statistics for a single symbol or all symbols."
+									},
 									"type": {
 										"type": "intrinsic",
 										"name": "void"
@@ -11505,7 +11621,7 @@
 							"sources": [
 								{
 									"fileName": "futuresStreams.ts",
-									"line": 106,
+									"line": 122,
 									"character": 3
 								}
 							],
@@ -11722,7 +11838,7 @@
 			"sources": [
 				{
 					"fileName": "promiseRequest.ts",
-					"line": 43,
+					"line": 53,
 					"character": 30
 				}
 			],
@@ -11733,6 +11849,10 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "Calls a custom API request",
+						"returns": "Request result\n"
+					},
 					"typeParameter": [
 						{
 							"id": 42,
@@ -11749,6 +11869,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "URL"
+							},
 							"type": {
 								"type": "intrinsic",
 								"name": "string"
@@ -11772,6 +11895,9 @@
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Request options"
+							},
 							"type": {
 								"type": "reference",
 								"name": "Flags"
@@ -11802,7 +11928,7 @@
 			"sources": [
 				{
 					"fileName": "options.ts",
-					"line": 26,
+					"line": 34,
 					"character": 16
 				}
 			],
@@ -11813,6 +11939,7 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {},
 					"parameters": [
 						{
 							"id": 3,
@@ -11848,7 +11975,7 @@
 			"sources": [
 				{
 					"fileName": "spot.ts",
-					"line": 26,
+					"line": 34,
 					"character": 22
 				}
 			],
@@ -11859,13 +11986,21 @@
 					"kind": 4096,
 					"kindString": "Call signature",
 					"flags": {},
+					"comment": {
+						"shortText": "Futures Transfer for Sub-account",
+						"returns": "Transaction info\n"
+					},
 					"parameters": [
 						{
 							"id": 242,
-							"name": "__namedParameters",
+							"name": "options",
 							"kind": 32768,
 							"kindString": "Parameter",
 							"flags": {},
+							"comment": {
+								"shortText": "Request options"
+							},
+							"originalName": "__namedParameters",
 							"type": {
 								"type": "reference",
 								"name": "TransferOptions"
@@ -11893,7 +12028,7 @@
 											"sources": [
 												{
 													"fileName": "spot.ts",
-													"line": 28,
+													"line": 36,
 													"character": 31
 												}
 											],
@@ -11915,7 +12050,7 @@
 									"sources": [
 										{
 											"fileName": "spot.ts",
-											"line": 28,
+											"line": 36,
 											"character": 29
 										}
 									]
