@@ -162,6 +162,12 @@ const Orders = (): ReactElement => {
                 {formatNumber(listenedLastPrices[symbol])}
                 {' '}
                 ₮
+                {' '}
+                (
+                {(listenedLastPrices[symbol] - price > 0 ? '+' : '') + formatPercent(
+                  ((listenedLastPrices[symbol] - price) / listenedLastPrices[symbol]) * 100,
+                )}
+                %)
               </td>
               )}
               {!hiddenOrderColumns.includes('price') && (

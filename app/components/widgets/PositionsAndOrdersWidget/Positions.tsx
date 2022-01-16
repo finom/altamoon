@@ -162,6 +162,12 @@ const Positions = (): ReactElement => {
               <td>
                 {formatNumber(lastPrice)}
                 &nbsp;₮
+                {' '}
+                (
+                {(lastPrice - entryPrice > 0 ? '+' : '') + formatPercent(
+                  ((lastPrice - entryPrice) / lastPrice) * 100,
+                )}
+                %)
               </td>
               )}
               {!hiddenPositionColumns.includes('entry_price') && (
