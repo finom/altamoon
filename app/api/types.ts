@@ -3,6 +3,7 @@ export type OrderSide = 'BUY' | 'SELL';
 export type MarginType = 'ISOLATED' | 'CROSSED';
 export type PositionMarginType = 'isolated' | 'cross';
 export type CandlestickChartInterval = '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '6h' | '8h' | '12h' | '1d' | '3d' | '1w' | '1M';
+export type ExtendedCandlestickChartInterval = '2m' | '10m' | '2d' | '4d' | '2w' | '2M';
 export type ContractType = 'PERPETUAL' | 'CURRENT_MONTH' | 'NEXT_MONTH' | 'CURRENT_MONTH_DELIVERING' | 'NEXT_MONTH_DELIVERING';
 export type RateLimitInterval = 'MINUTE' | 'SECOND' | 'DAY';
 export type OrderType = 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_MARKET' | 'TAKE_PROFIT' | 'TAKE_PROFIT_MARKET' | 'TRAILING_STOP_MARKET';
@@ -133,7 +134,7 @@ export interface FuturesAccount {
 
 export interface FuturesChartCandle {
   symbol: string;
-  interval: CandlestickChartInterval;
+  interval: CandlestickChartInterval | ExtendedCandlestickChartInterval;
   close: number;
   closeTime: number;
   high: number;

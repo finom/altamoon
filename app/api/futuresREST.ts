@@ -1,13 +1,13 @@
 import promiseRequest from './promiseRequest';
 import {
-  FuturesLeverageResponse, FuturesPositionRisk, MarginType,
+  FuturesLeverageResponse, FuturesPositionRisk, MarginType, ExtendedCandlestickChartInterval,
   FuturesAccount, FuturesLeverageBracket, FuturesUserTrade, FuturesDepth, FuturesExchangeInfo,
   IncomeType, FuturesIncome, TimeInForce, OrderType, OrderSide,
   FuturesOrder, CandlestickChartInterval, FuturesChartCandle,
 } from './types';
 
 /**
- * Array of all possible intervals.
+ * Array of all Binance intervals.
  * @example
  * ```ts
  * import { futuresIntervals } from 'altamoon-binance-api';
@@ -17,6 +17,19 @@ import {
  */
 export const futuresIntervals: CandlestickChartInterval[] = [
   '1m', '3m', '5m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '3d', '1w', '1M',
+];
+
+/**
+ * Array of extended intervals.
+ */
+export const extendedFuturesIntervals: ExtendedCandlestickChartInterval[] = [
+  '2m', '10m', '2d', '4d', '2w', '2M',
+];
+
+export const allFuturesIntervals: (
+  CandlestickChartInterval | ExtendedCandlestickChartInterval
+)[] = [
+  '1m', '2m', '3m', '5m', '10m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '2d', '3d', '4d', '1w', '2w', '1M', '2M',
 ];
 
 /**

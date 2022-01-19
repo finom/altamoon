@@ -1,6 +1,6 @@
-import { CandlestickChartInterval } from './types';
+import { CandlestickChartInterval, ExtendedCandlestickChartInterval } from './types';
 
-export default function intervalStrToMs(interval: Exclude<CandlestickChartInterval, '1M'>) {
+export default function intervalStrToMs(interval: Exclude<CandlestickChartInterval | ExtendedCandlestickChartInterval, '1M' | '2M'>) {
   const num = +interval.replace(/(\d+)\S/, '$1');
   const sym = interval.replace(/\d+(\S)/, '$1') as 'm' | 'h' | 'd' | 'w';
   const m = 1000 * 60;
