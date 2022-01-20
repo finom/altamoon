@@ -11,10 +11,11 @@ export default function combineCandlesIfNeeded(
   interval: CandlestickChartInterval | ExtendedCandlestickChartInterval,
   candles: FuturesChartCandle[],
 ): FuturesChartCandle[] {
-  const validInterval: CandlestickChartInterval = intervalMap[
+  const validInterval: CandlestickChartInterval | null = intervalMap[
     intervalMap[interval as ExtendedCandlestickChartInterval] as ExtendedCandlestickChartInterval
   ] as CandlestickChartInterval
-  ?? intervalMap[interval as ExtendedCandlestickChartInterval] ?? null;
+  ?? intervalMap[interval as ExtendedCandlestickChartInterval] as CandlestickChartInterval
+  ?? null;
 
   if (!validInterval) return candles;
   let isEven: boolean;
