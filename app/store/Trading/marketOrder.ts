@@ -13,6 +13,8 @@ export default async function marketOrder(this: altamoon.RootStore['trading'], {
 
     notify('success', `Position for ${symbol} is created`);
 
+    void this.loadPositions();
+
     return result;
   } catch (e) {
     // eslint-disable-next-line no-console
