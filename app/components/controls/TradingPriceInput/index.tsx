@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { GraphUp, GraphDown } from 'react-bootstrap-icons';
+import { GraphUp } from 'react-bootstrap-icons';
 import classNames from 'classnames';
 
 import LabeledInput from '../LabeledInput';
