@@ -35,7 +35,7 @@ const TradingPriceInput = ({
           title="Toggle draft line visibility"
           onClick={() => onChangeShouldShowPriceLine(!shouldShowPriceLine)}
         >
-          {side === 'BUY' || side === 'STOP_BUY' ? <GraphUp /> : <GraphDown />}
+          <GraphUp />
         </span>
       )}
       rightLabelClassName={css.draftChartLineToggle}

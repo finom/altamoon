@@ -31,10 +31,6 @@ export default function useDraftPrice(
     }
   }, [pricePrecision, priceStr, setPrice]);
 
-  useDepsUpdateEffect(() => {
-    setPriceStr(price ? floorByPrecision(price, pricePrecision).toString() : '');
-  }, [price, pricePrecision]);
-
   return {
     shouldShowPriceLine,
     setShouldShowPriceLine,
