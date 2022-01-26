@@ -76,7 +76,6 @@ export default async function createOrderFromDraft(this: altamoon.RootStore['tra
       symbol,
       reduceOnly,
       postOnly,
-      hideDraft: true,
       newClientOrderId,
     });
   }
