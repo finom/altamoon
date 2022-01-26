@@ -36,8 +36,6 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
 
   const getCandles = useGet(MARKET, 'candles');
   const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
-  const bids = useValue(MARKET, 'bids');
-  const asks = useValue(MARKET, 'asks');
 
   const getSymbol = useGet(PERSISTENT, 'symbol');
   const [interval, setCandleInterval] = useChange(PERSISTENT, 'interval');
@@ -86,10 +84,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
       emaNumbers: chartEmaNumbers,
       emaColors: chartEmaColors,
     });
-  }, [
-    currentSymbolInfo, candleChart, shouldShowBidAskLines, bids, asks,
-    chartShouldShowEma, chartEmaNumbers, chartEmaColors,
-  ]);
+  }, [candleChart, chartEmaColors, chartEmaNumbers, chartShouldShowEma]);
 
   useEffect(() => {
     candleChart?.update({ currentSymbolInfo });
@@ -110,6 +105,10 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   useEffect(() => {
     candleChart?.update({ customPriceLines });
   }, [customPriceLines, candleChart]);
+
+  useEffect(() => {
+    candleChart?.update({ shouldShowBidAskLines });
+  }, [shouldShowBidAskLines, candleChart]);
 
   useEffect(() => {
     const isAllOrdersRelevant = !currentSymbolAllOrders.length
