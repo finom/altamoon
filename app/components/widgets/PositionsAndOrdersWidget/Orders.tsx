@@ -139,7 +139,7 @@ const Orders = (): ReactElement => {
                   <>
                     (
                     {formatNumber(origQty * price, true)}
-                  &nbsp;₮)
+                  &nbsp;$)
                   </>
                 )}
               </td>
@@ -148,7 +148,7 @@ const Orders = (): ReactElement => {
               <td>
                 {formatNumber((origQty - executedQty) * (price / leverage))}
                 {' '}
-                ₮
+                $
                 {' '}
                 (
                 {formatPercent(
@@ -161,7 +161,7 @@ const Orders = (): ReactElement => {
               <td>
                 {formatNumber(listenedLastPrices[symbol])}
                 {' '}
-                ₮
+                $
                 {' '}
                 (
                 {(listenedLastPrices[symbol] - price > 0 ? '+' : '') + formatPercent(
@@ -175,7 +175,7 @@ const Orders = (): ReactElement => {
                 {!price && stopPrice ? <>&mdash;</> : (
                   <>
                     {formatNumber(price)}
-                  &nbsp;₮
+                  &nbsp;$
                   </>
                 )}
               </td>
@@ -194,7 +194,7 @@ const Orders = (): ReactElement => {
                 {stopPrice ? (
                   <>
                     {stopPrice}
-                  &nbsp;₮
+                  &nbsp;$
                   </>
                 ) : <>&mdash;</>}
               </td>

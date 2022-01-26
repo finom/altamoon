@@ -84,7 +84,7 @@ const ExactSize = ({
       <label className="mb-1" htmlFor={`market_${side}_exact`}>Size</label>
       <div className="input-group mb-3">
         <LabeledInput
-          label="₮"
+          label="$"
           type="text"
           id={`${id}_${side}_exact`}
           value={exactSizeStr}

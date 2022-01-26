@@ -100,8 +100,8 @@ export default class OrderArrows implements ChartItem {
             ?.style('display', '')
             .html(`
             <p><em>${moment(d.updateTime).format('lll')}</em></p>
-            <p><strong>${d.executedQty} ${d.symbol.replace('USDT', '')}</strong> (${formatMoneyNumber(+d.executedQty * +d.avgPrice)} ₮)</p>
-            <p>1 ${d.symbol.replace('USDT', '')} = ${+d.avgPrice} ₮</p>
+            <p><strong>${d.executedQty} ${d.symbol.replace(/USDT|BUSD/, '')}</strong> (${formatMoneyNumber(+d.executedQty * +d.avgPrice)} $)</p>
+            <p>1 ${d.symbol.replace(/USDT|BUSD/, '')} = ${+d.avgPrice} $</p>
           `)
             .style('background-color', d.side === 'BUY' ? 'var(--altamoon-buy-color)' : 'var(--altamoon-sell-color)');
 

@@ -48,7 +48,7 @@ export default class OrderPriceLines extends PriceLines {
         id: clientOrderId,
         isDraggable: false,
         yValue: price,
-        title: `Limit ${origQty} ${symbol.replace('USDT', '')}`,
+        title: `Limit ${origQty} ${symbol.replace(/USDT|BUSD/, '')}`,
         color: 'var(--bs-gray)',
         opacity: 0.8,
       })),
@@ -66,7 +66,7 @@ export default class OrderPriceLines extends PriceLines {
             opacity: isCanceled ? 0.8 : 1,
             // TODO this is a potentially wrong way to retrieve
             // asset name from symbol name because of BNB/BUSD pairs
-            title: `Limit ${origQty - executedQty} ${symbol.replace('USDT', '')}`,
+            title: `Limit ${origQty - executedQty} ${symbol.replace(/USDT|BUSD/, '')}`,
             id: clientOrderId,
             customData: { order },
             pointerEventsNone: isCanceled,

@@ -53,7 +53,7 @@ const AdjustMarginModal = ({
         <ModalBody>
           <label className="mb-1" htmlFor="adjustMarginAmount">Amount</label>
           <LabeledInput
-            label="₮"
+            label="$"
             type="text"
             id="adjustMarginAmount"
             value={value}
@@ -64,7 +64,7 @@ const AdjustMarginModal = ({
           Current margin:
           {' '}
           {format(',.2f')(position?.isolatedWallet || 0)}
-          &nbsp;₮
+          &nbsp;$
         </ModalBody>
         <ModalFooter>
           <Button color="primary" disabled={!isValid} onClick={adjust}>Confirm</Button>

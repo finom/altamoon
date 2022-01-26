@@ -135,7 +135,7 @@ const Positions = (): ReactElement => {
                 {' '}
                 (
                 {formatNumber(baseValue, true)}
-                &nbsp;₮)
+                &nbsp;$)
               </td>
               )}
               {!hiddenPositionColumns.includes('margin') && (
@@ -144,7 +144,7 @@ const Positions = (): ReactElement => {
                   : (
                     <>
                       {formatNumber(calculatedMargin, true)}
-                      &nbsp;₮
+                      &nbsp;$
                       {' '}
                       (
                       {formatPercent((calculatedMargin / totalWalletBalance) * 100)}
@@ -160,7 +160,7 @@ const Positions = (): ReactElement => {
               {!hiddenPositionColumns.includes('last_price') && (
               <td>
                 {formatNumber(lastPrice)}
-                &nbsp;₮
+                &nbsp;$
                 {' '}
                 (
                 {(lastPrice - entryPrice > 0 ? '+' : '') + formatPercent(
@@ -172,7 +172,7 @@ const Positions = (): ReactElement => {
               {!hiddenPositionColumns.includes('entry_price') && (
               <td>
                 {formatNumber(entryPrice)}
-                &nbsp;₮
+                &nbsp;$
               </td>
               )}
               {!hiddenPositionColumns.includes('liquidation_price') && (
@@ -180,7 +180,7 @@ const Positions = (): ReactElement => {
                 {marginType === 'isolated' ? (
                   <>
                     {formatNumber(liquidationPrice)}
-                    &nbsp;₮
+                    &nbsp;$
                   </>
                 ) : <>&mdash;</>}
               </td>
@@ -190,7 +190,7 @@ const Positions = (): ReactElement => {
                 {breakEvenPrice ? (
                   <>
                     {formatNumber(breakEvenPrice)}
-                    &nbsp;₮
+                    &nbsp;$
                   </>
                 ) : '...'}
               </td>
@@ -199,7 +199,7 @@ const Positions = (): ReactElement => {
               <td>
                 <span className={textClassName(realizedPnl ?? 0)}>
                   {typeof realizedPnl === 'number' ? formatNumber(realizedPnl, true) : '...'}
-                  &nbsp;₮
+                  &nbsp;$
                 </span>
               </td>
               )}
@@ -207,7 +207,7 @@ const Positions = (): ReactElement => {
               <td>
                 <span className={textClassName(pnl)}>
                   {formatNumber(pnl, true)}
-                  &nbsp;₮
+                  &nbsp;$
                 </span>
               </td>
               )}

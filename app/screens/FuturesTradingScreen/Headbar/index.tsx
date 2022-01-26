@@ -126,7 +126,7 @@ const Headbar = (): ReactElement => {
       <div className={css.marketInfo}>
         <span className={`${css.label} text-muted`}>
           24h vol (
-          {symbol.replace('USDT', '')}
+          {symbol.replace(/USDT|BUSD/, '')}
           )
         </span>
         <span className={css.text}>{ticker ? formatMoneyNumber(+ticker.volume) : '...'}</span>
