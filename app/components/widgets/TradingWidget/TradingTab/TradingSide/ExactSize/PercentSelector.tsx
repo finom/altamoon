@@ -8,6 +8,7 @@ interface Props {
   availableBalance: number;
   totalWalletBalance: number;
   onSetValue: (value: string) => void;
+  setIsPercentMode: (value: boolean) => void;
 }
 
 const ITEMS_COUNT = 20; // 5%
@@ -18,6 +19,7 @@ const PercentSelector = ({
   availableBalance,
   totalWalletBalance,
   onSetValue,
+  setIsPercentMode,
 }: Props): ReactElement => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
@@ -35,8 +37,8 @@ const PercentSelector = ({
           onMouseMove={() => setActiveIndex(i)}
           onMouseLeave={() => setActiveIndex(null)}
           role="button"
-          onClick={() => onSetValue(`${getPercentFromIndex(i)}%`)}
-          onKeyUp={() => onSetValue(`${getPercentFromIndex(i)}%`)}
+          onClick={() => { onSetValue(`${getPercentFromIndex(i)}`); setIsPercentMode(true); }}
+          onKeyUp={() => { onSetValue(`${getPercentFromIndex(i)}`); setIsPercentMode(true); }}
           data-bs-offset="0,-7"
           title={`${getPercentFromIndex(i)}%`}
           aria-label={`${getPercentFromIndex(i)}%`}

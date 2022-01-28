@@ -18,12 +18,15 @@ interface Props {
   tradingType: api.OrderType;
   exactSizeStr: string;
   setExactSizeStr: (value: string) => void;
+  isPercentMode: boolean;
+  setIsPercentMode: (value: boolean) => void;
   children?: ReactNode;
 }
 
 const TradingSide = ({
   side, postOnly, price, stopPrice, id, tradingType, children,
   exactSizeStr, setExactSizeStr,
+  isPercentMode, setIsPercentMode,
 }: Props): ReactElement => {
   const symbol = useValue(PERSISTENT, 'symbol');
   const totalWalletBalance = useValue(ACCOUNT, 'totalWalletBalance');
@@ -107,6 +110,8 @@ const TradingSide = ({
           price={price}
           exactSizeStr={exactSizeStr}
           setExactSizeStr={setExactSizeStr}
+          isPercentMode={isPercentMode}
+          setIsPercentMode={setIsPercentMode}
           onOrder={onOrder}
         />
       </div>

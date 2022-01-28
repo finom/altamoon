@@ -1,5 +1,7 @@
 // used by Chart Widget compoment
 
+import { trigger } from '../../hooks/useOn';
+
 export default function updateDrafts(this: altamoon.RootStore['trading'], {
   buyDraftPrice, sellDraftPrice, stopBuyDraftPrice, stopSellDraftPrice,
 }: {
@@ -38,4 +40,6 @@ export default function updateDrafts(this: altamoon.RootStore['trading'], {
       this.shouldShowStopSellDraftPriceLine = false;
     }
   }
+
+  trigger('updateDrafts');
 }

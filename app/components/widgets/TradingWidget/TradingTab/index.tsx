@@ -18,18 +18,20 @@ interface Props {
   buyNode?: ReactNode;
   sellNode?: ReactNode;
   tradingType: api.OrderType;
-  exactSizeBuyStr: string;
-  setExactSizeBuyStr: (value: string) => void;
-  exactSizeSellStr: string;
-  setExactSizeSellStr: (value: string) => void;
 }
 
 const TradingTab = ({
   isWideLayout, postOnly,
   buyPrice, sellPrice, stopBuyPrice, stopSellPrice, id, buyNode, sellNode, tradingType,
-  exactSizeBuyStr, setExactSizeBuyStr, exactSizeSellStr, setExactSizeSellStr,
 }: Props): ReactElement => {
   const [compactModeSide, setCompactModeSide] = useChange(PERSISTENT, 'compactModeSide');
+
+  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(PERSISTENT, 'tradingExactSizeBuyStr');
+  const [exactSizeSellStr, setExactSizeSellStr] = useChange(PERSISTENT, 'tradingExactSizeSellStr');
+
+  const [isPercentModeBuy, setIsPercentModeBuy] = useChange(PERSISTENT, 'tradingIsPercentModeBuy');
+  const [isPercentModeSell, setIsPercentModeSell] = useChange(PERSISTENT, 'tradingIsPercentModeSell');
+
   const switchSide = useCallback((v: boolean) => setCompactModeSide(v ? 'SELL' : 'BUY'), [setCompactModeSide]);
 
   return (
@@ -55,6 +57,8 @@ const TradingTab = ({
             tradingType={tradingType}
             exactSizeStr={exactSizeBuyStr}
             setExactSizeStr={setExactSizeBuyStr}
+            isPercentMode={isPercentModeBuy}
+            setIsPercentMode={setIsPercentModeBuy}
           >
             {buyNode}
           </TradingSide>
@@ -69,6 +73,8 @@ const TradingTab = ({
             tradingType={tradingType}
             exactSizeStr={exactSizeSellStr}
             setExactSizeStr={setExactSizeSellStr}
+            isPercentMode={isPercentModeSell}
+            setIsPercentMode={setIsPercentModeSell}
           >
             {sellNode}
           </TradingSide>

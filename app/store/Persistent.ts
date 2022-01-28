@@ -50,6 +50,10 @@ export default class Persistent {
 
   public tradingExactSizeSellStr = persist<string>('tradingExactSizeSellStr', '');
 
+  public tradingIsPercentModeBuy = persist<boolean>('tradingIsPercentModeBuy', false);
+
+  public tradingIsPercentModeSell = persist<boolean>('tradingIsPercentModeSell', false);
+
   public binanceApiKey = persist<string | null>('binanceApiKey', null);
 
   public binanceApiSecret = persist<string | null>('binanceApiSecret', null);

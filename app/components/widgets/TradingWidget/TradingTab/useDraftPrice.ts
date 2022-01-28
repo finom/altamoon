@@ -3,6 +3,7 @@ import useChange from 'use-change';
 import { TRADING } from '../../../../store';
 import useDepsUpdateEffect from '../../../../hooks/useDepsUpdateEffect';
 import floorByPrecision from '../../../../lib/floorByPrecision';
+import useOn from '../../../../hooks/useOn';
 
 export default function useDraftPrice(
   priceKey: 'limitBuyPrice' | 'limitSellPrice' | 'stopBuyPrice' | 'stopSellPrice',
@@ -26,10 +27,13 @@ export default function useDraftPrice(
 
   useDepsUpdateEffect(() => {
     if (!priceStr || !Number.isNaN(+priceStr)) {
-      // TODO use Trading['parsePrice']
       setPrice(+priceStr > 0 ? floorByPrecision(+priceStr, pricePrecision) : null);
     }
   }, [pricePrecision, priceStr, setPrice]);
+
+  useOn('updateDrafts', () => {
+    setPriceStr(price ? floorByPrecision(price, pricePrecision).toString() : '');
+  });
 
   return {
     shouldShowPriceLine,

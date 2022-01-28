@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
-import useChange, { useValue } from 'use-change';
-import { MARKET, PERSISTENT } from '../../../store';
+import { useValue } from 'use-change';
+import { MARKET } from '../../../store';
 import TradingTab from './TradingTab';
 import TradingPriceInput from '../../controls/TradingPriceInput';
 import useDraftPrice from './TradingTab/useDraftPrice';
@@ -13,9 +13,6 @@ interface Props {
 
 const StopLimit = ({ isWideLayout, postOnly, tradingType }: Props): ReactElement => {
   const pricePrecision = useValue(MARKET, 'currentSymbolPricePrecision');
-
-  const [exactSizeBuyStr, setExactSizeBuyStr] = useChange(PERSISTENT, 'tradingExactSizeBuyStr');
-  const [exactSizeSellStr, setExactSizeSellStr] = useChange(PERSISTENT, 'tradingExactSizeSellStr');
 
   const {
     shouldShowPriceLine: shouldShowLimitBuyPriceLine,
@@ -59,10 +56,6 @@ const StopLimit = ({ isWideLayout, postOnly, tradingType }: Props): ReactElement
       isWideLayout={isWideLayout}
       postOnly={postOnly}
       tradingType={tradingType}
-      exactSizeBuyStr={exactSizeBuyStr}
-      setExactSizeBuyStr={setExactSizeBuyStr}
-      exactSizeSellStr={exactSizeSellStr}
-      setExactSizeSellStr={setExactSizeSellStr}
       buyNode={(
         <>
           <label htmlFor="limitBuyPrice" className="mb-1">Buy Price</label>

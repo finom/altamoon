@@ -70,15 +70,12 @@ export default class Trading {
 
   public shouldShowStopSellDraftPriceLine = false;
 
-  public exactSizeStopLimitSellStr = '';
-
   public currentSymbolPseudoPosition: TradingPosition | null = null;
 
   /**
    * The object contains actual lastPrices for symbols that are currently listened.
    * In other words prices of symbols of current open positions and orders
    */
-
   public listenedLastPrices: Record<string, number> = {};
 
   /**

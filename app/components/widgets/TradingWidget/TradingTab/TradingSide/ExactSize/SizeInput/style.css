@@ -1,0 +1,32 @@
+.sizeInput {
+  display: flex!important;
+}
+
+.sizeInput > label:first-child {
+  margin-right: 0.375rem;
+  line-height: 24px;
+}
+
+.sizeInput > label:first-child > span {
+  width: 10px;
+  display: inline-block;
+}
+
+.sizeInput > label:first-child > span > span {
+  border-bottom: 1px dotted currentColor;
+  cursor: pointer;
+}
+
+.sizeInput > label:last-child {
+  margin-left: 0.375rem;
+  padding-top: 2px;
+}
+
+.sizeInput > input {
+  flex: 1;
+  border-color: transparent;
+  outline: none;
+  background-color: transparent;
+  color: inherit;
+  height: 24px;
+}

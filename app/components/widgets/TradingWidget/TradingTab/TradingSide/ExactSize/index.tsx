@@ -6,7 +6,7 @@ import { useSilent, useValue } from 'use-change';
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
 import { MARKET, PERSISTENT, TRADING } from '../../../../../../store';
-import LabeledInput from '../../../../../controls/LabeledInput';
+import SizeInput from './SizeInput';
 import usePriceTitle from '../usePriceTitle';
 import PercentSelector from './PercentSelector';
 
@@ -19,6 +19,8 @@ interface Props {
   id: string;
   exactSizeStr: string;
   setExactSizeStr: (value: string) => void;
+  isPercentMode: boolean;
+  setIsPercentMode: (value: boolean) => void;
   onOrder: (qty: number) => void;
 }
 
@@ -36,6 +38,8 @@ const ExactSize = ({
   onOrder,
   exactSizeStr,
   setExactSizeStr,
+  isPercentMode,
+  setIsPercentMode,
 }: Props): ReactElement => {
   const calculateQuantity = useSilent(TRADING, 'calculateQuantity');
   const calculateSizeFromString = useSilent(TRADING, 'calculateSizeFromString');
@@ -45,9 +49,9 @@ const ExactSize = ({
   const openPositions = useValue(TRADING, 'openPositions');
 
   const exactSize = useMemo(
-    () => calculateSizeFromString(symbol, exactSizeStr),
+    () => calculateSizeFromString(symbol, exactSizeStr, { isPercentMode }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [calculateSizeFromString, exactSizeStr, symbol, totalWalletBalance, leverage],
+    [calculateSizeFromString, exactSizeStr, symbol, totalWalletBalance, leverage, isPercentMode],
   );
 
   const quantity = useMemo(() => {
@@ -83,19 +87,19 @@ const ExactSize = ({
     <>
       <label className="mb-1" htmlFor={`market_${side}_exact`}>Size</label>
       <div className="input-group mb-3">
-        <LabeledInput
-          label="$"
-          type="text"
+        <SizeInput
           id={`${id}_${side}_exact`}
           value={exactSizeStr}
           innerRef={inputRef as Ref<HTMLInputElement>}
           onPressEnter={() => onOrder(quantity)}
           onChange={setExactSizeStr}
+          isPercentMode={isPercentMode}
+          setIsPercentMode={setIsPercentMode}
         />
         <Button
           color={side === 'BUY' ? 'success' : 'sell'}
           disabled={
-            exactSize > availableBalance * leverage + Math.abs(oppositeSideSize) || exactSize <= 0
+            exactSize > availableBalance * leverage + Math.abs(oppositeSideSize) || quantity <= 0
           }
           onClick={() => onOrder(quantity)}
         >
@@ -108,6 +112,7 @@ const ExactSize = ({
         availableBalance={availableBalance}
         totalWalletBalance={totalWalletBalance}
         onSetValue={setExactSizeStr}
+        setIsPercentMode={setIsPercentMode}
       />
     </>
   );
