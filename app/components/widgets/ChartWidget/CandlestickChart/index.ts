@@ -10,6 +10,7 @@ import GridLines from './items/GridLines';
 import Plot from './items/Plot';
 import Svg from './items/Svg';
 import Ema from './items/Ema';
+import Supertrend from './items/Supertrend';
 
 import './chart.global.css';
 
@@ -58,6 +59,8 @@ export default class CandlestickChart {
   #plot: Plot;
 
   #ema: Ema;
+
+  #supertrend: Supertrend;
 
   #width = 0;
 
@@ -128,6 +131,8 @@ export default class CandlestickChart {
     this.#measurer = new Measurer({ scales, resizeData });
     this.#plot = new Plot({ scales });
     this.#ema = new Ema({ scales });
+    this.#supertrend = new Supertrend({ scales });
+
     this.#orderArrows = new OrderArrows({ scales });
     this.#markPriceTriangle = new MarkPriceTriangle({ scales });
 
@@ -162,6 +167,7 @@ export default class CandlestickChart {
         this.#orderArrows.update({ scaledX });
         this.#markPriceTriangle.update({ scaledX });
         this.#ema.update({ scaledX });
+        this.#supertrend.update({ scaledX });
         this.#lines.update();
 
         this.#draw();
@@ -375,6 +381,7 @@ export default class CandlestickChart {
     this.#plot.draw(drawData);
     this.#orderArrows.draw();
     this.#ema.draw(drawData);
+    this.#supertrend.draw(drawData);
 
     // fixes https://trello.com/c/tLjFqdCB/230-chart-order-and-alert-lines-are-not-redrawn-on-price-ath-atl
     if (!isEqual(this.#yDomain, yDomain)) {
@@ -411,6 +418,7 @@ export default class CandlestickChart {
     this.#lines.resize(resizeData);
     this.#measurer.resize(resizeData);
     this.#ema.resize();
+    this.#supertrend.resize();
 
     if (this.#candles.length) {
       this.#draw();
@@ -434,6 +442,7 @@ export default class CandlestickChart {
     this.#measurer.appendTo(svgContainer, resizeData);
     this.#markPriceTriangle.appendTo(svgContainer);
     this.#ema.appendTo(svgContainer);
+    this.#supertrend.appendTo(svgContainer);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);
   };

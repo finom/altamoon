@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import futuresSubscribe from './futuresSubscribe';
 import futuresCandles from './futuresCandles';
 import {
@@ -14,7 +15,7 @@ const isArrayUnique = (array: unknown[]) => new Set(array).size === array.length
  * @returns
  */
 export function futuresAggTradeStream(
-  givenSymbols: string | string[], callback: (ticker: FuturesAggTradeStreamTicker) => void,
+  givenSymbols: string | string[], callback: (ticker: FuturesAggTradeStreamTicker) => any,
 ): () => void {
   const symbols = typeof givenSymbols === 'string' ? [givenSymbols] : givenSymbols;
   if (!isArrayUnique(symbols)) throw Error('futuresAggTradeStream: "symbols" cannot contain duplicate elements.');
@@ -43,7 +44,7 @@ export function futuresAggTradeStream(
   });
 }
 
-type MiniTickerCallback<T> = (ticker: T) => void;
+type MiniTickerCallback<T> = (ticker: T) => any;
 
 /**
  * 24hr rolling window mini-ticker statistics for a single symbol or for all symbols.
@@ -107,7 +108,7 @@ export function futuresMiniTickerStream(
   );
 }
 
-type TickerCallback<T> = (ticker: T) => void;
+type TickerCallback<T> = (ticker: T) => any;
 
 /**
  * 24hr rollwing window ticker statistics for a single symbol or all symbols.
@@ -205,7 +206,7 @@ export function futuresTickerStream(
   );
 }
 
-type MarkPriceCallback<T> = (ticker: T) => void;
+type MarkPriceCallback<T> = (ticker: T) => any;
 /**
  * Mark price and funding rate for a single symbol or all symbols pushed every every second.
  * @param callback - Stream callback
@@ -279,7 +280,7 @@ export function futuresMarkPriceStream(
  */
 export function futuresCandlesSubscribe(
   symbolIntervalPairs: [string, CandlestickChartInterval][],
-  callback: (candle: FuturesChartCandle) => void,
+  callback: (candle: FuturesChartCandle) => any,
 ): () => void {
   type KLineTicker = {
     e: 'kline'; // evt type
@@ -326,7 +327,7 @@ export function futuresCandlesSubscribe(
 interface FuturesChartSubscribeOptions {
   symbol: string;
   interval: CandlestickChartInterval;
-  callback: (candles: FuturesChartCandle[]) => void;
+  callback: (candles: FuturesChartCandle[]) => any;
   limit: number;
   firstTickFromCache?: boolean;
 }
