@@ -26,7 +26,10 @@ export default class Ema implements ChartItem {
     this.#scaledY = scales.y;
   }
 
-  public appendTo = (/* parent: Element */): void => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  public appendTo = (parent: Element): void => {
     // const container = d3.select(parent).append('g').attr('clip-path', 'url(#clipChart)');
 
     // this.#upperLines = container.append('g');
