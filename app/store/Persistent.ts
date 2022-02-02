@@ -88,6 +88,16 @@ export default class Persistent {
 
   public chartEmaColors = persist<[string, string, string, string]>('chartEmaColors', ['#ff0000', '#00ff00', '#0000ff', '#ffff00']);
 
+  public chartShouldShowSupertrend = persist<boolean>('chartShouldShowSupertrend', false);
+
+  public chartSupertrendPeroid = persist<number>('chartSupertrendPeroid', 10);
+
+  public chartSupertrendMultiplier = persist<number>('chartSupertrendMultiplier', 3);
+
+  public chartSupertrendDownTrendColor = persist<string>('chartSupertrendDownTrendColor', '#ff0000');
+
+  public chartSupertrendUpTrendColor = persist<string>('chartSupertrendUpTrendColor', '#00ff00');
+
   public tradingWidgetPercentButtonsCount = persist<number>('tradingWidgetPercentButtonsCount', 4);
 
   public testnetBinanceApiKey = persist<string | null>('testnetBinanceApiKey', null);

@@ -248,6 +248,12 @@ export default class CandlestickChart {
     emaNumbers?: [number, number, number, number];
     emaColors?: [string, string, string, string];
 
+    shouldShowSupertrend?: boolean;
+    supertrendPeroid?: number;
+    supertrendMultiplier?: number;
+    supertrendDownTrendColor?: string;
+    supertrendUpTrendColor?: string;
+
     paddingPercents?: ChartPaddingPercents;
   }): void {
     if (typeof data.alerts !== 'undefined') this.#lines.alertLines.updateAlertLines(data.alerts);
@@ -353,6 +359,16 @@ export default class CandlestickChart {
     if (typeof data.emaNumbers !== 'undefined' || typeof data.shouldShowEma !== 'undefined' || typeof data.emaColors !== 'undefined') {
       this.#ema.update(data);
       this.#draw();
+    }
+
+    if (
+      typeof data.shouldShowSupertrend !== 'undefined'
+      || typeof data.supertrendPeroid !== 'undefined'
+      || typeof data.supertrendMultiplier !== 'undefined'
+      || typeof data.supertrendDownTrendColor !== 'undefined'
+      || typeof data.supertrendUpTrendColor !== 'undefined'
+    ) {
+      this.#supertrend.update(data);
     }
   }
 

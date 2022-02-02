@@ -51,11 +51,17 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     chartPaddingBottomPercent, chartPaddingRightPercent,
     tradingExactSizeBuyStr: exactSizeBuyStr, tradingExactSizeSellStr: exactSizeSellStr,
     chartShouldShowEma, chartEmaNumbers, chartEmaColors,
+
+    chartShouldShowSupertrend, chartSupertrendPeroid, chartSupertrendMultiplier,
+    chartSupertrendDownTrendColor, chartSupertrendUpTrendColor,
   } = useMultiValue(PERSISTENT, [
     'symbol', 'tradingType', 'chartPaddingTopPercent',
     'chartPaddingBottomPercent', 'chartPaddingRightPercent',
     'tradingExactSizeBuyStr', 'tradingExactSizeSellStr',
     'chartShouldShowEma', 'chartEmaNumbers', 'chartEmaColors',
+
+    'chartShouldShowSupertrend', 'chartSupertrendPeroid', 'chartSupertrendMultiplier',
+    'chartSupertrendDownTrendColor', 'chartSupertrendUpTrendColor',
   ]);
   const getOpenOrders = useGet(TRADING, 'openOrders');
   const getOpenPositions = useGet(TRADING, 'openPositions');
@@ -85,6 +91,19 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
       emaColors: chartEmaColors,
     });
   }, [candleChart, chartEmaColors, chartEmaNumbers, chartShouldShowEma]);
+
+  useEffect(() => {
+    candleChart?.update({
+      shouldShowSupertrend: chartShouldShowSupertrend,
+      supertrendPeroid: chartSupertrendPeroid,
+      supertrendMultiplier: chartSupertrendMultiplier,
+      supertrendDownTrendColor: chartSupertrendDownTrendColor,
+      supertrendUpTrendColor: chartSupertrendUpTrendColor,
+    });
+  }, [
+    candleChart, chartShouldShowSupertrend, chartSupertrendDownTrendColor,
+    chartSupertrendMultiplier, chartSupertrendPeroid, chartSupertrendUpTrendColor,
+  ]);
 
   useEffect(() => {
     candleChart?.update({ currentSymbolInfo });

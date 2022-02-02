@@ -25,7 +25,7 @@ module.exports = {
     'react-hooks/exhaustive-deps': ['error', {
       additionalHooks: '(useDepsUpdateEffect)',
     }],
-    'max-lines': ['error', { max: 500, skipComments: true }],
+    'max-lines': ['error', { max: 600, skipComments: true }],
     'max-len': ['error', 100, 2, {
       comments: 200,
       ignoreUrls: true,

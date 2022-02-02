@@ -4,6 +4,27 @@ import {
 } from '../types';
 import * as api from '../../../../../api';
 
+/*
+SuperTrend Algorithm :
+        BASIC UPPERBAND = (HIGH + LOW) / 2 + Multiplier * ATR
+        BASIC LOWERBAND = (HIGH + LOW) / 2 - Multiplier * ATR
+        FINAL UPPERBAND = IF( (Current BASICUPPERBAND < Previous FINAL UPPERBAND) or (Previous Close > Previous FINAL UPPERBAND))
+                            THEN (Current BASIC UPPERBAND) ELSE Previous FINALUPPERBAND)
+        FINAL LOWERBAND = IF( (Current BASIC LOWERBAND > Previous FINAL LOWERBAND) or (Previous Close < Previous FINAL LOWERBAND))
+                            THEN (Current BASIC LOWERBAND) ELSE Previous FINAL LOWERBAND)
+        SUPERTREND = IF((Previous SUPERTREND = Previous FINAL UPPERBAND) and (Current Close <= Current FINAL UPPERBAND)) THEN
+                        Current FINAL UPPERBAND
+                    ELSE
+                        IF((Previous SUPERTREND = Previous FINAL UPPERBAND) and (Current Close > Current FINAL UPPERBAND)) THEN
+                            Current FINAL LOWERBAND
+                        ELSE
+                            IF((Previous SUPERTREND = Previous FINAL LOWERBAND) and (Current Close >= Current FINAL LOWERBAND)) THEN
+                                Current FINAL LOWERBAND
+                            ELSE
+                                IF((Previous SUPERTREND = Previous FINAL LOWERBAND) and (Current Close < Current FINAL LOWERBAND)) THEN
+                                    Current FINAL UPPERBAND
+*/
+
 export default class Ema implements ChartItem {
   #scaledX: Scales['x'];
 
@@ -17,27 +38,28 @@ export default class Ema implements ChartItem {
 
   #multiplier = 3;
 
-  #upperColor = 'red';
+  #upColor = 'red';
 
-  #lowerColor = 'green';
+  #downColor = 'green';
+
+  #candles: DrawData['candles'] = [];
 
   constructor({ scales }: { scales: Scales }) {
     this.#scaledX = scales.x;
     this.#scaledY = scales.y;
   }
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public appendTo = (parent: Element): void => {
-    // const container = d3.select(parent).append('g').attr('clip-path', 'url(#clipChart)');
+    const container = d3.select(parent).append('g').attr('clip-path', 'url(#clipChart)');
 
-    // this.#upperLines = container.append('g');
-    // this.#lowerLines = container.append('g');
+    this.#upperLines = container.append('g');
+    this.#lowerLines = container.append('g');
   };
 
-  public draw({ candles }: DrawData): void {
+  public draw({ candles }: { candles: api.FuturesChartCandle[] }): void {
     const curve = d3.line().curve(d3.curveLinear);
+
+    this.#candles = candles;
 
     const { upper, lower } = this.#calcSupertrend(candles);
 
@@ -49,9 +71,10 @@ export default class Ema implements ChartItem {
           .append('path')
           .attr('d', (d) => curve(d))
           .attr('fill', 'none')
-          .attr('stroke', this.#upperColor),
+          .attr('stroke', this.#upColor),
         (update) => update
-          .attr('d', (d) => curve(d)),
+          .attr('d', (d) => curve(d))
+          .attr('stroke', this.#upColor),
         (exit) => exit.remove(),
       );
 
@@ -63,9 +86,10 @@ export default class Ema implements ChartItem {
           .append('path')
           .attr('d', (d) => curve(d))
           .attr('fill', 'none')
-          .attr('stroke', this.#lowerColor),
+          .attr('stroke', this.#downColor),
         (update) => update
-          .attr('d', (d) => curve(d)),
+          .attr('d', (d) => curve(d))
+          .attr('stroke', this.#downColor),
         (exit) => exit.remove(),
       );
   }
@@ -78,14 +102,29 @@ export default class Ema implements ChartItem {
     scaledX?: d3.ScaleTime<number, number>;
 
     shouldShowSupertrend?: boolean;
-    emaNumbers?: [number, number, number, number];
-    emaColors?: [string, string, string, string];
+    supertrendPeroid?: number;
+    supertrendMultiplier?: number;
+    supertrendDownTrendColor?: string;
+    supertrendUpTrendColor?: string;
   }): void => {
     if (typeof data.scaledX !== 'undefined') this.#scaledX = data.scaledX;
 
     if (typeof data.shouldShowSupertrend !== 'undefined') {
       this.#upperLines?.style('display', data.shouldShowSupertrend ? '' : 'none');
       this.#lowerLines?.style('display', data.shouldShowSupertrend ? '' : 'none');
+    }
+
+    if (typeof data.supertrendPeroid !== 'undefined') this.#period = data.supertrendPeroid;
+    if (typeof data.supertrendMultiplier !== 'undefined') this.#multiplier = data.supertrendMultiplier;
+    if (typeof data.supertrendDownTrendColor !== 'undefined') this.#downColor = data.supertrendDownTrendColor;
+    if (typeof data.supertrendUpTrendColor !== 'undefined') this.#upColor = data.supertrendUpTrendColor;
+
+    if (
+      typeof data.supertrendPeroid !== 'undefined'
+      || typeof data.supertrendMultiplier !== 'undefined'
+      || typeof data.supertrendDownTrendColor !== 'undefined'
+      || typeof data.supertrendUpTrendColor !== 'undefined') {
+      this.draw({ candles: this.#candles });
     }
   };
 
@@ -94,6 +133,7 @@ export default class Ema implements ChartItem {
   ): { upper: [number, number][][], lower: [number, number][][] } => {
     let FINAL_UPPERBAND = 0;
     let FINAL_LOWERBAND = 0;
+    let SUPERTREND = 0;
     const period = this.#period;
     const multiplier = this.#multiplier;
 
@@ -120,6 +160,10 @@ export default class Ema implements ChartItem {
 
       const BASIC_UPPERBAND = (candle.high + candle.low) / 2 + multiplier * ATR;
       const BASIC_LOWERBAND = (candle.high + candle.low) / 2 - multiplier * ATR;
+
+      const PREV_FINAL_UPPERBAND = FINAL_UPPERBAND;
+      const PREV_FINAL_LOWERBAND = FINAL_LOWERBAND;
+
       // https://github.com/jigneshpylab/ZerodhaPythonScripts/blob/master/supertrend.py
       FINAL_UPPERBAND = i === 1
         || BASIC_UPPERBAND < FINAL_UPPERBAND
@@ -133,9 +177,16 @@ export default class Ema implements ChartItem {
         ? BASIC_LOWERBAND
         : FINAL_LOWERBAND;
 
-      const isUpper = candle.close <= FINAL_UPPERBAND;
+      let isUpper;
 
-      const SUPERTREND = isUpper ? FINAL_UPPERBAND : FINAL_LOWERBAND;
+      // https://github.com/jigneshpylab/ZerodhaPythonScripts/blob/master/supertrend.py#L133-L155
+      if (!SUPERTREND || SUPERTREND === PREV_FINAL_UPPERBAND) {
+        SUPERTREND = candle.close <= FINAL_UPPERBAND ? FINAL_UPPERBAND : FINAL_LOWERBAND;
+        isUpper = candle.close <= FINAL_UPPERBAND;
+      } else if (SUPERTREND === PREV_FINAL_LOWERBAND) {
+        SUPERTREND = candle.close >= FINAL_LOWERBAND ? FINAL_LOWERBAND : FINAL_UPPERBAND;
+        isUpper = candle.close < FINAL_LOWERBAND;
+      }
 
       if (isUpper) {
         // add a point to the last line

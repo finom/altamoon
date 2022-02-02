@@ -1,16 +1,13 @@
-import React, {
-  memo, ReactElement, useEffect, useState,
-} from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import {
   Col, Input, Label, Row,
 } from 'reactstrap';
 import useChange from 'use-change';
+import { PERSISTENT } from '../../../../store';
+import FormSwitch from '../../../controls/FormSwitch';
+import { WidgetSettingsProps } from '../../../layout/Widget';
 
-import { PERSISTENT } from '../../../store';
-import FormSwitch from '../../controls/FormSwitch';
-import { WidgetSettingsProps } from '../../layout/Widget';
-
-const ChartSettings = ({
+const GeneralSettings = ({
   listenSettingsCancel, listenSettingsSave,
 }: WidgetSettingsProps): ReactElement => {
   const [chartPaddingTopPercent, setChartPaddingTopPercent] = useChange(PERSISTENT, 'chartPaddingTopPercent');
@@ -35,15 +32,6 @@ const ChartSettings = ({
     chartShouldShowBidAskLinesValue, setChartShouldShowBidAskLinesValue,
   ] = useState(chartShouldShowBidAskLines);
 
-  const [chartEmaNumbers, setChartEmaNumbers] = useChange(PERSISTENT, 'chartEmaNumbers');
-  const [chartEmaNumbersValue, setChartEmaNumbersValue] = useState(chartEmaNumbers);
-
-  const [chartShouldShowEma, setChartShouldShowEma] = useChange(PERSISTENT, 'chartShouldShowEma');
-  const [chartShouldShowEmaValue, setChartShouldShowEmaValue] = useState(chartShouldShowEma);
-
-  const [chartEmaColors, setChartEmaColors] = useChange(PERSISTENT, 'chartEmaColors');
-  const [chartEmaColorsValue, setChartEmaColorsValue] = useState(chartEmaColors);
-
   useEffect(() => listenSettingsSave(() => {
     setChartPaddingTopPercent(
       Number.isNaN(+paddingTopStr) ? chartPaddingTopPercent : +paddingTopStr,
@@ -66,18 +54,13 @@ const ChartSettings = ({
     );
 
     setChartShouldShowBidAskLines(chartShouldShowBidAskLinesValue);
-
-    setChartEmaNumbers(chartEmaNumbersValue);
-    setChartShouldShowEma(chartShouldShowEmaValue);
-    setChartEmaColors(chartEmaColorsValue);
   }), [
-    chartEmaColorsValue, chartEmaNumbersValue, chartOrdersNumber, chartOrdersNumberStr,
-    chartPaddingBottomPercent, chartPaddingRightPercent, chartPaddingTopPercent,
-    chartShouldShowBidAskLinesValue, chartShouldShowEmaValue, chartUpdateFrequency,
+    chartOrdersNumber, chartOrdersNumberStr, chartPaddingBottomPercent, chartPaddingRightPercent,
+    chartPaddingTopPercent, chartShouldShowBidAskLinesValue, chartUpdateFrequency,
     chartUpdateFrequencyStr, listenSettingsSave, paddingBottomStr, paddingRightStr,
-    paddingTopStr, setChartEmaColors, setChartEmaNumbers, setChartOrdersNumber,
-    setChartPaddingBottomPercent, setChartPaddingRightPercent, setChartPaddingTopPercent,
-    setChartShouldShowBidAskLines, setChartShouldShowEma, setChartUpdateFrequency,
+    paddingTopStr, setChartOrdersNumber, setChartPaddingBottomPercent,
+    setChartPaddingRightPercent, setChartPaddingTopPercent, setChartShouldShowBidAskLines,
+    setChartUpdateFrequency,
   ]);
 
   useEffect(() => listenSettingsCancel(() => {
@@ -87,13 +70,10 @@ const ChartSettings = ({
     setChartOrdersNumberStr(String(chartOrdersNumber));
     setChartUpdateFrequencyStr(String(chartUpdateFrequency));
     setChartShouldShowBidAskLinesValue(chartShouldShowBidAskLines);
-    setChartEmaNumbersValue(chartEmaNumbers);
-    setChartShouldShowEmaValue(chartShouldShowEma);
-    setChartEmaColorsValue(chartEmaColors);
   }), [
-    chartEmaColors, chartEmaNumbers, chartOrdersNumber, chartPaddingBottomPercent,
-    chartPaddingRightPercent, chartPaddingTopPercent, chartShouldShowBidAskLines,
-    chartShouldShowEma, chartUpdateFrequency, listenSettingsCancel,
+    chartOrdersNumber, chartPaddingBottomPercent, chartPaddingRightPercent,
+    chartPaddingTopPercent, chartShouldShowBidAskLines, chartUpdateFrequency,
+    listenSettingsCancel,
   ]);
 
   return (
@@ -159,73 +139,8 @@ const ChartSettings = ({
           </Label>
         </Col>
       </Row>
-      {chartShouldShowEmaValue.map((_v, index) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <Row key={index} className="mt-3">
-          <Col xs={4} className="pt-4 mt-2">
-            <FormSwitch
-              id={`shouldShowChartEma${index}`}
-              isChecked={chartShouldShowEmaValue[index]}
-              className="d-inline-block align-middle"
-              onChange={(isChecked) => {
-                setChartShouldShowEmaValue(
-                  (v) => v.map((val, i) => (
-                    i === index ? isChecked : val
-                  )) as typeof chartShouldShowEmaValue,
-                );
-              }}
-            />
-            {' '}
-            Show EMA
-            {' '}
-            {index + 1}
-          </Col>
-          <Col xs={4}>
-            <Label htmlFor={`emaNumber${index}`}>
-              EMA
-              {' '}
-              {index + 1}
-              {' '}
-              number
-            </Label>
-            <Input
-              type="number"
-              id={`emaNumber${index}`}
-              value={chartEmaNumbersValue[index]}
-              onChange={({ target }) => {
-                setChartEmaNumbersValue(
-                  (v) => v.map((val, i) => (
-                    i === index ? +target.value : val
-                  )) as typeof chartEmaNumbersValue,
-                );
-              }}
-            />
-          </Col>
-          <Col xs={4}>
-            <Label htmlFor={`emaColor${index}`}>
-              EMA
-              {' '}
-              {index + 1}
-              {' '}
-              color
-            </Label>
-            <Input
-              type="color"
-              id={`emaColor${index}`}
-              value={chartEmaColorsValue[index]}
-              onChange={({ target }) => {
-                setChartEmaColorsValue(
-                  (v) => v.map((val, i) => (
-                    i === index ? target.value : val
-                  )) as typeof chartEmaColorsValue,
-                );
-              }}
-            />
-          </Col>
-        </Row>
-      ))}
     </>
   );
 };
 
-export default memo(ChartSettings);
+export default GeneralSettings;
