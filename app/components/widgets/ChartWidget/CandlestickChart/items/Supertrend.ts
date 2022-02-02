@@ -30,9 +30,9 @@ export default class Ema implements ChartItem {
 
   #scaledY: Scales['y'];
 
-  #upperLines?: D3Selection<SVGGElement>;
+  #downTrendLines?: D3Selection<SVGGElement>;
 
-  #lowerLines?: D3Selection<SVGGElement>;
+  #upTrendLines?: D3Selection<SVGGElement>;
 
   #period = 10;
 
@@ -52,8 +52,8 @@ export default class Ema implements ChartItem {
   public appendTo = (parent: Element): void => {
     const container = d3.select(parent).append('g').attr('clip-path', 'url(#clipChart)');
 
-    this.#upperLines = container.append('g');
-    this.#lowerLines = container.append('g');
+    this.#downTrendLines = container.append('g');
+    this.#upTrendLines = container.append('g');
   };
 
   public draw({ candles }: { candles: api.FuturesChartCandle[] }): void {
@@ -63,7 +63,7 @@ export default class Ema implements ChartItem {
 
     const { upper, lower } = this.#calcSupertrend(candles);
 
-    this.#upperLines
+    this.#downTrendLines
       ?.selectAll('path')
       .data(upper)
       .join(
@@ -78,7 +78,7 @@ export default class Ema implements ChartItem {
         (exit) => exit.remove(),
       );
 
-    this.#lowerLines
+    this.#upTrendLines
       ?.selectAll('path')
       .data(lower)
       .join(
@@ -110,8 +110,8 @@ export default class Ema implements ChartItem {
     if (typeof data.scaledX !== 'undefined') this.#scaledX = data.scaledX;
 
     if (typeof data.shouldShowSupertrend !== 'undefined') {
-      this.#upperLines?.style('display', data.shouldShowSupertrend ? '' : 'none');
-      this.#lowerLines?.style('display', data.shouldShowSupertrend ? '' : 'none');
+      this.#downTrendLines?.style('display', data.shouldShowSupertrend ? '' : 'none');
+      this.#upTrendLines?.style('display', data.shouldShowSupertrend ? '' : 'none');
     }
 
     if (typeof data.supertrendPeroid !== 'undefined') this.#period = data.supertrendPeroid;
