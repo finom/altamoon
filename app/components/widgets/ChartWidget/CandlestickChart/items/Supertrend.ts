@@ -71,10 +71,10 @@ export default class Ema implements ChartItem {
           .append('path')
           .attr('d', (d) => curve(d))
           .attr('fill', 'none')
-          .attr('stroke', this.#upColor),
+          .attr('stroke', this.#downColor),
         (update) => update
           .attr('d', (d) => curve(d))
-          .attr('stroke', this.#upColor),
+          .attr('stroke', this.#downColor),
         (exit) => exit.remove(),
       );
 
@@ -86,10 +86,10 @@ export default class Ema implements ChartItem {
           .append('path')
           .attr('d', (d) => curve(d))
           .attr('fill', 'none')
-          .attr('stroke', this.#downColor),
+          .attr('stroke', this.#upColor),
         (update) => update
           .attr('d', (d) => curve(d))
-          .attr('stroke', this.#downColor),
+          .attr('stroke', this.#upColor),
         (exit) => exit.remove(),
       );
   }
