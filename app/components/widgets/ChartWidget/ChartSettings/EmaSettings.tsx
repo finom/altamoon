@@ -14,7 +14,7 @@ const EmaSettings = ({
   listenSettingsCancel, listenSettingsSave,
 }: WidgetSettingsProps): ReactElement => {
   const [chartEmaNumbers, setChartEmaNumbers] = useChange(PERSISTENT, 'chartEmaNumbers');
-  const [chartEmaNumbersValue, setChartEmaNumbersValue] = useState(chartEmaNumbers);
+  const [chartEmaNumbersValue, setChartEmaNumbersValue] = useState(chartEmaNumbers.map(String));
 
   const [chartShouldShowEma, setChartShouldShowEma] = useChange(PERSISTENT, 'chartShouldShowEma');
   const [chartShouldShowEmaValue, setChartShouldShowEmaValue] = useState(chartShouldShowEma);
@@ -23,16 +23,17 @@ const EmaSettings = ({
   const [chartEmaColorsValue, setChartEmaColorsValue] = useState(chartEmaColors);
 
   useEffect(() => listenSettingsSave(() => {
-    setChartEmaNumbers(chartEmaNumbersValue);
+    setChartEmaNumbers(chartEmaNumbersValue.map((v) => +v || 0) as typeof chartEmaNumbers);
     setChartShouldShowEma(chartShouldShowEmaValue);
     setChartEmaColors(chartEmaColorsValue);
+    setChartEmaNumbersValue(chartEmaNumbersValue.map((v) => String(+v || 0)));
   }), [
     chartEmaColorsValue, chartEmaNumbersValue, chartShouldShowEmaValue, listenSettingsSave,
     setChartEmaColors, setChartEmaNumbers, setChartShouldShowEma,
   ]);
 
   useEffect(() => listenSettingsCancel(() => {
-    setChartEmaNumbersValue(chartEmaNumbers);
+    setChartEmaNumbersValue(chartEmaNumbers.map(String));
     setChartShouldShowEmaValue(chartShouldShowEma);
     setChartEmaColorsValue(chartEmaColors);
   }), [chartEmaColors, chartEmaNumbers, chartShouldShowEma, listenSettingsCancel]);
@@ -75,8 +76,8 @@ const EmaSettings = ({
               onChange={({ target }) => {
                 setChartEmaNumbersValue(
                   (v) => v.map((val, i) => (
-                    i === index ? +target.value : val
-                  )) as typeof chartEmaNumbersValue,
+                    i === index ? target.value : val
+                  )),
                 );
               }}
             />

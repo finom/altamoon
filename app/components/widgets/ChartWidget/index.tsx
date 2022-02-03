@@ -92,7 +92,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     });
   }, [candleChart, chartEmaColors, chartEmaNumbers, chartShouldShowEma]);
 
-  useEffect(() => {
+  // for some reason useEffect doesn't work here even though deps are changed
+  useMemo(() => {
     candleChart?.update({
       shouldShowSupertrend: chartShouldShowSupertrend,
       supertrendPeroid: chartSupertrendPeroid,

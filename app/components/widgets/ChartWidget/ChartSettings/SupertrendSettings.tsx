@@ -16,10 +16,10 @@ const SupertrendSettings = ({
   const [shouldShowValue, setShouldShowValue] = useState(shouldShow);
 
   const [period, setPeriod] = useChange(PERSISTENT, 'chartSupertrendPeroid');
-  const [periodValue, setPeriodValue] = useState(period);
+  const [periodValue, setPeriodValue] = useState(String(period));
 
   const [multiplier, setMultiplier] = useChange(PERSISTENT, 'chartSupertrendMultiplier');
-  const [multiplierValue, setMultiplierValue] = useState(multiplier);
+  const [multiplierValue, setMultiplierValue] = useState(String(multiplier));
 
   const [downTrendColor, setDownTrendColor] = useChange(PERSISTENT, 'chartSupertrendDownTrendColor');
   const [downTrendColorValue, setDownTrendColorValue] = useState(downTrendColor);
@@ -29,10 +29,13 @@ const SupertrendSettings = ({
 
   useEffect(() => listenSettingsSave(() => {
     setShouldShow(shouldShowValue);
-    setPeriod(periodValue);
-    setMultiplier(multiplierValue);
+    setPeriod(+periodValue || 0);
+    setMultiplier(+multiplierValue || 0);
     setDownTrendColor(downTrendColorValue);
     setUpTrendColor(upTrendColorValue);
+
+    setPeriodValue(String(+periodValue || 0));
+    setMultiplierValue(String(+multiplierValue || 0));
   }), [
     downTrendColorValue, listenSettingsSave, multiplierValue, period, periodValue,
     setDownTrendColor, setMultiplier, setPeriod, setShouldShow, setUpTrendColor,
@@ -41,8 +44,8 @@ const SupertrendSettings = ({
 
   useEffect(() => listenSettingsCancel(() => {
     setShouldShowValue(shouldShow);
-    setPeriodValue(period);
-    setMultiplierValue(multiplier);
+    setPeriodValue(String(period));
+    setMultiplierValue(String(multiplier));
     setDownTrendColorValue(downTrendColor);
     setUpTrendColorValue(upTrendColor);
   }), [downTrendColor, listenSettingsCancel, multiplier, period, shouldShow, upTrendColor]);
@@ -72,7 +75,7 @@ const SupertrendSettings = ({
               id="supertrendPeriod"
               value={periodValue}
               onChange={({ target }) => {
-                setPeriodValue(+target.value || 0);
+                setPeriodValue(target.value);
               }}
             />
           </Col>
@@ -85,7 +88,7 @@ const SupertrendSettings = ({
               id="supertrendMultiplier"
               value={multiplierValue}
               onChange={({ target }) => {
-                setMultiplierValue(+target.value || 0);
+                setMultiplierValue(target.value);
               }}
             />
           </Col>
