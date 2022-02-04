@@ -120,6 +120,10 @@ export default class Trading {
       }
     });
 
+    setInterval(() => {
+      void this.loadPositions();
+    }, 10_000);
+
     /* listenChange(this, 'currentSymbolLeverage',
       debounce(async (currentSymbolLeverage: number) => {
       const { symbol } = store.persistent;
