@@ -18,7 +18,7 @@ export interface SettingsFileObject {
 interface Props {
   isSettingsModalOpen: boolean;
   setingsFileObject: SettingsFileObject;
-  setSettingsFileObject: Dispatch<SetStateAction<SettingsFileObject>>
+  setSettingsFileObject: Dispatch<SetStateAction<SettingsFileObject | null>>
 }
 
 const baseStyle = {
