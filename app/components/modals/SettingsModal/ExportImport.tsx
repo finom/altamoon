@@ -17,7 +17,7 @@ export interface SettingsFileObject {
 
 interface Props {
   isSettingsModalOpen: boolean;
-  setingsFileObject: SettingsFileObject;
+  setingsFileObject: SettingsFileObject | null;
   setSettingsFileObject: Dispatch<SetStateAction<SettingsFileObject | null>>
 }
 
