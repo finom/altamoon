@@ -3,11 +3,12 @@ import { QuestionCircleFill } from 'react-bootstrap-icons';
 import {
   Button, Form, Input, Label, Row, Col, Collapse,
 } from 'reactstrap';
-import useChange from 'use-change';
-import isType from '../../lib/isType';
-import { PERSISTENT, ROOT, RootStore } from '../../store';
-import FormSwitch from '../controls/FormSwitch';
-import Modal, { ModalHeader, ModalFooter, ModalBody } from '../layout/Modal';
+import useChange, { useGet } from 'use-change';
+import isType from '../../../lib/isType';
+import { PERSISTENT, ROOT, RootStore } from '../../../store';
+import FormSwitch from '../../controls/FormSwitch';
+import Modal, { ModalHeader, ModalFooter, ModalBody } from '../../layout/Modal';
+import ExportImport, { SettingsFileObject } from './ExportImport';
 
 const SettingsModal = (): ReactElement => {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useChange(ROOT, 'isSettingsModalOpen');
@@ -20,6 +21,8 @@ const SettingsModal = (): ReactElement => {
   const closeModal = useCallback(() => {
     setIsSettingsModalOpen(false);
   }, [setIsSettingsModalOpen]);
+  const getSettings = useGet(ROOT, 'persistent');
+  const getMinicharts = useGet(ROOT, 'minicharts');
 
   const [binanceApiKey, setBinanceApiKey] = useState(existingApiKey ?? '');
   const [binanceApiSecret, setBinanceApiSecret] = useState(existingApiSecret ?? '');
@@ -28,7 +31,16 @@ const SettingsModal = (): ReactElement => {
   const [testnetBinanceApiKey, setTestnetBinanceApiKey] = useState(existingTestnetApiKey ?? '');
   const [testnetBinanceApiSecret, setTestnetBinanceApiSecret] = useState(existingTestnetApiSecret ?? '');
 
+  const [setingsFileObject, setSettingsFileObject] = useState<SettingsFileObject | null>(null);
+
   const onSubmit = useCallback(() => {
+    if (setingsFileObject?.fileType === 'altamoon-settings') {
+      Object.assign(getSettings(), setingsFileObject.settings);
+      Object.assign(getMinicharts(), setingsFileObject.minichartsSettings);
+
+      closeModal();
+      return;
+    }
     setExistingTheme(theme);
     setExistingIsTestnet(isTestnet);
     setExistingApiKey(binanceApiKey);
@@ -41,7 +53,7 @@ const SettingsModal = (): ReactElement => {
     binanceApiKey, binanceApiSecret, closeModal, isTestnet, setExistingApiKey,
     setExistingApiSecret, setExistingIsTestnet, setExistingTestnetApiKey,
     setExistingTestnetApiSecret, setExistingTheme, testnetBinanceApiKey,
-    testnetBinanceApiSecret, theme,
+    testnetBinanceApiSecret, theme, getSettings, setingsFileObject, getMinicharts,
   ]);
 
   return (
@@ -152,6 +164,11 @@ const SettingsModal = (): ReactElement => {
               type="password"
             />
           </Collapse>
+          <ExportImport
+            isSettingsModalOpen={isSettingsModalOpen}
+            setingsFileObject={setingsFileObject}
+            setSettingsFileObject={setSettingsFileObject}
+          />
         </Form>
       </ModalBody>
       <ModalFooter>
