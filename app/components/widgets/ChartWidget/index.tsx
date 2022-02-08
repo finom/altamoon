@@ -50,6 +50,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     symbol, tradingType, chartPaddingTopPercent,
     chartPaddingBottomPercent, chartPaddingRightPercent,
     tradingExactSizeBuyStr: exactSizeBuyStr, tradingExactSizeSellStr: exactSizeSellStr,
+    tradingIsPercentModeBuy: isPercentModeBuy, tradingIsPercentModeSell: isPercentModeSell,
     chartShouldShowEma, chartEmaNumbers, chartEmaColors,
 
     chartShouldShowSupertrend, chartSupertrendPeroid, chartSupertrendMultiplier,
@@ -58,6 +59,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     'symbol', 'tradingType', 'chartPaddingTopPercent',
     'chartPaddingBottomPercent', 'chartPaddingRightPercent',
     'tradingExactSizeBuyStr', 'tradingExactSizeSellStr',
+    'tradingIsPercentModeBuy', 'tradingIsPercentModeSell',
     'chartShouldShowEma', 'chartEmaNumbers', 'chartEmaColors',
 
     'chartShouldShowSupertrend', 'chartSupertrendPeroid', 'chartSupertrendMultiplier',
@@ -167,9 +169,11 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
             sellDraftPrice: limitSellPrice,
             buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr, {
               leverage: currentSymbolLeverage,
+              isPercentMode: isPercentModeBuy,
             }),
             sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr, {
               leverage: currentSymbolLeverage,
+              isPercentMode: isPercentModeSell,
             }),
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
@@ -191,9 +195,11 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
             sellDraftPrice: limitSellPrice,
             buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr, {
               leverage: currentSymbolLeverage,
+              isPercentMode: isPercentModeBuy,
             }),
             sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr, {
               leverage: currentSymbolLeverage,
+              isPercentMode: isPercentModeSell,
             }),
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
@@ -215,9 +221,11 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
             sellDraftPrice: limitSellPrice,
             buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr, {
               leverage: currentSymbolLeverage,
+              isPercentMode: isPercentModeBuy,
             }),
             sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr, {
               leverage: currentSymbolLeverage,
+              isPercentMode: isPercentModeSell,
             }),
             stopBuyDraftPrice: stopBuyPrice,
             stopSellDraftPrice: stopSellPrice,
@@ -239,9 +247,11 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
             sellDraftPrice: limitSellPrice,
             buyDraftSize: calculateSizeFromString(symbol, exactSizeBuyStr, {
               leverage: currentSymbolLeverage,
+              isPercentMode: isPercentModeBuy,
             }),
             sellDraftSize: calculateSizeFromString(symbol, exactSizeSellStr, {
               leverage: currentSymbolLeverage,
+              isPercentMode: isPercentModeSell,
             }),
             stopBuyDraftPrice: 0,
             stopSellDraftPrice: 0,
@@ -261,6 +271,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     stopBuyPrice, stopSellPrice, tradingType, candleChart,
     calculateSizeFromString, exactSizeBuyStr, exactSizeSellStr,
     isCurrentSymbolMarginTypeIsolated, currentSymbolLeverage,
+    isPercentModeBuy, isPercentModeSell,
   ]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
