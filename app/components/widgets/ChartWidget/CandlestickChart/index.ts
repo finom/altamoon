@@ -451,14 +451,14 @@ export default class CandlestickChart {
 
     this.#gridLines.appendTo(svgContainer, resizeData);
     this.#axes.appendTo(svgContainer, resizeData);
+    this.#ema.appendTo(svgContainer);
+    this.#supertrend.appendTo(svgContainer);
     this.#plot.appendTo(svgContainer);
     this.#clipPath.appendTo(svgContainer, resizeData);
     this.#orderArrows.appendTo(svgContainer);
     this.#lines.appendTo(svgContainer, resizeData);
     this.#measurer.appendTo(svgContainer, resizeData);
     this.#markPriceTriangle.appendTo(svgContainer);
-    this.#ema.appendTo(svgContainer);
-    this.#supertrend.appendTo(svgContainer);
 
     new ResizeObserver(() => this.#resize()).observe(this.#container);
   };
