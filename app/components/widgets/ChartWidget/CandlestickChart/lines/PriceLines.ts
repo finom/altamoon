@@ -18,7 +18,7 @@ interface Params {
   isVisible?: boolean;
   isTitleVisible?: boolean | 'hover';
   isBackgroundFill?: boolean;
-  lineStyle?: 'solid' | 'dashed' | 'dotted';
+  lineStyle?: PriceLinesDatum['lineStyle'];
   pointerEventsNone?: boolean;
   onDragEnd?: Handler;
   onDrag?: Handler;
@@ -44,7 +44,7 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
 
   readonly #axis: ChartAxis;
 
-  #lineStyle: 'solid' | 'dashed' | 'dotted';
+  #lineStyle: PriceLinesDatum['lineStyle'];
 
   #pricePrecision = 1;
 
@@ -209,6 +209,7 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
         .style('opacity', (d) => (d.opacity ? String(d.opacity) : ''));
 
       update.select('.price-line-horizontal-group .price-line-line')
+        .style('display', (d) => (d.lineStyle === 'none' ? 'none' : ''))
         .attr('stroke-dasharray', (d) => {
           const lineStyle = d.lineStyle ?? this.#lineStyle;
           if (lineStyle === 'dashed') return '10 7';
@@ -221,6 +222,8 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
           || d.isTitleVisible === false
           || (d.isTitleVisible === 'hover' && !d.isHovered)
         ? 'none' : 'inline-block'));
+
+      update.select('.price-line-right-group').style('display', (d) => (d.isPriceLabelVisible === false ? 'none' : ''));
 
       update.style('cursor', (d) => (d.isDraggable ? 'ns-resize' : 'auto'));
 

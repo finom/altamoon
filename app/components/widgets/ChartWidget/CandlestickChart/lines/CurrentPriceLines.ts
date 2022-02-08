@@ -9,7 +9,11 @@ export default class CurrentPriceLines extends PriceLines {
   constructor({ axis }: Params, resizeData: ResizeData) {
     super({
       axis,
-      items: [{ id: 'lastPrice' }, { id: 'bidPrice', isVisible: false }, { id: 'askPrice', isVisible: false }],
+      items: [
+        { id: 'lastPrice' },
+        { id: 'bidPrice', isVisible: false, isPriceLabelVisible: false },
+        { id: 'askPrice', isVisible: false, isPriceLabelVisible: false },
+      ],
       color: 'var(--altamoon-chart-last-price-line-color)',
       pointerEventsNone: true,
     }, resizeData);
@@ -22,7 +26,9 @@ export default class CurrentPriceLines extends PriceLines {
     asks?: [number, number][];
   }) => {
     if (typeof data.shouldShowBidAskLines !== 'undefined') {
-      this.updateItem('lastPrice', { isVisible: !data.shouldShowBidAskLines });
+      this.updateItem('lastPrice', {
+        lineStyle: data.shouldShowBidAskLines ? 'none' : 'solid',
+      });
       this.updateItem('bidPrice', { isVisible: data.shouldShowBidAskLines });
       this.updateItem('askPrice', { isVisible: data.shouldShowBidAskLines });
     }

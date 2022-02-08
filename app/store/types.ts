@@ -101,8 +101,9 @@ export interface PriceLinesDatum<T = unknown> {
   isCheckable?: boolean; // non-dynamic so far
   isClosable?: boolean; // non-dynamic so far
   isTitleVisible?: boolean | 'hover';
+  isPriceLabelVisible?: boolean;
   isHovered?: boolean;
-  lineStyle?: 'solid' | 'dashed' | 'dotted';
+  lineStyle?: 'solid' | 'dashed' | 'dotted' | 'none';
   customData?: T;
   pointerEventsNone?: boolean;
 }
