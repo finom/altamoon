@@ -3,7 +3,9 @@
 declare namespace StyleCssNamespace {
   export interface IStyleCss {
     label: string;
+    layoutsWrapper: string;
     marketInfo: string;
+    navbar: string;
     symbol: string;
     text: string;
   }

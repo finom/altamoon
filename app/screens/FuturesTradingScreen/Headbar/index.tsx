@@ -63,6 +63,7 @@ const Headbar = (): ReactElement => {
   return (
     <Navbar
       className={classNames({
+        [css.navbar]: true,
         'bg-dark': theme === 'dark',
         'bg-light': theme !== 'dark',
         'p-3': true,
@@ -135,7 +136,7 @@ const Headbar = (): ReactElement => {
         <span className={`${css.label} text-muted`}>24h vol (USDT)</span>
         <span className={css.text}>{ticker ? formatMoneyNumber(+ticker.quoteVolume) : '...'}</span>
       </div>
-      <Layouts />
+      <Layouts className={css.layoutsWrapper} />
       {' '}
       <SettingsButton buttonTextClassName="d-none d-xxl-inline-block" />
       {' '}
@@ -148,7 +149,7 @@ const Headbar = (): ReactElement => {
         {' '}
         <span className="d-none d-xxl-inline-block">Plugins</span>
       </Button>
-      <WidgetsSelect buttonTextClassName="d-none d-xxl-inline-block" />
+      <WidgetsSelect buttonTextClassName="d-none d-xxl-inline-block " />
     </Navbar>
   );
 };

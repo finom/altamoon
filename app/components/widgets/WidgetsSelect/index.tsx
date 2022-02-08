@@ -13,7 +13,12 @@ import useClickOutside from '../../../hooks/useClickOutside';
 
 import css from './style.css';
 
-const WidgetsSelect = ({ buttonTextClassName }: { buttonTextClassName: string; }): ReactElement => {
+interface Props {
+  className?: string;
+  buttonTextClassName: string;
+}
+
+const WidgetsSelect = ({ className, buttonTextClassName }: Props): ReactElement => {
   const [isWidgetListVisible, setIsWidgetListVisible] = useState(false);
   const theme = useValue(PERSISTENT, 'theme');
   const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets');
@@ -34,7 +39,7 @@ const WidgetsSelect = ({ buttonTextClassName }: { buttonTextClassName: string; }
   useClickOutside(ref, () => setIsWidgetListVisible(false));
 
   return (
-    <div className="d-inline-block position-relative" ref={ref as LegacyRef<HTMLDivElement>}>
+    <div className={`d-inline-block position-relative ${className ?? ''}`} ref={ref as LegacyRef<HTMLDivElement>}>
       <Button
         title="Widgets"
         color={theme === 'dark' ? 'dark' : 'light'}

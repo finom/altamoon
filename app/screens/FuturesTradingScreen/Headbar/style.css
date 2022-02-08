@@ -1,3 +1,11 @@
+.navbar > div {
+  justify-content: start!important;
+}
+
+.layoutsWrapper {
+  margin-lefT: auto;
+}
+
 .symbol {
     width: 150px!important;
 }

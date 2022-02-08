@@ -5,8 +5,8 @@ import { useSet, useValue } from 'use-change';
 import { PERSISTENT, ROOT } from '../../store';
 
 const SettingsButton = ({
-  buttonTextClassName,
-}: { buttonTextClassName?: string }): ReactElement => {
+  className, buttonTextClassName,
+}: { className?: string; buttonTextClassName?: string }): ReactElement => {
   const theme = useValue(PERSISTENT, 'theme');
   const setIsSettingsModalOpen = useSet(ROOT, 'isSettingsModalOpen');
 
@@ -15,6 +15,7 @@ const SettingsButton = ({
       title="Settings"
       color={theme === 'dark' ? 'dark' : 'light'}
       onClick={() => setIsSettingsModalOpen(true)}
+      className={className}
     >
       <Gear size={16} />
       {' '}

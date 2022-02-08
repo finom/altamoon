@@ -62,7 +62,7 @@ const LayoutItem = ({
   );
 };
 
-const Layouts = (): ReactElement => {
+const Layouts = ({ className }: { className?: string; }): ReactElement => {
   const theme = useValue(PERSISTENT, 'theme');
   const widgetLayouts = useValue(PERSISTENT, 'widgetLayouts');
   const resetLayout = useSilent(PERSISTENT, 'resetLayout');
@@ -74,7 +74,7 @@ const Layouts = (): ReactElement => {
   useClickOutside(ref, () => onSetIsDropdownOpen(false));
 
   return (
-    <div ref={ref}>
+    <div ref={ref} className={className}>
       <NewLayoutModal isOpen={isNewLayoutModalOpen} setIsOpen={setIsNewLayoutModalOpen} />
       <Dropdown isOpen={isDropdownOpen} toggle={() => { onSetIsDropdownOpen((v) => !v); }} active>
         <DropdownToggle
