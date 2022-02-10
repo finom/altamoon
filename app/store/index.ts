@@ -82,7 +82,7 @@ const store = new RootStore();
 
 if (process.env.NODE_ENV === 'development') {
   // make store to be accessed ass a global variable
-  convertType<{ store: RootStore }>(window).store = store;
+  convertType<{ altamoon: RootStore }>(window).altamoon = store;
 }
 
 // store selectors
