@@ -1,6 +1,7 @@
 import { MinichartsStore, minichartsStore } from 'altamoon-minicharts';
 import { listenChange } from 'use-change';
 import { groupBy } from 'lodash';
+import * as api from '../api';
 
 import convertType from '../lib/convertType';
 import Persistent from './Persistent';
@@ -28,6 +29,10 @@ export class RootStore implements altamoon.RootStore {
   public readonly minicharts: MinichartsStore = minichartsStore;
 
   public isSettingsModalOpen;
+
+  public readonly futuresAlertsWorkerSubscribe = api.futuresAlertsWorkerSubscribe;
+
+  public readonly futuresChartWorkerSubscribe = api.futuresChartWorkerSubscribe;
 
   constructor() {
     this.persistent = new Persistent();

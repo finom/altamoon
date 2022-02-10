@@ -9,8 +9,6 @@ declare global {
   namespace globalThis {
     // eslint-disable-next-line no-var, vars-on-top
     var alertsWorker: Worker;
-    // eslint-disable-next-line vars-on-top, no-var
-    var altamoonFuturesAlertsWorkerSubscribe: typeof futuresAlertsWorkerSubscribe;
   }
 }
 
@@ -59,8 +57,3 @@ export default function futuresAlertsWorkerSubscribe({
     worker.postMessage(setAlertsMessage);
   };
 }
-
-// workers don't work well when minicharts are used as part of Altamoon
-// the widget is going to use the global altamoonFuturesChartWorkerSubscription
-// but the standalone version is going to import the function as usually
-window.altamoonFuturesAlertsWorkerSubscribe = futuresAlertsWorkerSubscribe;

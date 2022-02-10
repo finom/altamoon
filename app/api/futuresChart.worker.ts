@@ -187,4 +187,4 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
 });
 
 // export this pseudo class for typescript
-export default class Work extends Worker { constructor() { super(''); } }
+export default class Work extends Worker { constructor() { super('zalupa.js'); } }
