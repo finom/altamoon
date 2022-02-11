@@ -13,8 +13,10 @@ export default async function createOrderFromDraft(this: altamoon.RootStore['tra
 }, side: api.OrderSide): Promise<void> {
   const {
     tradingType, symbol, tradingBuyReduceOnly, tradingSellReduceOnly, tradingPostOnly: postOnly,
+    tradingIsPercentModeBuy, tradingIsPercentModeSell,
   } = this.store.persistent;
   const reduceOnly = side === 'BUY' ? tradingBuyReduceOnly : tradingSellReduceOnly;
+  const isPercentMode = side === 'BUY' ? tradingIsPercentModeBuy : tradingIsPercentModeSell;
   const price = side === 'BUY' ? buyDraftPrice : sellDraftPrice;
   const stopPrice = side === 'BUY' ? stopBuyDraftPrice : stopSellDraftPrice;
   const exactSizeStr = side === 'BUY'
@@ -29,8 +31,7 @@ export default async function createOrderFromDraft(this: altamoon.RootStore['tra
 
       return;
     }
-
-    const size = this.calculateSizeFromString(symbol, exactSizeStr);
+    const size = this.calculateSizeFromString(symbol, exactSizeStr, { isPercentMode });
 
     const quantity = this.calculateQuantity({
       symbol,
@@ -55,7 +56,7 @@ export default async function createOrderFromDraft(this: altamoon.RootStore['tra
       newClientOrderId,
     });
   } else { // LIMIT or MARKET
-    const size = this.calculateSizeFromString(symbol, exactSizeStr);
+    const size = this.calculateSizeFromString(symbol, exactSizeStr, { isPercentMode });
 
     const quantity = this.calculateQuantity({
       symbol,
