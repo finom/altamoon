@@ -80,10 +80,7 @@ export class RootStore implements altamoon.RootStore {
 
 const store = new RootStore();
 
-if (process.env.NODE_ENV === 'development') {
-  // make store to be accessed ass a global variable
-  convertType<{ altamoon: RootStore }>(window).altamoon = store;
-}
+convertType<{ altamoonStore: RootStore }>(window).altamoonStore = store;
 
 // store selectors
 export const ROOT = (root: RootStore): RootStore => root;
