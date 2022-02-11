@@ -9,6 +9,7 @@ export default async function limitOrder(this: altamoon.RootStore['trading'], {
   symbol, reduceOnly = false,
   postOnly = false,
   newClientOrderId,
+  shouldHideDraft,
 }: {
   side: api.OrderSide;
   quantity: number;
@@ -17,6 +18,7 @@ export default async function limitOrder(this: altamoon.RootStore['trading'], {
   reduceOnly?: boolean;
   postOnly?: boolean;
   newClientOrderId?: string;
+  shouldHideDraft?: boolean;
 }): Promise<api.FuturesOrder | null> {
   const clientOrderId = newClientOrderId ?? `order_${new Date().toISOString()}`;
 
@@ -37,8 +39,10 @@ export default async function limitOrder(this: altamoon.RootStore['trading'], {
     isCanceled: false,
   }];
 
-  if (side === 'BUY') this.shouldShowLimitBuyPriceLine = false;
-  else this.shouldShowLimitSellPriceLine = false;
+  if (shouldHideDraft) {
+    if (side === 'BUY') this.shouldShowLimitBuyPriceLine = false;
+    else this.shouldShowLimitSellPriceLine = false;
+  }
 
   try {
     const result = await api.futuresLimitOrder(
@@ -60,8 +64,10 @@ export default async function limitOrder(this: altamoon.RootStore['trading'], {
     this.ordersToBeCreated = this.ordersToBeCreated
       .filter((o) => o.clientOrderId !== clientOrderId);
 
-    if (side === 'BUY') this.shouldShowLimitBuyPriceLine = shouldShowLimitBuyPriceLine;
-    else this.shouldShowLimitSellPriceLine = shouldShowLimitSellPriceLine;
+    if (shouldHideDraft) {
+      if (side === 'BUY') this.shouldShowLimitBuyPriceLine = shouldShowLimitBuyPriceLine;
+      else this.shouldShowLimitSellPriceLine = shouldShowLimitSellPriceLine;
+    }
 
     return null;
   }

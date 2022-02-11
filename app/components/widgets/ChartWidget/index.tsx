@@ -314,6 +314,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
                 symbol: order.symbol,
                 reduceOnly: order.reduceOnly,
                 postOnly: order.timeInForce === 'GTX',
+                shouldHideDraft: false,
               });
             }
           }
