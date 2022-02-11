@@ -246,7 +246,7 @@
   },
   "dependencies": {
     "altamoon-components": "^0.0.10",
-    "altamoon-minicharts": "^0.3.98",
+    "altamoon-minicharts": "^0.3.99",
     "altamoon-robust-websocket": "^1.0.3",
     "balajs": "^1.0.10",
     "bootstrap": "^5.1.3",
