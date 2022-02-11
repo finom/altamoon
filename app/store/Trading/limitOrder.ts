@@ -9,7 +9,7 @@ export default async function limitOrder(this: altamoon.RootStore['trading'], {
   symbol, reduceOnly = false,
   postOnly = false,
   newClientOrderId,
-  shouldHideDraft,
+  shouldHideDraft = true,
 }: {
   side: api.OrderSide;
   quantity: number;
