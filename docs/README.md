@@ -1,1 +1,0 @@
-**This is not the documentation. This folder is used to serve the app [via Github Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).**
