@@ -1,6 +1,7 @@
 import { TradingOrder, OrderToBeCreated } from '../../../../../store/types';
 import { ChartAxis, PriceLinesDatum, ResizeData } from '../types';
 import PriceLines from './PriceLines';
+import formatMoneyNumber from '../../../../../lib/formatMoneyNumber';
 
 interface Params {
   axis: ChartAxis;
@@ -10,7 +11,13 @@ interface Params {
 }
 
 export default class OrderPriceLines extends PriceLines {
-  #orders: TradingOrder[] = [];
+  #totalWalletBalance = 0;
+
+  #openOrders: TradingOrder[] = [];
+
+  #ordersToBeCreated: OrderToBeCreated[] = [];
+
+  #currentSymbolLeverage = 1;
 
   // we neeed this to preserve line position when it was dragged
   // but not yet removed (not yet re-created)
@@ -34,30 +41,42 @@ export default class OrderPriceLines extends PriceLines {
     }, resizeData);
   }
 
-  public updateOrderLines = ({ openOrders: givenOrders, ordersToBeCreated }: {
-    openOrders: TradingOrder[] | null;
-    ordersToBeCreated: OrderToBeCreated[];
+  public updateOrderLines = (data: {
+    openOrders?: TradingOrder[];
+    ordersToBeCreated?: OrderToBeCreated[];
+    totalWalletBalance?: number;
+    currentSymbolLeverage?: number;
   }): void => {
-    const orders = givenOrders ?? this.#orders;
-    this.#orders = orders;
+    if (typeof data.openOrders !== 'undefined') this.#openOrders = data.openOrders;
+    if (typeof data.ordersToBeCreated !== 'undefined') this.#ordersToBeCreated = data.ordersToBeCreated;
+    if (typeof data.totalWalletBalance !== 'undefined') this.#totalWalletBalance = data.totalWalletBalance;
+    if (typeof data.currentSymbolLeverage !== 'undefined') this.#currentSymbolLeverage = data.currentSymbolLeverage;
 
     const items: PriceLinesDatum[] = [
-      ...ordersToBeCreated.map(({
-        symbol, clientOrderId, price, origQty,
-      }): PriceLinesDatum => ({
-        id: clientOrderId,
-        isDraggable: false,
-        yValue: price,
-        title: `Limit ${origQty} ${symbol.replace(/USDT|BUSD/, '')}`,
-        color: 'var(--bs-gray)',
-        opacity: 0.8,
-      })),
-      ...orders
+      ...this.#ordersToBeCreated.map(({ clientOrderId, price, origQty }): PriceLinesDatum => {
+        const size = price * origQty;
+        const sizePercent = +(
+          ((size / this.#currentSymbolLeverage) / this.#totalWalletBalance) * 100
+        ).toFixed(1);
+        return {
+          id: clientOrderId,
+          isDraggable: false,
+          yValue: price,
+          title: `Limit ${formatMoneyNumber(size)}$ (${sizePercent}%)`,
+          color: 'var(--bs-gray)',
+          opacity: 0.8,
+        };
+      }),
+      ...this.#openOrders
         .map((order): PriceLinesDatum => {
           const {
-            price, side, origQty, executedQty, symbol, type, isCanceled, clientOrderId,
+            price, side, origQty, executedQty, type, isCanceled, clientOrderId,
           } = order;
           const color = side === 'BUY' ? 'var(--altamoon-buy-color)' : 'var(--altamoon-sell-color)';
+          const size = price * (origQty - executedQty);
+          const sizePercent = +(
+            ((size / this.#currentSymbolLeverage) / this.#totalWalletBalance) * 100
+          ).toFixed(1);
           return ({
             isDraggable: type === 'LIMIT',
             yValue: this.#forceOrderPrices[clientOrderId] ?? price,
@@ -66,13 +85,13 @@ export default class OrderPriceLines extends PriceLines {
             opacity: isCanceled ? 0.8 : 1,
             // TODO this is a potentially wrong way to retrieve
             // asset name from symbol name because of BNB/BUSD pairs
-            title: `Limit ${origQty - executedQty} ${symbol.replace(/USDT|BUSD/, '')}`,
+            title: `Limit ${formatMoneyNumber(size)}$ (${sizePercent}%)`,
             id: clientOrderId,
             customData: { order },
             pointerEventsNone: isCanceled,
           });
         }),
-      ...orders
+      ...this.#openOrders
         .filter(({ stopPrice }) => !!stopPrice)
         .map(({ stopPrice, side, clientOrderId }): PriceLinesDatum => ({
           yValue: stopPrice,

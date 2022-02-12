@@ -30,6 +30,18 @@ export default class DraftPriceLines extends PriceLines {
 
   #lastPrice = 0;
 
+  #buyDraftPrice: number | null = 0;
+
+  #buyDraftSize: number | null = 0;
+
+  #sellDraftPrice: number | null = 0;
+
+  #sellDraftSize: number | null = 0;
+
+  #totalWalletBalance = 0;
+
+  #currentSymbolLeverage = 1;
+
   constructor({
     axis, getPseudoPosition, calculateQuantity, onUpdateDrafts,
     onClickDraftCheck, onUpdateItems, onDoubleClick,
@@ -127,6 +139,8 @@ export default class DraftPriceLines extends PriceLines {
 
   public updateDraftLines = (data: {
     lastPrice?: number;
+    totalWalletBalance?: number;
+    currentSymbolLeverage?: number;
 
     buyDraftPrice?: number | null;
     sellDraftPrice?: number | null;
@@ -141,31 +155,49 @@ export default class DraftPriceLines extends PriceLines {
     shouldShowStopSellDraftPrice?: boolean;
   }): void => {
     if (typeof data.lastPrice !== 'undefined') this.#lastPrice = data.lastPrice;
+    if (typeof data.totalWalletBalance !== 'undefined') this.#totalWalletBalance = data.totalWalletBalance;
+    if (typeof data.currentSymbolLeverage !== 'undefined') this.#currentSymbolLeverage = data.currentSymbolLeverage;
 
-    if (typeof data.buyDraftPrice !== 'undefined' && typeof data.buyDraftSize !== 'undefined') {
+    if (typeof data.buyDraftPrice !== 'undefined') this.#buyDraftPrice = data.buyDraftPrice;
+    if (typeof data.buyDraftSize !== 'undefined') this.#buyDraftSize = data.buyDraftSize;
+    if (typeof data.sellDraftPrice !== 'undefined') this.#sellDraftPrice = data.sellDraftPrice;
+    if (typeof data.sellDraftSize !== 'undefined') this.#sellDraftSize = data.sellDraftSize;
+
+    if (typeof data.buyDraftPrice !== 'undefined' || typeof data.buyDraftSize !== 'undefined') {
       const currentSymbolPseudoPosition = this.#getPseudoPosition({ side: 'BUY' });
+      const size = this.#buyDraftSize ? formatMoneyNumber(this.#buyDraftSize) : 0;
+      const sizePercent = +(
+        (((this.#buyDraftSize ?? 0) / this.#currentSymbolLeverage) / this.#totalWalletBalance) * 100
+      ).toFixed(1);
       this.updateItem('BUY', {
-        yValue: data.buyDraftPrice ?? 0,
-        title: `Buy draft (${data.buyDraftSize ? formatMoneyNumber(data.buyDraftSize) : 0} USDT)`,
+        yValue: this.#buyDraftPrice ?? 0,
+        title: `Draft ${size}$ (${sizePercent}%)`,
         customData: {
           draftAmount: currentSymbolPseudoPosition ? this.#calculateQuantity({
             symbol: currentSymbolPseudoPosition.symbol,
-            size: data.buyDraftSize ?? 0,
-            price: data.buyDraftPrice ?? 0,
+            size: this.#buyDraftSize ?? 0,
+            price: this.#buyDraftPrice ?? 0,
           }) : 0,
         },
       });
     }
-    if (typeof data.sellDraftPrice !== 'undefined' && typeof data.sellDraftSize !== 'undefined') {
+
+    if (typeof data.sellDraftPrice !== 'undefined' || typeof data.sellDraftSize !== 'undefined') {
       const currentSymbolPseudoPosition = this.#getPseudoPosition({ side: 'SELL' });
+      const size = this.#sellDraftSize ? formatMoneyNumber(this.#sellDraftSize) : 0;
+      const sizePercent = +(
+        (
+          ((this.#sellDraftSize ?? 0) / this.#currentSymbolLeverage) / this.#totalWalletBalance
+        ) * 100
+      ).toFixed(1);
       this.updateItem('SELL', {
-        yValue: data.sellDraftPrice ?? 0,
-        title: `Sell draft (${data.sellDraftSize ? formatMoneyNumber(data.sellDraftSize) : 0} USDT)`,
+        yValue: this.#sellDraftPrice ?? 0,
+        title: `Draft ${size}$ (${sizePercent}%)`,
         customData: {
           draftAmount: currentSymbolPseudoPosition ? this.#calculateQuantity({
             symbol: currentSymbolPseudoPosition.symbol,
-            size: data.sellDraftSize ?? 0,
-            price: data.sellDraftPrice ?? 0,
+            size: this.#sellDraftSize ?? 0,
+            price: this.#sellDraftPrice ?? 0,
           }) : 0,
         },
       });

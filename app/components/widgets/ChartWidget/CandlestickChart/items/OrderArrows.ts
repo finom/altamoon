@@ -57,13 +57,8 @@ export default class OrderArrows implements ChartItem {
     scaledX?: d3.ScaleTime<number, number>,
     filledOrders?: api.FuturesOrder[],
   }): void => {
-    if (typeof data.scaledX !== 'undefined') {
-      this.#scaledX = data.scaledX;
-    }
-
-    if (typeof data.filledOrders !== 'undefined') {
-      this.#filledOrders = data.filledOrders;
-    }
+    if (typeof data.scaledX !== 'undefined') this.#scaledX = data.scaledX;
+    if (typeof data.filledOrders !== 'undefined') this.#filledOrders = data.filledOrders;
 
     this.draw();
   };

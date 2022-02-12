@@ -279,9 +279,7 @@ export default class CandlestickChart {
       const lastPrice = +(last(data.candles ?? [])?.close ?? 0);
       this.#candles = data.candles;
 
-      if (lastPrice) {
-        this.#lines.draftLines.updateDraftLines({ lastPrice });
-      }
+      if (lastPrice) this.#lines.draftLines.updateDraftLines({ lastPrice });
 
       this.#draw();
 
@@ -318,10 +316,20 @@ export default class CandlestickChart {
       this.#lines.liquidationPriceLines.updateLiquidationLines(data);
     }
 
-    if (typeof data.totalWalletBalance !== 'undefined') this.#measurer.update({ totalWalletBalance: data.totalWalletBalance });
+    if (typeof data.totalWalletBalance !== 'undefined') {
+      this.#measurer.update({ totalWalletBalance: data.totalWalletBalance });
+      this.#lines.draftLines.updateDraftLines({ totalWalletBalance: data.totalWalletBalance });
+      this.#lines.orderLines.updateOrderLines({ totalWalletBalance: data.totalWalletBalance });
+    }
 
     if (typeof data.currentSymbolLeverage !== 'undefined') {
       this.#measurer.update({ currentSymbolLeverage: data.currentSymbolLeverage });
+      this.#lines.draftLines.updateDraftLines({
+        currentSymbolLeverage: data.currentSymbolLeverage,
+      });
+      this.#lines.orderLines.updateOrderLines({
+        currentSymbolLeverage: data.currentSymbolLeverage,
+      });
     }
 
     if (typeof data.filledOrders !== 'undefined') {
