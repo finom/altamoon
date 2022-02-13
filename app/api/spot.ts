@@ -1,8 +1,11 @@
 import promiseRequest from './promiseRequest';
 
+const isElectron = /electron/i.test(navigator.userAgent);
+
 type Result = Record<string, { available: number; locked: number }>;
-const api = 'https://api.binance.com/api/';
-const sapi = 'https://api.binance.com/sapi/';
+const api = isElectron ? 'https://api.binance.com/api/' : 'https://altamoon-proxy-server.herokuapp.com/api/api/';
+const sapi = isElectron ? 'https://api.binance.com/sapi/' : 'https://altamoon-proxy-server.herokuapp.com/api/sapi/';
+
 export async function balance(): Promise<Result> {
   const { balances } = await promiseRequest<{ balances: { asset: string; free: string; locked: string }[] }>('v3/account', {}, {
     type: 'SIGNED', baseURL: api,
