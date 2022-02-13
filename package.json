@@ -246,7 +246,7 @@
   },
   "dependencies": {
     "altamoon-components": "^0.0.10",
-    "altamoon-minicharts": "^0.3.101",
+    "altamoon-minicharts": "^0.3.102",
     "altamoon-robust-websocket": "^1.0.3",
     "balajs": "^1.0.10",
     "bootstrap": "^5.1.3",
@@ -270,7 +270,7 @@
     "react": "^17.0.2",
     "react-bootstrap-icons": "^1.7.2",
     "react-dom": "^17.0.2",
-    "react-dropzone": "^12.0.2",
+    "react-dropzone": "^12.0.4",
     "react-grid-layout": "^1.3.3",
     "react-modal": "^3.14.4",
     "react-router-config": "^5.1.1",
