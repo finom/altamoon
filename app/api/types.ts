@@ -1,9 +1,37 @@
+export interface WorkerCandlesMessageBack {
+  type: 'ALL_CANDLES' | 'NEW_CANDLE' | 'EXTEND_LAST_CANDLE';
+  subscriptionId: string;
+  symbol: string;
+  candlesArray: Float64Array;
+  interval: CandlestickChartInterval;
+}
+
+export interface WorkerSubscribeMessage {
+  type: 'SUBSCRIBE';
+  symbols: string[];
+  frequency: number;
+  subscriptionId: string;
+}
+
+export interface WorkerUnsubscribeMessage {
+  type: 'UNSUBSCRIBE';
+  subscriptionId: string;
+}
+
+export interface WorkerInitMessage {
+  type: 'INIT';
+  allSymbols: string[];
+  interval: CandlestickChartInterval;
+  isTestnet?: boolean;
+}
+
 export type PositionSide = 'BOTH' | 'LONG' | 'SHORT';
 export type OrderSide = 'BUY' | 'SELL';
 export type MarginType = 'ISOLATED' | 'CROSSED';
 export type PositionMarginType = 'isolated' | 'cross';
 export type CandlestickChartInterval = '1m' | '3m' | '5m' | '15m' | '30m' | '1h' | '2h' | '4h' | '6h' | '8h' | '12h' | '1d' | '3d' | '1w' | '1M';
 export type ExtendedCandlestickChartInterval = '2m' | '10m' | '2d' | '4d' | '2w' | '2M';
+export type SubminutedCandlestickChartInterval = '5s' | '10s' | '15s' | '20s' | '30s' | '40s';
 export type ContractType = 'PERPETUAL' | 'CURRENT_MONTH' | 'NEXT_MONTH' | 'CURRENT_MONTH_DELIVERING' | 'NEXT_MONTH_DELIVERING';
 export type RateLimitInterval = 'MINUTE' | 'SECOND' | 'DAY';
 export type OrderType = 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_MARKET' | 'TAKE_PROFIT' | 'TAKE_PROFIT_MARKET' | 'TRAILING_STOP_MARKET';

@@ -1,39 +1,15 @@
 /* eslint-disable no-await-in-loop */
 import 'regenerator-runtime';
-import { CandlestickChartInterval, FuturesChartCandle } from './types';
+import {
+  CandlestickChartInterval, FuturesChartCandle, WorkerCandlesMessageBack,
+  WorkerSubscribeMessage, WorkerUnsubscribeMessage, WorkerInitMessage,
+} from './types';
 import futuresCandles from './futuresCandles';
 import { futuresCandlesSubscribe } from './futuresStreams';
 import { setOptions } from './options';
 
 // eslint-disable-next-line no-restricted-globals
 const ctx = self as unknown as Worker;
-
-export interface CandlesMessageBack {
-  type: 'ALL_CANDLES' | 'NEW_CANDLE' | 'EXTEND_LAST_CANDLE';
-  subscriptionId: string;
-  symbol: string;
-  candlesArray: Float64Array;
-  interval: CandlestickChartInterval;
-}
-
-export interface SubscribeMessage {
-  type: 'SUBSCRIBE';
-  symbols: string[];
-  frequency: number;
-  subscriptionId: string;
-}
-
-export interface UnsubscribeMessage {
-  type: 'UNSUBSCRIBE';
-  subscriptionId: string;
-}
-
-export interface InitMessage {
-  type: 'INIT';
-  allSymbols: string[]
-  interval: CandlestickChartInterval;
-  isTestnet?: boolean;
-}
 
 let allSymbols: string[];
 let interval: CandlestickChartInterval;
@@ -72,9 +48,9 @@ const getTypedArray = (candles: FuturesChartCandle[]) => {
   return float64;
 };
 
-const tick = (type: CandlesMessageBack['type'], subscriptionId: string, symbol: string) => {
+const tick = (type: WorkerCandlesMessageBack['type'], subscriptionId: string, symbol: string) => {
   if (type !== 'ALL_CANDLES') subscriptions[subscriptionId].lastMessageBackTimes[symbol] = Date.now();
-  let messageBack: CandlesMessageBack;
+  let messageBack: WorkerCandlesMessageBack;
   if (type === 'ALL_CANDLES') {
     const candlesArray = getTypedArray(allIntervalCandles[symbol]);
     messageBack = {
@@ -95,7 +71,7 @@ const tick = (type: CandlesMessageBack['type'], subscriptionId: string, symbol: 
 };
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
-ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage | InitMessage | UnsubscribeMessage>) => {
+ctx.addEventListener('message', async ({ data }: MessageEvent<WorkerSubscribeMessage | WorkerInitMessage | WorkerUnsubscribeMessage>) => {
   if (data.type === 'INIT') {
     // initialise by starting WS subscription
     allSymbols = data.allSymbols;
@@ -112,7 +88,7 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
       const candles = allIntervalCandles[symbol];
       if (!candles) return;
       const now = Date.now();
-      let type: CandlesMessageBack['type'];
+      let type: WorkerCandlesMessageBack['type'];
 
       if (candle.time === candles[candles.length - 1]?.time) {
         Object.assign(candles[candles.length - 1], candle);
@@ -187,4 +163,4 @@ ctx.addEventListener('message', async ({ data }: MessageEvent<SubscribeMessage |
 });
 
 // export this pseudo class for typescript
-export default class Work extends Worker { constructor() { super('zalupa.js'); } }
+export default class Work extends Worker { constructor() { super(''); } }

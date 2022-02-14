@@ -1,9 +1,8 @@
-import Worker, {
-  CandlesMessageBack, InitMessage, SubscribeMessage, UnsubscribeMessage,
-} from './futuresChart.worker';
+import Worker from './futuresChart.worker';
 import {
   CandlestickChartInterval, ExtendedCandlestickChartInterval,
-  FuturesChartCandle, FuturesExchangeInfo,
+  FuturesChartCandle, FuturesExchangeInfo, WorkerCandlesMessageBack,
+  WorkerInitMessage, WorkerSubscribeMessage, WorkerUnsubscribeMessage,
 } from './types';
 import options from './options';
 import combineCandlesIfNeeded from './combineCandlesIfNeeded';
@@ -86,7 +85,7 @@ export default function futuresChartWorkerSubscribe({
   // if no worker for given interval is created yet then create thw worker
   if (!globalThis.chartWorkers[actualInterval]) {
     worker = new Worker();
-    const initMessage: InitMessage = {
+    const initMessage: WorkerInitMessage = {
       type: 'INIT', allSymbols, interval: actualInterval, isTestnet: options.isTestnet,
     };
     worker.postMessage(initMessage);
@@ -97,11 +96,11 @@ export default function futuresChartWorkerSubscribe({
   }
 
   // start subscription
-  const subscribeMessage: SubscribeMessage = {
+  const subscribeMessage: WorkerSubscribeMessage = {
     type: 'SUBSCRIBE', symbols: workerSymbols, frequency, subscriptionId,
   };
 
-  const handler = ({ data }: MessageEvent<CandlesMessageBack>) => {
+  const handler = ({ data }: MessageEvent< WorkerCandlesMessageBack>) => {
     // ignore other subscriptions
     if (data.subscriptionId !== subscriptionId) return;
     if (data.type === 'ALL_CANDLES') {
@@ -129,7 +128,7 @@ export default function futuresChartWorkerSubscribe({
   worker.postMessage(subscribeMessage);
 
   return () => {
-    const unsubscribeMessage: UnsubscribeMessage = {
+    const unsubscribeMessage: WorkerUnsubscribeMessage = {
       type: 'UNSUBSCRIBE', subscriptionId,
     };
     worker.postMessage(unsubscribeMessage);
