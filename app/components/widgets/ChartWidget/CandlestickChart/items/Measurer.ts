@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import { format } from 'd3';
 import * as api from '../../../../../api';
-import { TradingOrder, TradingPosition } from '../../../../../store/types';
+import { TradingPosition } from '../../../../../store/types';
 import { D3Selection, ResizeData, Scales } from '../types';
 
 const nFormat = (f: string, n: number) => format(f)(n);
@@ -31,11 +31,13 @@ export default class Measurer {
 
   #position: TradingPosition | null = null;
 
-  #orders: TradingOrder[] = [];
-
   #totalWalletBalance = 0;
 
   #currentSymbolLeverage = 1;
+
+  #buyDraftSize = 0;
+
+  #sellDraftSize = 0;
 
   constructor({ scales, resizeData }: { scales: Scales; resizeData: ResizeData; }) {
     this.#scales = scales;
@@ -154,56 +156,51 @@ export default class Measurer {
 
     const time = Measurer.getTimeInterval(Math.abs(+x2 - +x1));
 
-    const amount = y2 - y1;
+    const diff = y2 - y1;
 
-    const percentage = (y2 - y1) / y1;
+    const percentage = diff / y1;
 
-    const leveragedPercent = ((y2 - y1) / y1) * this.#currentSymbolLeverage;
+    const leveragedPercent = percentage * this.#currentSymbolLeverage;
     const trueLeverage = this.#position && this.#totalWalletBalance
       ? this.#position.baseValue / this.#totalWalletBalance : 0;
 
-    const trueLeveragedPercent = ((y2 - y1) / y1) * trueLeverage;
+    const trueLeveragedPercent = percentage * trueLeverage;
 
-    const side: api.OrderSide = (y2 >= y1) ? 'BUY' : 'SELL';
+    const side: api.OrderSide = y2 >= y1 ? 'BUY' : 'SELL';
 
-    const orderQty = this.#orders
-      .reduce((a, order) => a + (order.side === side ? order.origQty : 0), 0);
-    const orderValue = orderQty * y1;
+    // const orderQty = this.#orders
+    //   .reduce((a, order) => a + (order.side === side ? order.origQty : 0), 0);
+
+    const size = side === 'BUY' ? this.#buyDraftSize : this.#sellDraftSize;
+    const orderValue = size * y1;
 
     const orderLeverage = this.#totalWalletBalance ? orderValue / this.#totalWalletBalance : 0;
-    const orderLeveragedPercent = ((y2 - y1) / y1) * orderLeverage;
+    const orderLeveragedPercent = percentage * orderLeverage;
 
     this.#label?.html(`
       <p><b>${time}</b></p>
-      <p><b>${nFormat(',.2f', amount)}</b> USDT</p>
+      <p><b>${nFormat(',.2f', diff)}</b> USDT</p>
       <p><b>${nFormat('+,.2%', percentage)}</b></p>
       <p><b>${nFormat('+,.1%', leveragedPercent)}</b> at ${this.#currentSymbolLeverage}x</p>
       <p><b>${nFormat('+,.1%', trueLeveragedPercent)}</b> at ${Measurer.formatLeverage(trueLeverage)}x (position)</p>
-      <p><b>${nFormat('+,.1%', orderLeveragedPercent)}</b> at ${Measurer.formatLeverage(orderLeverage)}x (${side.toLowerCase()} qty)</p>
+      <p><b>${nFormat('+,.1%', orderLeveragedPercent)}</b> at ${Measurer.formatLeverage(orderLeverage)}x (${side.toLowerCase()} size)</p>
     `);
   }
 
   public update = (data: {
     position?: TradingPosition | null;
-    orders?: TradingOrder[];
+    // orders?: TradingOrder[];
     totalWalletBalance?: number;
     currentSymbolLeverage?: number;
+    buyDraftSize?: number | null;
+    sellDraftSize?: number | null;
   }): void => {
-    if (typeof data.position !== 'undefined') {
-      this.#position = data.position;
-    }
-
-    if (typeof data.orders !== 'undefined') {
-      this.#orders = data.orders;
-    }
-
-    if (typeof data.totalWalletBalance !== 'undefined') {
-      this.#totalWalletBalance = data.totalWalletBalance;
-    }
-
-    if (typeof data.currentSymbolLeverage !== 'undefined') {
-      this.#currentSymbolLeverage = data.currentSymbolLeverage;
-    }
+    if (typeof data.position !== 'undefined') this.#position = data.position;
+    // if (typeof data.orders !== 'undefined') this.#orders = data.orders;
+    if (typeof data.totalWalletBalance !== 'undefined') this.#totalWalletBalance = data.totalWalletBalance;
+    if (typeof data.currentSymbolLeverage !== 'undefined') this.#currentSymbolLeverage = data.currentSymbolLeverage;
+    if (typeof data.buyDraftSize !== 'undefined') this.#buyDraftSize = data.buyDraftSize ?? 0;
+    if (typeof data.sellDraftSize !== 'undefined') this.#sellDraftSize = data.sellDraftSize ?? 0;
 
     this.#drawLabelText();
   };

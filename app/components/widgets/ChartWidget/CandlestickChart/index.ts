@@ -336,8 +336,11 @@ export default class CandlestickChart {
       this.#orderArrows.update({ filledOrders: data.filledOrders });
     }
 
+    if (typeof data.sellDraftSize !== 'undefined') this.#measurer.update({ sellDraftSize: data.sellDraftSize });
+    if (typeof data.buyDraftSize !== 'undefined') this.#measurer.update({ buyDraftSize: data.buyDraftSize });
+
     if (typeof data.orders !== 'undefined' && typeof data.ordersToBeCreated !== 'undefined') {
-      this.#measurer.update({ orders: data.orders });
+      // this.#measurer.update({ orders: data.orders });
       this.#lines.orderLines.updateOrderLines({
         openOrders: data.orders,
         ordersToBeCreated: data.ordersToBeCreated,
