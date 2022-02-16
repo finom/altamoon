@@ -2,7 +2,7 @@ import promiseRequest from './promiseRequest';
 import {
   FuturesLeverageResponse, FuturesPositionRisk, MarginType, ExtendedCandlestickChartInterval,
   FuturesAccount, FuturesLeverageBracket, FuturesUserTrade, FuturesDepth, FuturesExchangeInfo,
-  IncomeType, FuturesIncome, TimeInForce, OrderType, OrderSide,
+  IncomeType, FuturesIncome, TimeInForce, OrderType, OrderSide, FuturesAggTrade,
   FuturesOrder, CandlestickChartInterval, FuturesChartCandle, SubminutedCandlestickChartInterval,
 } from './types';
 
@@ -30,7 +30,7 @@ export const extendedFuturesIntervals: ExtendedCandlestickChartInterval[] = [
  * Subminute intervals
  */
 export const subminuteFuturesIntervals: SubminutedCandlestickChartInterval[] = [
-  '5s', '10s', '15s', '20s', '30s', '40s',
+  '5s', '10s', '15s', '20s', '30s',
 ];
 
 /**
@@ -40,8 +40,53 @@ export const subminuteFuturesIntervals: SubminutedCandlestickChartInterval[] = [
 export const allFuturesIntervals: (
   CandlestickChartInterval | ExtendedCandlestickChartInterval | SubminutedCandlestickChartInterval
 )[] = [
-  /* '5s', '10s', '15s', '20s', '30s', '40s', */ '1m', '2m', '3m', '5m', '10m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '2d', '3d', '4d', '1w', '2w', '1M', '2M',
+  '5s', '10s', '15s', '20s', '30s', '1m', '2m', '3m', '5m', '10m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '2d', '3d', '4d', '1w', '2w', '1M', '2M',
 ];
+
+interface AggTradeOriginal {
+  a: number; // Aggregate tradeId
+  p: string; // Price
+  q: string; // Quantity
+  f: number; // First tradeId
+  l: number; // Last tradeId
+  T: number; // Timestamp
+  m: boolean; // Was the buyer the maker?
+}
+
+interface AggTradeArg {
+  symbol: string;
+  fromId?: number;
+  startTime?: number;
+  endTime?: number;
+  limit?: number;
+
+}
+/**
+ * Compressed/Aggregate Trades List
+ * @remarks Get compressed, aggregate market trades. Market trades that fill at the time, from the same order, with the same price will have the quantity aggregated.
+ * @param symbol - Symbol
+ * @returns
+ */
+export async function futuresAggTrades(options: AggTradeArg): Promise<FuturesAggTrade[]> {
+  const trades = await promiseRequest<AggTradeOriginal[]>(
+    'v1/aggTrades',
+    options as unknown as Record<string, string | number | boolean | undefined>,
+    { method: 'GET' },
+  );
+
+  return trades.map(({
+    a, p, q, f, l, T, m,
+  }) => ({
+    aggTradeId: a,
+    amount: q,
+    firstTradeId: f,
+    lastTradeId: l,
+    maker: m,
+    price: p,
+    symbol: options.symbol,
+    timestamp: T,
+  }));
+}
 
 /**
  * Change Initial Leverage (TRADE)

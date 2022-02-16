@@ -1,4 +1,5 @@
-import Worker from './futuresChart.worker';
+import ChartWorker from './futuresChart.worker';
+import SubminuteChartWorker from './futuresSubminuteChart.worker';
 import {
   CandlestickChartInterval, ExtendedCandlestickChartInterval,
   FuturesChartCandle, FuturesExchangeInfo, WorkerCandlesMessageBack,
@@ -6,6 +7,7 @@ import {
 } from './types';
 import options from './options';
 import combineCandlesIfNeeded from './combineCandlesIfNeeded';
+import { SubminutedCandlestickChartInterval, subminuteFuturesIntervals } from '.';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -69,7 +71,7 @@ export default function futuresChartWorkerSubscribe({
     '2m': '1m', '10m': '5m', '2d': '1d', '4d': '1d', '2w': '1w', '2M': '1M',
   } as Record<ExtendedCandlestickChartInterval, CandlestickChartInterval>)[
     interval as ExtendedCandlestickChartInterval
-  ] ?? interval as CandlestickChartInterval;
+  ] ?? interval as CandlestickChartInterval | SubminutedCandlestickChartInterval;
   // subscriptionId is used to make worker identify current subscription
   const subscriptionId = new Date().toISOString();
 
@@ -80,11 +82,13 @@ export default function futuresChartWorkerSubscribe({
 
   // if 'PERPETUAL' is given instead of symbol list then convert it to the list of PERPETUAL symbols
   const workerSymbols = symbols === 'PERPETUAL' ? allSymbols : symbols;
-  let worker: Worker;
+  let worker: ChartWorker | SubminuteChartWorker;
 
   // if no worker for given interval is created yet then create thw worker
   if (!globalThis.chartWorkers[actualInterval]) {
-    worker = new Worker();
+    worker = subminuteFuturesIntervals
+      .includes(actualInterval as SubminutedCandlestickChartInterval)
+      ? new SubminuteChartWorker() : new ChartWorker();
     const initMessage: WorkerInitMessage = {
       type: 'INIT', allSymbols, interval: actualInterval, isTestnet: options.isTestnet,
     };
