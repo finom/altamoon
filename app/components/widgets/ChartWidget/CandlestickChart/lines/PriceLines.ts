@@ -200,9 +200,10 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
     ): d3.Selection<d3.BaseType, PriceLinesDatum, SVGGElement, unknown> => {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       const textSelection = update.select<SVGTextElement>(`.price-line-${orient}-label`);
+
       update
         .select('.price-line-horizontal-group')
-        .attr('transform', (d) => `translate(0, ${String(axis.scale()(d.yValue ?? 0))})`)
+        .attr('transform', (d) => `translate(0, ${Math.round(axis.scale()(d.yValue ?? 0) ?? 0)})`)
         .attr('color', ({ color }) => color ?? this.#color)
         .style('visibility', ({ isVisible }) => (typeof isVisible === 'undefined' || isVisible ? '' : 'hidden'))
         .style('pointer-events', (d) => (d.pointerEventsNone ?? this.#pointerEventsNone ? 'none' : 'auto'))
@@ -245,7 +246,7 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
       const textSelection = update.select<SVGTextElement>('.price-line-bottom-label');
       update
         .select('.price-line-vertical-group')
-        .attr('transform', (d) => `translate(${String(axis.scale()(d.xValue ?? 0))}, 0)`)
+        .attr('transform', (d) => `translate(${Math.round(axis.scale()(d.xValue ?? 0) ?? 0)}, 0)`)
         .attr('color', ({ color }) => color ?? this.#color)
         .style('pointer-events', (d) => (d.pointerEventsNone ?? this.#pointerEventsNone ? 'none' : 'auto'))
         .style('visibility', ({ isVisible }) => (typeof isVisible === 'undefined' || isVisible ? '' : 'hidden'));
