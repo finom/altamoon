@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import 'regenerator-runtime';
 import {
-  SubminutedCandlestickChartInterval, FuturesChartCandle, WorkerCandlesMessageBack, FuturesAggTrade,
+  SubminutedCandlestickChartInterval, FuturesChartCandle, WorkerCandlesMessageBack,
   WorkerSubscribeMessage, WorkerUnsubscribeMessage, WorkerInitMessage, FuturesAggTradeStreamTicker,
 } from './types';
 import { setOptions } from './options';

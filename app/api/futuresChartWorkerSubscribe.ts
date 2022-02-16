@@ -4,10 +4,11 @@ import {
   CandlestickChartInterval, ExtendedCandlestickChartInterval,
   FuturesChartCandle, FuturesExchangeInfo, WorkerCandlesMessageBack,
   WorkerInitMessage, WorkerSubscribeMessage, WorkerUnsubscribeMessage,
+  SubminutedCandlestickChartInterval,
 } from './types';
 import options from './options';
 import combineCandlesIfNeeded from './combineCandlesIfNeeded';
-import { SubminutedCandlestickChartInterval, subminuteFuturesIntervals } from '.';
+import { subminuteFuturesIntervals } from './futuresREST';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
