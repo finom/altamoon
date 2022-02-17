@@ -41,7 +41,9 @@ export class RootStore implements altamoon.RootStore {
     this.trading = new Trading(this);
     this.stats = new Stats(this);
     this.customization = new Customization(this);
-    this.isSettingsModalOpen = !this.persistent.binanceApiKey;
+    this.isSettingsModalOpen = !this.persistent.binanceApiKey
+      && !(this.persistent.isTestnet
+      && this.persistent.testnetBinanceApiKey);
 
     // update minichart orders
     listenChange(this.trading, 'openOrders', (openOrders, prevOpenOrders) => {

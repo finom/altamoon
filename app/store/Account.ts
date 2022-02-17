@@ -66,7 +66,13 @@ export default class Account {
   }
 
   public readonly reloadFuturesAccount = throttle(async (): Promise<void> => {
-    if (!this.#store.persistent.binanceApiKey || !this.#store.persistent.binanceApiSecret) {
+    const {
+      binanceApiKey, binanceApiSecret, testnetBinanceApiKey, testnetBinanceApiSecret, isTestnet,
+    } = this.#store.persistent;
+    if (
+      (!binanceApiKey || !binanceApiSecret)
+      && (isTestnet && (!testnetBinanceApiKey || !testnetBinanceApiSecret))
+    ) {
       await delay(3000);
       return this.reloadFuturesAccount();
     }

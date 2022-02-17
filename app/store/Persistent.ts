@@ -100,11 +100,11 @@ export default class Persistent {
 
   public tradingWidgetPercentButtonsCount = persist<number>('tradingWidgetPercentButtonsCount', 4);
 
-  public testnetBinanceApiKey = persist<string | null>('testnetBinanceApiKey', null);
+  public testnetBinanceApiKey = persist<string | null>('testnetBinanceApiKey', '45f8b1dfd0c2c57575f5d9991b11117ede55aa158f58ba0179e05f6778bedb64');
 
-  public testnetBinanceApiSecret = persist<string | null>('testnetBinanceApiSecret', null);
+  public testnetBinanceApiSecret = persist<string | null>('testnetBinanceApiSecret', 'a7cc73a3480c75776a5244bbffd8373988e285ee68c8b22d78bc26712b18abdb');
 
-  public isTestnet = persist<boolean>('isTestnet', false);
+  public isTestnet = persist<boolean>('isTestnet', true);
 
   public tradingWidgetPercentButtonsLayouts = persist<Record<number, number[]>>('tradingWidgetPercentButtonsLayouts', {
     4: [1, 2, 5, 10],

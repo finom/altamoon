@@ -19,7 +19,7 @@ declare namespace altamoon {
 
     readonly trading: Trading;
 
-    isSettingsModalOpen: boolean;
+    public isSettingsModalOpen: boolean;
 
     constructor();
   }
