@@ -49,7 +49,6 @@ const getDivider = (subMinuteInterval: SubminutedCandlestickChartInterval) => ({
   '5s': 12,
   '10s': 6,
   '15s': 4,
-  '20s': 3,
   '30s': 2,
 }[subMinuteInterval]);
 
@@ -67,6 +66,9 @@ const convertOneMinuteToSubMinute = (
           const closeTime = candle.closeTime - (divider - index) * (60_000 / divider);
           return {
             ...candle,
+            open: index === 0 ? candle.open : candle.close,
+            high: index === 0 ? candle.high : candle.close,
+            low: index === 0 ? candle.low : candle.close,
             time,
             timeISOString: new Date(time).toISOString(),
             closeTime,
