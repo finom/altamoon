@@ -172,10 +172,12 @@ export default class Measurer {
     //   .reduce((a, order) => a + (order.side === side ? order.origQty : 0), 0);
 
     const size = side === 'BUY' ? this.#buyDraftSize : this.#sellDraftSize;
-    const orderValue = size * y1;
+    // const orderValue = size * y1;
 
-    const orderLeverage = this.#totalWalletBalance ? orderValue / this.#totalWalletBalance : 0;
-    const orderLeveragedPercent = percentage * orderLeverage;
+    const percentageOfProfit = this.#totalWalletBalance
+      ? diff * (size / this.#totalWalletBalance) : 0;
+    const effectiveLeverage = this.#totalWalletBalance ? size / this.#totalWalletBalance : 0;
+    // const orderLeveragedPercent = percentage * orderLeverage;
 
     this.#label?.html(`
       <p><b>${time}</b></p>
@@ -183,7 +185,7 @@ export default class Measurer {
       <p><b>${nFormat('+,.2%', percentage)}</b></p>
       <p><b>${nFormat('+,.1%', leveragedPercent)}</b> at ${this.#currentSymbolLeverage}x</p>
       <p><b>${nFormat('+,.1%', trueLeveragedPercent)}</b> at ${Measurer.formatLeverage(trueLeverage)}x (position)</p>
-      <p><b>${nFormat('+,.1%', orderLeveragedPercent)}</b> at ${Measurer.formatLeverage(orderLeverage)}x (${side.toLowerCase()} size)</p>
+      <p><b>${nFormat('+,.1%', percentageOfProfit)}</b> at ${Measurer.formatLeverage(effectiveLeverage)}x (${side.toLowerCase()} size)</p>
     `);
   }
 
