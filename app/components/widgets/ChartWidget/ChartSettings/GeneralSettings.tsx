@@ -32,6 +32,11 @@ const GeneralSettings = ({
     chartShouldShowBidAskLinesValue, setChartShouldShowBidAskLinesValue,
   ] = useState(chartShouldShowBidAskLines);
 
+  const [shouldShowSubminuteIntervals, setShouldShowSubminuteIntervals] = useChange(PERSISTENT, 'chartShouldShowSubminuteIntervals');
+  const [
+    shouldShowSubminuteIntervalsValue, setShouldShowSubminuteIntervalsValue,
+  ] = useState(shouldShowSubminuteIntervals);
+
   useEffect(() => listenSettingsSave(() => {
     setChartPaddingTopPercent(
       Number.isNaN(+paddingTopStr) ? chartPaddingTopPercent : +paddingTopStr,
@@ -54,13 +59,15 @@ const GeneralSettings = ({
     );
 
     setChartShouldShowBidAskLines(chartShouldShowBidAskLinesValue);
+
+    setShouldShowSubminuteIntervals(shouldShowSubminuteIntervalsValue);
   }), [
     chartOrdersNumber, chartOrdersNumberStr, chartPaddingBottomPercent, chartPaddingRightPercent,
     chartPaddingTopPercent, chartShouldShowBidAskLinesValue, chartUpdateFrequency,
     chartUpdateFrequencyStr, listenSettingsSave, paddingBottomStr, paddingRightStr,
     paddingTopStr, setChartOrdersNumber, setChartPaddingBottomPercent,
     setChartPaddingRightPercent, setChartPaddingTopPercent, setChartShouldShowBidAskLines,
-    setChartUpdateFrequency,
+    setChartUpdateFrequency, setShouldShowSubminuteIntervals, shouldShowSubminuteIntervalsValue,
   ]);
 
   useEffect(() => listenSettingsCancel(() => {
@@ -70,10 +77,11 @@ const GeneralSettings = ({
     setChartOrdersNumberStr(String(chartOrdersNumber));
     setChartUpdateFrequencyStr(String(chartUpdateFrequency));
     setChartShouldShowBidAskLinesValue(chartShouldShowBidAskLines);
+    setShouldShowSubminuteIntervalsValue(shouldShowSubminuteIntervals);
   }), [
     chartOrdersNumber, chartPaddingBottomPercent, chartPaddingRightPercent,
     chartPaddingTopPercent, chartShouldShowBidAskLines, chartUpdateFrequency,
-    listenSettingsCancel,
+    listenSettingsCancel, shouldShowSubminuteIntervals,
   ]);
 
   return (
@@ -117,7 +125,7 @@ const GeneralSettings = ({
         </Col>
       </Row>
       <Row className="mt-3">
-        <Col xs={6} md={3}>
+        <Col xs={6} md={4}>
           <Label htmlFor="chartUpdateFrequency" className="form-label">Update frequency (ms)</Label>
           <Input
             type="number"
@@ -126,7 +134,7 @@ const GeneralSettings = ({
             onChange={({ target }) => setChartUpdateFrequencyStr(target.value)}
           />
         </Col>
-        <Col xs={6} md={3} className="pt-3">
+        <Col xs={6} md={4} className="pt-3">
           <Label className="form-label mt-4">
             <FormSwitch
               id="chartShouldShowBidAskLines"
@@ -136,6 +144,18 @@ const GeneralSettings = ({
             />
             {' '}
             Show bid/ask lines
+          </Label>
+        </Col>
+        <Col xs={6} md={4} className="pt-3">
+          <Label className="form-label mt-4">
+            <FormSwitch
+              id="shouldShowSubminuteIntervals"
+              className="d-inline-block align-middle"
+              onChange={setShouldShowSubminuteIntervalsValue}
+              isChecked={shouldShowSubminuteIntervalsValue}
+            />
+            {' '}
+            Enable subminute timeframes
           </Label>
         </Col>
       </Row>

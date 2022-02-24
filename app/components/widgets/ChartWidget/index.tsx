@@ -18,7 +18,7 @@ import ChartSettings from './ChartSettings';
 import css from './style.css';
 import ChartInfo from './ChartInfo';
 import { AlertItem } from './CandlestickChart/types';
-import { allFuturesIntervals } from '../../../api';
+import { allFuturesIntervals, futuresIntervals } from '../../../api';
 
 interface Props {
   title: string;
@@ -83,6 +83,8 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     'shouldShowStopBuyDraftPriceLine', 'shouldShowStopSellDraftPriceLine',
     'currentSymbolAllOrders',
   ]);
+
+  const shouldShowSubminuteIntervals = useValue(PERSISTENT, 'chartShouldShowSubminuteIntervals');
 
   const alerts = symbolAlerts[symbol];
 
@@ -359,7 +361,11 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
         Filled Orders
       </label>
       <div className={`nav nav-pills ${css.intervals}`}>
-        <Intervals intervals={allFuturesIntervals} value={interval} onChange={setCandleInterval} />
+        <Intervals
+          intervals={shouldShowSubminuteIntervals ? allFuturesIntervals : futuresIntervals}
+          value={interval}
+          onChange={setCandleInterval}
+        />
       </div>
       <ChartInfo />
       <div
