@@ -72,9 +72,9 @@ const TradingOptions = ({
           }, (instance) => { leverageTooltipRef.current = instance; })}
           data-bs-original-title={leverageTooltipText}
           onChange={({ target }) => setCurrentSymbolLeverage(+target.value)}
-          onMouseUp={() => updateLeverage()}
-          onKeyUp={() => updateLeverage()}
-          onTouchEnd={() => updateLeverage()}
+          onMouseUp={() => void updateLeverage()}
+          onKeyUp={() => void updateLeverage()}
+          onTouchEnd={() => void updateLeverage()}
         />
         <span className={`${css.minLeverage} text-muted`}>1x</span>
         <span className={`${css.maxLeverage} text-muted`}>

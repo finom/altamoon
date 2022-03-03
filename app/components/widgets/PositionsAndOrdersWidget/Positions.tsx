@@ -232,7 +232,7 @@ const Positions = (): ReactElement => {
                   color="link"
                   className="text-muted px-0"
                   disabled={isClosed}
-                  onClick={() => onCloseMarket(symbol)}
+                  onClick={() => void onCloseMarket(symbol)}
                 >
                   {isClosed ? 'Closing...' : 'Market'}
                 </Button>

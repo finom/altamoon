@@ -45,7 +45,7 @@ const PluginsModal = ({ isOpen, onRequestClose }: Props): ReactElement => {
             isEnabled={pluginsEnabled.includes(id)}
             isThirdParty={isThirdParty}
             isDevelopment={isDevelopment}
-            onEnablePlugin={() => enablePlugin(id, { isThirdParty, isDefault: true })}
+            onEnablePlugin={() => void enablePlugin(id, { isThirdParty, isDefault: true })}
             onDisablePlugin={disablePlugin}
           />
         ))}
@@ -67,7 +67,7 @@ const PluginsModal = ({ isOpen, onRequestClose }: Props): ReactElement => {
             color="success"
             id="customPluginInputAddon"
             disabled={!customPluginId}
-            onClick={createCustomPlugin}
+            onClick={() => void createCustomPlugin()}
           >
             Add Plugin
           </Button>
@@ -88,7 +88,7 @@ const PluginsModal = ({ isOpen, onRequestClose }: Props): ReactElement => {
             isEnabled={pluginsEnabled.includes(id)}
             isThirdParty
             isDevelopment={isDevelopment}
-            onEnablePlugin={() => enablePlugin(id, { isThirdParty: true, isDefault: false })}
+            onEnablePlugin={() => void enablePlugin(id, { isThirdParty: true, isDefault: false })}
             onDisablePlugin={disablePlugin}
           />
         ))}

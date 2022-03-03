@@ -21,17 +21,24 @@ const MinichartsWidget = ({ title, id }: { title: string; id: string; }): ReactE
         onSymbolSelect: setSymbol,
       });
     }
-  }, [bodyRef, setSymbol, settingsRef]);
+  }, [bodyRef, setSymbol, settingsRef, alertLogRef]);
 
   return (
-    <Widget
-      id={id}
-      title={title}
-      bodyRef={bodyRef}
-      settings={<div ref={settingsRef} />}
-      after={<div ref={alertLogRef} />}
-      canSettingsSave={false}
-    />
+    <>
+      <div style={{ display: 'none' }}><div ref={settingsRef} /></div>
+      <Widget
+        id={id}
+        title={title}
+        bodyRef={bodyRef}
+        settings={(
+          <div
+            ref={(element) => settingsRef.current && element?.appendChild(settingsRef.current)}
+          />
+        )}
+        after={<div ref={alertLogRef} />}
+        canSettingsSave={false}
+      />
+    </>
   );
 };
 

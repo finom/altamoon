@@ -1,5 +1,5 @@
 import React, { memo, ReactElement } from 'react';
-import { WidgetSettingsProps } from '../../../layout/Widget';
+import { WidgetSettingsProps } from '../../../layout/Widget/WidgetSettingsModal';
 import GeneralSettings from './GeneralSettings';
 import EmaSettings from './EmaSettings';
 import SupertrendSettings from './SupertrendSettings';

@@ -85,7 +85,7 @@ const Orders = (): ReactElement => {
                 color="link"
                 className="text-muted px-0 py-0"
                 disabled={isAllOrdersCanceled}
-                onClick={onCancelAll}
+                onClick={() => void onCancelAll()}
               >
                 Cancel all
               </Button>
@@ -205,7 +205,7 @@ const Orders = (): ReactElement => {
                   color="link"
                   className="text-muted px-0 py-0"
                   disabled={isCanceled || !orderId}
-                  onClick={() => onCancel(symbol, clientOrderId)}
+                  onClick={() => void onCancel(symbol, clientOrderId)}
                 >
                   {isCanceled ? '...' : <Trash size={18} />}
                 </Button>

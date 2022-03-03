@@ -33,6 +33,9 @@ function useMultiValue<STORE, KEY, SLICE = STORE>(
 ): unknown {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const store = useContext<STORE>(Context);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const slice: SliceRecord<SLICE> = typeof storeSlice === 'function' ? storeSlice(store) : storeSlice;
   const [, setForceUpdateBool] = useState<boolean>(true);
 

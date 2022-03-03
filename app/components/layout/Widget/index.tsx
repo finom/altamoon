@@ -1,22 +1,16 @@
 import React, {
   ReactElement, ReactNode, Ref, useCallback, useRef, useState,
 } from 'react';
-import {
-  Button, Card, CardBody, CardHeader, Row, Col,
-} from 'reactstrap';
+import { Card, CardBody, CardHeader } from 'reactstrap';
 import classNames from 'classnames';
 import { Gear } from 'react-bootstrap-icons';
-import { listenChange, useValue } from 'use-change';
+import { useValue } from 'use-change';
 
 import css from './style.css';
 import { ACCOUNT } from '../../../store';
 import AccountError from './AccountError';
-import useWidgetSizeBreakpoint from '../../../hooks/useWidgetSizeBreakpoint';
+import WidgetSettingsModal, { WidgetSettingsProps } from './WidgetSettingsModal';
 
-export interface WidgetSettingsProps {
-  listenSettingsSave: (handler: () => void) => (() => void);
-  listenSettingsCancel: (handler: () => void) => (() => void);
-}
 interface Props {
   id: string;
   title: string;
@@ -38,10 +32,7 @@ const Widget = ({
 }: Props): ReactElement => {
   const [isSettingsOpen, setIsSettignsOpen] = useState(false);
   const futuresAccount = useValue(ACCOUNT, 'futuresAccount');
-  const [isWideLayout, wideLayoutRef] = useWidgetSizeBreakpoint('lg');
   const evtTargetRef = useRef({ saveCount: 0, cancelCount: 0 });
-  const listenSettingsSave = useCallback((handler: () => void) => listenChange(evtTargetRef.current, 'saveCount', handler), []);
-  const listenSettingsCancel = useCallback((handler: () => void) => listenChange(evtTargetRef.current, 'cancelCount', handler), []);
 
   const toggleSettings = useCallback(() => {
     if (isSettingsOpen) {
@@ -51,14 +42,8 @@ const Widget = ({
     setIsSettignsOpen(!isSettingsOpen);
   }, [isSettingsOpen, onSettingsCancel]);
 
-  const onSaveClick = useCallback(() => {
-    onSettingsSave?.();
-    evtTargetRef.current.saveCount += 1;
-    setIsSettignsOpen(false);
-  }, [onSettingsSave]);
-
   return (
-    <Card className={css.card} innerRef={wideLayoutRef} data-widget-id={id}>
+    <Card className={css.card} data-widget-id={id}>
       <CardHeader className={css.cardHeader}>
         {title}
         {!!settings && (
@@ -76,38 +61,14 @@ const Widget = ({
         )}
       </CardHeader>
       {!!settings && (
-        <CardBody
-          className={classNames({
-            [css.settings]: true,
-            [css.settingsOpen]: isSettingsOpen,
-            'overflow-auto': true,
-          })}
-        >
-          {typeof settings === 'function' ? settings({ listenSettingsSave, listenSettingsCancel }) : settings}
-          <Row>
-            <Col xs={6}>
-              {canSettingsSave !== false && (
-                <Button
-                  color="info"
-                  block
-                  className={`mt-3${!isWideLayout ? ' w-100' : ''}`}
-                  onClick={onSaveClick}
-                >
-                  Save
-                </Button>
-              )}
-            </Col>
-            <Col xs={6} className="text-end">
-              <Button
-                color="secondary"
-                className={`mt-3${!isWideLayout ? ' w-100' : ''}`}
-                onClick={toggleSettings}
-              >
-                {canSettingsSave !== false ? 'Cancel' : 'Close'}
-              </Button>
-            </Col>
-          </Row>
-        </CardBody>
+        <WidgetSettingsModal
+          settings={settings}
+          isSettingsOpen={isSettingsOpen}
+          setIsSettignsOpen={setIsSettignsOpen}
+          canSettingsSave={canSettingsSave}
+          onSettingsCancel={onSettingsCancel}
+          onSettingsSave={onSettingsSave}
+        />
       )}
       <CardBody
         innerRef={bodyRef}

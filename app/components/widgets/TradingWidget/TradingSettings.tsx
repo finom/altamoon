@@ -5,7 +5,7 @@ import {
 } from 'reactstrap';
 import useChange from 'use-change';
 import { PERSISTENT } from '../../../store';
-import { WidgetSettingsProps } from '../../layout/Widget';
+import { WidgetSettingsProps } from '../../layout/Widget/WidgetSettingsModal';
 
 import css from './style.css';
 

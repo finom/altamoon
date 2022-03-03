@@ -58,7 +58,7 @@ const AdjustMarginModal = ({
             id="adjustMarginAmount"
             value={value}
             className="mb-2"
-            onPressEnter={adjust}
+            onPressEnter={() => void adjust()}
             onChange={setValue}
           />
           Current margin:
@@ -67,7 +67,7 @@ const AdjustMarginModal = ({
           &nbsp;$
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" disabled={!isValid} onClick={adjust}>Confirm</Button>
+          <Button color="primary" disabled={!isValid} onClick={() => void adjust()}>Confirm</Button>
         </ModalFooter>
       </>
       )}

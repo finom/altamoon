@@ -8,7 +8,7 @@ import useChange from 'use-change';
 
 import { PERSISTENT } from '../../../../store';
 import FormSwitch from '../../../controls/FormSwitch';
-import { WidgetSettingsProps } from '../../../layout/Widget';
+import { WidgetSettingsProps } from '../../../layout/Widget/WidgetSettingsModal';
 
 const EmaSettings = ({
   listenSettingsCancel, listenSettingsSave,
