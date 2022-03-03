@@ -175,7 +175,7 @@ export default class Measurer {
     // const orderValue = size * y1;
 
     const percentageOfProfit = this.#totalWalletBalance
-      ? diff * (size / this.#totalWalletBalance) : 0;
+      ? percentage * (size / this.#totalWalletBalance) : 0;
     const effectiveLeverage = this.#totalWalletBalance ? size / this.#totalWalletBalance : 0;
     // const orderLeveragedPercent = percentage * orderLeverage;
 
