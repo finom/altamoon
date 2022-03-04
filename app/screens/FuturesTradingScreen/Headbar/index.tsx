@@ -17,7 +17,6 @@ import Layouts from './Layouts';
 const Headbar = (): ReactElement => {
   const [symbol, setSymbol] = useChange(PERSISTENT, 'symbol');
   const futuresExchangeSymbols = useValue(MARKET, 'futuresExchangeSymbols');
-  const theme = useValue(PERSISTENT, 'theme');
   const currentSymbolLastPrice = useValueDebounced(MARKET, 'currentSymbolLastPrice', 1000);
   const priceDirection = useValue(MARKET, 'priceDirection');
   const currentSymbolInfo = useValue(MARKET, 'currentSymbolInfo');
@@ -64,8 +63,7 @@ const Headbar = (): ReactElement => {
     <Navbar
       className={classNames({
         [css.navbar]: true,
-        'bg-dark': theme === 'dark',
-        'bg-light': theme !== 'dark',
+        'bg-dark': true,
         'p-3': true,
         'justify-content-start': true,
       })}
@@ -142,7 +140,7 @@ const Headbar = (): ReactElement => {
       {' '}
       <Button
         title="Plugins"
-        color={theme === 'dark' ? 'dark' : 'light'}
+        color="dark"
         onClick={() => setIsPluginsModalOpen(true)}
       >
         <Puzzle size={16} />

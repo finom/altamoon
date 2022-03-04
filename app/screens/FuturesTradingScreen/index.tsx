@@ -7,7 +7,7 @@ import useChange, { useValue } from 'use-change';
 import { keyBy, pick } from 'lodash';
 import LastTradesWidget from '../../components/widgets/LastTradesWidget';
 import { CUSTOMIZATION, PERSISTENT, RootStore } from '../../store';
-import { darkTheme, lightTheme } from '../../themes';
+import { darkTheme } from '../../themes';
 import OrderBookWidget from '../../components/widgets/OrderBookWidget';
 import WalletWidget from '../../components/widgets/WalletWidget';
 import ChartWidget from '../../components/widgets/ChartWidget';
@@ -52,7 +52,6 @@ const FuturesTradingScreen = (): ReactElement => {
   }, [enabledLayout]);
   const individualLayouts = enabledLayout?.individualLayouts;
   const layouts = useMemo(() => ({ xxs: gridLayout }), [gridLayout]);
-  const theme = useValue(PERSISTENT, 'theme');
   const widgetsDisabled = useValue(PERSISTENT, 'widgetsDisabled');
   const numberOfColumns = useValue(PERSISTENT, 'widgetsNumberOfColumns');
   const pluginWidgets = useValue(CUSTOMIZATION, 'pluginWidgets').filter(({ id }) => !widgetsDisabled.includes(id));
@@ -81,7 +80,7 @@ const FuturesTradingScreen = (): ReactElement => {
 
   return (
     <div>
-      {theme === 'dark' ? <style>{darkTheme}</style> : <style>{lightTheme}</style>}
+      <style>{darkTheme}</style>
       <Headbar />
       {didPluginsInitialized && (
         <ResponsiveReactGridLayout

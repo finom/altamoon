@@ -20,7 +20,6 @@ interface Props {
 
 const WidgetsSelect = ({ className, buttonTextClassName }: Props): ReactElement => {
   const [isWidgetListVisible, setIsWidgetListVisible] = useState(false);
-  const theme = useValue(PERSISTENT, 'theme');
   const builtInWidgets = useValue(CUSTOMIZATION, 'builtInWidgets');
   const pluginWidgets = useValue(CUSTOMIZATION, 'pluginWidgets');
   const defaultPlugins = useValue(CUSTOMIZATION, 'defaultPlugins');
@@ -42,7 +41,7 @@ const WidgetsSelect = ({ className, buttonTextClassName }: Props): ReactElement 
     <div className={`d-inline-block position-relative ${className ?? ''}`} ref={ref as LegacyRef<HTMLDivElement>}>
       <Button
         title="Widgets"
-        color={theme === 'dark' ? 'dark' : 'light'}
+        color="dark"
         onClick={() => setIsWidgetListVisible((v) => !v)}
       >
         <UiChecksGrid size={16} />
@@ -54,8 +53,7 @@ const WidgetsSelect = ({ className, buttonTextClassName }: Props): ReactElement 
         className={classNames({
           [css.widgets]: true,
           'px-2 fade': true,
-          'bg-dark': theme === 'dark',
-          'bg-light': theme !== 'dark',
+          'bg-dark': true,
           'pe-none': !isWidgetListVisible, // pointer-events: none
           show: isWidgetListVisible,
         })}

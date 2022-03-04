@@ -63,7 +63,6 @@ const LayoutItem = ({
 };
 
 const Layouts = ({ className }: { className?: string; }): ReactElement => {
-  const theme = useValue(PERSISTENT, 'theme');
   const widgetLayouts = useValue(PERSISTENT, 'widgetLayouts');
   const resetLayout = useSilent(PERSISTENT, 'resetLayout');
   const ref = useRef<HTMLDivElement | null>(null);
@@ -79,7 +78,7 @@ const Layouts = ({ className }: { className?: string; }): ReactElement => {
       <Dropdown isOpen={isDropdownOpen} toggle={() => { onSetIsDropdownOpen((v) => !v); }} active>
         <DropdownToggle
           className="ms-auto"
-          color={theme === 'dark' ? 'dark' : 'light'}
+          color="dark"
           title="Layouts"
         >
           <LayoutWtf size={16} />

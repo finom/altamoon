@@ -36,8 +36,6 @@ export default class Persistent {
 
   public interval = persist<api.CandlestickChartInterval>('interval', '1d');
 
-  public theme = persist<'dark' | 'light'>('theme', 'dark');
-
   public tradingType = persist<api.OrderType>('tradingType', 'MARKET');
 
   public tradingPostOnly = persist<boolean>('tradingPostOnly', false);
