@@ -127,3 +127,11 @@ select.form-control.form-select, select.form-control.form-select:focus {
 
 /* ==== Random overrides ==== */
 .tooltip { pointer-events: none; }
+
+
+/* ==== Modal ==== */
+@media (min-width: 576px) {
+  .modal-dialog {
+      max-width: 600px !important;
+  }
+}
