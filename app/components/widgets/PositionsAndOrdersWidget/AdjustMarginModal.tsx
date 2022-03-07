@@ -25,8 +25,11 @@ const AdjustMarginModal = ({
   const [mode, setMode] = useState<'ADD' | 'REMOVE'>('ADD');
   const openPositions = useValue(TRADING, 'openPositions');
   const adjustPositionMargin = useSilent(TRADING, 'adjustPositionMargin');
+  const getMarginAdjustmentInfo = useSilent(TRADING, 'getMarginAdjustmentInfo');
+  const calculateLiquidationPrice = useSilent(TRADING, 'calculateLiquidationPrice');
   const position = openPositions.find((pos) => pos.symbol === symbol);
   const isValid = !!+value;
+  const { addable, removable } = getMarginAdjustmentInfo(position);
 
   const adjust = useCallback(async () => {
     if (position && isValid) {
@@ -35,6 +38,11 @@ const AdjustMarginModal = ({
       }
     }
   }, [adjustPositionMargin, isValid, mode, onClose, position, value]);
+
+  const estLiquidation = position ? calculateLiquidationPrice({
+    ...position,
+    isolatedWallet: position.isolatedWallet + (mode === 'ADD' ? 1 : -1) * +value,
+  }) : 0;
 
   return (
     <Modal isOpen={typeof symbol === 'string'} onRequestClose={onClose}>
@@ -52,19 +60,52 @@ const AdjustMarginModal = ({
         </ModalHeader>
         <ModalBody>
           <label className="mb-1" htmlFor="adjustMarginAmount">Amount</label>
-          <LabeledInput
-            label="$"
-            type="text"
-            id="adjustMarginAmount"
-            value={value}
-            className="mb-2"
-            onPressEnter={() => void adjust()}
-            onChange={setValue}
-          />
-          Current margin:
-          {' '}
-          {format(',.2f')(position?.isolatedWallet || 0)}
-          &nbsp;$
+          <p>
+            <LabeledInput
+              label="$"
+              type="text"
+              id="adjustMarginAmount"
+              value={value}
+              className="mb-2"
+              onPressEnter={() => void adjust()}
+              onChange={setValue}
+            />
+          </p>
+          <p>
+            Current margin:
+            {' '}
+            {format(',.2f')(position?.isolatedWallet || 0)}
+            &nbsp;$
+          </p>
+          <p>
+            {mode === 'ADD' && (
+              <>
+                Max addable:
+                {' '}
+                {format(',.2f')(addable)}
+                &nbsp;$
+              </>
+            )}
+          </p>
+          <p>
+            {mode === 'REMOVE' && (
+              <>
+                Max removable:
+                {' '}
+                {format(',.2f')(removable)}
+                &nbsp;$
+              </>
+            )}
+          </p>
+          <p>
+            Est. liq. price after
+            {' '}
+            {mode === 'ADD' ? 'increase' : 'reduction'}
+            :
+            {' '}
+            {format(',.2f')(estLiquidation)}
+            &nbsp;$
+          </p>
         </ModalBody>
         <ModalFooter>
           <Button color="primary" disabled={!isValid} onClick={() => void adjust()}>Confirm</Button>
