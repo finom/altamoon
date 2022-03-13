@@ -98,6 +98,8 @@ export default class Persistent {
 
   public chartShouldShowSubminuteIntervals = persist<boolean>('chartShouldShowSubminuteIntervals', false);
 
+  public chartShouldShowVolume = persist<boolean>('chartShouldShowVolume', false);
+
   public tradingWidgetPercentButtonsCount = persist<number>('tradingWidgetPercentButtonsCount', 4);
 
   public testnetBinanceApiKey = persist<string | null>('testnetBinanceApiKey', '45f8b1dfd0c2c57575f5d9991b11117ede55aa158f58ba0179e05f6778bedb64');

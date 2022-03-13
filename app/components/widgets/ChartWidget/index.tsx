@@ -52,6 +52,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     tradingExactSizeBuyStr: exactSizeBuyStr, tradingExactSizeSellStr: exactSizeSellStr,
     tradingIsPercentModeBuy: isPercentModeBuy, tradingIsPercentModeSell: isPercentModeSell,
     chartShouldShowEma, chartEmaNumbers, chartEmaColors,
+    chartShouldShowVolume,
 
     chartShouldShowSupertrend, chartSupertrendPeroid, chartSupertrendMultiplier,
     chartSupertrendDownTrendColor, chartSupertrendUpTrendColor,
@@ -61,6 +62,7 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
     'tradingExactSizeBuyStr', 'tradingExactSizeSellStr',
     'tradingIsPercentModeBuy', 'tradingIsPercentModeSell',
     'chartShouldShowEma', 'chartEmaNumbers', 'chartEmaColors',
+    'chartShouldShowVolume',
 
     'chartShouldShowSupertrend', 'chartSupertrendPeroid', 'chartSupertrendMultiplier',
     'chartSupertrendDownTrendColor', 'chartSupertrendUpTrendColor',
@@ -133,6 +135,10 @@ const ChartWidget = ({ title, id }: Props): ReactElement => {
   useEffect(() => {
     candleChart?.update({ shouldShowBidAskLines });
   }, [shouldShowBidAskLines, candleChart]);
+
+  useMemo(() => { // useEffect doesn't work for some reason
+    candleChart?.update({ shouldShowVolume: chartShouldShowVolume });
+  }, [chartShouldShowVolume, candleChart]);
 
   useEffect(() => {
     const isAllOrdersRelevant = !currentSymbolAllOrders.length

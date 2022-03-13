@@ -37,6 +37,11 @@ const GeneralSettings = ({
     shouldShowSubminuteIntervalsValue, setShouldShowSubminuteIntervalsValue,
   ] = useState(shouldShowSubminuteIntervals);
 
+  const [shouldShowVolume, setShouldShowVolume] = useChange(PERSISTENT, 'chartShouldShowVolume');
+  const [
+    shouldShowVolumeValue, setShouldShowVolumeValue,
+  ] = useState(shouldShowVolume);
+
   useEffect(() => listenSettingsSave(() => {
     setChartPaddingTopPercent(
       Number.isNaN(+paddingTopStr) ? chartPaddingTopPercent : +paddingTopStr,
@@ -61,6 +66,8 @@ const GeneralSettings = ({
     setChartShouldShowBidAskLines(chartShouldShowBidAskLinesValue);
 
     setShouldShowSubminuteIntervals(shouldShowSubminuteIntervalsValue);
+
+    setShouldShowVolume(shouldShowVolumeValue);
   }), [
     chartOrdersNumber, chartOrdersNumberStr, chartPaddingBottomPercent, chartPaddingRightPercent,
     chartPaddingTopPercent, chartShouldShowBidAskLinesValue, chartUpdateFrequency,
@@ -68,6 +75,7 @@ const GeneralSettings = ({
     paddingTopStr, setChartOrdersNumber, setChartPaddingBottomPercent,
     setChartPaddingRightPercent, setChartPaddingTopPercent, setChartShouldShowBidAskLines,
     setChartUpdateFrequency, setShouldShowSubminuteIntervals, shouldShowSubminuteIntervalsValue,
+    setShouldShowVolume, shouldShowVolumeValue,
   ]);
 
   useEffect(() => listenSettingsCancel(() => {
@@ -78,16 +86,17 @@ const GeneralSettings = ({
     setChartUpdateFrequencyStr(String(chartUpdateFrequency));
     setChartShouldShowBidAskLinesValue(chartShouldShowBidAskLines);
     setShouldShowSubminuteIntervalsValue(shouldShowSubminuteIntervals);
+    setShouldShowVolumeValue(shouldShowVolume);
   }), [
     chartOrdersNumber, chartPaddingBottomPercent, chartPaddingRightPercent,
     chartPaddingTopPercent, chartShouldShowBidAskLines, chartUpdateFrequency,
-    listenSettingsCancel, shouldShowSubminuteIntervals,
+    listenSettingsCancel, shouldShowSubminuteIntervals, shouldShowVolume,
   ]);
 
   return (
     <>
       <Row>
-        <Col xs={6} md={3}>
+        <Col xs={6} md={4}>
           <Label htmlFor="chartPaddingTop" className="form-label">Top margin %</Label>
           <Input
             type="number"
@@ -96,7 +105,7 @@ const GeneralSettings = ({
             onChange={({ target }) => setPaddingTopStr(target.value)}
           />
         </Col>
-        <Col xs={6} md={3}>
+        <Col xs={6} md={4}>
           <Label htmlFor="chartPaddingBottom" className="form-label">Bottom margin %</Label>
           <Input
             type="number"
@@ -105,7 +114,7 @@ const GeneralSettings = ({
             onChange={({ target }) => setPaddingBottomStr(target.value)}
           />
         </Col>
-        <Col xs={6} md={3} className="mt-2 mt-md-0">
+        <Col xs={6} md={4} className="mt-2 mt-md-0">
           <Label htmlFor="chartPaddingRight" className="form-label">Right margin %</Label>
           <Input
             type="number"
@@ -114,7 +123,19 @@ const GeneralSettings = ({
             onChange={({ target }) => setPaddingRightStr(target.value)}
           />
         </Col>
-        <Col xs={6} md={3} className="mt-2 mt-md-0">
+
+      </Row>
+      <Row className="mt-3">
+        <Col xs={6} md={6}>
+          <Label htmlFor="chartUpdateFrequency" className="form-label">Update frequency (ms)</Label>
+          <Input
+            type="number"
+            id="chartUpdateFrequency"
+            value={chartUpdateFrequencyStr}
+            onChange={({ target }) => setChartUpdateFrequencyStr(target.value)}
+          />
+        </Col>
+        <Col xs={6} md={6} className="mt-2 mt-md-0">
           <Label htmlFor="chartOrdersNumber" className="form-label">Filled orders max</Label>
           <Input
             type="number"
@@ -124,16 +145,7 @@ const GeneralSettings = ({
           />
         </Col>
       </Row>
-      <Row className="mt-3">
-        <Col xs={6} md={4}>
-          <Label htmlFor="chartUpdateFrequency" className="form-label">Update frequency (ms)</Label>
-          <Input
-            type="number"
-            id="chartUpdateFrequency"
-            value={chartUpdateFrequencyStr}
-            onChange={({ target }) => setChartUpdateFrequencyStr(target.value)}
-          />
-        </Col>
+      <Row>
         <Col xs={6} md={4} className="pt-3">
           <Label className="form-label mt-4">
             <FormSwitch
@@ -156,6 +168,18 @@ const GeneralSettings = ({
             />
             {' '}
             Enable subminute timeframes
+          </Label>
+        </Col>
+        <Col xs={6} md={4} className="pt-3">
+          <Label className="form-label mt-4">
+            <FormSwitch
+              id="shouldShowVolumeValue"
+              className="d-inline-block align-middle"
+              onChange={setShouldShowVolumeValue}
+              isChecked={shouldShowVolumeValue}
+            />
+            {' '}
+            Show volume
           </Label>
         </Col>
       </Row>
