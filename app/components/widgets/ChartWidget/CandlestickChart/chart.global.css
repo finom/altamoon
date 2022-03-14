@@ -1,5 +1,4 @@
 :root {
-
   --altamoon-chart-background: #202020e8;
   --altamoon-chart-text-fill: #fff;
   --altamoon-chart-axis-line-stroke: rgba(255, 255, 255, 0.1);
@@ -52,23 +51,22 @@ svg.chart-svg .gridlines line, svg.chart-svg .gridlines path {
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Candles & Volume
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-svg.chart-svg .plot .wick {
-  stroke-width: 1px;
-}
+svg.chart-svg .plot .wick { stroke-width: 1px; }
 svg.chart-svg .plot .up.body, svg.chart-svg .volume .up.body {
   fill: var(--altamoon-chart-plot-up-body-fill);
   stroke: var(--altamoon-chart-plot-up-body-stroke);
 }
-svg.chart-svg .plot .up.wick {
-  stroke: var(--altamoon-chart-plot-up-wick-stroke);
-}
+svg.chart-svg .plot .up.wick { stroke: var(--altamoon-chart-plot-up-wick-stroke); }
+
 svg.chart-svg .plot .down.body, svg.chart-svg .volume .down.body {
   fill: var(--altamoon-chart-plot-down-body-fill);
   stroke: var(--altamoon-chart-plot-down-body-stroke);
 }
-svg.chart-svg .plot .down.wick {
-  stroke: var(--altamoon-chart-plot-down-wick-stroke);
-}
+svg.chart-svg .plot .down.wick { stroke: var(--altamoon-chart-plot-down-wick-stroke); }
+
+svg.chart-svg .volume-tooltip.up { background-color: var(--altamoon-chart-plot-up-body-fill); }
+svg.chart-svg .volume-tooltip.down { background-color: var(--altamoon-chart-plot-down-body-fill); }
+
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Lines
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */

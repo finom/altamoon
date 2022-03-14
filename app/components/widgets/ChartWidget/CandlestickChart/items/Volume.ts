@@ -3,11 +3,11 @@ import * as api from 'altamoon-binance-api';
 import { isEqual } from 'lodash';
 
 import {
-  ChartPaddingPercents,
-  D3Selection, DrawData, Scales,
+  ChartPaddingPercents, D3Selection, DrawData, Scales,
 } from '../types';
 
 import Plot from './Plot';
+import formatMoneyNumber from '../../../../../lib/formatMoneyNumber';
 
 export default class Volume {
   #lastCandle?: api.FuturesChartCandle;
@@ -32,6 +32,14 @@ export default class Volume {
 
   #zoomTransform?: Pick<d3.ZoomTransform, 'k' | 'x' | 'y'>;
 
+  #tooltipWrapper?: D3Selection<SVGForeignObjectElement>;
+
+  #tooltip?: D3Selection<HTMLDivElement>;
+
+  #maxVolume = 0;
+
+  #filteredCandles: api.FuturesChartCandle[] = [];
+
   constructor({
     scales, paddingPercents,
   }: { scales: Scales; paddingPercents: ChartPaddingPercents }) {
@@ -52,6 +60,54 @@ export default class Volume {
 
     this.#pathLastUp = wrapper.append('path').attr('class', 'body up');
     this.#pathLastDown = wrapper.append('path').attr('class', 'body down');
+
+    const tooltipWrapper = d3.select(parent).append('foreignObject')
+      .attr('class', 'tooltip-wrapper');
+    const tooltip = tooltipWrapper.append<HTMLDivElement>('xhtml:div').classed('volume-tooltip', true);
+
+    this.#tooltipWrapper = tooltipWrapper;
+    this.#tooltip = tooltip;
+
+    tooltip.style('display', 'none');
+    wrapper.on('mousemove', (evt: MouseEvent) => {
+      const { offsetX } = evt;
+
+      const date = this.#scaledX.invert(offsetX + this.bodyWidth);
+      const time = date.getTime();
+
+      const candle = this.#filteredCandles.find((c, i, candles) => {
+        if (i === 0 && time < c.time) return true;
+        if (i === candles.length && time > c.closeTime) return true;
+        if (c.time < time && c.closeTime > time) return true;
+        return false;
+      });
+
+      if (!candle) return; // TS ensure
+
+      this.#tooltip
+        ?.style('display', '')
+        .classed('up', candle.direction === 'UP')
+        .classed('down', candle.direction === 'DOWN')
+        .html(`
+          <div class="text-center">
+            <nobr>${formatMoneyNumber(candle.quoteVolume)} $</nobr>
+            <nobr>${formatMoneyNumber(candle.volume)} ${candle.symbol.replace(/USDT|BUSD/, '')}</nobr>
+          </div>
+        `);
+
+      const width = this.#tooltip?.node()?.getBoundingClientRect().width ?? 0;
+      const height = this.#tooltip?.node()?.getBoundingClientRect().height ?? 0;
+      const tooltipCenter = Math.round(this.#scaledX(candle.time));
+      const x = tooltipCenter - width / 2;
+      const y = this.#getChartHeight() - this.#getCandleHeight(candle) - height;
+
+      this.#tooltipWrapper
+        ?.attr('x', x)
+        .attr('y', y);
+    })
+      .on('mouseleave', () => {
+        this.#tooltip?.style('display', 'none');
+      });
   };
 
   public draw = ({
@@ -66,16 +122,20 @@ export default class Volume {
       givenCandles.filter((x) => x.time >= xDomain[0].getTime()
         && x.time <= xDomain[1].getTime()),
     );
-    const maxVolume = candles.reduce((vol, { volume }) => Math.max(vol, volume), 0);
+
+    this.#filteredCandles = candles;
+
     const firstCandles = candles.slice(0, -1);
     const lastCandle = candles[candles.length - 1];
+
+    this.#maxVolume = candles.reduce((vol, { volume }) => Math.max(vol, volume), 0);
 
     // update last candle
     const upLastCandles = lastCandle?.direction === 'UP' ? [lastCandle] : [];
     const downLastCandles = lastCandle?.direction === 'DOWN' ? [lastCandle] : [];
 
-    this.#pathLastUp?.attr('d', this.#getBodies(upLastCandles, maxVolume));
-    this.#pathLastDown?.attr('d', this.#getBodies(downLastCandles, maxVolume));
+    this.#pathLastUp?.attr('d', this.#getBodies(upLastCandles));
+    this.#pathLastDown?.attr('d', this.#getBodies(downLastCandles));
 
     // update rest if zoom or last candle was changed
     if (
@@ -88,8 +148,8 @@ export default class Volume {
       const upCandles = firstCandles.filter((x) => x.direction === 'UP');
       const downCandles = firstCandles.filter((x) => x.direction === 'DOWN');
 
-      this.#pathUp?.attr('d', this.#getBodies(upCandles, maxVolume));
-      this.#pathDown?.attr('d', this.#getBodies(downCandles, maxVolume));
+      this.#pathUp?.attr('d', this.#getBodies(upCandles));
+      this.#pathDown?.attr('d', this.#getBodies(downCandles));
 
       this.#yDomain = yDomain;
     }
@@ -118,12 +178,12 @@ export default class Volume {
     }
   };
 
-  #getBodies = (candles: api.FuturesChartCandle[], maxVolume: number): string => {
+  #getBodies = (candles: api.FuturesChartCandle[]): string => {
     const width = this.bodyWidth;
     let string = '';
 
     for (const candle of candles) {
-      string += this.#getBodyString(candle, width, maxVolume);
+      string += this.#getBodyString(candle, width);
     }
 
     return string;
@@ -132,15 +192,9 @@ export default class Volume {
   #getBodyString = (
     candle: api.FuturesChartCandle,
     width: number,
-    maxVolume: number,
   ): string => {
-    const yDomain = this.#scaledY.domain() as [number, number];
-    const chartHeight = Math.round(this.#scaledY(yDomain[0]));
-    const height = (candle.volume / maxVolume)
-      * chartHeight
-      * (this.#paddingPercents.bottom / 100)
-      * 0.9
-      - 30; // minus X axis height
+    const chartHeight = this.#getChartHeight();
+    const height = this.#getCandleHeight(candle);
 
     const x = Math.round(this.#scaledX(candle.time)) - width / 2;
 
@@ -160,6 +214,20 @@ export default class Volume {
 
     return width;
   }
+
+  #getCandleHeight = (candle: api.FuturesChartCandle) => {
+    const chartHeight = this.#getChartHeight();
+    return (candle.volume / this.#maxVolume)
+      * chartHeight
+      * (this.#paddingPercents.bottom / 100)
+      * 0.9
+      - 30; // minus X axis height
+  };
+
+  #getChartHeight = () => {
+    const yDomain = this.#scaledY.domain() as [number, number];
+    return Math.round(this.#scaledY(yDomain[0]));
+  };
 
   private get zoomScale() {
     return this.#wrapper ? d3.zoomTransform(this.#wrapper.node() as Element).k : 1;
