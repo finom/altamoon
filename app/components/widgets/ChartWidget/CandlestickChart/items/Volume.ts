@@ -50,8 +50,8 @@ export default class Volume {
 
   public appendTo = (parent: Element): void => {
     const wrapper = d3.select(parent).append('g')
-      .attr('class', 'volume')
-      .attr('clip-path', 'url(#clipChart)');
+      .attr('class', 'volume');
+      // .attr('clip-path', 'url(#clipChart)');
 
     this.#wrapper = wrapper;
 
@@ -220,8 +220,7 @@ export default class Volume {
     return (candle.volume / this.#maxVolume)
       * chartHeight
       * (this.#paddingPercents.bottom / 100)
-      * 0.9
-      - 30; // minus X axis height
+      * 0.6;
   };
 
   #getChartHeight = () => {
