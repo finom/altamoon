@@ -88,3 +88,13 @@ And last but not least, the Last trades and Order book widgets.
 ## Plugins
 
 Altamoon has a powerful plugin system. With an intuitive API and modern web development technologies, anybody who knows JavaScript can do whatever they want: create widgets, implement automated strategies, add third-party APIs. For more information take a look at [plugins documentation](https://github.com/Altamoon/altamoon-plugins).
+
+## Useful commands
+
+- `npm start` - start Electron version of Altamoon.
+- `npm run start:browser` - start browser version of altamoon on port `1213` (http://localhost:1213/)
+- `npm run lint` - lint the code and automatically fix "fixable" issues.
+- `npm test` - lint the code and check TypeScript types.
+- `npm run patch` - publish a new development version (publish types to NPM registry, deploy dev version of Altamoon).
+- `npm run patch:prod` - publish a new production version.
+- `npm run upgrade` - renew project dependencies.
