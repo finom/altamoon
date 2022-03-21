@@ -1,4 +1,4 @@
-import React, { memo, ReactElement } from 'react';
+import React, { memo, ReactElement, Ref } from 'react';
 import {
   Nav, NavItem, NavLink, TabContent,
 } from 'reactstrap';
@@ -29,7 +29,7 @@ const Trading = ({ title, id }: Props): ReactElement => {
     <Widget
       id={id}
       title={title}
-      bodyRef={wideLayoutRef}
+      bodyRef={wideLayoutRef as unknown as Ref<HTMLElement>}
       shouldCheckAccount
       settings={({ listenSettingsCancel, listenSettingsSave }) => (
         <TradingSettings
