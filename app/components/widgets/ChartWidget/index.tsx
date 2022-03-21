@@ -18,7 +18,7 @@ import ChartSettings from './ChartSettings';
 import css from './style.css';
 import ChartInfo from './ChartInfo';
 import { AlertItem } from './CandlestickChart/types';
-import { allFuturesIntervals, allFuturesIntervalsExcludingSubminute, futuresIntervals } from '../../../api';
+import { allFuturesIntervals, allFuturesIntervalsExcludingSubminute } from '../../../api';
 
 interface Props {
   title: string;
