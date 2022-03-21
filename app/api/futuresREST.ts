@@ -36,11 +36,19 @@ export const subminuteFuturesIntervals: SubminutedCandlestickChartInterval[] = [
 /**
  * All intervals
  */
-
 export const allFuturesIntervals: (
   CandlestickChartInterval | ExtendedCandlestickChartInterval | SubminutedCandlestickChartInterval
 )[] = [
   '5s', '10s', '15s', '30s', '1m', '2m', '3m', '5m', '10m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '2d', '3d', '4d', '1w', '2w', '1M', '2M',
+];
+
+/**
+ * All intervals excluding subminute
+ */
+export const allFuturesIntervalsExcludingSubminute: (
+  CandlestickChartInterval | ExtendedCandlestickChartInterval
+)[] = [
+  '1m', '2m', '3m', '5m', '10m', '15m', '30m', '1h', '2h', '4h', '6h', '8h', '12h', '1d', '2d', '3d', '4d', '1w', '2w', '1M', '2M',
 ];
 
 interface AggTradeOriginal {
