@@ -4,7 +4,7 @@ import {
 import * as bootstrap from 'bootstrap';
 
 export default function useBootstrapTooltip<E extends HTMLElement>(
-  options?: Partial<bootstrap.Tooltip.Options>,
+  options?: Partial<Pick<bootstrap.Tooltip.Options, 'offset' | 'trigger'>>,
 ): [Ref<E | null>, (text: string | number) => void] {
   const elementRef = useRef<E | null>(null);
   const tooltipRef = useRef<bootstrap.Tooltip & { tip: HTMLElement }>();
@@ -15,7 +15,12 @@ export default function useBootstrapTooltip<E extends HTMLElement>(
     if (element) {
       if (!tooltipRef.current) {
         tooltipRef.current = new bootstrap.Tooltip(
-          element, { title: String(text), html: true, offset: options?.offset ?? [0, 0] },
+          element, {
+            title: String(text),
+            html: true,
+            offset: options?.offset ?? [0, 0],
+            trigger: options?.trigger ?? 'click hover focus',
+          },
         ) as bootstrap.Tooltip & { tip: HTMLElement };
       }
 
@@ -38,7 +43,7 @@ export default function useBootstrapTooltip<E extends HTMLElement>(
     }
 
     return undefined;
-  }, [options?.offset, text]);
+  }, [options?.offset, options?.trigger, text]);
 
   return [elementRef, setText];
 }

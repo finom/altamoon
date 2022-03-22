@@ -1,7 +1,8 @@
 import { capitalize } from 'lodash';
-import React, { ReactElement, Ref, useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { Button } from 'reactstrap';
 import { useSilent, useValue } from 'use-change';
+import { Tooltip } from 'bootstrap';
 
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
@@ -24,8 +25,9 @@ interface Props {
   onOrder: (qty: number) => void;
 }
 
-const tooltipOptions = {
+const tooltipOptions: Partial<Tooltip.Options> = {
   offset: '0, 6',
+  trigger: 'focus',
 };
 
 const ExactSize = ({
@@ -90,7 +92,7 @@ const ExactSize = ({
         <SizeInput
           id={`${id}_${side}_exact`}
           value={exactSizeStr}
-          innerRef={inputRef as Ref<HTMLInputElement>}
+          innerRef={inputRef}
           onPressEnter={() => onOrder(quantity)}
           onChange={setExactSizeStr}
           isPercentMode={isPercentMode}
