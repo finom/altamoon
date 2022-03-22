@@ -1,5 +1,5 @@
 import { capitalize } from 'lodash';
-import React, { ReactElement, useMemo } from 'react';
+import React, { ReactElement, Ref, useMemo } from 'react';
 import { Button } from 'reactstrap';
 import { useSilent, useValue } from 'use-change';
 import { Tooltip } from 'bootstrap';
@@ -92,7 +92,7 @@ const ExactSize = ({
         <SizeInput
           id={`${id}_${side}_exact`}
           value={exactSizeStr}
-          innerRef={inputRef}
+          innerRef={inputRef as Ref<HTMLInputElement>}
           onPressEnter={() => onOrder(quantity)}
           onChange={setExactSizeStr}
           isPercentMode={isPercentMode}
