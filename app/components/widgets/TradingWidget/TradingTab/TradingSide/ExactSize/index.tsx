@@ -27,7 +27,7 @@ interface Props {
 
 const tooltipOptions: Partial<Tooltip.Options> = {
   offset: '0, 6',
-  trigger: 'focus',
+  trigger: 'hover focus',
 };
 
 const ExactSize = ({
