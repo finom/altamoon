@@ -15,11 +15,11 @@ const MinichartsWidget = ({ title, id }: { title: string; id: string; }): ReactE
 
   useEffect(() => {
     if (bodyRef.current && alertLogRef.current && settingsRef.current) {
-      /* minichars(bodyRef.current, {
+      minichars(bodyRef.current, {
         settingsContainer: settingsRef.current,
         alertLogContainer: alertLogRef.current,
         onSymbolSelect: setSymbol,
-      }); */
+      });
     }
   }, [bodyRef, setSymbol, settingsRef, alertLogRef]);
 
