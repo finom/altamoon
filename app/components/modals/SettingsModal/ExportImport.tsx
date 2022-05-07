@@ -4,7 +4,7 @@ import React, {
   Dispatch, ReactElement, SetStateAction, useCallback, useEffect, useMemo,
 } from 'react';
 import { Download } from 'react-bootstrap-icons';
-import { useDropzone } from 'react-dropzone';
+import { Accept, useDropzone } from 'react-dropzone';
 import { Button } from 'reactstrap';
 import { useGet } from 'use-change';
 import { ROOT, RootStore } from '../../../store';
@@ -71,7 +71,7 @@ const ExportImport = ({
     isDragReject,
     inputRef: fileInputRef,
   } = useDropzone({
-    accept: 'application/json',
+    accept: { 'application/json': [] },
     maxFiles: 1,
     onDrop,
   });
