@@ -1,6 +1,6 @@
 /!\ Work in progress, use at your own risk /!\
 
-# Altamoon
+# [Altamoon](https://altamoon.io/)
 
 > A trading interface for Binance Perpetual Futures.
 
