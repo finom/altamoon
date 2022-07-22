@@ -58,13 +58,17 @@ export default class Plot implements ChartItem {
     this.#pathLastWickDown = wrapper.append('path').attr('class', 'wick down');
   };
 
-  public draw = ({ candles, zoomTransform }: DrawData): void => {
-    if (!candles.length) return;
-
-    const lastCandle = candles[candles.length - 1];
-    const smoozCandles = Plot.smoozCandles(candles);
-    const smoozLastCandle = smoozCandles.pop();
+  public draw = ({ candles: givenCandles, zoomTransform }: DrawData): void => {
+    if (!givenCandles.length) return;
+    const xDomain = this.#scaledX.domain() as [Date, Date];
     const yDomain = this.#scaledY.domain() as [number, number];
+
+    const lastCandle = givenCandles[givenCandles.length - 1];
+    const smoozCandles = Plot.smoozCandles(
+      givenCandles.filter((x) => x.time >= xDomain[0].getTime()
+        && x.time <= xDomain[1].getTime()),
+    );
+    const smoozLastCandle = smoozCandles.pop();
 
     // update last candle
     const upLastCandles = smoozLastCandle?.direction === 'UP' ? [smoozLastCandle] : [];
@@ -180,7 +184,7 @@ export default class Plot implements ChartItem {
    * Returns an array of smoothed candles.
    * (Based on heikin ashi candles, but keeps the real high & low)
    */
-  private static smoozCandles = (
+  public static smoozCandles = (
     candles: api.FuturesChartCandle[],
     prevSmooz: api.FuturesChartCandle[] = [], // If updating
     startIndex = 0, // If updating

@@ -71,7 +71,7 @@ const ExportImport = ({
     isDragReject,
     inputRef: fileInputRef,
   } = useDropzone({
-    accept: 'application/json',
+    accept: { 'application/json': [] },
     maxFiles: 1,
     onDrop,
   });

@@ -134,7 +134,7 @@ const TransferFunds = (): ReactElement => {
           </div>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" disabled={!canTransfer} onClick={transfer}>Confirm transfer</Button>
+          <Button color="primary" disabled={!canTransfer} onClick={() => void transfer()}>Confirm transfer</Button>
           {' '}
           <Button color="secondary" onClick={toggleModal}>Cancel</Button>
         </ModalFooter>

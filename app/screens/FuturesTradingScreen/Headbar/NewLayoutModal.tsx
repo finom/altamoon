@@ -85,7 +85,7 @@ const NewLayoutModal = ({ isOpen, setIsOpen }: Props): ReactElement => {
     isDragReject,
     inputRef: fileInputRef,
   } = useDropzone({
-    accept: 'application/json',
+    accept: { 'application/json': [] },
     maxFiles: 1,
     onDrop,
   });

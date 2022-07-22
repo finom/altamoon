@@ -429,6 +429,53 @@ export default class Trading {
     this.currentSymbolAllOrders = await api.futuresAllOrders(this.#store.persistent.symbol);
   };
 
+  public getMarginAdjustmentInfo = (
+    position?: TradingPosition,
+  ): { addable: number; removable: number; } => {
+    const { futuresAccount } = this.#store.account;
+    if (!futuresAccount || !position) return { addable: 0, removable: 0 };
+    // Max addable amount to isolated margin
+    // min（crossWalletBalance - ∑isolated open order initial margin - ∑crossPosition MM, Available for Order）
+
+    const crossWalletBalance = futuresAccount.assets
+      .reduce((acc, asset) => acc + +asset.crossWalletBalance, 0);
+
+    const isolatedOrdersMargin = this.openOrders
+      .reduce((acc, o) => acc + ((o.origQty - o.executedQty) * o.price) / o.leverage, 0);
+
+    const crossPositionMaintenanceMargin = this.openPositions
+      .filter(({ marginType }) => marginType === 'cross')
+      .reduce((acc, { maintMargin }) => acc + maintMargin, 0);
+
+    const { availableBalance } = this.#store.account;
+
+    const addable = Math.min(
+      crossWalletBalance - isolatedOrdersMargin - crossPositionMaintenanceMargin,
+      availableBalance,
+    );
+
+    // Max removable from isolated margin
+    // max（0，min (isolatedWalletBalance - isolatedPosition MM, isolatedWalletBalance + size * (mark price - Entry Price) - mark price * abs(size) * IMR)）
+
+    const isolatedWalletBalance = position.isolatedWallet;
+
+    const isolatedPositionMM = position.isolatedMargin;
+
+    const IMR = 1 / +position.leverage;
+
+    const removable = Math.max(
+      0,
+      Math.min(
+        +availableBalance - +isolatedPositionMM,
+        isolatedWalletBalance
+        + position.positionAmt * (position.lastPrice - position.entryPrice)
+        - position.lastPrice * Math.abs(position.positionAmt) * IMR,
+      ),
+    );
+
+    return { addable, removable };
+  };
+
   #updatePseudoPosition = (): void => {
     this.currentSymbolPseudoPosition = this.getPseudoPosition();
   };

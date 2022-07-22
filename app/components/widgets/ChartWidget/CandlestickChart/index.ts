@@ -8,6 +8,7 @@ import Axes from './items/Axes';
 import ClipPath from './items/ClipPath';
 import GridLines from './items/GridLines';
 import Plot from './items/Plot';
+import Volume from './items/Volume';
 import Svg from './items/Svg';
 import Ema from './items/Ema';
 import Supertrend from './items/Supertrend';
@@ -37,8 +38,8 @@ interface Params {
     d: DraftPrices & { newClientOrderId: string; },
     side: OrderSide,
   ) => Promise<void>;
-  onDragLimitOrder: (clientOrderId: string, price: number) => void;
-  onCancelOrder: (clientOrderId: string) => void;
+  onDragLimitOrder: (clientOrderId: string, price: number) => void | Promise<void>;
+  onCancelOrder: (clientOrderId: string) => void | Promise<void>;
   draftPriceItems: PriceLinesDatum[];
   pricePrecision: number;
   paddingPercents: ChartPaddingPercents;
@@ -57,6 +58,8 @@ export default class CandlestickChart {
   #gridLines: GridLines;
 
   #plot: Plot;
+
+  #volume: Volume;
 
   #ema: Ema;
 
@@ -130,6 +133,7 @@ export default class CandlestickChart {
     this.#paddingPercents = paddingPercents;
     this.#measurer = new Measurer({ scales, resizeData });
     this.#plot = new Plot({ scales });
+    this.#volume = new Volume({ scales, paddingPercents });
     this.#ema = new Ema({ scales });
     this.#supertrend = new Supertrend({ scales });
 
@@ -163,6 +167,7 @@ export default class CandlestickChart {
 
         this.#axes.update({ scaledX });
         this.#gridLines.update({ scaledX });
+        this.#volume.update({ scaledX });
         this.#plot.update({ scaledX });
         this.#orderArrows.update({ scaledX });
         this.#markPriceTriangle.update({ scaledX });
@@ -241,6 +246,8 @@ export default class CandlestickChart {
     shouldShowStopSellDraftPrice?: boolean;
 
     shouldShowBidAskLines?: boolean;
+    shouldShowVolume?: boolean;
+
     bids?: [number, number][];
     asks?: [number, number][];
 
@@ -356,8 +363,12 @@ export default class CandlestickChart {
 
     if (typeof data.markPrice !== 'undefined') this.#markPriceTriangle.update({ markPrice: data.markPrice });
 
+    if (typeof data.shouldShowVolume !== 'undefined') this.#volume.update({ shouldShowVolume: data.shouldShowVolume });
+
     if (typeof data.paddingPercents !== 'undefined' && !isEqual(data.paddingPercents, this.#paddingPercents)) {
       this.#paddingPercents = data.paddingPercents;
+
+      this.#volume.update({ paddingPercents: data.paddingPercents });
 
       this.#translateBy(
         -this.#zoomTransform.x
@@ -405,6 +416,7 @@ export default class CandlestickChart {
 
     this.#axes.draw(resizeData);
     this.#gridLines.draw();
+    this.#volume.draw(drawData);
     this.#plot.draw(drawData);
     this.#orderArrows.draw();
     this.#ema.draw(drawData);
@@ -461,11 +473,12 @@ export default class CandlestickChart {
     const svgContainer = this.#svg.appendTo(this.#container, resizeData);
 
     this.#gridLines.appendTo(svgContainer, resizeData);
+    this.#clipPath.appendTo(svgContainer, resizeData);
+    this.#volume.appendTo(svgContainer);
     this.#axes.appendTo(svgContainer, resizeData);
     this.#ema.appendTo(svgContainer);
     this.#supertrend.appendTo(svgContainer);
     this.#plot.appendTo(svgContainer);
-    this.#clipPath.appendTo(svgContainer, resizeData);
     this.#orderArrows.appendTo(svgContainer);
     this.#lines.appendTo(svgContainer, resizeData);
     this.#measurer.appendTo(svgContainer, resizeData);

@@ -1,9 +1,6 @@
 /* eslint-disable import/no-webpack-loader-syntax */
-import bootstrap from '!raw-loader!bootstrap/dist/css/bootstrap.css';
 import bootswatchDarkly from '!raw-loader!bootswatch/dist/darkly/bootstrap.css';
-
-import lightThemeStyle from '!raw-loader!./lightTheme.css';
 import darkThemeStyle from '!raw-loader!./darkTheme.css';
 
-export const lightTheme = bootstrap + lightThemeStyle;
+// eslint-disable-next-line import/prefer-default-export
 export const darkTheme = bootswatchDarkly + darkThemeStyle;

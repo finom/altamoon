@@ -1,19 +1,18 @@
 import React, { ReactElement } from 'react';
 import { Gear } from 'react-bootstrap-icons';
 import { Button } from 'reactstrap';
-import { useSet, useValue } from 'use-change';
-import { PERSISTENT, ROOT } from '../../store';
+import { useSet } from 'use-change';
+import { ROOT } from '../../store';
 
 const SettingsButton = ({
   className, buttonTextClassName,
 }: { className?: string; buttonTextClassName?: string }): ReactElement => {
-  const theme = useValue(PERSISTENT, 'theme');
   const setIsSettingsModalOpen = useSet(ROOT, 'isSettingsModalOpen');
 
   return (
     <Button
       title="Settings"
-      color={theme === 'dark' ? 'dark' : 'light'}
+      color="dark"
       onClick={() => setIsSettingsModalOpen(true)}
       className={className}
     >

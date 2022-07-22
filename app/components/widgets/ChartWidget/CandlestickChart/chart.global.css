@@ -1,11 +1,17 @@
 :root {
-
   --altamoon-chart-background: #202020e8;
   --altamoon-chart-text-fill: #fff;
   --altamoon-chart-axis-line-stroke: rgba(255, 255, 255, 0.1);
   --altamoon-chart-gridlines-stroke: rgba(255, 255, 255, 0.05);
   --altamoon-chart-last-price-line-color: var(--bs-info);
   --altamoon-chart-crosshair-color: var(--bs-info);
+  --altamoon-chart-position-buy-line-color: #30b332;
+  --altamoon-chart-position-sell-line-color: #ab257c;
+  --altamoon-chart-order-buy-line-color: #20884c;
+  --altamoon-chart-order-sell-line-color: #6d28d2;
+  --altamoon-chart-measurer-selection-color: rgba(0, 68, 255, 0.3);
+  --altamoon-chart-measurer-body-color: rgba(52, 106, 255, 0.9);
+  --altamoon-chart-liquidation-line-color: #ff0026;
 
   --altamoon-chart-up: var(--bs-green);
   --altamoon-chart-down: #e73a4a;
@@ -43,25 +49,24 @@ svg.chart-svg .gridlines line, svg.chart-svg .gridlines path {
   stroke: var(--altamoon-chart-gridlines-stroke);
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-/*   Candles
+/*   Candles & Volume
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
-svg.chart-svg .plot .wick {
-  stroke-width: 1px;
-}
-svg.chart-svg .plot .up.body {
+svg.chart-svg .plot .wick { stroke-width: 1px; }
+svg.chart-svg .plot .up.body, svg.chart-svg .volume .up.body {
   fill: var(--altamoon-chart-plot-up-body-fill);
   stroke: var(--altamoon-chart-plot-up-body-stroke);
 }
-svg.chart-svg .plot .up.wick {
-  stroke: var(--altamoon-chart-plot-up-wick-stroke);
-}
-svg.chart-svg .plot .down.body {
+svg.chart-svg .plot .up.wick { stroke: var(--altamoon-chart-plot-up-wick-stroke); }
+
+svg.chart-svg .plot .down.body, svg.chart-svg .volume .down.body {
   fill: var(--altamoon-chart-plot-down-body-fill);
   stroke: var(--altamoon-chart-plot-down-body-stroke);
 }
-svg.chart-svg .plot .down.wick {
-  stroke: var(--altamoon-chart-plot-down-wick-stroke);
-}
+svg.chart-svg .plot .down.wick { stroke: var(--altamoon-chart-plot-down-wick-stroke); }
+
+svg.chart-svg .volume-tooltip.up { background-color: var(--altamoon-chart-plot-up-body-fill); }
+svg.chart-svg .volume-tooltip.down { background-color: var(--altamoon-chart-plot-down-body-fill); }
+
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Lines
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
@@ -77,15 +82,15 @@ svg.chart-svg .price-line .supstance path {
   visibility: hidden;
 }
 svg.chart-svg .price-line .axisannotation path {
-  fill: #0000ff;
-  stroke: #0000ff;
+  fill: var(--altamoon-chart-last-price-line-color);
+  stroke: var(--altamoon-chart-last-price-line-color);
   shape-rendering: auto;
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Bid & Ask line
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg .bid-ask-lines .supstance path {
-  stroke: #0000ff;
+  stroke: var(--altamoon-chart-last-price-line-color);
 }
 svg.chart-svg .bid-ask-lines .axisannotation path,
 svg.chart-svg .bid-ask-lines .axisannotation text {
@@ -95,12 +100,12 @@ svg.chart-svg .bid-ask-lines .axisannotation text {
 /*   Position line
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg .position-line path {
-  fill: #30b332;
-  stroke: #30b332;
+  fill: var(--altamoon-chart-position-buy-line-color);
+  stroke: var(--altamoon-chart-position-buy-line-color);
 }
 svg.chart-svg .position-label .line-label {
-  background-color: #30b332;
-  border: 2px solid #30b332;
+  background-color: var(--altamoon-chart-position-buy-line-color);
+  border: 2px solid var(--altamoon-chart-position-buy-line-color);
   border-radius: 5px;
   box-sizing: content-box;
   min-width: 70px;
@@ -118,8 +123,8 @@ svg.chart-svg .position-label text {
 svg.chart-svg .position-line [data-side='sell'] path,
 svg.chart-svg .position-label [data-side='sell'] path,
 svg.chart-svg .position-label [data-side='sell'] rect {
-  fill: #ab257c;
-  stroke: #ab257c;
+  fill: var(--altamoon-chart-position-sell-line-color);
+  stroke: var(--altamoon-chart-position-sell-line-color);
 }
 svg.chart-svg .position-line [data-side='sell'] text,
 svg.chart-svg .position-label [data-side='sell'] text {
@@ -140,7 +145,7 @@ svg.chart-svg .break-even-line .axisannotation text {
 /*   Liquidation lines
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg .liquidation-line .supstance path {
-  stroke: #ff0026;
+  stroke: var(--altamoon-chart-liquidation-line-color);
 }
 svg.chart-svg .liquidation-line .axisannotation path,
 svg.chart-svg .liquidation-line .axisannotation text {
@@ -156,14 +161,14 @@ svg.chart-svg .order-lines .scope-supstance.mouseover path {
   cursor: grab;
 }
 svg.chart-svg .order-lines path {
-  fill: #20884c;
-  stroke: #20884c;
+  fill: var(--altamoon-chart-order-buy-line-color);
+  stroke: var(--altamoon-chart-order-buy-line-color);
 }
 svg.chart-svg .order-lines [data-side='sell'] path {
-  stroke: #6d28d2;
+  stroke: var(--altamoon-chart-order-sell-line-color);
 }
 svg.chart-svg .order-labels .line-label  {
-  background-color: #20884c;
+  background-color: var(--altamoon-chart-order-buy-line-color);
   border-radius: 5px;
   min-width: 70px;
   height: 19px;
@@ -174,7 +179,7 @@ svg.chart-svg .order-labels .line-label div {
   padding: 4px 3px;
 }
 svg.chart-svg .order-labels [data-side='sell'] .line-label {
-  background-color: #6d28d2;
+  background-color: var(--altamoon-chart-order-sell-line-color);
 }
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 /*   Draft lines
@@ -186,12 +191,12 @@ svg.chart-svg .draft-lines .supstance path {
   stroke-dasharray: 10 6;
 }
 svg.chart-svg .draft-lines path {
-  fill: #20884c;
-  stroke: #20884c;
+  fill: var(--altamoon-chart-order-buy-line-color);
+  stroke: var(--altamoon-chart-order-buy-line-color);
 }
 svg.chart-svg .draft-labels .line-label {
   background-color: #191919;
-  border: 2px solid #20884c;
+  border: 2px solid var(--altamoon-chart-order-buy-line-color);
   border-radius: 5px;
   box-sizing: content-box;
   width: 70px;
@@ -207,7 +212,7 @@ svg.chart-svg .draft-lines [data-side='sell'] path {
   stroke: #7d37e4;
 }
 svg.chart-svg .draft-labels [data-side='sell'] .line-label {
-  border-color: #6d28d2;
+  border-color: var(--altamoon-chart-order-sell-line-color);
 }
 
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
@@ -236,8 +241,7 @@ svg.chart-svg .triggered-alert-indicator {
 /*   Measure tool
 /* –––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––– */
 svg.chart-svg .measurer rect {
-  fill: rgb(0, 68, 255);
-  opacity: 0.3;
+  fill: var(--altamoon-chart-measurer-selection-color);
 }
 svg.chart-svg .measurer foreignObject {
   overflow: visible;
@@ -247,13 +251,12 @@ svg.chart-svg .measurer-label {
   text-align: center;
 }
 svg.chart-svg .measurer-label div {
-  background: rgb(52, 106, 255);
+  background: var(--altamoon-chart-measurer-body-color);
   border-radius: 0.25rem;
   color: rgb(255, 255, 255);
   display: inline-block;
   font-size: 1.5em;
   line-height: 1.3em;
-  opacity: 0.9;
   padding: 10px;
   text-align: left;
 }

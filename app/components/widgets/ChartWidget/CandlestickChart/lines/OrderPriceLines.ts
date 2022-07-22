@@ -5,8 +5,8 @@ import formatMoneyNumber from '../../../../../lib/formatMoneyNumber';
 
 interface Params {
   axis: ChartAxis;
-  onDragLimitOrder: (clientOrderId: string, price: number) => void;
-  onCancelOrder: (clientOrderId: string) => void;
+  onDragLimitOrder: (clientOrderId: string, price: number) => void | Promise<void>;
+  onCancelOrder: (clientOrderId: string) => void | Promise<void>;
   onUpdateItems: (d: PriceLinesDatum[]) => void;
 }
 
@@ -34,7 +34,7 @@ export default class OrderPriceLines extends PriceLines {
       isBackgroundFill: true,
       onDragEnd: (d) => {
         this.#forceOrderPrices[d.id as string] = d.yValue ?? 0;
-        onDragLimitOrder(d.id as string, d.yValue ?? 0);
+        void onDragLimitOrder(d.id as string, d.yValue ?? 0);
       },
       onClickClose: (d) => onCancelOrder(d.id as string),
       onUpdateItems,

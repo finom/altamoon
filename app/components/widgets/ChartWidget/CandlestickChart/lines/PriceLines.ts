@@ -8,7 +8,7 @@ import {
 
 type Orient = 'top' | 'bottom' | 'left' | 'right';
 
-type Handler = (datum: PriceLinesDatum, d: PriceLinesDatum[]) => void;
+type Handler = (datum: PriceLinesDatum, d: PriceLinesDatum[]) => (void | Promise<void>);
 
 interface Params {
   items: PriceLinesDatum[];
@@ -168,7 +168,7 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
   public addItem = (data: PriceLinesDatum): void => {
     this.#items.push(data);
     this.update({ items: this.#items });
-    this.#handleAdd?.(data, this.#items);
+    void this.#handleAdd?.(data, this.#items);
   };
 
   public removeItem = (key: number | string): void => {
@@ -176,7 +176,7 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
     if (!item) throw new Error(`Unable to find item "${key}"`);
     this.#items.splice(this.#items.indexOf(item), 1);
     this.update({ items: this.#items });
-    this.#handleRemove?.(item, this.#items);
+    void this.#handleRemove?.(item, this.#items);
   };
 
   public invertX = (px: number): Date => convertType<{ invert:(px: number) => Date }>(
@@ -386,7 +386,7 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
                 .style('display', (d) => (d.isClosable === false ? 'none' : 'auto')) // TODO support dynamic change
                 .on('click', (evt: { target: HTMLElement }) => {
                   const datum = getDatumFromTarget(evt.target);
-                  if (datum) this.#handleClickClose?.(datum, this.#items);
+                  if (datum) void this.#handleClickClose?.(datum, this.#items);
                 });
             }
 
@@ -405,7 +405,7 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
                 .style('display', (d) => (d.isCheckable === false ? 'none' : 'auto')) // TODO support dynamic change
                 .on('click', (evt: { target: HTMLElement }) => {
                   const datum = getDatumFromTarget(evt.target);
-                  if (datum) this.#handleClickCheck?.(datum, this.#items);
+                  if (datum) void this.#handleClickCheck?.(datum, this.#items);
                 });
             }
           }
@@ -572,7 +572,7 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
         || !this.#items[this.#draggableItemIndex] // fixes bug with filled orders https://trello.com/c/19LumwFG/195-chart-error-when-dragging-an-order-while-it-gets-filled
     ) return;
 
-    this.#handleDrag?.(datum, this.#items);
+    void this.#handleDrag?.(datum, this.#items);
     this.updateItem(this.#draggableItemIndex, {
       yValue: this.invertY(evt.y),
     });
@@ -581,6 +581,6 @@ export default class PriceLines implements Omit<ChartItem, 'appendTo'> {
   #onDragEnd = (_evt: unknown, datum: PriceLinesDatum): void => {
     if (!datum.isDraggable) return;
     this.#draggableItemIndex = null;
-    this.#handleDragEnd?.(datum, this.#items);
+    void this.#handleDragEnd?.(datum, this.#items);
   };
 }

@@ -36,8 +36,6 @@ export default class Persistent {
 
   public interval = persist<api.CandlestickChartInterval>('interval', '1d');
 
-  public theme = persist<'dark' | 'light'>('theme', 'dark');
-
   public tradingType = persist<api.OrderType>('tradingType', 'MARKET');
 
   public tradingPostOnly = persist<boolean>('tradingPostOnly', false);
@@ -97,6 +95,10 @@ export default class Persistent {
   public chartSupertrendDownTrendColor = persist<string>('chartSupertrendDownTrendColor', '#ff0000');
 
   public chartSupertrendUpTrendColor = persist<string>('chartSupertrendUpTrendColor', '#00ff00');
+
+  public chartShouldShowSubminuteIntervals = persist<boolean>('chartShouldShowSubminuteIntervals', false);
+
+  public chartShouldShowVolume = persist<boolean>('chartShouldShowVolume', false);
 
   public tradingWidgetPercentButtonsCount = persist<number>('tradingWidgetPercentButtonsCount', 4);
 

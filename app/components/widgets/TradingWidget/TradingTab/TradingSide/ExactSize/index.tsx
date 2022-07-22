@@ -2,6 +2,7 @@ import { capitalize } from 'lodash';
 import React, { ReactElement, Ref, useMemo } from 'react';
 import { Button } from 'reactstrap';
 import { useSilent, useValue } from 'use-change';
+import { Tooltip } from 'bootstrap';
 
 import * as api from '../../../../../../api';
 import useBootstrapTooltip from '../../../../../../hooks/useBootstrapTooltip';
@@ -24,8 +25,9 @@ interface Props {
   onOrder: (qty: number) => void;
 }
 
-const tooltipOptions = {
+const tooltipOptions: Partial<Tooltip.Options> = {
   offset: '0, 6',
+  trigger: 'hover focus',
 };
 
 const ExactSize = ({
